@@ -5,6 +5,7 @@
 import random
 import math
 import time
+import numpy
 from random import randint
 from collections import defaultdict
 from scipy.special import expit
@@ -30,6 +31,9 @@ class Program:
         self.accuracies_per_class_0 = 0.0
         self.accuracies_per_class_1 = 0.0
         self.accuracies_per_class_2 = 0.0
+        self.accuracies_per_class_0_cont = 0
+        self.accuracies_per_class_1_cont = 0
+        self.accuracies_per_class_2_cont = 0
         self.fitness = -1
         self.accuracy_trainingset = 0
         self.accuracy_testset = 0
@@ -56,11 +60,13 @@ class Program:
             instruction['source'] = randint(0, self.total_input_registers-1)
         return instruction
 
-    def execute(self, X_train, Y_train, testset=False):
+    def execute(self, data, testset=False):
         # execute code for each input
         outputs = []
         membership_outputs_array = []
-        for x in X_train:
+        X = get_X(data)
+        Y = get_Y(data)
+        for x in X:
             # execute
             if DEBUG_PROGRAM_EXECUTION: print(self.to_str())
             if DEBUG_PROGRAM_EXECUTION: print("inputs: "+str(x))
@@ -88,7 +94,7 @@ class Program:
             membership_outputs_array.append(membership_outputs)
             outputs.append(output_class)
         # calculate fitness and accuracy
-        accuracy = self.calculate_accuracy(outputs, Y_train, testset)
+        accuracy = self.calculate_accuracy(outputs, Y, testset)
         if USE_MDE:
             fitness = self.calculate_fitness(accuracy, membership_outputs_array)
         elif USE_MSE:
@@ -121,6 +127,9 @@ class Program:
             self.accuracies_per_class_0 = cont0/float(len(predicted_outputs))
             self.accuracies_per_class_1 = cont1/float(len(predicted_outputs))
             self.accuracies_per_class_2 = cont2/float(len(predicted_outputs))
+            self.accuracies_per_class_0_cont = cont0
+            self.accuracies_per_class_1_cont = cont1
+            self.accuracies_per_class_2_cont = cont2
         return cont/float(len(predicted_outputs))
 
     def calculate_fitness(self, accuracy, membership_outputs_array):

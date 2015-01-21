@@ -10,3 +10,11 @@ USE_MSE3 = False
 
 CURRENT_DIR = "C:/Users/jpbonson/Dropbox/Dalhousie Winter 2015/Genetic Algorithms/GeneticProgrammingSandbox/"
 # CURRENT_DIR = ""
+
+CONFIG = {
+    'sampling': {
+        'use_sampling': True,
+        'use_probability_per_class': False, # or general probability
+        'sampling_size': 200,
+    }
+}
