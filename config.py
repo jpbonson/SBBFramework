@@ -4,9 +4,8 @@ DEBUG_PROGRAM_EXECUTION = False
 DEBUG_PROGRAM_CROSSOVER = False
 DEBUG_PROGRAM_MUTATION = False
 
-USE_MDE = False
-USE_MSE = False
 USE_MSE3 = False
+USE_ACC = False
 
 CURRENT_DIR = "C:/Users/jpbonson/Dropbox/Dalhousie Winter 2015/Genetic Algorithms/GeneticProgrammingSandbox/"
 # CURRENT_DIR = ""

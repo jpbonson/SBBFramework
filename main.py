@@ -84,13 +84,13 @@ class Algorithm:
                 training_accuracy.append(best_program.accuracy_trainingset)
                 best_program.execute(test, testset=True) # analisar o melhor individuo gerado com o test set
                 test_accuracy.append(best_program.accuracy_testset)
-                print("Best program: "+str(best_program.program_id)+":"+str(best_program.generation)+", fitness: "+str(Operations.round_to_decimals(best_program.fitness))+", accuracy-trainingset: "+str(Operations.round_to_decimals(best_program.accuracy_trainingset))+", accuracy-testset: "+str(Operations.round_to_decimals(best_program.accuracy_testset))+", len: "+str(len(best_program.instructions)))
+                print("Best program: "+best_program.print_metrics())
             # info += ("\nTraining fitness: "+str(training_fitness))
             # info += ("\nTraining accuracy: "+str(training_accuracy))
             # info += ("\nTest accuracy: "+str(test_accuracy))
             print(info)
 
-            print("\nRun's best program: "+str(best_program.program_id)+":"+str(best_program.generation)+", fitness: "+str(best_program.fitness)+", accuracy-trainingset: "+str(Operations.round_to_decimals(best_program.accuracy_trainingset))+", accuracy-testset: "+str(Operations.round_to_decimals(best_program.accuracy_testset))+", len: "+str(len(best_program.instructions)))
+            print("\nRun's best program: "+best_program.print_metrics())
             best_programs_per_run.append(best_program)
             print("\nFinishing run: "+str(run_id))
             runs_info.append(info)
@@ -100,15 +100,20 @@ class Algorithm:
         for run_id in range(self.runs_total):
             best_program = best_programs_per_run[run_id]
             test_accuracy_per_run.append(Operations.round_to_decimals(best_program.accuracy_testset))
-            print("\n"+str(run_id)+" Run best program: "+str(best_program.program_id)+":"+str(best_program.generation)+", fitness: "+str(Operations.round_to_decimals(best_program.fitness))+", accuracy-trainingset: "+str(Operations.round_to_decimals(best_program.accuracy_trainingset))+", accuracy-testset: "+str(Operations.round_to_decimals(best_program.accuracy_testset))+", len: "+str(len(best_program.instructions)))
+            print("\n"+str(run_id)+" Run best program: "+best_program.print_metrics())
+            print("Acc per classes: "+str(best_program.accuracies_per_class))
+            print("Acc per classes (counter): "+str(best_program.conts_per_class))
+            print("Confusion Matrix:\n"+str(best_program.conf_matrix))
         
-        accuracy_testset = [p.accuracy_testset for p in best_programs_per_run]
-        best_run = accuracy_testset.index(max(accuracy_testset))
+        best_result_metric = [numpy.mean([p.accuracy_testset, p.macro_recall_testset]) for p in best_programs_per_run]
+        best_run = best_result_metric.index(max(best_result_metric))
         overall_best_program = best_programs_per_run[best_run]
-        msg = "\n################# Overall Best:\n"+str(best_run)+" Run best program: "+str(overall_best_program.program_id)+":"+str(overall_best_program.generation)+", fitness: "+str(Operations.round_to_decimals(overall_best_program.fitness))+", accuracy-trainingset: "+str(Operations.round_to_decimals(overall_best_program.accuracy_trainingset))+", accuracy-testset: "+str(Operations.round_to_decimals(overall_best_program.accuracy_testset))+", len: "+str(len(overall_best_program.instructions))
+        msg = "\n################# Overall Best:\n"+str(best_run)+" Run best program: "+overall_best_program.print_metrics()
         msg += "\n"+runs_info[best_run]
-        msg += "\nAcc per classes: "+str(overall_best_program.accuracies_per_class)
-        msg += "\nAcc per classes (cont): "+str(overall_best_program.conts_per_class)
+
+        msg += "\n\nAcc per classes: "+str(overall_best_program.accuracies_per_class)+"\nAcc per classes (counter): "+str(overall_best_program.conts_per_class)
+        msg += "\nConfusion Matrix:\n"+str(overall_best_program.conf_matrix)
+
         msg += "\n\nTest Accuracies per run solution: "+str(test_accuracy_per_run)
         print(msg)
 
@@ -271,11 +276,9 @@ if __name__ == "__main__":
     a.run(data)
 
 # TODO: Second sampling heuristic (?)
-# TODO: calcular accuracy com numpy/sklearn
-# TODO: implementar Class-wise detection rate (DR) (se basear na matriz de confusao do numby/sklearn)
-# TODO: durante o training, definir melhor algoritmo das runs usando ambas as metricas (media das duas?)
-# TODO: definir fitness function (entender os datasets, etestar fitness que valorizem atodas as classes)
+# TODO: definir fitness function (entender os datasets, e testar fitness que valorizem todas as classes)
 # TODO: escrever o report
 
 # report: replace all sampling exemplars at each GP generation
 # report: normalized the attributes between -1 <= x <= 1, using (x-mean)/(max-min)
+# report: automatically get best run my getting the mean between the final metrics (maybe give more weight to one of them?)
