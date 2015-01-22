@@ -5,6 +5,7 @@
 import random
 import math
 import time
+import numpy
 from random import randint
 from collections import defaultdict
 from scipy.special import expit
@@ -31,18 +32,22 @@ class Algorithm:
         start = time.time()
         best_programs_per_run = []
         runs_info = []
+        print("\nReading inputs from data: "+data_name)
+        train, test = read_inputs_already_partitioned(data_name)
+        normalization_params = self.get_normalization_params(train, test)
+        train = self.normalize(normalization_params, train)
+        test = self.normalize(normalization_params, test)
+
         for run_id in range(self.runs_total):
             print("\nStarting run: "+str(run_id))
-            print("\nReading inputs from data: "+data_name)
-            info = "\nAlgorithm info:"
-
-            train, test = read_inputs_already_partitioned(data_name)
+            info = "\nAlgorithm info:"          
+            random.shuffle(train)
+            random.shuffle(test)
             features_size = len(train[0])-1
             Y_test = get_Y(test)
             class_dist = get_class_distribution(Y_test)
             info += "Class Distributions: "+str(class_dist)+", for a total of "+str(len(Y_test))+" samples"
             output_size = len(class_dist)
-            
             info += ("\ntotal samples (train): "+str(len(train)))
             info += ("\ntotal samples (test): "+str(len(test)))
             info += ("\ntotal_input_registers: "+str(features_size))
@@ -85,7 +90,7 @@ class Algorithm:
             # info += ("\nTest accuracy: "+str(test_accuracy))
             print(info)
 
-            print("\nRun's best program: "+str(best_program.program_id)+":"+str(best_program.generation)+", fitness: "+str(best_program.fitness)+", accuracy-trainingset: "+str(best_program.accuracy_trainingset)+", accuracy-testset: "+str(best_program.accuracy_testset)+", len: "+str(len(best_program.instructions)))
+            print("\nRun's best program: "+str(best_program.program_id)+":"+str(best_program.generation)+", fitness: "+str(best_program.fitness)+", accuracy-trainingset: "+str(Operations.round_to_decimals(best_program.accuracy_trainingset))+", accuracy-testset: "+str(Operations.round_to_decimals(best_program.accuracy_testset))+", len: "+str(len(best_program.instructions)))
             best_programs_per_run.append(best_program)
             print("\nFinishing run: "+str(run_id))
             runs_info.append(info)
@@ -95,15 +100,15 @@ class Algorithm:
         for run_id in range(self.runs_total):
             best_program = best_programs_per_run[run_id]
             test_accuracy_per_run.append(Operations.round_to_decimals(best_program.accuracy_testset))
-            print("\n"+str(run_id)+" Run best program: "+str(best_program.program_id)+":"+str(best_program.generation)+", fitness: "+str(best_program.fitness)+", accuracy-trainingset: "+str(best_program.accuracy_trainingset)+", accuracy-testset: "+str(best_program.accuracy_testset)+", len: "+str(len(best_program.instructions)))
+            print("\n"+str(run_id)+" Run best program: "+str(best_program.program_id)+":"+str(best_program.generation)+", fitness: "+str(Operations.round_to_decimals(best_program.fitness))+", accuracy-trainingset: "+str(Operations.round_to_decimals(best_program.accuracy_trainingset))+", accuracy-testset: "+str(Operations.round_to_decimals(best_program.accuracy_testset))+", len: "+str(len(best_program.instructions)))
         
         accuracy_testset = [p.accuracy_testset for p in best_programs_per_run]
         best_run = accuracy_testset.index(max(accuracy_testset))
         overall_best_program = best_programs_per_run[best_run]
-        msg = "\n################# Overall Best:\n"+str(best_run)+" Run best program: "+str(overall_best_program.program_id)+":"+str(overall_best_program.generation)+", fitness: "+str(overall_best_program.fitness)+", accuracy-trainingset: "+str(overall_best_program.accuracy_trainingset)+", accuracy-testset: "+str(overall_best_program.accuracy_testset)+", len: "+str(len(overall_best_program.instructions))
+        msg = "\n################# Overall Best:\n"+str(best_run)+" Run best program: "+str(overall_best_program.program_id)+":"+str(overall_best_program.generation)+", fitness: "+str(Operations.round_to_decimals(overall_best_program.fitness))+", accuracy-trainingset: "+str(Operations.round_to_decimals(overall_best_program.accuracy_trainingset))+", accuracy-testset: "+str(Operations.round_to_decimals(overall_best_program.accuracy_testset))+", len: "+str(len(overall_best_program.instructions))
         msg += "\n"+runs_info[best_run]
-        msg += "\nAcc per classes: "+str(overall_best_program.accuracies_per_class_0)+", "+str(overall_best_program.accuracies_per_class_1)+", "+str(overall_best_program.accuracies_per_class_2)
-        msg += "\nAcc per classes (cont): "+str(overall_best_program.accuracies_per_class_0_cont)+", "+str(overall_best_program.accuracies_per_class_1_cont)+", "+str(overall_best_program.accuracies_per_class_2_cont)
+        msg += "\nAcc per classes: "+str(overall_best_program.accuracies_per_class)
+        msg += "\nAcc per classes (cont): "+str(overall_best_program.conts_per_class)
         msg += "\n\nTest Accuracies per run solution: "+str(test_accuracy_per_run)
         print(msg)
 
@@ -127,6 +132,20 @@ class Algorithm:
         else:
             sample = data[:100] # just to test the program
         return sample
+
+    def get_normalization_params(self, train, test):
+        normalization_params = []
+        data = numpy.array(train+test)
+        attributes_len = len(data[0])
+        for index in range(attributes_len-1): # dont get the class' labels column
+            column = data[:,index]
+            normalization_params.append({'mean':numpy.mean(column), 'range':max(column)-min(column)})
+        normalization_params.append({'mean': 0.0, 'range': 1.0}) # default values so the class labels will not change
+        return normalization_params
+
+    def normalize(self, normalization_params, data):
+        normalized_data = [[(cell-normalization_params[i]['mean'])/normalization_params[i]['range'] for i, cell in enumerate(line)] for line in data]
+        return normalized_data
 
     def stop_criterion(self):
         if self.current_generation == self.max_generation_total:
@@ -251,12 +270,12 @@ if __name__ == "__main__":
             max_program_size = 64, total_calculation_registers=2)
     a.run(data)
 
-# TODO: Normalize data (apply to both train and test set)
-# TODO: Second sampling heuristics
+# TODO: Second sampling heuristic (?)
 # TODO: calcular accuracy com numpy/sklearn
 # TODO: implementar Class-wise detection rate (DR) (se basear na matriz de confusao do numby/sklearn)
 # TODO: durante o training, definir melhor algoritmo das runs usando ambas as metricas (media das duas?)
-# TODO: definir fitness function (entender os datasets!)
-# TODO: escrever os reports
+# TODO: definir fitness function (entender os datasets, etestar fitness que valorizem atodas as classes)
+# TODO: escrever o report
 
 # report: replace all sampling exemplars at each GP generation
+# report: normalized the attributes between -1 <= x <= 1, using (x-mean)/(max-min)

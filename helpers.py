@@ -104,6 +104,5 @@ def read_space_separated_file(file_path):
         content = f.readlines()
         content = [x.strip('\n').strip() for x in content]
         content = [x.split(' ') for x in content]
-        random.shuffle(content)
         content = [[float(y) for y in x]for x in content]
     return content

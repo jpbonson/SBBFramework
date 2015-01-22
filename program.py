@@ -28,12 +28,8 @@ class Program:
         next_program_id += 1
         self.program_id = next_program_id
         self.generation = generation
-        self.accuracies_per_class_0 = 0.0
-        self.accuracies_per_class_1 = 0.0
-        self.accuracies_per_class_2 = 0.0
-        self.accuracies_per_class_0_cont = 0
-        self.accuracies_per_class_1_cont = 0
-        self.accuracies_per_class_2_cont = 0
+        self.accuracies_per_class = []
+        self.conts_per_class = []
         self.fitness = -1
         self.accuracy_trainingset = 0
         self.accuracy_testset = 0
@@ -111,25 +107,15 @@ class Program:
 
     def calculate_accuracy(self, predicted_outputs, desired_outputs, testset=False):
         cont = 0.0
-        cont0 = 0.0
-        cont1 = 0.0
-        cont2 = 0.0
         for p, d in zip(predicted_outputs, desired_outputs):
             if p == d:
                 cont += 1.0
-                if p == 0:
-                    cont0 += 1.0
-                if p == 1:
-                    cont1 += 1.0
-                if p == 2:
-                    cont2 += 1.0
         if testset:
-            self.accuracies_per_class_0 = cont0/float(len(predicted_outputs))
-            self.accuracies_per_class_1 = cont1/float(len(predicted_outputs))
-            self.accuracies_per_class_2 = cont2/float(len(predicted_outputs))
-            self.accuracies_per_class_0_cont = cont0
-            self.accuracies_per_class_1_cont = cont1
-            self.accuracies_per_class_2_cont = cont2
+            self.conts_per_class = [0] * self.total_output_registers
+            for p, d in zip(predicted_outputs, desired_outputs):
+                if p == d:
+                    self.conts_per_class[d] += 1.0
+            self.accuracies_per_class = [x/float(len(predicted_outputs)) for x in self.conts_per_class]
         return cont/float(len(predicted_outputs))
 
     def calculate_fitness(self, accuracy, membership_outputs_array):
