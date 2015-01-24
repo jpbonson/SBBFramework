@@ -84,7 +84,7 @@ def get_Y(data):
     Y = sum(Y, [])
     Y = [int(y) for y in Y]
     if 0 not in Y:
-        Y = [y-1 for y in Y]
+        Y = [y-1 for y in Y]  # added -1 due to class labels starting at 1
     return Y
 
 def get_class_distribution(Y):

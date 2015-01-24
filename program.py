@@ -96,8 +96,8 @@ class Program:
         accuracy, macro_recall = self.calculate_performance_metrics(outputs, Y, testset)
         if USE_MSE3:
             fitness = self.calculate_fitness(accuracy, macro_recall, membership_outputs_array)
-        elif USE_ACC:
-            fitness = self.calculate_fitness_2(accuracy, macro_recall)
+        elif USE_ACC_MR:
+            fitness = self.calculate_fitness_3(accuracy, macro_recall)
         else:
             fitness = accuracy
         if testset:
@@ -129,7 +129,7 @@ class Program:
             self.accuracies_per_class = [x/float(len(predicted_outputs)) for x in self.conts_per_class]
         return accuracy, macro_recall
 
-    def calculate_fitness(self, accuracy, macro_recall, membership_outputs_array):
+    def calculate_MSE(self, membership_outputs_array):
         results = []
         for m in membership_outputs_array:
             first_best_membership_result = max(m)
@@ -140,14 +140,18 @@ class Program:
             wrong_classes_errors = sum_wrong_classes_errors/float(len(m))
             result = ((Operations.minus(first_best_membership_result, 1.0)**2) + wrong_classes_errors)/2.0
             results.append(result)
-        MCE = accuracy
         MSE = sum(results)/float(len(membership_outputs_array))
+        return MSE
+
+    def calculate_fitness(self, accuracy, macro_recall, membership_outputs_array):
+        MSE = self.calculate_MSE(membership_outputs_array)
+        MCE = accuracy
         fitness = (MSE + 2.0*MCE)/3.0
         return fitness
 
-    def calculate_fitness_2(self, accuracy, macro_recall):
+    def calculate_fitness_3(self, accuracy, macro_recall):
         MCE = accuracy
-        fitness = MCE
+        fitness = (MCE + macro_recall)/2.0
         return fitness
 
     def crossover(self, other_program, generation):

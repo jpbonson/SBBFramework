@@ -5,7 +5,8 @@ DEBUG_PROGRAM_CROSSOVER = False
 DEBUG_PROGRAM_MUTATION = False
 
 USE_MSE3 = False
-USE_ACC = False
+USE_ACC_MR = False
+
 
 CURRENT_DIR = "C:/Users/jpbonson/Dropbox/Dalhousie Winter 2015/Genetic Algorithms/GeneticProgrammingSandbox/"
 # CURRENT_DIR = ""
@@ -13,7 +14,7 @@ CURRENT_DIR = "C:/Users/jpbonson/Dropbox/Dalhousie Winter 2015/Genetic Algorithm
 CONFIG = {
     'sampling': {
         'use_sampling': True,
-        'use_probability_per_class': False, # or general probability
-        'sampling_size': 200,
+        'use_probability_per_class': True, # or general probability
+        'sampling_size': 420,
     }
 }

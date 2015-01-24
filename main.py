@@ -37,6 +37,9 @@ class Algorithm:
         normalization_params = self.get_normalization_params(train, test)
         train = self.normalize(normalization_params, train)
         test = self.normalize(normalization_params, test)
+        Y_test = get_Y(test)
+        class_dist = get_class_distribution(Y_test)
+        trainsubsets_per_class = self.get_data_per_class(train, class_dist)
 
         for run_id in range(self.runs_total):
             print("\nStarting run: "+str(run_id))
@@ -44,8 +47,6 @@ class Algorithm:
             random.shuffle(train)
             random.shuffle(test)
             features_size = len(train[0])-1
-            Y_test = get_Y(test)
-            class_dist = get_class_distribution(Y_test)
             info += "Class Distributions: "+str(class_dist)+", for a total of "+str(len(Y_test))+" samples"
             output_size = len(class_dist)
             info += ("\ntotal samples (train): "+str(len(train)))
@@ -62,7 +63,7 @@ class Algorithm:
             # random initialize population
             reset_ids()
             population =[]
-            sample = self.get_sample(train)
+            sample = self.get_sample(train, trainsubsets_per_class)
             for i in range(self.population_size):
                 program = Program(generation=1, total_input_registers=features_size, total_output_registers=output_size, 
                     total_general_registers = self.total_calculation_registers+output_size, max_program_size=self.max_program_size,
@@ -75,7 +76,7 @@ class Algorithm:
             test_accuracy = []
             while not self.stop_criterion():
                 self.current_generation += 1
-                sample = self.get_sample(train)
+                sample = self.get_sample(train, trainsubsets_per_class)
                 print("\n>>>>> Executing generation: "+str(self.current_generation)+", run: "+str(run_id))
                 population = self.selection(population, sample)
                 fitness = [p.fitness for p in population]
@@ -96,10 +97,12 @@ class Algorithm:
             runs_info.append(info)
 
         print("\n################# RESULT PER RUN ####################")
+        test_metrics_per_run = []
         test_accuracy_per_run = []
         for run_id in range(self.runs_total):
             best_program = best_programs_per_run[run_id]
             test_accuracy_per_run.append(Operations.round_to_decimals(best_program.accuracy_testset))
+            test_metrics_per_run.append(Operations.round_to_decimals(numpy.mean([best_program.accuracy_testset, best_program.macro_recall_testset])))
             print("\n"+str(run_id)+" Run best program: "+best_program.print_metrics())
             print("Acc per classes: "+str(best_program.accuracies_per_class))
             print("Acc per classes (counter): "+str(best_program.conts_per_class))
@@ -115,6 +118,7 @@ class Algorithm:
         msg += "\nConfusion Matrix:\n"+str(overall_best_program.conf_matrix)
 
         msg += "\n\nTest Accuracies per run solution: "+str(test_accuracy_per_run)
+        msg += "\n\nTest Metrics per run solution: "+str(test_metrics_per_run)
         print(msg)
 
         localtime = time.localtime()
@@ -127,11 +131,27 @@ class Algorithm:
         elapsed = end - start
         print("\nFinished execution, elapsed time: "+str(elapsed)+" secs")
 
-    def get_sample(self, data):
+    def get_data_per_class(self, data, class_dist):
+        subsets_per_class = []
+        for class_index in range(len(class_dist)):
+            values = [line for line in data if line[-1]-1 == class_index] # added -1 due to class labels starting at 1
+            subsets_per_class.append(values)
+        return subsets_per_class
+
+    def get_sample(self, data, subsets_per_class):
         if CONFIG['sampling']['use_sampling']:
             print("Sampling")
             if CONFIG['sampling']['use_probability_per_class']:
-                pass
+                num_samples_per_class = CONFIG['sampling']['sampling_size']/len(subsets_per_class)
+                samples_per_class = []
+                for subset in subsets_per_class:
+                    if len(subset) <= num_samples_per_class:
+                        sample = subset
+                    else:
+                        sample = random.sample(subset, num_samples_per_class)
+                    samples_per_class.append(sample)
+                sample = sum(samples_per_class, [])
+                random.shuffle(sample)
             else:
                 sample = random.sample(data, CONFIG['sampling']['sampling_size'])
         else:
@@ -271,14 +291,6 @@ class Algorithm:
 if __name__ == "__main__":
     data = "thyroid"
     a = Algorithm(population_size = 200, max_generation_total = 20, use_proportional_selection = True,
-            crossover_rate = 0.1, mutation_rate = 0.9, runs_total = 2, initial_program_size = 32, 
-            max_program_size = 64, total_calculation_registers=2)
+            crossover_rate = 0.1, mutation_rate = 0.9, runs_total = 20, initial_program_size = 32, 
+            max_program_size = 64, total_calculation_registers = 2)
     a.run(data)
-
-# TODO: Second sampling heuristic (?)
-# TODO: definir fitness function (entender os datasets, e testar fitness que valorizem todas as classes)
-# TODO: escrever o report
-
-# report: replace all sampling exemplars at each GP generation
-# report: normalized the attributes between -1 <= x <= 1, using (x-mean)/(max-min)
-# report: automatically get best run my getting the mean between the final metrics (maybe give more weight to one of them?)
