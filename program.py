@@ -23,22 +23,15 @@ def reset_ids():
     next_program_id = 0
 
 class Program:
-    def __init__(self, generation, total_input_registers, total_output_registers, random=True, instructions=[]):
+    def __init__(self, generation, total_input_registers, total_classes, random=True, instructions=[]):
         global next_program_id
         next_program_id += 1
         self.program_id = next_program_id
         self.generation = generation
-        self.accuracies_per_class = []
-        self.conts_per_class = []
-        self.conf_matrix = []
-        self.fitness = -1
-        self.accuracy_trainingset = 0
-        self.accuracy_testset = 0
-        self.recall = 0
-        self.total_general_registers = CONFIG['total_calculation_registers']+total_output_registers
         self.total_input_registers = total_input_registers
-        self.total_output_registers = total_output_registers
-        self.action = randint(0, total_output_registers-1)
+        self.total_output_registers = 1
+        self.total_general_registers = CONFIG['total_calculation_registers']+self.total_output_registers
+        self.action = randint(0, total_classes-1)
         if random:
             self.instructions = []
             for i in range(CONFIG['initial_program_size']):
@@ -58,90 +51,27 @@ class Program:
             instruction['source'] = randint(0, self.total_input_registers-1)
         return instruction
 
-    def execute(self, data, testset=False):
+    def execute(self, sample, testset=False):
         # execute code for each input
-        outputs = []
-        membership_outputs_array = []
-        X = get_X(data)
-        Y = get_Y(data)
-        for x in X:
-            # execute
-            general_registers = [0] * self.total_general_registers
-            for i in self.instructions:
-                if i['op'] == '+':
-                    op = Operations.sum
-                elif i['op'] == '-':
-                    op = Operations.minus
-                elif i['op'] == '*':
-                    op = Operations.multi
-                elif i['op'] == '/':
-                    op = Operations.div
-                if i['mode'] == 'read-register':
-                    source =  general_registers[i['source']]
-                else:
-                    source =  x[i['source']]
-                general_registers[i['target']] = op(general_registers[i['target']], source)
-            # get class output
-            partial_outputs = general_registers[0:self.total_output_registers] # tinha um +1 aqui antes, why?
-            membership_outputs = [expit(k) for k in partial_outputs] # apply sigmoid function before getting the output class
-            output_class = membership_outputs.index(max(membership_outputs))
-            membership_outputs_array.append(membership_outputs)
-            outputs.append(output_class)
-        # calculate fitness and accuracy
-        accuracy, macro_recall = self.calculate_performance_metrics(outputs, Y, testset)
-        if USE_MSE3:
-            fitness = self.calculate_fitness(accuracy, macro_recall, membership_outputs_array)
-        else:
-            fitness = accuracy
-
-        if testset:
-            self.accuracy_testset = accuracy
-            self.macro_recall_testset = macro_recall
-        else:
-            self.fitness = fitness
-            self.accuracy_trainingset = accuracy
-            self.macro_recall_trainingset = macro_recall
-
-    def print_metrics(self):
-        r = Operations.round_to_decimals
-        m = str(self.program_id)+":"+str(self.generation)+", f: "+str(r(self.fitness))+", len: "+str(len(self.instructions))
-        m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset))+", mrecall: "+str(r(self.macro_recall_trainingset))
-        m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.macro_recall_testset))+", final: "+str(r(numpy.mean([self.accuracy_testset, self.macro_recall_testset])))+", recall: "+str(self.recall)
-        return m
-
-    def calculate_performance_metrics(self, predicted_outputs, desired_outputs, testset=False):
-        conf_matrix = confusion_matrix(desired_outputs, predicted_outputs)
-        accuracy = accuracy_score(desired_outputs, predicted_outputs)
-        macro_recall = recall_score(desired_outputs, predicted_outputs, average='macro')
-        if testset:
-            self.conf_matrix = conf_matrix
-            self.conts_per_class = [0] * self.total_output_registers
-            self.recall = recall_score(desired_outputs, predicted_outputs, average=None)
-            for p, d in zip(predicted_outputs, desired_outputs):
-                if p == d:
-                    self.conts_per_class[d] += 1.0
-            self.accuracies_per_class = [x/float(len(predicted_outputs)) for x in self.conts_per_class]
-        return accuracy, macro_recall
-
-    def calculate_MSE(self, membership_outputs_array):
-        results = []
-        for m in membership_outputs_array:
-            first_best_membership_result = max(m)
-            m.pop(m.index(first_best_membership_result))
-            sum_wrong_classes_errors = 0.0
-            for item in m:
-                sum_wrong_classes_errors += (Operations.minus(item, 0.0)**2)
-            wrong_classes_errors = sum_wrong_classes_errors/float(len(m))
-            result = ((Operations.minus(first_best_membership_result, 1.0)**2) + wrong_classes_errors)/2.0
-            results.append(result)
-        MSE = sum(results)/float(len(membership_outputs_array))
-        return MSE
-
-    def calculate_fitness(self, accuracy, macro_recall, membership_outputs_array):
-        MSE = self.calculate_MSE(membership_outputs_array)
-        MCE = accuracy
-        fitness = (MSE + 2.0*MCE)/3.0
-        return fitness
+        general_registers = [0] * self.total_general_registers
+        for i in self.instructions:
+            if i['op'] == '+':
+                op = Operations.sum
+            elif i['op'] == '-':
+                op = Operations.minus
+            elif i['op'] == '*':
+                op = Operations.multi
+            elif i['op'] == '/':
+                op = Operations.div
+            if i['mode'] == 'read-register':
+                source =  general_registers[i['source']]
+            else:
+                source =  sample[i['source']]
+            general_registers[i['target']] = op(general_registers[i['target']], source)
+        # get class output
+        output = general_registers[0]
+        membership_outputs = expit(output) # apply sigmoid function before getting the output class
+        return membership_outputs
 
     def mutate_single_instruction(self):
         index = randint(0, len(self.instructions)-1)
@@ -162,7 +92,7 @@ class Program:
             else:
                 instruction['source'] = randint(0, self.total_input_registers-1)
 
-    def mutation_instruction_set(self):
+    def mutate_instruction_set(self):
         mutation_type = randint(0,1)
         if len(self.instructions) == CONFIG['initial_program_size']:
             mutation_type = 1
@@ -190,6 +120,3 @@ class Program:
         else:
             instruction_text += "i["+str(i['source'])+"]"
         return instruction_text
-
-    def __str__(self):
-        return str(self.program_id)+":"+str(self.generation)

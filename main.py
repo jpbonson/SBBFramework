@@ -11,6 +11,7 @@ from random import randint
 from collections import defaultdict
 from scipy.special import expit
 from program import Program, reset_ids
+from team import Team
 from helpers import *
 from config import *
 
@@ -52,17 +53,21 @@ class Algorithm:
             population =[]
             sample = self.get_sample(train, trainsubsets_per_class)
             for i in range(CONFIG['population_size']):
-                program = Program(generation=1, total_input_registers=features_size, total_output_registers=output_size)
-                program.execute(sample)
+                program = Program(generation=1, total_input_registers=features_size, total_classes=output_size)
                 population.append(program)
+            teams = []
+            for t in range(CONFIG['team_population_size']):
+                team = Team(generation=1, total_input_registers=features_size, total_classes=output_size, sample_programs=population)
+                team.execute(sample)
+                teams.append(team)
             self.current_generation = 0
             while not self.stop_criterion():
                 self.current_generation += 1
                 sample = self.get_sample(train, trainsubsets_per_class)
                 print("\n>>>>> Executing generation: "+str(self.current_generation)+", run: "+str(run_id))
-                population = self.selection(population, sample)
-                fitness = [p.fitness for p in population]
-                best_program = population[fitness.index(max(fitness))]
+                teams, population = self.selection(teams, population, sample)
+                fitness = [p.fitness for p in teams]
+                best_program = teams[fitness.index(max(fitness))]
                 best_program.execute(test, testset=True) # analisar o melhor individuo gerado com o test set
                 print("Best program: "+best_program.print_metrics())
             print(info)
@@ -149,27 +154,27 @@ class Algorithm:
             return True
         return False
 
-    def selection(self, population, train):
-        individuals_to_be_replaced = int(CONFIG['removal_rate']*float(len(population)))
-        new_population_len = len(population) - individuals_to_be_replaced
-        while len(population) > new_population_len:
-            fitness = [p.fitness for p in population]
-            worst_program_index = fitness.index(min(fitness))
-            population.pop(worst_program_index)
+    def selection(self, teams, population, train): # TODO
+        # individuals_to_be_replaced = int(CONFIG['removal_rate']*float(len(population)))
+        # new_population_len = len(population) - individuals_to_be_replaced
+        # while len(population) > new_population_len:
+        #     fitness = [p.fitness for p in population]
+        #     worst_program_index = fitness.index(min(fitness))
+        #     population.pop(worst_program_index)
 
-        individuals_to_clone = random.sample(population, individuals_to_be_replaced)
-        for individual in individuals_to_clone:
-            program = Program(self.current_generation, individual.total_input_registers, individual.total_output_registers,
-                random=False, instructions=copy.deepcopy(individual.instructions))
-            mutation_chance = random.random()
-            if mutation_chance <= CONFIG['mutation_single_instruction_rate']:
-                program.mutate_single_instruction()
-            mutation_chance = random.random()
-            if mutation_chance <= CONFIG['mutation_instruction_set_rate']:
-                program.mutation_instruction_set()
-            program.execute(train)
-            population.append(program)
-        return population
+        # individuals_to_clone = random.sample(population, individuals_to_be_replaced)
+        # for individual in individuals_to_clone:
+        #     program = Program(self.current_generation, individual.total_input_registers, individual.total_output_registers,
+        #         random=False, instructions=copy.deepcopy(individual.instructions))
+        #     mutation_chance = random.random()
+        #     if mutation_chance <= CONFIG['mutation_single_instruction_rate']:
+        #         program.mutate_single_instruction()
+        #     mutation_chance = random.random()
+        #     if mutation_chance <= CONFIG['mutation_instruction_set_rate']:
+        #         program.mutate_instruction_set()
+        #     program.execute(train)
+        #     population.append(program)
+        return teams, population
 
 if __name__ == "__main__":
     data = "thyroid"

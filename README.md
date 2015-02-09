@@ -97,3 +97,5 @@ alterar programa para printar nova saida completa
 removido crossover
 
 para o programa ainda variar de tamanho, adicionada chance de uma isntrução ser adicionada (random) ou removida em uma mutação
+
+todo: selection, team mutation, team_id
