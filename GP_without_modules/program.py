@@ -38,7 +38,6 @@ class Program:
         self.total_general_registers = CONFIG['total_calculation_registers']+total_output_registers
         self.total_input_registers = total_input_registers
         self.total_output_registers = total_output_registers
-        self.action = randint(0, total_output_registers-1)
         if random:
             self.instructions = []
             for i in range(CONFIG['initial_program_size']):
@@ -66,6 +65,8 @@ class Program:
         Y = get_Y(data)
         for x in X:
             # execute
+            if DEBUG_PROGRAM_EXECUTION: print(self.to_str())
+            if DEBUG_PROGRAM_EXECUTION: print("inputs: "+str(x))
             general_registers = [0] * self.total_general_registers
             for i in self.instructions:
                 if i['op'] == '+':
@@ -81,19 +82,22 @@ class Program:
                 else:
                     source =  x[i['source']]
                 general_registers[i['target']] = op(general_registers[i['target']], source)
+            if DEBUG_PROGRAM_EXECUTION: print("partial outputs: "+str(general_registers))
             # get class output
             partial_outputs = general_registers[0:self.total_output_registers] # tinha um +1 aqui antes, why?
             membership_outputs = [expit(k) for k in partial_outputs] # apply sigmoid function before getting the output class
             output_class = membership_outputs.index(max(membership_outputs))
+            if DEBUG_PROGRAM_EXECUTION: print("output_class: "+str(output_class)+", output membership values: "+str(membership_outputs))
             membership_outputs_array.append(membership_outputs)
             outputs.append(output_class)
         # calculate fitness and accuracy
         accuracy, macro_recall = self.calculate_performance_metrics(outputs, Y, testset)
         if USE_MSE3:
             fitness = self.calculate_fitness(accuracy, macro_recall, membership_outputs_array)
+        elif USE_ACC_MR:
+            fitness = self.calculate_fitness_3(accuracy, macro_recall)
         else:
             fitness = accuracy
-
         if testset:
             self.accuracy_testset = accuracy
             self.macro_recall_testset = macro_recall
@@ -143,10 +147,49 @@ class Program:
         fitness = (MSE + 2.0*MCE)/3.0
         return fitness
 
-    def mutate_single_instruction(self):
+    def calculate_fitness_3(self, accuracy, macro_recall):
+        MCE = accuracy
+        fitness = (MCE + macro_recall)/2.0
+        return fitness
+
+    def crossover(self, other_program, generation):
+        slice_start_point = randint(0, len(self.instructions)-2)
+        slice_end_point = randint(slice_start_point+1, len(self.instructions)-1)
+
+        slice_start_point_other = randint(0, len(other_program.instructions)-2)
+        slice_end_point_other = randint(slice_start_point_other+1, len(other_program.instructions)-1)
+        if DEBUG_PROGRAM_CROSSOVER: print("PROGRAM 1:"+self.to_str())
+        if DEBUG_PROGRAM_CROSSOVER: print("PROGRAM 2:"+other_program.to_str())
+        if DEBUG_PROGRAM_CROSSOVER: print("Slicing points: ["+str(slice_start_point)+":"+str(slice_end_point)+"] and ["+str(slice_start_point_other)+":"+str(slice_end_point_other)+"]")
+        instructions_slice1 = self.instructions[slice_start_point:slice_end_point]
+        instructions_slice2 = other_program.instructions[slice_start_point_other:slice_end_point_other]
+        if DEBUG_PROGRAM_CROSSOVER: print("SLICE 1:"+str([self.instruction_to_str(x) for x in instructions_slice1]))
+        if DEBUG_PROGRAM_CROSSOVER: print("SLICE 2:"+str([self.instruction_to_str(x) for x in instructions_slice2]))
+        new_instrutions1 = self.instructions[0:slice_start_point] + instructions_slice2 + self.instructions[slice_end_point:]
+        new_instrutions2 = other_program.instructions[0:slice_start_point_other] + instructions_slice1 + other_program.instructions[slice_end_point_other:]
+        
+        new_instrutions1 = new_instrutions1[0:CONFIG['max_program_size']]
+        new_instrutions2 = new_instrutions2[0:CONFIG['max_program_size']]
+        if DEBUG_PROGRAM_CROSSOVER: print("new_instrutions 1:"+str([self.instruction_to_str(x) for x in new_instrutions1]))
+        if DEBUG_PROGRAM_CROSSOVER: print("new_instrutions 2:"+str([self.instruction_to_str(x) for x in new_instrutions2]))
+
+        offspring1 = Program(generation, self.total_input_registers, self.total_output_registers, random=False, instructions=new_instrutions1)
+        offspring2 = Program(generation, self.total_input_registers, self.total_output_registers, random=False, instructions=new_instrutions2)
+
+        if DEBUG_PROGRAM_CROSSOVER: print("PROGRAM 1:"+self.to_str())
+        if DEBUG_PROGRAM_CROSSOVER: print("PROGRAM 2:"+other_program.to_str())
+        if DEBUG_PROGRAM_CROSSOVER: print("OFFSPRING 1:"+offspring1.to_str())
+        if DEBUG_PROGRAM_CROSSOVER: print("OFFSPRING 2:"+offspring2.to_str())
+        return offspring1, offspring2
+
+    def mutate(self):
+        if DEBUG_PROGRAM_MUTATION: print("PROGRAM BEFORE "+self.to_str())
         index = randint(0, len(self.instructions)-1)
         instruction = self.instructions[index]
-        instruction_parameter = randint(0,3)
+        instruction_parameter = randint(0,4)
+        if DEBUG_PROGRAM_MUTATION: print("Instruction index "+str(index))
+        if DEBUG_PROGRAM_MUTATION: print("Instruction parameter "+str(instruction_parameter))
+        if DEBUG_PROGRAM_MUTATION: print("Instruction before: "+str(instruction))
         if instruction_parameter == 0:
             if instruction['mode'] == GENOTYPE_OPTIONS['modes'][0]:
                 instruction['mode'] = GENOTYPE_OPTIONS['modes'][1]
@@ -161,22 +204,11 @@ class Program:
                 instruction['source'] = randint(0, self.total_general_registers-1)
             else:
                 instruction['source'] = randint(0, self.total_input_registers-1)
-
-    def mutation_instruction_set(self):
-        mutation_type = randint(0,1)
-        if len(self.instructions) == CONFIG['initial_program_size']:
-            mutation_type = 1
-        if len(self.instructions) == CONFIG['max_program_size']:
-            mutation_type = 0
-        if mutation_type == 0: # remove random instruction
-            index = randint(0, len(self.instructions)-1)
-            self.instructions.pop(index)
-        else: # add random instruction
-            index = randint(0, len(self.instructions))
-            self.instructions.insert(index, self.generate_random_instruction())
+        if DEBUG_PROGRAM_MUTATION: print("Instruction after: "+str(instruction))
+        if DEBUG_PROGRAM_MUTATION: print("PROGRAM AFTER "+self.to_str())
 
     def to_str(self):
-        text = "\nCode for program "+str(self.program_id)+" from generation "+str(self.generation)+" for action "+str(self.action)
+        text = "\nCode for program "+str(self.program_id)+" from generation "+str(self.generation)
         text += "\n----------------"
         for i in self.instructions:
             text += "\n"+self.instruction_to_str(i)

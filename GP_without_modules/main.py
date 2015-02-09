@@ -5,7 +5,6 @@
 import random
 import math
 import time
-import copy
 import numpy
 from random import randint
 from collections import defaultdict
@@ -45,6 +44,10 @@ class Algorithm:
             info += ("\ntotal_input_registers: "+str(features_size))
             info += ("\ntotal_output_registers: "+str(output_size))
             info += ("\ntotal_general_registers: "+str(CONFIG['total_calculation_registers']+output_size))
+            if CONFIG['use_proportional_selection']:
+                info += ("\nSelection: Proportional Selection")
+            else:
+                info += ("\nSelection: Steady Tournament Selection")
             print(info)
 
             # random initialize population
@@ -116,16 +119,19 @@ class Algorithm:
     def get_sample(self, data, subsets_per_class):
         if CONFIG['sampling']['use_sampling']:
             print("Sampling")
-            num_samples_per_class = CONFIG['sampling']['sampling_size']/len(subsets_per_class)
-            samples_per_class = []
-            for subset in subsets_per_class:
-                if len(subset) <= num_samples_per_class:
-                    sample = subset
-                else:
-                    sample = random.sample(subset, num_samples_per_class)
-                samples_per_class.append(sample)
-            sample = sum(samples_per_class, [])
-            random.shuffle(sample)
+            if CONFIG['sampling']['use_probability_per_class']:
+                num_samples_per_class = CONFIG['sampling']['sampling_size']/len(subsets_per_class)
+                samples_per_class = []
+                for subset in subsets_per_class:
+                    if len(subset) <= num_samples_per_class:
+                        sample = subset
+                    else:
+                        sample = random.sample(subset, num_samples_per_class)
+                    samples_per_class.append(sample)
+                sample = sum(samples_per_class, [])
+                random.shuffle(sample)
+            else:
+                sample = random.sample(data, CONFIG['sampling']['sampling_size'])
         else:
             sample = data[:100] # just to test the program
         return sample
@@ -150,26 +156,115 @@ class Algorithm:
         return False
 
     def selection(self, population, train):
-        individuals_to_be_replaced = int(CONFIG['removal_rate']*float(len(population)))
-        new_population_len = len(population) - individuals_to_be_replaced
-        while len(population) > new_population_len:
-            fitness = [p.fitness for p in population]
-            worst_program_index = fitness.index(min(fitness))
-            population.pop(worst_program_index)
+        if CONFIG['use_proportional_selection']:
+            return self.proportional_selection(population, train)
+        else:
+            return self.steady_tournament_selection(population, train)
 
-        individuals_to_clone = random.sample(population, individuals_to_be_replaced)
-        for individual in individuals_to_clone:
-            program = Program(self.current_generation, individual.total_input_registers, individual.total_output_registers,
-                random=False, instructions=copy.deepcopy(individual.instructions))
-            mutation_chance = random.random()
-            if mutation_chance <= CONFIG['mutation_single_instruction_rate']:
-                program.mutate_single_instruction()
-            mutation_chance = random.random()
-            if mutation_chance <= CONFIG['mutation_instruction_set_rate']:
-                program.mutation_instruction_set()
-            program.execute(train)
-            population.append(program)
+    def proportional_selection(self, population, train):
+        # 1. get individuals based on the crossover rate with proportional probability
+        participants_num = int(CONFIG['crossover_rate']*float(len(population)))
+        if participants_num%2 != 0:
+            participants_num += 1
+        if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("participants_num: "+str(participants_num))
+        participants = []
+        while len(participants) < participants_num:
+            if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("participants_len: "+str(len(participants)))
+            selected = self.weighted_random_choice(population)
+            if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("selected: "+str(selected.program_id))
+            if selected not in participants:
+                participants.append(selected)
+        if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("participants: "+str([p.program_id for p in participants]))
+
+        # 2. apply crossover and mutation to each pair
+        iterable = iter(participants)
+        pairs = zip(iterable, iterable)
+        offsprings = []
+        for p1, p2 in pairs:
+            if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("pairs: "+str(p1.program_id)+", "+str(p2.program_id))
+            offspring1, offspring2 = self.apply_operators(p1, p2, train)
+            offsprings.append(offspring1)
+            offsprings.append(offspring2)
+        if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("offsprings: "+str([p.program_id for p in offsprings]))
+
+        # 3. replace worst individuals by offspring(REPORT: the replacement occur consiring population+offspring)
+        if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("population_len: "+str(len(population)))
+        population += offsprings
+        if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("population_len: "+str(len(population)))
+        removed = 0
+        while removed < participants_num:
+            fitness = [p.fitness for p in population]
+            worst_index = fitness.index(min(fitness))
+            if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("removed: "+str(population[worst_index].program_id))
+            population.pop(worst_index)
+            removed += 1
+        if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("population_len: "+str(len(population)))
+
         return population
+
+    def weighted_random_choice(self, chromosomes):
+        fitness = [p.fitness for p in chromosomes]
+        if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("fitness: "+str(fitness))
+        total = sum(chromosome.fitness for chromosome in chromosomes)
+        if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("total: "+str(total))
+        pick = random.uniform(0, total)
+        if DEBUG_PROGRAM_PROPORTIONAL_SELECTION: print("pick: "+str(pick))
+        current = 0
+        for chromosome in chromosomes:
+            current += chromosome.fitness
+            if current > pick:
+                return chromosome
+
+    def steady_tournament_selection(self, population, train):
+        # 1. Choose FOUR individuals with uniform probability from the population (these are the members of the tournament).
+        if DEBUG_PROGRAM_STEADY_TOURNAMENT: print("Choosing programs participants")
+        participants = []
+        while len(participants) < 4:
+            candidate = population[randint(0,len(population)-1)]
+            if candidate not in participants:
+                participants.append(candidate)
+        if DEBUG_PROGRAM_STEADY_TOURNAMENT: print("Choosen programs: "+str([x.program_id for x in participants]))
+
+        # 2. Get the fitness of each individual participating in the tournament.
+        if DEBUG_PROGRAM_STEADY_TOURNAMENT: print("Executing programs")
+        fitness = [p.fitness for p in participants]
+        for p in participants:
+            if DEBUG_PROGRAM_STEADY_TOURNAMENT:  print("Fitness "+str(p.program_id)+":"+str(p.generation)+" = "+str(p.fitness))
+
+        # 3. Select the two best ones.
+        winner1_index = fitness.index(max(fitness))
+        fitness[winner1_index] = -1
+        winner2_index = fitness.index(max(fitness))
+        winner1 = participants[winner1_index]
+        winner2 = participants[winner2_index]
+        if DEBUG_PROGRAM_STEADY_TOURNAMENT:  print("Winners: "+str(winner1.program_id)+":"+str(winner1.generation)+" and "+str(winner2.program_id)+":"+str(winner2.generation))
+
+        # 4. Apply the variation operators to the best individuals from the tournament.
+        offspring1, offspring2 = self.apply_operators(winner1, winner2, train)
+
+        # 5. Replace the worst TWO individuals from the tournament with the children from step 3 (thus updating the population).
+        participants.remove(winner1)
+        participants.remove(winner2)
+        if DEBUG_PROGRAM_STEADY_TOURNAMENT:  print("Losers: "+str(participants[0].program_id)+":"+str(participants[0].generation)+" and "+str(participants[1].program_id)+":"+str(participants[1].generation))
+        population.remove(participants[0])
+        population.remove(participants[1])
+        population.append(offspring1)
+        population.append(offspring2)
+        return population
+
+    def apply_operators(self, winner1, winner2, train):
+        offspring1, offspring2 = winner1.crossover(winner2, self.current_generation)
+        mutation_chance = random.random()
+        if mutation_chance <= CONFIG['mutation_rate']:
+            if DEBUG_PROGRAM_STEADY_TOURNAMENT:  print("Mutating first offspring")
+            offspring1.mutate()
+        mutation_chance = random.random()
+        if mutation_chance <= CONFIG['mutation_rate']:
+            if DEBUG_PROGRAM_STEADY_TOURNAMENT:  print("Mutating second offspring")
+            offspring2.mutate()
+        offspring1.execute(train) # calculate fitness
+        offspring2.execute(train) # calculate fitness
+        return offspring1, offspring2
 
 if __name__ == "__main__":
     data = "thyroid"
