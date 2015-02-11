@@ -10,8 +10,8 @@ import numpy
 from random import randint
 from collections import defaultdict
 from scipy.special import expit
-from program import Program, reset_ids
-from team import Team
+from program import Program, reset_programs_ids
+from team import Team, reset_teams_ids
 from helpers import *
 from config import *
 
@@ -49,25 +49,26 @@ class Algorithm:
             print(info)
 
             # random initialize population
-            reset_ids()
-            population =[]
+            reset_programs_ids()
+            reset_teams_ids()
+            programs_population =[]
             sample = self.get_sample(train, trainsubsets_per_class)
-            for i in range(CONFIG['population_size']):
-                program = Program(generation=1, total_input_registers=features_size, total_classes=output_size)
-                population.append(program)
-            teams = []
+            for i in range(CONFIG['program_population_size']):
+                program = Program(generation=1, total_input_registers=features_size, total_classes=output_size, random=True)
+                programs_population.append(program)
+            teams_population = []
             for t in range(CONFIG['team_population_size']):
-                team = Team(generation=1, total_input_registers=features_size, total_classes=output_size, sample_programs=population)
+                team = Team(generation=1, total_input_registers=features_size, total_classes=output_size, random=True, sample_programs=programs_population)
                 team.execute(sample)
-                teams.append(team)
+                teams_population.append(team)
             self.current_generation = 0
             while not self.stop_criterion():
                 self.current_generation += 1
                 sample = self.get_sample(train, trainsubsets_per_class)
                 print("\n>>>>> Executing generation: "+str(self.current_generation)+", run: "+str(run_id))
-                teams, population = self.selection(teams, population, sample)
-                fitness = [p.fitness for p in teams]
-                best_program = teams[fitness.index(max(fitness))]
+                teams_population, programs_population = self.selection(teams_population, programs_population, sample)
+                fitness = [p.fitness for p in teams_population]
+                best_program = teams_population[fitness.index(max(fitness))]
                 best_program.execute(test, testset=True) # analisar o melhor individuo gerado com o test set
                 print("Best program: "+best_program.print_metrics())
             print(info)
@@ -154,27 +155,58 @@ class Algorithm:
             return True
         return False
 
-    def selection(self, teams, population, train): # TODO
-        # individuals_to_be_replaced = int(CONFIG['removal_rate']*float(len(population)))
-        # new_population_len = len(population) - individuals_to_be_replaced
-        # while len(population) > new_population_len:
-        #     fitness = [p.fitness for p in population]
-        #     worst_program_index = fitness.index(min(fitness))
-        #     population.pop(worst_program_index)
+    def selection(self, teams_population, programs_population, training_data):
+        # 1. Remove worst teams
+        teams_to_be_replaced = int(CONFIG['replacement_rate']*float(len(teams_population)))
+        new_teams_population_len = len(teams_population) - teams_to_be_replaced
+        while len(teams_population) > new_teams_population_len:
+            fitness = [t.fitness for t in teams_population]
+            worst_program_index = fitness.index(min(fitness))
+            teams_population[worst_program_index].remove_programs_link()
+            teams_population.pop(worst_program_index)
 
-        # individuals_to_clone = random.sample(population, individuals_to_be_replaced)
-        # for individual in individuals_to_clone:
-        #     program = Program(self.current_generation, individual.total_input_registers, individual.total_output_registers,
-        #         random=False, instructions=copy.deepcopy(individual.instructions))
-        #     mutation_chance = random.random()
-        #     if mutation_chance <= CONFIG['mutation_single_instruction_rate']:
-        #         program.mutate_single_instruction()
-        #     mutation_chance = random.random()
-        #     if mutation_chance <= CONFIG['mutation_instruction_set_rate']:
-        #         program.mutate_instruction_set()
-        #     program.execute(train)
-        #     population.append(program)
-        return teams, population
+        # 2. Remove programs are are not in a team
+        to_remove = []
+        for p in programs_population:
+            if len(p.teams) == 0:
+                to_remove.append(p)
+        for p in programs_population:
+            if p in to_remove:
+                programs_population.remove(p)
+
+        # 3. Create new mutated programs
+        new_programs_to_create = CONFIG['program_population_size'] - len(programs_population)
+        new_programs = []
+        programs_to_clone = random.sample(programs_population, new_programs_to_create)
+        for program in programs_to_clone:
+            clone = Program(self.current_generation, program.total_input_registers, program.total_output_registers,
+                random=False, instructions=copy.deepcopy(program.instructions))
+            mutation_chance = random.random()
+            if mutation_chance <= CONFIG['mutation_single_instruction_rate']:
+                clone.mutate_single_instruction()
+            mutation_chance = random.random()
+            if mutation_chance <= CONFIG['mutation_instruction_set_rate']:
+                clone.mutate_instruction_set()
+            # programs_population.append(clone)
+            new_programs.append(clone)
+
+        # 4. Add new teams, cloning the old ones and adding or removing programs (if adding, can only add a new program)
+        new_teams_to_create = CONFIG['team_population_size'] - len(teams_population)
+        teams_to_clone = random.sample(teams_population, new_teams_to_create)
+        for team in teams_to_clone:
+            clone = Team(self.current_generation, team.total_input_registers, team.total_classes,
+                random=False, sample_programs=team.programs)
+            mutation_chance = random.random()
+            if mutation_chance <= CONFIG['mutation_team_rate']:
+                clone.mutate(new_programs)
+            clone.execute(training_data)
+            teams_population.append(clone)
+
+        # 5. Add new programs to population, so it has the same size as before
+        for p in new_programs:
+            programs_population.append(p)
+
+        return teams_population, programs_population
 
 if __name__ == "__main__":
     data = "thyroid"

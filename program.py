@@ -18,7 +18,7 @@ GENOTYPE_OPTIONS = {
     'op': ['+', '-', '*', '/'],
 }
 
-def reset_ids():
+def reset_programs_ids():
     global next_program_id
     next_program_id = 0
 
@@ -38,6 +38,7 @@ class Program:
                 self.instructions.append(self.generate_random_instruction())
         else:
             self.instructions = instructions
+        self.teams = []
 
     def generate_random_instruction(self):
         instruction = {}
@@ -94,7 +95,7 @@ class Program:
 
     def mutate_instruction_set(self):
         mutation_type = randint(0,1)
-        if len(self.instructions) == CONFIG['initial_program_size']:
+        if len(self.instructions) == CONFIG['minimum_program_size']:
             mutation_type = 1
         if len(self.instructions) == CONFIG['max_program_size']:
             mutation_type = 0
@@ -105,8 +106,16 @@ class Program:
             index = randint(0, len(self.instructions))
             self.instructions.insert(index, self.generate_random_instruction())
 
+    def add_team(self, team):
+        self.teams.append(team)
+
+    def remove_team(self, team):
+        self.teams.remove(team)
+
     def to_str(self):
         text = "\nCode for program "+str(self.program_id)+" from generation "+str(self.generation)+" for action "+str(self.action)
+        teams_ids = ["("+str(t.team_id)+":"+str(t.generation)+")" for t in self.teams]
+        text += "\nParticipate in the teams: "+str(teams_ids)
         text += "\n----------------"
         for i in self.instructions:
             text += "\n"+self.instruction_to_str(i)

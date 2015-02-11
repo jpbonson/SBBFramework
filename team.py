@@ -14,9 +14,15 @@ from helpers import *
 from config import *
 from program import Program
 
+def reset_teams_ids():
+    global next_team_id
+    next_team_id = 0
+
 class Team:
-    def __init__(self, generation, total_input_registers, total_classes, sample_programs=[]):
-        self.team_id = -1 # TODO
+    def __init__(self, generation, total_input_registers, total_classes, random=True, sample_programs=[]):
+        global next_team_id
+        next_team_id += 1
+        self.team_id = next_team_id
         self.generation = generation
         self.total_input_registers = total_input_registers
         self.total_classes = total_classes
@@ -28,9 +34,19 @@ class Team:
         self.accuracy_testset = 0
         self.recall = 0
         self.programs = []
-        for i in range(CONFIG['initial_team_size']):
-            index = randint(0, len(sample_programs)-1)
-            self.programs.append(sample_programs[index])
+        if random:
+            test = False
+            while not test:
+                index = randint(0, len(sample_programs)-1)
+                if sample_programs[index] not in self.programs:
+                    self.programs.append(sample_programs[index])
+                    sample_programs[index].add_team(self)
+                    if len(self.programs) == CONFIG['initial_team_size']:
+                        test = True
+        else:
+            for p in sample_programs:
+                p.add_team(self)
+                self.programs.append(p)
 
     def execute(self, data, testset=False):
         # execute code for each input
@@ -71,13 +87,34 @@ class Team:
 
     def print_metrics(self):
         r = Operations.round_to_decimals
-        m = str(self.team_id)+":"+str(self.generation)+", f: "+str(r(self.fitness))+", team size: "+str(len(self.programs))
+        teams_members_ids = ["("+str(p.program_id)+":"+str(p.generation)+")" for p in self.programs]
+        m = str(self.team_id)+":"+str(self.generation)+", f: "+str(r(self.fitness))+", team size: "+str(len(self.programs))+", team members: "+str(teams_members_ids)
         m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset))+", mrecall: "+str(r(self.macro_recall_trainingset))
         m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.macro_recall_testset))+", final: "+str(r(numpy.mean([self.accuracy_testset, self.macro_recall_testset])))+", recall: "+str(self.recall)
         return m
 
-    def mutate(self):
-        pass # TODO
+    def remove_programs_link(self):
+        for p in self.programs:
+            p.remove_team(self)
+
+    def mutate(self, new_programs):
+        mutation_type = randint(0,1)
+        if len(self.programs) == CONFIG['minimum_team_size']:
+            mutation_type = 1
+        if len(self.programs) == CONFIG['max_team_size']:
+            mutation_type = 0
+        if mutation_type == 0: # remove random program
+            index = randint(0, len(self.programs)-1)
+            self.programs[index].remove_team(self)
+            self.programs.pop(index)
+        else: # add random program
+            test = False
+            while not test:
+                index = randint(0, len(new_programs)-1)
+                if new_programs[index] not in self.programs:
+                    new_programs[index].add_team(self)
+                    self.programs.append(new_programs[index])
+                    test = True
 
     def to_str(self):
         text = "\nCode for team "+str(self.team_id)+" from generation "+str(self.generation)+", team size: "+str(len(self.programs))
