@@ -19,7 +19,7 @@ def reset_teams_ids():
     next_team_id = 0
 
 class Team:
-    def __init__(self, generation, total_input_registers, total_classes, random=True, sample_programs=[]):
+    def __init__(self, generation, total_input_registers, total_classes, random_mode=True, sample_programs=[]):
         global next_team_id
         next_team_id += 1
         self.team_id = next_team_id
@@ -34,7 +34,7 @@ class Team:
         self.accuracy_testset = 0
         self.recall = 0
         self.programs = []
-        if random:
+        if random_mode:
             test = False
             while not test:
                 index = randint(0, len(sample_programs)-1)
@@ -43,10 +43,47 @@ class Team:
                     sample_programs[index].add_team(self)
                     if len(self.programs) == CONFIG['initial_team_size']:
                         test = True
+            if not self.there_is_at_least_two_different_actions():
+                program_to_be_replaced = self.programs[-1]
+                program_to_be_replaced.remove_team(self)
+                self.programs.remove(program_to_be_replaced)
+                test = False
+                while not test:
+                    candidate_program = random.choice(sample_programs)
+                    if candidate_program not in self.programs and self.there_is_at_least_two_different_actions_given_new_program(candidate_program):
+                        self.programs.append(candidate_program)
+                        candidate_program.add_team(self)
+                        test = True
         else:
             for p in sample_programs:
                 p.add_team(self)
                 self.programs.append(p)
+
+    def there_is_at_least_two_different_actions(self):
+        actions = [p.action for p in self.programs]
+        actions = set(actions)
+        if len(actions) == 1:
+            return False
+        else:
+            return True
+
+    def there_is_at_least_two_different_actions_given_new_program(self, program):
+        actions = [p.action for p in self.programs]
+        actions.append(program.action)
+        actions = set(actions)
+        if len(actions) == 1:
+            return False
+        else:
+            return True
+
+    def there_is_at_least_two_different_actions_removing_program(self, program):
+        actions = [p.action for p in self.programs if p != program]
+        actions.append(program.action)
+        actions = set(actions)
+        if len(actions) == 1:
+            return False
+        else:
+            return True
 
     def execute(self, data, testset=False):
         # execute code for each input
@@ -104,9 +141,13 @@ class Team:
         if len(self.programs) == CONFIG['max_team_size']:
             mutation_type = 0
         if mutation_type == 0: # remove random program
-            index = randint(0, len(self.programs)-1)
-            self.programs[index].remove_team(self)
-            self.programs.pop(index)
+            test = False
+            while not test:
+                index = randint(0, len(self.programs)-1)
+                if self.there_is_at_least_two_different_actions_removing_program(self.programs[index]):
+                    self.programs[index].remove_team(self)
+                    self.programs.pop(index)
+                    test = True
         else: # add random program
             test = False
             while not test:

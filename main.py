@@ -54,11 +54,11 @@ class Algorithm:
             programs_population =[]
             sample = self.get_sample(train, trainsubsets_per_class)
             for i in range(CONFIG['program_population_size']):
-                program = Program(generation=1, total_input_registers=features_size, total_classes=output_size, random=True)
+                program = Program(generation=1, total_input_registers=features_size, total_classes=output_size, random_mode=True)
                 programs_population.append(program)
             teams_population = []
             for t in range(CONFIG['team_population_size']):
-                team = Team(generation=1, total_input_registers=features_size, total_classes=output_size, random=True, sample_programs=programs_population)
+                team = Team(generation=1, total_input_registers=features_size, total_classes=output_size, random_mode=True, sample_programs=programs_population)
                 team.execute(sample)
                 teams_population.append(team)
             self.current_generation = 0
@@ -180,7 +180,7 @@ class Algorithm:
         programs_to_clone = random.sample(programs_population, new_programs_to_create)
         for program in programs_to_clone:
             clone = Program(self.current_generation, program.total_input_registers, program.total_output_registers,
-                random=False, instructions=copy.deepcopy(program.instructions))
+                random_mode=False, instructions=copy.deepcopy(program.instructions))
             mutation_chance = random.random()
             if mutation_chance <= CONFIG['mutation_single_instruction_rate']:
                 clone.mutate_single_instruction()
@@ -195,7 +195,7 @@ class Algorithm:
         teams_to_clone = random.sample(teams_population, new_teams_to_create)
         for team in teams_to_clone:
             clone = Team(self.current_generation, team.total_input_registers, team.total_classes,
-                random=False, sample_programs=team.programs)
+                random_mode=False, sample_programs=team.programs)
             mutation_chance = random.random()
             if mutation_chance <= CONFIG['mutation_team_rate']:
                 clone.mutate(new_programs)

@@ -23,7 +23,7 @@ def reset_programs_ids():
     next_program_id = 0
 
 class Program:
-    def __init__(self, generation, total_input_registers, total_classes, random=True, instructions=[]):
+    def __init__(self, generation, total_input_registers, total_classes, random_mode=True, instructions=[]):
         global next_program_id
         next_program_id += 1
         self.program_id = next_program_id
@@ -32,7 +32,7 @@ class Program:
         self.total_output_registers = 1
         self.total_general_registers = CONFIG['total_calculation_registers']+self.total_output_registers
         self.action = randint(0, total_classes-1)
-        if random:
+        if random_mode:
             self.instructions = []
             for i in range(CONFIG['initial_program_size']):
                 self.instructions.append(self.generate_random_instruction())

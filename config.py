@@ -15,8 +15,8 @@ CONFIG = {
     'initial_program_size': 32, # 32
     'max_program_size': 64, # 64
     'minimum_team_size': 2,
-    'initial_team_size': 2,
-    'max_team_size': 4,
+    'initial_team_size': 3,
+    'max_team_size': 6,
     'total_calculation_registers': 3,
     'replacement_rate': 0.2,
     'sampling': {

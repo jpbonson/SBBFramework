@@ -40,4 +40,4 @@ Sampling
 - idem ao de cima, mas para times
 - variando tamanho entre initial, min e max
 
-(c) across the set of BidGP individuals associated with the same team, there must be at least two different actions present. (creation, add, remove)
+(c) across the set of BidGP individuals associated with the same team, there must be at least two different actions present. (remove)
