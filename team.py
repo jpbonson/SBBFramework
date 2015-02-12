@@ -124,7 +124,8 @@ class Team:
 
     def print_metrics(self):
         r = Operations.round_to_decimals
-        teams_members_ids = ["("+str(p.program_id)+":"+str(p.generation)+")" for p in self.programs]
+        teams_members_ids = [("("+str(p.program_id)+":"+str(p.generation)+")", p.action) for p in self.programs]
+        teams_members_ids.sort(key=lambda tup: tup[1])
         m = str(self.team_id)+":"+str(self.generation)+", f: "+str(r(self.fitness))+", team size: "+str(len(self.programs))+", team members: "+str(teams_members_ids)
         m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset))+", mrecall: "+str(r(self.macro_recall_trainingset))
         m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.macro_recall_testset))+", final: "+str(r(numpy.mean([self.accuracy_testset, self.macro_recall_testset])))+", recall: "+str(self.recall)
@@ -149,6 +150,9 @@ class Team:
                     self.programs.pop(index)
                     test = True
         else: # add random program
+            if len(new_programs) == 0:
+                print "WARNING! NO NEW PROGRAMS!"
+                return
             test = False
             while not test:
                 index = randint(0, len(new_programs)-1)

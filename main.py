@@ -102,15 +102,16 @@ class Algorithm:
         msg += "\n\nTest Solution Metric per run solution: "+str(test_metrics_per_run)
         print(msg)
 
-        localtime = time.localtime()
-        pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+str(localtime.tm_hour)+str(localtime.tm_min)
-        text_file = open(CURRENT_DIR+"best_program_codes/"+str(self.data_name)+"_best_program_code-"+pretty_localtime+".txt",'w')
-        text_file.write(msg+overall_best_program.to_str())
-        text_file.close()
-
         end = time.time()
         elapsed = end - start
-        print("\nFinished execution, elapsed time: "+str(elapsed)+" secs")
+        elapsed_msg = "\nFinished execution, elapsed time: "+str(elapsed)+" secs"
+        print(elapsed_msg)
+
+        localtime = time.localtime()
+        pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+str(localtime.tm_hour)+str(localtime.tm_min)+str(localtime.tm_sec)
+        text_file = open(CURRENT_DIR+"best_program_codes/"+str(self.data_name)+"_best_program_code-"+pretty_localtime+".txt",'w')
+        text_file.write(msg+overall_best_program.to_str()+elapsed_msg)
+        text_file.close()
 
     def get_data_per_class(self, data, class_dist):
         subsets_per_class = []
@@ -181,18 +182,30 @@ class Algorithm:
         for program in programs_to_clone:
             clone = Program(self.current_generation, program.total_input_registers, program.total_output_registers,
                 random_mode=False, instructions=copy.deepcopy(program.instructions))
-            mutation_chance = random.random()
-            if mutation_chance <= CONFIG['mutation_single_instruction_rate']:
-                clone.mutate_single_instruction()
-            mutation_chance = random.random()
-            if mutation_chance <= CONFIG['mutation_instruction_set_rate']:
-                clone.mutate_instruction_set()
+            
+            mutations = randint(1, CONFIG['max_mutations_per_program'])
+            for i in range(mutations):
+                mutation_chance = random.random()
+                if mutation_chance <= CONFIG['mutation_instruction_set_rate']:
+                    clone.mutate_instruction_set()
+
+            mutations = randint(1, CONFIG['max_mutations_per_program'])
+            for i in range(mutations):
+                mutation_chance = random.random()
+                if mutation_chance <= CONFIG['mutation_single_instruction_rate']:
+                    clone.mutate_single_instruction()
+            
             # programs_population.append(clone)
             new_programs.append(clone)
 
         # 4. Add new teams, cloning the old ones and adding or removing programs (if adding, can only add a new program)
         new_teams_to_create = CONFIG['team_population_size'] - len(teams_population)
-        teams_to_clone = random.sample(teams_population, new_teams_to_create)
+        # teams_to_clone = random.sample(teams_population, new_teams_to_create)
+        teams_to_clone = []
+        while len(teams_to_clone) < new_teams_to_create:
+            selected = self.weighted_random_choice(teams_population)
+            if selected not in teams_to_clone:
+                teams_to_clone.append(selected)
         for team in teams_to_clone:
             clone = Team(self.current_generation, team.total_input_registers, team.total_classes,
                 random_mode=False, sample_programs=team.programs)
@@ -208,6 +221,16 @@ class Algorithm:
 
         return teams_population, programs_population
 
+    def weighted_random_choice(self, chromosomes):
+        fitness = [p.fitness for p in chromosomes]
+        total = sum(chromosome.fitness for chromosome in chromosomes)
+        pick = random.uniform(0, total)
+        current = 0
+        for chromosome in chromosomes:
+            current += chromosome.fitness
+            if current > pick:
+                return chromosome
+
 if __name__ == "__main__":
-    data = "thyroid"
+    data = "shuttle"
     Algorithm(data).run()

@@ -35,9 +35,7 @@ Sampling
 
 =============================================
 
-- removido crossover
-- para o programa ainda variar de tamanho, adicionada chance de uma isntrucao ser adicionada (random) ou removida em uma mutacao
-- idem ao de cima, mas para times
-- variando tamanho entre initial, min e max
+Class Distributions: defaultdict(<type 'int'>, {0: 73, 1: 177, 2: 3178}), for a total of 3428 samples
 
-(c) across the set of BidGP individuals associated with the same team, there must be at least two different actions present. (remove)
+Algorithm info:Class Distributions: defaultdict(<type 'int'>, {0: 11478, 1: 13, 2: 39, 3: 2155, 4: 809, 5: 4, 6: 2}), for a total of
+ 14500 samples total samples (train): 43500
