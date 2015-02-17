@@ -38,31 +38,27 @@ class Team:
             test = False
             while not test:
                 index = randint(0, len(sample_programs)-1)
-                if sample_programs[index] not in self.programs:
-                    self.programs.append(sample_programs[index])
-                    sample_programs[index].add_team(self)
-                    if len(self.programs) == CONFIG['initial_team_size']:
-                        test = True
-            if not self.there_is_at_least_two_different_actions():
-                program_to_be_replaced = self.programs[-1]
-                program_to_be_replaced.remove_team(self)
-                self.programs.remove(program_to_be_replaced)
-                test = False
-                while not test:
-                    candidate_program = random.choice(sample_programs)
-                    if candidate_program not in self.programs and self.there_is_at_least_two_different_actions_given_new_program(candidate_program):
-                        self.programs.append(candidate_program)
-                        candidate_program.add_team(self)
-                        test = True
+                candidate_program = sample_programs[index]
+                if len(self.programs) == 0:
+                    self.programs.append(candidate_program)
+                    candidate_program.add_team(self)
+                elif candidate_program not in self.programs and self.there_is_at_least_two_different_actions_given_new_program(candidate_program):
+                    self.programs.append(candidate_program)
+                    candidate_program.add_team(self)
+                if len(self.programs) == CONFIG['initial_team_size']:
+                    test = True
         else:
             for p in sample_programs:
                 p.add_team(self)
                 self.programs.append(p)
+            if not self.there_is_at_least_two_different_actions():
+                print "argh"
+                raise SystemExit
 
     def there_is_at_least_two_different_actions(self):
         actions = [p.action for p in self.programs]
         actions = set(actions)
-        if len(actions) == 1:
+        if len(actions) < 2:
             return False
         else:
             return True
@@ -71,16 +67,15 @@ class Team:
         actions = [p.action for p in self.programs]
         actions.append(program.action)
         actions = set(actions)
-        if len(actions) == 1:
+        if len(actions) < 2:
             return False
         else:
             return True
 
     def there_is_at_least_two_different_actions_removing_program(self, program):
         actions = [p.action for p in self.programs if p != program]
-        actions.append(program.action)
         actions = set(actions)
-        if len(actions) == 1:
+        if len(actions) < 2:
             return False
         else:
             return True
@@ -160,6 +155,12 @@ class Team:
                     new_programs[index].add_team(self)
                     self.programs.append(new_programs[index])
                     test = True
+
+    def avg_introns(self):
+        total = 0.0
+        for p in self.programs:
+            total += len(p.instructions)-len(p.instructions_without_introns)
+        return total/float(len(self.programs))
 
     def to_str(self):
         text = "\nCode for team "+str(self.team_id)+" from generation "+str(self.generation)+", team size: "+str(len(self.programs))

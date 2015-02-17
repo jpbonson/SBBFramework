@@ -21,7 +21,6 @@ class Algorithm:
         self.current_generation = 0
 
     def run(self):
-        start = time.time()
         best_programs_per_run = []
         runs_info = []
         print("\nReading inputs from data: "+self.data_name)
@@ -32,8 +31,10 @@ class Algorithm:
         Y_test = get_Y(test)
         class_dist = get_class_distribution(Y_test)
         trainsubsets_per_class = self.get_data_per_class(train, class_dist)
+        elapseds_per_run = []
 
         for run_id in range(CONFIG['runs_total']):
+            start_per_run = time.time()
             print("\nStarting run: "+str(run_id))
             info = "\nAlgorithm info:"          
             random.shuffle(train)
@@ -54,11 +55,11 @@ class Algorithm:
             programs_population =[]
             sample = self.get_sample(train, trainsubsets_per_class)
             for i in range(CONFIG['program_population_size']):
-                program = Program(generation=1, total_input_registers=features_size, total_classes=output_size, random_mode=True)
+                program = Program(generation=0, total_input_registers=features_size, total_classes=output_size, random_mode=True)
                 programs_population.append(program)
             teams_population = []
             for t in range(CONFIG['team_population_size']):
-                team = Team(generation=1, total_input_registers=features_size, total_classes=output_size, random_mode=True, sample_programs=programs_population)
+                team = Team(generation=0, total_input_registers=features_size, total_classes=output_size, random_mode=True, sample_programs=programs_population)
                 team.execute(sample)
                 teams_population.append(team)
             self.current_generation = 0
@@ -77,10 +78,15 @@ class Algorithm:
             best_programs_per_run.append(best_program)
             print("\nFinishing run: "+str(run_id))
             runs_info.append(info)
+            end_per_run = time.time()
+            elapsed_per_run = end_per_run - start_per_run
+            elapseds_per_run.append(elapsed_per_run)
+            print("\nFinished run execution, elapsed time: "+str(elapsed_per_run)+" secs")
 
         print("\n################# RESULT PER RUN ####################")
         test_metrics_per_run = []
         test_accuracy_per_run = []
+        avg_introns = []
         for run_id in range(CONFIG['runs_total']):
             best_program = best_programs_per_run[run_id]
             test_accuracy_per_run.append(Operations.round_to_decimals(best_program.accuracy_testset))
@@ -89,6 +95,7 @@ class Algorithm:
             print("Acc per classes: "+str(best_program.accuracies_per_class))
             print("Acc per classes (counter): "+str(best_program.conts_per_class))
             print("Confusion Matrix:\n"+str(best_program.conf_matrix))
+            avg_introns.append(best_program.avg_introns())
         
         best_result_metric = [numpy.mean([p.accuracy_testset, p.macro_recall_testset]) for p in best_programs_per_run]
         best_run = best_result_metric.index(max(best_result_metric))
@@ -99,12 +106,13 @@ class Algorithm:
         msg += "\n\nAcc per classes: "+str(overall_best_program.accuracies_per_class)+"\nAcc per classes (counter): "+str(overall_best_program.conts_per_class)
         msg += "\nConfusion Matrix:\n"+str(overall_best_program.conf_matrix)
 
-        msg += "\n\nTest Solution Metric per run solution: "+str(test_metrics_per_run)
+        msg += "\n\nTest Metric per run: "+str(test_metrics_per_run)
+        msg += "\nTest Metric, mean: "+str(numpy.mean(test_metrics_per_run))+", std: "+str(numpy.std(test_metrics_per_run))
+        msg += "\n\nAvg Introns:, mean: "+str(numpy.mean(avg_introns))+", std: "+str(numpy.std(avg_introns))
         print(msg)
 
-        end = time.time()
-        elapsed = end - start
-        elapsed_msg = "\nFinished execution, elapsed time: "+str(elapsed)+" secs"
+        elapsed_msg = "\nFinished execution, total elapsed time: "+str(sum(elapseds_per_run))+" secs"
+        elapsed_msg += "\nElapsed times, mean: "+str(numpy.mean(elapseds_per_run))+", std: "+str(numpy.std(elapseds_per_run))
         print(elapsed_msg)
 
         localtime = time.localtime()
@@ -148,7 +156,17 @@ class Algorithm:
         return normalization_params
 
     def normalize(self, normalization_params, data):
-        normalized_data = [[(cell-normalization_params[i]['mean'])/normalization_params[i]['range'] for i, cell in enumerate(line)] for line in data]
+        # normalized_data = [[(cell-normalization_params[i]['mean'])/normalization_params[i]['range'] for i, cell in enumerate(line)] for line in data]
+        normalized_data = []
+        for line in data:
+            new_line = []
+            for i, cell in enumerate(line):
+                if normalization_params[i]['range'] == 0.0:
+                    cell = 0.0
+                else:
+                    cell = (cell-normalization_params[i]['mean'])/normalization_params[i]['range']
+                new_line.append(cell)
+            normalized_data.append(new_line)
         return normalized_data
 
     def stop_criterion(self):
@@ -232,5 +250,5 @@ class Algorithm:
                 return chromosome
 
 if __name__ == "__main__":
-    data = "shuttle"
+    data = DATA_FILE
     Algorithm(data).run()

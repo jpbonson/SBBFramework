@@ -5,6 +5,7 @@
 import random
 import math
 import time
+import numpy
 from random import randint
 from collections import defaultdict
 from scipy.special import expit
@@ -17,7 +18,7 @@ class Operations(object):
             result = op1+op2
         except ArithmeticError:
             result = op1
-        if math.isnan(result):
+        if math.isnan(result) or math.isinf(result):
             return op1
         return result
 
@@ -27,7 +28,7 @@ class Operations(object):
             result = op1-op2
         except ArithmeticError:
             result = op1
-        if math.isnan(result):
+        if math.isnan(result) or math.isinf(result):
             return op1
         return result
 
@@ -37,7 +38,7 @@ class Operations(object):
             result = op1*op2
         except ArithmeticError:
             result = op1
-        if math.isnan(result):
+        if math.isnan(result) or math.isinf(result):
             return op1
         return result
 
@@ -52,7 +53,39 @@ class Operations(object):
                 result = 1
         except ArithmeticError:
             result = op1
-        if math.isnan(result):
+        if math.isnan(result) or math.isinf(result):
+            return op1
+        return result
+
+    @staticmethod
+    def ln(op1):
+        if op1 == 0.0:
+            return 1.0
+        try:
+            result = numpy.log(op1)
+        except ArithmeticError:
+            result = op1
+        if math.isnan(result) or math.isinf(result):
+            return op1
+        return result
+
+    @staticmethod
+    def exp(op1):
+        try:
+            result = math.exp(op1)
+        except ArithmeticError:
+            result = op1
+        if math.isnan(result) or math.isinf(result):
+            return op1
+        return result
+
+    @staticmethod
+    def cos(op1):
+        try:
+            result = numpy.cos(op1)
+        except ArithmeticError:
+            result = op1
+        if math.isnan(result) or math.isinf(result):
             return op1
         return result
 
