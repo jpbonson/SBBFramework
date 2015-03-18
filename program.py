@@ -14,16 +14,24 @@ from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from helpers import *
 from config import *
 
-GENOTYPE_OPTIONS = {
-    'modes': ['read-register', 'read-input'],
-    'op': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
-    'one-operand-instructions': ['ln', 'exp', 'cos'],
-    'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
-}
-
 def reset_programs_ids():
     global next_program_id
     next_program_id = 0
+
+if CONFIG['use_complex_functions']:
+    GENOTYPE_OPTIONS = {
+        'modes': ['read-register', 'read-input'],
+        'op': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
+        'one-operand-instructions': ['ln', 'exp', 'cos'],
+        'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
+    }
+else:
+    GENOTYPE_OPTIONS = {
+        'modes': ['read-register', 'read-input'],
+        'op': ['+', '-', '*', '/'],
+        'one-operand-instructions': [],
+        'if-instructions': [],
+    }
 
 class Program:
     def __init__(self, generation, total_input_registers, total_classes, random_mode=True, instructions=[]):

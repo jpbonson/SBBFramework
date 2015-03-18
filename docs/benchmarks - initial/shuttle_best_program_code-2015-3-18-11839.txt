@@ -1,0 +1,124 @@
+
+CONFIG: {'remove_introns': False, 'print_recall_per_generation_for_best_run': True, 'mutation_single_instruction_rate': 0.9, 'replacement_rate': 0.2, 'max_mutations_per_program': 5, 'max_generation_total': 20, 'minimum_team_size': 2, 'mutation_team_rate': 0.9, 'initial_program_size': 10, 'max_team_size': 6, 'mutation_instruction_set_rate': 0.9, 'sampling': {'sampling_size': 420, 'use_sampling': True}, 'use_complex_functions': False, 'max_program_size': 20, 'team_population_size': 200, 'total_calculation_registers': 1, 'program_population_size': 400, 'runs_total': 20, 'initial_team_size': 3, 'minimum_program_size': 1}
+
+################# Overall Best:
+14 Run best program: 608:11, f: 0.35865, team size: 5, team members: [('(873:5)', 0), ('(1012:7)', 0), ('(1640:11)', 0), ('(314:0)', 2), ('(85:0)', 6)]
+TRAIN: acc: 0.39115, mrecall: 0.35865
+TEST: acc: 0.64103, mrecall: 0.40089, recall: [ 0.80623802  0.          1.          0.          0.          0.          1.        ]
+
+Algorithm info:Class Distributions: defaultdict(<type 'int'>, {0: 11478, 1: 13, 2: 39, 3: 2155, 4: 809, 5: 4, 6: 2}), for a total of 14500 samples
+total samples (train): 43500
+total samples (test): 14500
+total_input_registers: 9
+total_classes: 7
+total_registers: 2
+
+Acc per classes: [0.6382068965517241, 0.0, 0.0026896551724137933, 0.0, 0.0, 0.0, 0.00013793103448275863]
+Acc per classes (counter): [9254.0, 0, 39.0, 0, 0, 0, 2.0]
+Confusion Matrix:
+[[9254    0 2223    0    0    0    1]
+ [  13    0    0    0    0    0    0]
+ [   0    0   39    0    0    0    0]
+ [1906    0  249    0    0    0    0]
+ [ 652    0  157    0    0    0    0]
+ [   4    0    0    0    0    0    0]
+ [   0    0    0    0    0    0    2]]
+
+Test DR per run: [0.32425, 0.36905, 0.30951, 0.37165, 0.38031, 0.29252, 0.26269, 0.21978, 0.38452, 0.398, 0.37278, 0.30859, 0.29881, 0.32572, 0.40089, 0.32632, 0.3767, 0.35978, 0.28806, 0.36628]
+Test DR, mean: 0.3368105, std: 0.0476748134212
+
+recall_per_generation: [[0.035, 0.0, 0.0, 0.0, 0.992, 0.0, 1.0], [0.035, 0.0, 0.0, 0.0, 0.992, 0.0, 1.0], [0.452, 0.615, 0.0, 0.0, 0.0, 0.0, 1.0], [0.452, 0.615, 0.0, 0.0, 0.0, 0.0, 1.0], [0.452, 0.615, 0.0, 0.0, 0.0, 0.0, 1.0], [0.452, 0.615, 0.0, 0.0, 0.0, 0.0, 1.0], [0.452, 0.615, 0.0, 0.0, 0.0, 0.0, 1.0], [0.452, 0.615, 0.0, 0.0, 0.0, 0.0, 1.0], [0.452, 0.615, 0.0, 0.0, 0.0, 0.0, 1.0], [0.452, 0.615, 0.0, 0.0, 0.0, 0.0, 1.0], [0.806, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], [0.806, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], [0.806, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], [0.806, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], [0.806, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], [0.806, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], [0.806, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], [0.806, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], [0.806, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], [0.806, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]]
+Code for team 608 from generation 11, team size: 5
+################
+
+Code for program 314 from generation 0 for action 2
+Participate in the teams (1): ['(608:11)']
+Total instructions: 10, total introns: 10
+----------------
+r[1] = r[1] - r[1]
+r[1] = r[1] + r[0]
+r[1] = r[1] / i[2]
+r[1] = r[1] + r[0]
+r[1] = r[1] * r[1]
+r[0] = r[0] / i[7]
+r[1] = r[1] / i[2]
+r[1] = r[1] * r[1]
+r[0] = r[0] * r[0]
+r[0] = r[0] * r[1]
+----------------
+Total instructions (without introns): 0
+----------------
+----------------
+
+Code for program 85 from generation 0 for action 6
+Participate in the teams (1): ['(608:11)']
+Total instructions: 10, total introns: 10
+----------------
+r[0] = r[0] + i[1]
+r[1] = r[1] + r[0]
+r[0] = r[0] * r[1]
+r[1] = r[1] - r[1]
+r[0] = r[0] * i[5]
+r[1] = r[1] - i[2]
+r[0] = r[0] * r[0]
+r[0] = r[0] * i[7]
+r[1] = r[1] * i[6]
+r[1] = r[1] + i[4]
+----------------
+Total instructions (without introns): 0
+----------------
+----------------
+
+Code for program 873 from generation 5 for action 0
+Participate in the teams (1): ['(608:11)']
+Total instructions: 8, total introns: 8
+----------------
+r[0] = r[0] - i[2]
+r[1] = r[1] * i[5]
+r[0] = r[0] - r[1]
+r[1] = r[1] / r[1]
+r[0] = r[0] * r[1]
+r[0] = r[0] - i[6]
+r[0] = r[0] + i[2]
+r[0] = r[0] - r[0]
+----------------
+Total instructions (without introns): 0
+----------------
+----------------
+
+Code for program 1012 from generation 7 for action 0
+Participate in the teams (1): ['(608:11)']
+Total instructions: 8, total introns: 8
+----------------
+r[0] = r[0] + r[0]
+r[1] = r[1] + i[7]
+r[1] = r[1] / i[3]
+r[1] = r[1] - i[8]
+r[1] = r[1] - i[8]
+r[0] = r[0] / i[7]
+r[0] = r[0] / i[6]
+r[1] = r[1] * r[0]
+----------------
+Total instructions (without introns): 0
+----------------
+----------------
+
+Code for program 1640 from generation 11 for action 0
+Participate in the teams (1): ['(608:11)']
+Total instructions: 8, total introns: 8
+----------------
+r[0] = r[0] * r[1]
+r[0] = r[0] / r[1]
+r[1] = r[1] * i[1]
+r[0] = r[0] / i[1]
+r[1] = r[1] / r[1]
+r[1] = r[1] + i[5]
+r[1] = r[1] + i[8]
+r[0] = r[0] + i[7]
+----------------
+Total instructions (without introns): 0
+----------------
+----------------
+################
+Finished execution, total elapsed time: 1199.26400018 secs
+Elapsed times, mean: 59.9632000089, std: 3.79511280914

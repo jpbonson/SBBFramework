@@ -51,9 +51,6 @@ class Team:
             for p in sample_programs:
                 p.add_team(self)
                 self.programs.append(p)
-            if not self.there_is_at_least_two_different_actions():
-                print "argh"
-                raise SystemExit
 
     def there_is_at_least_two_different_actions(self):
         actions = [p.action for p in self.programs]
@@ -93,7 +90,7 @@ class Team:
             outputs.append(output_class)
         # calculate fitness and accuracy
         accuracy, macro_recall = self.calculate_performance_metrics(outputs, Y, testset)
-        fitness = accuracy
+        fitness = macro_recall
 
         if testset:
             self.accuracy_testset = accuracy
@@ -106,11 +103,12 @@ class Team:
     def calculate_performance_metrics(self, predicted_outputs, desired_outputs, testset=False):
         conf_matrix = confusion_matrix(desired_outputs, predicted_outputs)
         accuracy = accuracy_score(desired_outputs, predicted_outputs)
-        macro_recall = recall_score(desired_outputs, predicted_outputs, average='macro')
-        if testset:
+        recall = recall_score(desired_outputs, predicted_outputs, average=None)
+        macro_recall = numpy.mean(recall)
+        if testset: # t avoid wasting time processing metrics when they are not necessary
             self.conf_matrix = conf_matrix
             self.conts_per_class = [0] * self.total_classes
-            self.recall = recall_score(desired_outputs, predicted_outputs, average=None)
+            self.recall = recall
             for p, d in zip(predicted_outputs, desired_outputs):
                 if p == d:
                     self.conts_per_class[d] += 1.0
@@ -123,7 +121,7 @@ class Team:
         teams_members_ids.sort(key=lambda tup: tup[1])
         m = str(self.team_id)+":"+str(self.generation)+", f: "+str(r(self.fitness))+", team size: "+str(len(self.programs))+", team members: "+str(teams_members_ids)
         m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset))+", mrecall: "+str(r(self.macro_recall_trainingset))
-        m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.macro_recall_testset))+", final: "+str(r(numpy.mean([self.accuracy_testset, self.macro_recall_testset])))+", recall: "+str(self.recall)
+        m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.macro_recall_testset))+", recall: "+str(self.recall)
         return m
 
     def remove_programs_link(self):

@@ -22,6 +22,7 @@ class Algorithm:
 
     def run(self):
         best_programs_per_run = []
+        best_programs_per_run_per_generation = []
         runs_info = []
         print("\nReading inputs from data: "+self.data_name)
         train, test = read_inputs_already_partitioned(self.data_name)
@@ -32,8 +33,11 @@ class Algorithm:
         class_dist = get_class_distribution(Y_test)
         trainsubsets_per_class = self.get_data_per_class(train, class_dist)
         elapseds_per_run = []
+        recall_per_generation_per_run = []
 
         for run_id in range(CONFIG['runs_total']):
+            recall_per_generation = []
+            best_programs_per_generation = []
             start_per_run = time.time()
             print("\nStarting run: "+str(run_id))
             info = "\nAlgorithm info:"          
@@ -45,8 +49,8 @@ class Algorithm:
             info += ("\ntotal samples (train): "+str(len(train)))
             info += ("\ntotal samples (test): "+str(len(test)))
             info += ("\ntotal_input_registers: "+str(features_size))
-            info += ("\ntotal_output_registers: "+str(output_size))
-            info += ("\ntotal_general_registers: "+str(CONFIG['total_calculation_registers']+output_size))
+            info += ("\ntotal_classes: "+str(output_size))
+            info += ("\ntotal_registers: "+str(CONFIG['total_calculation_registers']+1))
             print(info)
 
             # random initialize population
@@ -72,6 +76,8 @@ class Algorithm:
                 best_program = teams_population[fitness.index(max(fitness))]
                 best_program.execute(test, testset=True) # analisar o melhor individuo gerado com o test set
                 print("Best program: "+best_program.print_metrics())
+                best_programs_per_generation.append(best_program)
+                recall_per_generation.append(best_program.recall)
             print(info)
 
             print("\nRun's best program: "+best_program.print_metrics())
@@ -81,34 +87,44 @@ class Algorithm:
             end_per_run = time.time()
             elapsed_per_run = end_per_run - start_per_run
             elapseds_per_run.append(elapsed_per_run)
+            best_programs_per_run_per_generation.append(best_programs_per_generation)
+            recall_per_generation_per_run.append(recall_per_generation)
             print("\nFinished run execution, elapsed time: "+str(elapsed_per_run)+" secs")
 
         print("\n################# RESULT PER RUN ####################")
-        test_metrics_per_run = []
-        test_accuracy_per_run = []
+        dr_metric_per_run = []
+        acc_metric_per_run = []
         avg_introns = []
         for run_id in range(CONFIG['runs_total']):
             best_program = best_programs_per_run[run_id]
-            test_accuracy_per_run.append(Operations.round_to_decimals(best_program.accuracy_testset))
-            test_metrics_per_run.append(Operations.round_to_decimals(numpy.mean([best_program.accuracy_testset, best_program.macro_recall_testset])))
+            dr_metric_per_run.append(Operations.round_to_decimals(best_program.macro_recall_testset))
+            acc_metric_per_run.append(Operations.round_to_decimals(best_program.accuracy_testset))
             print("\n"+str(run_id)+" Run best program: "+best_program.print_metrics())
             print("Acc per classes: "+str(best_program.accuracies_per_class))
             print("Acc per classes (counter): "+str(best_program.conts_per_class))
             print("Confusion Matrix:\n"+str(best_program.conf_matrix))
             avg_introns.append(best_program.avg_introns())
         
-        best_result_metric = [numpy.mean([p.accuracy_testset, p.macro_recall_testset]) for p in best_programs_per_run]
+        best_result_metric = [p.macro_recall_testset for p in best_programs_per_run]
         best_run = best_result_metric.index(max(best_result_metric))
         overall_best_program = best_programs_per_run[best_run]
-        msg = "\n################# Overall Best:\n"+str(best_run)+" Run best program: "+overall_best_program.print_metrics()
+        msg = "\nCONFIG: "+str(CONFIG)+"\n"
+        msg += "\n################# Overall Best:\n"+str(best_run)+" Run best program: "+overall_best_program.print_metrics()
         msg += "\n"+runs_info[best_run]
 
         msg += "\n\nAcc per classes: "+str(overall_best_program.accuracies_per_class)+"\nAcc per classes (counter): "+str(overall_best_program.conts_per_class)
         msg += "\nConfusion Matrix:\n"+str(overall_best_program.conf_matrix)
 
-        msg += "\n\nTest Metric per run: "+str(test_metrics_per_run)
-        msg += "\nTest Metric, mean: "+str(numpy.mean(test_metrics_per_run))+", std: "+str(numpy.std(test_metrics_per_run))
-        msg += "\n\nAvg Introns:, mean: "+str(numpy.mean(avg_introns))+", std: "+str(numpy.std(avg_introns))
+        # msg += "\n\nTest ACC per run: "+str(acc_metric_per_run)
+        # msg += "\nTest ACC, mean: "+str(numpy.mean(acc_metric_per_run))+", std: "+str(numpy.std(acc_metric_per_run))
+
+        msg += "\n\nTest DR per run: "+str(dr_metric_per_run)
+        msg += "\nTest DR, mean: "+str(numpy.mean(dr_metric_per_run))+", std: "+str(numpy.std(dr_metric_per_run))
+        # msg += "\n\nAvg Introns:, mean: "+str(numpy.mean(avg_introns))+", std: "+str(numpy.std(avg_introns))
+
+        if CONFIG['print_recall_per_generation_for_best_run']:
+            temp = [[Operations.round_to_decimals(x, round_decimals_to = 3) for x in a] for a in recall_per_generation_per_run[best_run]]
+            msg += "\n\nrecall_per_generation: "+str(temp)
         print(msg)
 
         elapsed_msg = "\nFinished execution, total elapsed time: "+str(sum(elapseds_per_run))+" secs"
@@ -213,12 +229,10 @@ class Algorithm:
                 if mutation_chance <= CONFIG['mutation_single_instruction_rate']:
                     clone.mutate_single_instruction()
             
-            # programs_population.append(clone)
             new_programs.append(clone)
 
         # 4. Add new teams, cloning the old ones and adding or removing programs (if adding, can only add a new program)
         new_teams_to_create = CONFIG['team_population_size'] - len(teams_population)
-        # teams_to_clone = random.sample(teams_population, new_teams_to_create)
         teams_to_clone = []
         while len(teams_to_clone) < new_teams_to_create:
             selected = self.weighted_random_choice(teams_population)

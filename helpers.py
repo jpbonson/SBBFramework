@@ -104,8 +104,7 @@ class Operations(object):
         return False
 
     @staticmethod
-    def round_to_decimals(value):
-        round_decimals_to = 5
+    def round_to_decimals(value, round_decimals_to = 5):
         number = float(10**round_decimals_to)
         return int(value * number) / number
 
