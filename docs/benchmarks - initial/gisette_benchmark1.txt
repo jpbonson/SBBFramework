@@ -1,3 +1,4 @@
+GISETTE - raw benchmark
 
 CONFIG: {'remove_introns': False, 'print_recall_per_generation_for_best_run': True, 'mutation_single_instruction_rate': 0.9, 'replacement_rate': 0.2, 'max_mutations_per_program': 5, 'max_generation_total': 20, 'minimum_team_size': 2, 'mutation_team_rate': 0.9, 'initial_program_size': 10, 'max_team_size': 6, 'mutation_instruction_set_rate': 0.9, 'sampling': {'sampling_size': 200, 'use_sampling': True}, 'use_complex_functions': False, 'max_program_size': 20, 'team_population_size': 200, 'total_calculation_registers': 1, 'program_population_size': 400, 'runs_total': 30, 'initial_team_size': 3, 'minimum_program_size': 1}
 

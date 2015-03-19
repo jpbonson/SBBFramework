@@ -51,6 +51,7 @@ class Team:
             for p in sample_programs:
                 p.add_team(self)
                 self.programs.append(p)
+        self.correct_samples = []
 
     def there_is_at_least_two_different_actions(self):
         actions = [p.action for p in self.programs]
@@ -113,6 +114,11 @@ class Team:
                 if p == d:
                     self.conts_per_class[d] += 1.0
             self.accuracies_per_class = [x/float(len(predicted_outputs)) for x in self.conts_per_class]
+        else:
+            self.correct_samples = []
+            for i, (p, d) in enumerate(zip(predicted_outputs, desired_outputs)):
+                if p == d:
+                    self.correct_samples.append(i)
         return accuracy, macro_recall
 
     def print_metrics(self):

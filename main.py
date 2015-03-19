@@ -34,6 +34,7 @@ class Algorithm:
         trainsubsets_per_class = self.get_data_per_class(train, class_dist)
         elapseds_per_run = []
         recall_per_generation_per_run = []
+        avg_dr_per_generations = [0.0] * CONFIG['max_generation_total']
 
         for run_id in range(CONFIG['runs_total']):
             recall_per_generation = []
@@ -64,7 +65,8 @@ class Algorithm:
             teams_population = []
             for t in range(CONFIG['team_population_size']):
                 team = Team(generation=0, total_input_registers=features_size, total_classes=output_size, random_mode=True, sample_programs=programs_population)
-                team.execute(sample)
+                if not CONFIG['use_diversity']:
+                    team.execute(sample)
                 teams_population.append(team)
             self.current_generation = 0
             while not self.stop_criterion():
@@ -78,6 +80,7 @@ class Algorithm:
                 print("Best program: "+best_program.print_metrics())
                 best_programs_per_generation.append(best_program)
                 recall_per_generation.append(best_program.recall)
+                avg_dr_per_generations[self.current_generation-1] += best_program.macro_recall_testset
             print(info)
 
             print("\nRun's best program: "+best_program.print_metrics())
@@ -125,6 +128,10 @@ class Algorithm:
         if CONFIG['print_recall_per_generation_for_best_run']:
             temp = [[Operations.round_to_decimals(x, round_decimals_to = 3) for x in a] for a in recall_per_generation_per_run[best_run]]
             msg += "\n\nrecall_per_generation: "+str(temp)
+        
+        avg_dr_per_generations = [Operations.round_to_decimals(x/float(CONFIG['runs_total']), round_decimals_to = 3) for x in avg_dr_per_generations]
+        msg += "\n\navg_dr_per_generations: "+str(avg_dr_per_generations)
+
         print(msg)
 
         elapsed_msg = "\nFinished execution, total elapsed time: "+str(sum(elapseds_per_run))+" secs"
@@ -191,6 +198,39 @@ class Algorithm:
         return False
 
     def selection(self, teams_population, programs_population, training_data):
+        if CONFIG['use_diversity']:
+            labels = get_Y(training_data)
+            total_hits_per_sample = defaultdict(int)
+            for t in teams_population: # execute teams to calculate the total_hits_per_sample and the correct_samples per team
+                t.execute(training_data)
+                for c in t.correct_samples:
+                    total_hits_per_sample[c] += 1
+            if CONFIG['diversity']['fitness_sharing']:
+                for t in teams_population:
+                    sum_per_sample = 0.0
+                    for i, l in enumerate(labels):
+                        if i in t.correct_samples:
+                            sum_per_sample += 1.0/float(total_hits_per_sample[i])
+                        else:
+                            sum_per_sample += 0.0
+                    t.fitness = float(sum_per_sample)/float(len(labels))
+            elif CONFIG['diversity']['classwise_fitness_sharing']:
+                for t in teams_population:
+                    fitness_per_class = []
+                    for label in set(labels):
+                        sum_per_sample = 0.0
+                        cont = 0
+                        for i, l in enumerate(labels):
+                            if l == label:
+                                cont += 1
+                                if i in t.correct_samples:
+                                    sum_per_sample += 1.0/float(total_hits_per_sample[i])
+                                else:
+                                    sum_per_sample += 0.0
+                        fitness = float(sum_per_sample)/float(cont)
+                        fitness_per_class.append(fitness)
+                    t.fitness = numpy.mean(fitness_per_class)
+
         # 1. Remove worst teams
         teams_to_be_replaced = int(CONFIG['replacement_rate']*float(len(teams_population)))
         new_teams_population_len = len(teams_population) - teams_to_be_replaced
@@ -244,7 +284,8 @@ class Algorithm:
             mutation_chance = random.random()
             if mutation_chance <= CONFIG['mutation_team_rate']:
                 clone.mutate(new_programs)
-            clone.execute(training_data)
+            if not CONFIG['use_diversity']:
+                clone.execute(training_data)
             teams_population.append(clone)
 
         # 5. Add new programs to population, so it has the same size as before
