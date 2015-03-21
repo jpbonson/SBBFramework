@@ -34,6 +34,7 @@ class Team:
         self.accuracy_testset = 0
         self.recall = 0
         self.programs = []
+        self.active_programs = []
         if random_mode:
             test = False
             while not test:
@@ -87,11 +88,14 @@ class Team:
             partial_outputs = []
             for program in self.programs:
                 partial_outputs.append(program.execute(x, testset=False))
-            output_class = self.programs[partial_outputs.index(max(partial_outputs))].action
+            selected_program = self.programs[partial_outputs.index(max(partial_outputs))]
+            output_class = selected_program.action
             outputs.append(output_class)
+            if selected_program.program_id not in self.active_programs:
+                self.active_programs.append(selected_program.program_id)
         # calculate fitness and accuracy
         accuracy, macro_recall = self.calculate_performance_metrics(outputs, Y, testset)
-        fitness = macro_recall
+        fitness = accuracy
 
         if testset:
             self.accuracy_testset = accuracy

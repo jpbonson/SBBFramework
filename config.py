@@ -4,14 +4,14 @@ CURRENT_DIR = "C:/Users/jpbonson/Dropbox/Dalhousie Winter 2015/Genetic Algorithm
 # CURRENT_DIR = ""
 
 DEFAULT_CONFIG = {
-    'program_population_size': 400,
-    'team_population_size': 200, # must be half the population_size
-    'max_generation_total': 20,
+    'program_population_size': 100,
+    'team_population_size': 50, # must be half the population_size
+    'max_generation_total': 100,
     'mutation_single_instruction_rate': 0.9,
     'mutation_instruction_set_rate': 0.9,
     'mutation_team_rate': 0.9,
     'max_mutations_per_program': 5,
-    'runs_total': 30, # !
+    'runs_total': 30,
     'minimum_program_size': 1,
     'initial_program_size': 10,
     'max_program_size': 20,
@@ -30,16 +30,21 @@ DEFAULT_CONFIG = {
     'use_diversity': True,
     'diversity': {
         'fitness_sharing': False,
-        'classwise_fitness_sharing': True,
+        'classwise_fitness_sharing': False,
+        'genotype_fitness_maintanance': True,
+        'genotype_configs': {
+            'p_value': 0.1,
+            'k': 8,
+        },        
     },
 }
 
 CONFIG = DEFAULT_CONFIG
 
-CONFIG['runs_total'] = 30
-CONFIG['sampling']['sampling_size'] = 200
-DATA_FILE = "gisette"
+# CONFIG['runs_total'] = 30
+# CONFIG['sampling']['sampling_size'] = 200
+# DATA_FILE = "gisette"
 
-# CONFIG['runs_total'] = 20
-# CONFIG['sampling']['sampling_size'] = 420
-# DATA_FILE = "shuttle"
+CONFIG['runs_total'] = 30
+CONFIG['sampling']['sampling_size'] = 420
+DATA_FILE = "shuttle"

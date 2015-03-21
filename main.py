@@ -201,7 +201,8 @@ class Algorithm:
         if CONFIG['use_diversity']:
             labels = get_Y(training_data)
             total_hits_per_sample = defaultdict(int)
-            for t in teams_population: # execute teams to calculate the total_hits_per_sample and the correct_samples per team
+            # execute teams to calculate the total_hits_per_sample and the correct_samples per team
+            for t in teams_population:
                 t.execute(training_data)
                 for c in t.correct_samples:
                     total_hits_per_sample[c] += 1
@@ -230,6 +231,28 @@ class Algorithm:
                         fitness = float(sum_per_sample)/float(cont)
                         fitness_per_class.append(fitness)
                     t.fitness = numpy.mean(fitness_per_class)
+            elif CONFIG['diversity']['genotype_fitness_maintanance']:
+                for t in teams_population:
+                    # create array of distances to other teams
+                    distances = []
+                    for other_t in teams_population:
+                        if t != other_t:
+                            num_programs_intersection = len(set(t.active_programs).intersection(other_t.active_programs))
+                            num_programs_union = len(set(t.active_programs).union(other_t.active_programs))
+                            if num_programs_union > 0:
+                                distance = 1.0 - (float(num_programs_intersection)/float(num_programs_union))
+                            else:
+                                distance = 1.0
+                            distances.append(distance)
+                    # get mean of the k nearest neighbours
+                    sorted_list = sorted(distances)
+                    k = CONFIG['diversity']['genotype_configs']['k']
+                    min_values = sorted_list[:k]
+                    diversity = numpy.mean(min_values)
+                    # calculate fitness
+                    p = CONFIG['diversity']['genotype_configs']['p_value']
+                    raw_fitness = t.fitness
+                    t.fitness = (1.0-p)*(raw_fitness) + p*diversity
 
         # 1. Remove worst teams
         teams_to_be_replaced = int(CONFIG['replacement_rate']*float(len(teams_population)))
