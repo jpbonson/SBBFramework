@@ -4,34 +4,38 @@ CURRENT_DIR = "C:/Users/jpbonson/Dropbox/Dalhousie Winter 2015/Genetic Algorithm
 # CURRENT_DIR = ""
 
 DEFAULT_CONFIG = {
-    'program_population_size': 100,
-    'team_population_size': 50, # must be half the population_size
-    'max_generation_total': 100,
-    'mutation_single_instruction_rate': 0.9,
-    'mutation_instruction_set_rate': 0.9,
-    'mutation_team_rate': 0.9,
-    'max_mutations_per_program': 5,
-    'runs_total': 30,
+    'program_population_size': 400,
+    'team_population_size': 200, # must be half the population_size
+    'max_generation_total': 20,
+    'runs_total': 3, # 25
+    'total_calculation_registers': 1,
+    'team_replacement_rate': 0.2,
+
+    'mutation_program_remove_instruction_rate': 0.8,
+    'mutation_program_add_instruction_rate': 0.9,
+    'mutation_program_single_instruction_rate': 0.9,
+    'mutation_program_action_rate': 0.1,
+    'mutation_team_remove_rate': 0.7,
+    'mutation_team_add_rate': 0.8,
+
     'minimum_program_size': 1,
     'initial_program_size': 10,
     'max_program_size': 20,
     'minimum_team_size': 2,
     'initial_team_size': 3,
     'max_team_size': 6,
-    'total_calculation_registers': 1,
-    'replacement_rate': 0.2,
+
     'sampling': {
-        'use_sampling': True,
+        'use_oversampling': False,
         'sampling_size': 200,
     },
     'remove_introns': False,
     'use_complex_functions': False,
     'print_recall_per_generation_for_best_run': True,
-    'use_diversity': True,
     'diversity': {
         'fitness_sharing': False,
         'classwise_fitness_sharing': False,
-        'genotype_fitness_maintanance': True,
+        'genotype_fitness_maintanance': False,
         'genotype_configs': {
             'p_value': 0.1,
             'k': 8,
@@ -39,12 +43,49 @@ DEFAULT_CONFIG = {
     },
 }
 
-CONFIG = DEFAULT_CONFIG
+DEFAULT_CONFIG_V2 = {
+    'program_population_size': 200,
+    'team_population_size': 100, # must be half the population_size
+    'max_generation_total': 100,
+    'runs_total': 3, # 25
+    'total_calculation_registers': 1,
+    'team_replacement_rate': 0.6,
 
-# CONFIG['runs_total'] = 30
-# CONFIG['sampling']['sampling_size'] = 200
+    'mutation_program_remove_instruction_rate': 0.8,
+    'mutation_program_add_instruction_rate': 0.9,
+    'mutation_program_single_instruction_rate': 0.9,
+    'mutation_program_action_rate': 0.1,
+    'mutation_team_remove_rate': 0.7,
+    'mutation_team_add_rate': 0.8,
+
+    'minimum_program_size': 1,
+    'initial_program_size': 10,
+    'max_program_size': 20,
+    'minimum_team_size': 2,
+    'initial_team_size': 3,
+    'max_team_size': 10,
+
+    'sampling': {
+        'use_oversampling': True,
+        'sampling_size': 100,
+    },
+    'remove_introns': False,
+    'use_complex_functions': False,
+    'print_recall_per_generation_for_best_run': True,
+    'diversity': {
+        'fitness_sharing': False,
+        'classwise_fitness_sharing': False,
+        'genotype_fitness_maintanance': False,
+        'genotype_configs': {
+            'p_value': 0.1,
+            'k': 8,
+        },        
+    },
+}
+
+# CONFIG = DEFAULT_CONFIG
+CONFIG = DEFAULT_CONFIG_V2
+
 # DATA_FILE = "gisette"
-
-CONFIG['runs_total'] = 30
-CONFIG['sampling']['sampling_size'] = 420
 DATA_FILE = "shuttle"
+# DATA_FILE = "thyroid"

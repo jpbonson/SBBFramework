@@ -45,7 +45,7 @@ class Algorithm:
             random.shuffle(train)
             random.shuffle(test)
             features_size = len(train[0])-1
-            info += "Class Distributions: "+str(class_dist)+", for a total of "+str(len(Y_test))+" samples"
+            info += "\nClass Distributions (test dataset): "+str(class_dist)+", for a total of "+str(len(Y_test))+" samples"
             output_size = len(class_dist)
             info += ("\ntotal samples (train): "+str(len(train)))
             info += ("\ntotal samples (test): "+str(len(test)))
@@ -58,20 +58,18 @@ class Algorithm:
             reset_programs_ids()
             reset_teams_ids()
             programs_population =[]
-            sample = self.get_sample(train, trainsubsets_per_class)
             for i in range(CONFIG['program_population_size']):
                 program = Program(generation=0, total_input_registers=features_size, total_classes=output_size, random_mode=True)
                 programs_population.append(program)
             teams_population = []
             for t in range(CONFIG['team_population_size']):
                 team = Team(generation=0, total_input_registers=features_size, total_classes=output_size, random_mode=True, sample_programs=programs_population)
-                if not CONFIG['use_diversity']:
-                    team.execute(sample)
                 teams_population.append(team)
             self.current_generation = 0
+            sample = None
             while not self.stop_criterion():
                 self.current_generation += 1
-                sample = self.get_sample(train, trainsubsets_per_class)
+                sample = self.get_sample(trainsubsets_per_class, previous_samples=sample)
                 print("\n>>>>> Executing generation: "+str(self.current_generation)+", run: "+str(run_id))
                 teams_population, programs_population = self.selection(teams_population, programs_population, sample)
                 fitness = [p.fitness for p in teams_population]
@@ -147,25 +145,32 @@ class Algorithm:
     def get_data_per_class(self, data, class_dist):
         subsets_per_class = []
         for class_index in range(len(class_dist)):
-            values = [line for line in data if line[-1]-1 == class_index] # added -1 due to class labels starting at 1
+            values = [line for line in data if line[-1]-1 == class_index] # added -1 due to class labels starting at 1 instead of 0
             subsets_per_class.append(values)
         return subsets_per_class
 
-    def get_sample(self, data, subsets_per_class):
-        if CONFIG['sampling']['use_sampling']:
-            print("Sampling")
-            num_samples_per_class = CONFIG['sampling']['sampling_size']/len(subsets_per_class)
-            samples_per_class = []
-            for subset in subsets_per_class:
-                if len(subset) <= num_samples_per_class:
-                    sample = subset
-                else:
-                    sample = random.sample(subset, num_samples_per_class)
-                samples_per_class.append(sample)
-            sample = sum(samples_per_class, [])
-            random.shuffle(sample)
-        else:
-            sample = data[:100] # just to test the program
+    def get_sample(self, subsets_per_class, previous_samples=None):
+        print("Sampling")
+        num_samples_per_class = CONFIG['sampling']['sampling_size']/len(subsets_per_class)
+        # get samples per class
+        samples_per_class = []
+        for subset in subsets_per_class:
+            if len(subset) <= num_samples_per_class:
+                sample = subset
+            else:
+                sample = random.sample(subset, num_samples_per_class)
+            samples_per_class.append(sample)
+        # ensure that the sampling is balanced for all classes, using oversampling for the unbalanced ones
+        if CONFIG['sampling']['use_oversampling']:
+            for sample in samples_per_class:
+                while len(sample) < num_samples_per_class:
+                    to_sample = num_samples_per_class-len(sample)
+                    if to_sample > len(sample):
+                        to_sample = len(sample)
+                    sample += random.sample(sample, to_sample)
+        # join samples per class
+        sample = sum(samples_per_class, [])
+        random.shuffle(sample)
         return sample
 
     def get_normalization_params(self, train, test):
@@ -198,64 +203,64 @@ class Algorithm:
         return False
 
     def selection(self, teams_population, programs_population, training_data):
-        if CONFIG['use_diversity']:
-            labels = get_Y(training_data)
-            total_hits_per_sample = defaultdict(int)
-            # execute teams to calculate the total_hits_per_sample and the correct_samples per team
+        labels = get_Y(training_data)
+        total_hits_per_sample = defaultdict(int)
+        # execute teams to calculate the total_hits_per_sample and the correct_samples per team
+        for t in teams_population:
+            t.execute(training_data)
+            for c in t.correct_samples:
+                total_hits_per_sample[c] += 1
+
+        if CONFIG['diversity']['fitness_sharing']:
             for t in teams_population:
-                t.execute(training_data)
-                for c in t.correct_samples:
-                    total_hits_per_sample[c] += 1
-            if CONFIG['diversity']['fitness_sharing']:
-                for t in teams_population:
+                sum_per_sample = 0.0
+                for i, l in enumerate(labels):
+                    if i in t.correct_samples:
+                        sum_per_sample += 1.0/float(total_hits_per_sample[i])
+                    else:
+                        sum_per_sample += 0.0
+                t.fitness = float(sum_per_sample)/float(len(labels))
+        elif CONFIG['diversity']['classwise_fitness_sharing']:
+            for t in teams_population:
+                fitness_per_class = []
+                for label in set(labels):
                     sum_per_sample = 0.0
+                    cont = 0
                     for i, l in enumerate(labels):
-                        if i in t.correct_samples:
-                            sum_per_sample += 1.0/float(total_hits_per_sample[i])
-                        else:
-                            sum_per_sample += 0.0
-                    t.fitness = float(sum_per_sample)/float(len(labels))
-            elif CONFIG['diversity']['classwise_fitness_sharing']:
-                for t in teams_population:
-                    fitness_per_class = []
-                    for label in set(labels):
-                        sum_per_sample = 0.0
-                        cont = 0
-                        for i, l in enumerate(labels):
-                            if l == label:
-                                cont += 1
-                                if i in t.correct_samples:
-                                    sum_per_sample += 1.0/float(total_hits_per_sample[i])
-                                else:
-                                    sum_per_sample += 0.0
-                        fitness = float(sum_per_sample)/float(cont)
-                        fitness_per_class.append(fitness)
-                    t.fitness = numpy.mean(fitness_per_class)
-            elif CONFIG['diversity']['genotype_fitness_maintanance']:
-                for t in teams_population:
-                    # create array of distances to other teams
-                    distances = []
-                    for other_t in teams_population:
-                        if t != other_t:
-                            num_programs_intersection = len(set(t.active_programs).intersection(other_t.active_programs))
-                            num_programs_union = len(set(t.active_programs).union(other_t.active_programs))
-                            if num_programs_union > 0:
-                                distance = 1.0 - (float(num_programs_intersection)/float(num_programs_union))
+                        if l == label:
+                            cont += 1
+                            if i in t.correct_samples:
+                                sum_per_sample += 1.0/float(total_hits_per_sample[i])
                             else:
-                                distance = 1.0
-                            distances.append(distance)
-                    # get mean of the k nearest neighbours
-                    sorted_list = sorted(distances)
-                    k = CONFIG['diversity']['genotype_configs']['k']
-                    min_values = sorted_list[:k]
-                    diversity = numpy.mean(min_values)
-                    # calculate fitness
-                    p = CONFIG['diversity']['genotype_configs']['p_value']
-                    raw_fitness = t.fitness
-                    t.fitness = (1.0-p)*(raw_fitness) + p*diversity
+                                sum_per_sample += 0.0
+                    fitness = float(sum_per_sample)/float(cont)
+                    fitness_per_class.append(fitness)
+                t.fitness = numpy.mean(fitness_per_class)
+        elif CONFIG['diversity']['genotype_fitness_maintanance']:
+            for t in teams_population:
+                # create array of distances to other teams
+                distances = []
+                for other_t in teams_population:
+                    if t != other_t:
+                        num_programs_intersection = len(set(t.active_programs).intersection(other_t.active_programs))
+                        num_programs_union = len(set(t.active_programs).union(other_t.active_programs))
+                        if num_programs_union > 0:
+                            distance = 1.0 - (float(num_programs_intersection)/float(num_programs_union))
+                        else:
+                            distance = 1.0
+                        distances.append(distance)
+                # get mean of the k nearest neighbours
+                sorted_list = sorted(distances)
+                k = CONFIG['diversity']['genotype_configs']['k']
+                min_values = sorted_list[:k]
+                diversity = numpy.mean(min_values)
+                # calculate fitness
+                p = CONFIG['diversity']['genotype_configs']['p_value']
+                raw_fitness = t.fitness
+                t.fitness = (1.0-p)*(raw_fitness) + p*diversity
 
         # 1. Remove worst teams
-        teams_to_be_replaced = int(CONFIG['replacement_rate']*float(len(teams_population)))
+        teams_to_be_replaced = int(CONFIG['team_replacement_rate']*float(len(teams_population)))
         new_teams_population_len = len(teams_population) - teams_to_be_replaced
         while len(teams_population) > new_teams_population_len:
             fitness = [t.fitness for t in teams_population]
@@ -279,19 +284,7 @@ class Algorithm:
         for program in programs_to_clone:
             clone = Program(self.current_generation, program.total_input_registers, program.total_output_registers,
                 random_mode=False, instructions=copy.deepcopy(program.instructions))
-            
-            mutations = randint(1, CONFIG['max_mutations_per_program'])
-            for i in range(mutations):
-                mutation_chance = random.random()
-                if mutation_chance <= CONFIG['mutation_instruction_set_rate']:
-                    clone.mutate_instruction_set()
-
-            mutations = randint(1, CONFIG['max_mutations_per_program'])
-            for i in range(mutations):
-                mutation_chance = random.random()
-                if mutation_chance <= CONFIG['mutation_single_instruction_rate']:
-                    clone.mutate_single_instruction()
-            
+            clone.mutate()            
             new_programs.append(clone)
 
         # 4. Add new teams, cloning the old ones and adding or removing programs (if adding, can only add a new program)
@@ -299,16 +292,12 @@ class Algorithm:
         teams_to_clone = []
         while len(teams_to_clone) < new_teams_to_create:
             selected = self.weighted_random_choice(teams_population)
-            if selected not in teams_to_clone:
-                teams_to_clone.append(selected)
+            teams_to_clone.append(selected)
+
         for team in teams_to_clone:
             clone = Team(self.current_generation, team.total_input_registers, team.total_classes,
                 random_mode=False, sample_programs=team.programs)
-            mutation_chance = random.random()
-            if mutation_chance <= CONFIG['mutation_team_rate']:
-                clone.mutate(new_programs)
-            if not CONFIG['use_diversity']:
-                clone.execute(training_data)
+            clone.mutate(new_programs)
             teams_population.append(clone)
 
         # 5. Add new programs to population, so it has the same size as before

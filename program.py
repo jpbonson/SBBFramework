@@ -42,7 +42,8 @@ class Program:
         self.total_input_registers = total_input_registers
         self.total_output_registers = 1
         self.total_general_registers = CONFIG['total_calculation_registers']+self.total_output_registers
-        self.action = randint(0, total_classes-1)
+        self.total_classes = total_classes
+        self.action = randint(0, self.total_classes-1)
         if random_mode:
             self.instructions = []
             for i in range(CONFIG['initial_program_size']):
@@ -143,6 +144,22 @@ class Program:
             else:
                 ignore_if = True
 
+    def mutate(self):
+        mutation_chance = random.random()
+        if mutation_chance <= CONFIG['mutation_program_remove_instruction_rate'] and len(self.instructions) > CONFIG['minimum_program_size']:
+            index = randint(0, len(self.instructions)-1)
+            self.instructions.pop(index)
+        mutation_chance = random.random()
+        if mutation_chance <= CONFIG['mutation_program_add_instruction_rate'] and len(self.instructions) < CONFIG['max_program_size']:
+            index = randint(0, len(self.instructions))
+            self.instructions.insert(index, self.generate_random_instruction())
+        mutation_chance = random.random()
+        if mutation_chance <= CONFIG['mutation_program_single_instruction_rate']:
+            self.mutate_single_instruction()
+        mutation_chance = random.random()
+        if mutation_chance <= CONFIG['mutation_program_action_rate']:
+            self.action = randint(0, self.total_classes-1)
+
     def mutate_single_instruction(self):
         index = randint(0, len(self.instructions)-1)
         instruction = self.instructions[index]
@@ -160,20 +177,7 @@ class Program:
             if instruction['mode'] == 'read-register':
                 instruction['source'] = randint(0, self.total_general_registers-1)
             else:
-                instruction['source'] = randint(0, self.total_input_registers-1)
-
-    def mutate_instruction_set(self):
-        mutation_type = randint(0,1)
-        if len(self.instructions) == CONFIG['minimum_program_size']:
-            mutation_type = 1
-        if len(self.instructions) == CONFIG['max_program_size']:
-            mutation_type = 0
-        if mutation_type == 0: # remove random instruction
-            index = randint(0, len(self.instructions)-1)
-            self.instructions.pop(index)
-        else: # add random instruction
-            index = randint(0, len(self.instructions))
-            self.instructions.insert(index, self.generate_random_instruction())
+                instruction['source'] = randint(0, self.total_input_registers-1)          
 
     def add_team(self, team):
         self.teams.append(team)

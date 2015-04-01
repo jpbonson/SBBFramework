@@ -139,12 +139,22 @@ class Team:
             p.remove_team(self)
 
     def mutate(self, new_programs):
-        mutation_type = randint(0,1)
+        add_program = False
+        remove_program = False
+
+        mutation_chance = random.random()
+        if mutation_chance <= CONFIG['mutation_team_add_rate']:
+            add_program = True
+        mutation_chance = random.random()
+        if mutation_chance <= CONFIG['mutation_team_remove_rate']:
+            remove_program = True
+
         if len(self.programs) == CONFIG['minimum_team_size']:
-            mutation_type = 1
+            remove_program = False
         if len(self.programs) == CONFIG['max_team_size']:
-            mutation_type = 0
-        if mutation_type == 0: # remove random program
+            add_program = False
+
+        if remove_program:
             test = False
             while not test:
                 index = randint(0, len(self.programs)-1)
@@ -152,7 +162,8 @@ class Team:
                     self.programs[index].remove_team(self)
                     self.programs.pop(index)
                     test = True
-        else: # add random program
+        
+        if add_program:
             if len(new_programs) == 0:
                 print "WARNING! NO NEW PROGRAMS!"
                 return
