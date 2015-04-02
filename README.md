@@ -37,13 +37,51 @@ TASKS:
 
 - TODO:
 - achar parametros com bom resultado e runtime aceitavel (usar thyroid?)
-
 - rerodar os testes com diversity (no modo sem diversity, rodar do modo que recalcula a fitness de todos a cada generation)
 - expectativa: o grafico de DRs per class nao e mais para ter mudancas bruscas
-- expectitativa: melhor DR, ja que evita os local minimuns
+- expectativa: melhor DR, ja que evita os local minimuns
 - atualizar report
 - ler paper do SBB
 
 Obs.:
 - nao tentar implementar crossover
 - testar pareto com age? testar multi-objective?
+
+Results (with bug were all new program had action 0):
+200-100-100 (178) > 200-100-300 (694): 2.1731 (overfitting? mostrar training error!)
+200-100-100 (178) > 100-50-100 (98): 3.153
+100-50-100 (98) < 100-50-200 (963?): -3.2597
+100-50-200 (963?) > 100-50-300 (417?): 2.5418
+100-50-200 (678) == 200-100-100 (476) == 50-25-500 (1105)
+melhor runtime: 200-100-100
+
+Results:
+200-100-100 (203) - 100-50-200 (273) - 200-100-200 (410) - 100-50-400 (542) ('balanced_team_mutation': True)
+200-100-100 < 200-100-200
+200-100-100 == 100-50-200
+100-50-200 == 100-50-400
+
+200-100-100 (with balanced mutation) == 200-100-100 (without balanced mutation): with balanced mutation
+200-100-100 (with point repl0.3) == 200-100-100 (with point repl0.2): with point repl0.2
+
+100-50-200 (10/20 programs) - 100-50-200 (24/48 programs)
+100-50-200 (with point repl0.3) == 100-50-200 (with point repl0.2)
+100-50-200 (with action0.1) == 100-50-200 (with action0.3)
+
+testar:
+- retestar analises anteriores
+- balanced mutation
+- aumentar mutation rate para actions
+
+
+
+analisar performance x tempo (levar em conta q esse 'e a thyroid, o mais rapido!)
+
+
+implementar:
+- training error?
+- balancear criacao de programs por action?
+
+- fixed bug
+- added new metrics
+- added option to balanced mutations

@@ -33,6 +33,7 @@ DEFAULT_CONFIG = {
     'remove_introns': False,
     'use_complex_functions': False,
     'enforce_initialize_at_least_one_action_per_class': False,
+    'balanced_team_mutation': False,
     'print_recall_per_generation_for_best_run': True,
     'diversity': {
         'fitness_sharing': False,
@@ -46,9 +47,9 @@ DEFAULT_CONFIG = {
 }
 
 DEFAULT_CONFIG_V2 = {
-    'program_population_size': 200,
-    'team_population_size': 100, # must be half the population_size
-    'max_generation_total': 100,
+    'program_population_size': 100,
+    'team_population_size': 50, # must be half the population_size
+    'max_generation_total': 200,
     'runs_total': 25,
     'total_calculation_registers': 1,
     'team_replacement_rate': 0.6,
@@ -75,6 +76,7 @@ DEFAULT_CONFIG_V2 = {
     'remove_introns': False,
     'use_complex_functions': False,
     'enforce_initialize_at_least_one_action_per_class': True,
+    'balanced_team_mutation': True,
     'print_recall_per_generation_for_best_run': True,
     'diversity': {
         'fitness_sharing': False,
@@ -93,8 +95,8 @@ CONFIG = DEFAULT_CONFIG_V2
 # CONFIG['max_team_size'] = 6
 # DATA_FILE = "gisette"
 
-# CONFIG['max_team_size'] = 14
-# DATA_FILE = "shuttle"
+#CONFIG['max_team_size'] = 14
+#DATA_FILE = "shuttle"
 
 CONFIG['max_team_size'] = 9
 DATA_FILE = "thyroid"

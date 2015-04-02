@@ -8,6 +8,7 @@ import time
 import numpy
 from random import randint
 from collections import defaultdict
+from collections import Counter
 from scipy.special import expit
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from helpers import *
@@ -154,13 +155,29 @@ class Team:
             add_program = False
 
         if remove_program:
-            test = False
-            while not test:
-                index = randint(0, len(self.programs)-1)
-                if self.there_is_at_least_two_different_actions_removing_program(self.programs[index]):
-                    self.programs[index].remove_team(self)
-                    self.programs.pop(index)
-                    test = True
+            if CONFIG['balanced_team_mutation']:
+                actions = [p.action for p in self.programs]
+                actions_count = Counter(actions)
+                valid_actions_to_remove = []
+                for key, value in actions_count.iteritems():
+                    if value > 1:
+                        valid_actions_to_remove.append(key)
+                if len(valid_actions_to_remove) == 0:
+                    return
+                valid_programs_to_remove = [p for p in self.programs if p.action in valid_actions_to_remove]
+                index = randint(0, len(valid_programs_to_remove)-1)
+                removed_program = valid_programs_to_remove[index]
+                removed_program.remove_team(self)
+                self.programs.remove(removed_program)
+                actions = [p.action for p in self.programs]
+            else:
+                test = False
+                while not test:
+                    index = randint(0, len(self.programs)-1)
+                    if self.there_is_at_least_two_different_actions_removing_program(self.programs[index]):
+                        self.programs[index].remove_team(self)
+                        self.programs.pop(index)
+                        test = True
 
         if add_program:
             if len(new_programs) == 0:
@@ -173,6 +190,16 @@ class Team:
                     new_programs[index].add_team(self)
                     self.programs.append(new_programs[index])
                     test = True
+
+    def get_programs_per_class(self, programs):
+        programs_per_class = []
+        for class_index in range(self.output_size):
+            values = [p for p in programs if p.action == class_index]
+            if len(values) == 0:
+                print "WARNING! No programs for class "+str(class_index)
+                raise Exception
+            programs_per_class.append(values)
+        return programs_per_class
 
     def avg_introns(self):
         total = 0.0

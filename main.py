@@ -9,6 +9,7 @@ import copy
 import numpy
 from random import randint
 from collections import defaultdict
+from collections import Counter
 from scipy.special import expit
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
@@ -35,10 +36,13 @@ class Algorithm:
         self.output_size = len(class_dist)
         trainsubsets_per_class = self.get_data_per_class(train)
         elapseds_per_run = []
+        actions_counts_per_run = []
+        actions_counts_per_generation_per_run = []
         recall_per_generation_per_run = []
         avg_dr_per_generations = [0.0] * CONFIG['max_generation_total']
 
         for run_id in range(CONFIG['runs_total']):
+            actions_counts = []
             recall_per_generation = []
             best_programs_per_generation = []
             start_per_run = time.time()
@@ -90,6 +94,9 @@ class Algorithm:
                 best_programs_per_generation.append(best_program)
                 recall_per_generation.append(best_program.recall)
                 avg_dr_per_generations[self.current_generation-1] += best_program.macro_recall_testset
+                actions_count = Counter([p.action for p in programs_population])
+                actions_counts.append(actions_count.values())
+                print "Actions Counter: "+str(actions_count)
             print(info)
 
             print("\nRun's best program: "+best_program.print_metrics())
@@ -101,6 +108,8 @@ class Algorithm:
             elapseds_per_run.append(elapsed_per_run)
             best_programs_per_run_per_generation.append(best_programs_per_generation)
             recall_per_generation_per_run.append(recall_per_generation)
+            actions_counts_per_run.append(actions_count)
+            actions_counts_per_generation_per_run.append(actions_counts)
             print("\nFinished run execution, elapsed time: "+str(elapsed_per_run)+" secs")
 
         print("\n################# RESULT PER RUN ####################")
@@ -140,6 +149,9 @@ class Algorithm:
         
         avg_dr_per_generations = [Operations.round_to_decimals(x/float(CONFIG['runs_total']), round_decimals_to = 3) for x in avg_dr_per_generations]
         msg += "\n\navg_dr_per_generations: "+str(avg_dr_per_generations)
+
+        msg += "\n\nActions Counter (per gen.): "+str(actions_counts_per_generation_per_run[best_run])
+        msg += "\nActions Counter: "+str(actions_counts_per_run[best_run])
 
         print(msg)
 
@@ -326,8 +338,8 @@ class Algorithm:
         programs_to_clone = random.sample(programs_population, new_programs_to_create)
         for program in programs_to_clone:
             clone = Program(self.current_generation, program.total_input_registers, program.total_output_registers,
-                random_mode=False, instructions=copy.deepcopy(program.instructions))
-            clone.mutate()            
+                random_mode=False, instructions=copy.deepcopy(program.instructions), action=program.action)
+            clone.mutate()
             new_programs.append(clone)
 
         # 4. Add new teams, cloning the old ones and adding or removing programs (if adding, can only add a new program)
