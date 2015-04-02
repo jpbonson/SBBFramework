@@ -19,6 +19,7 @@ class Algorithm:
     def __init__(self, data_name):
         self.data_name = data_name
         self.current_generation = 0
+        self.output_size = -1
 
     def run(self):
         best_programs_per_run = []
@@ -31,7 +32,8 @@ class Algorithm:
         test = self.normalize(normalization_params, test)
         Y_test = get_Y(test)
         class_dist = get_class_distribution(Y_test)
-        trainsubsets_per_class = self.get_data_per_class(train, class_dist)
+        self.output_size = len(class_dist)
+        trainsubsets_per_class = self.get_data_per_class(train)
         elapseds_per_run = []
         recall_per_generation_per_run = []
         avg_dr_per_generations = [0.0] * CONFIG['max_generation_total']
@@ -46,11 +48,10 @@ class Algorithm:
             random.shuffle(test)
             features_size = len(train[0])-1
             info += "\nClass Distributions (test dataset): "+str(class_dist)+", for a total of "+str(len(Y_test))+" samples"
-            output_size = len(class_dist)
             info += ("\ntotal samples (train): "+str(len(train)))
             info += ("\ntotal samples (test): "+str(len(test)))
             info += ("\ntotal_input_registers: "+str(features_size))
-            info += ("\ntotal_classes: "+str(output_size))
+            info += ("\ntotal_classes: "+str(self.output_size))
             info += ("\ntotal_registers: "+str(CONFIG['total_calculation_registers']+1))
             print(info)
 
@@ -59,11 +60,21 @@ class Algorithm:
             reset_teams_ids()
             programs_population =[]
             for i in range(CONFIG['program_population_size']):
-                program = Program(generation=0, total_input_registers=features_size, total_classes=output_size, random_mode=True)
+                program = Program(generation=0, total_input_registers=features_size, total_classes=self.output_size, random_mode=True)
                 programs_population.append(program)
+
+            programs_per_class = []
+            if CONFIG['enforce_initialize_at_least_one_action_per_class']:
+                try:
+                    programs_per_class = self.get_programs_per_class(programs_population)
+                except:
+                    print "WARNING, skipping run!"
+                    run_id -= 1
+                    continue
             teams_population = []
             for t in range(CONFIG['team_population_size']):
-                team = Team(generation=0, total_input_registers=features_size, total_classes=output_size, random_mode=True, sample_programs=programs_population)
+                team = Team(generation=0, total_input_registers=features_size, total_classes=self.output_size, random_mode=True, 
+                    sample_programs=programs_population, sample_programs_per_class=programs_per_class)
                 teams_population.append(team)
             self.current_generation = 0
             sample = None
@@ -142,24 +153,54 @@ class Algorithm:
         text_file.write(msg+overall_best_program.to_str()+elapsed_msg)
         text_file.close()
 
-    def get_data_per_class(self, data, class_dist):
+    def get_programs_per_class(self, programs):
+        programs_per_class = []
+        for class_index in range(self.output_size):
+            values = [p for p in programs if p.action == class_index]
+            if len(values) == 0:
+                print "WARNING! No programs for class "+str(class_index)
+                raise Exception
+            programs_per_class.append(values)
+        return programs_per_class
+
+    def get_data_per_class(self, data):
         subsets_per_class = []
-        for class_index in range(len(class_dist)):
+        for class_index in range(self.output_size):
             values = [line for line in data if line[-1]-1 == class_index] # added -1 due to class labels starting at 1 instead of 0
             subsets_per_class.append(values)
         return subsets_per_class
 
-    def get_sample(self, subsets_per_class, previous_samples=None):
+    def get_sample(self, new_subsets_per_class, previous_samples=None):
         print("Sampling")
-        num_samples_per_class = CONFIG['sampling']['sampling_size']/len(subsets_per_class)
-        # get samples per class
-        samples_per_class = []
-        for subset in subsets_per_class:
-            if len(subset) <= num_samples_per_class:
-                sample = subset
-            else:
-                sample = random.sample(subset, num_samples_per_class)
-            samples_per_class.append(sample)
+        num_samples_per_class = CONFIG['sampling']['sampling_size']/len(new_subsets_per_class)
+
+        if not previous_samples or CONFIG['point_replacement_rate'] == 1.0: # first sampling
+            # get samples per class
+            samples_per_class = []
+            for subset in new_subsets_per_class:
+                if len(subset) <= num_samples_per_class:
+                    sample = subset
+                else:
+                    sample = random.sample(subset, num_samples_per_class)
+                samples_per_class.append(sample)
+        else:
+            current_subsets_per_class = self.get_data_per_class(previous_samples)
+            num_samples_per_class_to_maintain = int(round(num_samples_per_class*(1.0-CONFIG['point_replacement_rate'])))
+            num_samples_per_class_to_add = num_samples_per_class - num_samples_per_class_to_maintain
+
+            # obtain the data points that will be maintained
+            maintained_subsets_per_class = []
+            for subset in current_subsets_per_class:
+                maintained_subsets_per_class.append(random.sample(subset, num_samples_per_class_to_maintain))
+
+            # add the new data points
+            for i, subset in enumerate(maintained_subsets_per_class):
+                if len(new_subsets_per_class[i]) <= num_samples_per_class_to_add:
+                    subset += new_subsets_per_class[i]
+                else:
+                    subset += random.sample(new_subsets_per_class[i], num_samples_per_class_to_add)
+            samples_per_class = maintained_subsets_per_class
+
         # ensure that the sampling is balanced for all classes, using oversampling for the unbalanced ones
         if CONFIG['sampling']['use_oversampling']:
             for sample in samples_per_class:
@@ -168,8 +209,10 @@ class Algorithm:
                     if to_sample > len(sample):
                         to_sample = len(sample)
                     sample += random.sample(sample, to_sample)
+
         # join samples per class
         sample = sum(samples_per_class, [])
+
         random.shuffle(sample)
         return sample
 
@@ -295,8 +338,8 @@ class Algorithm:
             teams_to_clone.append(selected)
 
         for team in teams_to_clone:
-            clone = Team(self.current_generation, team.total_input_registers, team.total_classes,
-                random_mode=False, sample_programs=team.programs)
+            clone = Team(self.current_generation, team.total_input_registers, team.total_classes, random_mode=False, 
+                sample_programs=team.programs)
             clone.mutate(new_programs)
             teams_population.append(clone)
 

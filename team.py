@@ -19,7 +19,7 @@ def reset_teams_ids():
     next_team_id = 0
 
 class Team:
-    def __init__(self, generation, total_input_registers, total_classes, random_mode=True, sample_programs=[]):
+    def __init__(self, generation, total_input_registers, total_classes, random_mode=True, sample_programs=[], sample_programs_per_class=[]):
         global next_team_id
         next_team_id += 1
         self.team_id = next_team_id
@@ -36,31 +36,30 @@ class Team:
         self.programs = []
         self.active_programs = []
         if random_mode:
-            test = False
-            while not test:
-                index = randint(0, len(sample_programs)-1)
-                candidate_program = sample_programs[index]
-                if len(self.programs) == 0:
+            if CONFIG['enforce_initialize_at_least_one_action_per_class']:
+                for c in sample_programs_per_class:
+                    index = randint(0, len(c)-1)
+                    candidate_program = c[index]
                     self.programs.append(candidate_program)
                     candidate_program.add_team(self)
-                elif candidate_program not in self.programs and self.there_is_at_least_two_different_actions_given_new_program(candidate_program):
-                    self.programs.append(candidate_program)
-                    candidate_program.add_team(self)
-                if len(self.programs) == CONFIG['initial_team_size']:
-                    test = True
+            else:
+                test = False
+                while not test:
+                    index = randint(0, len(sample_programs)-1)
+                    candidate_program = sample_programs[index]
+                    if len(self.programs) == 0:
+                        self.programs.append(candidate_program)
+                        candidate_program.add_team(self)
+                    elif candidate_program not in self.programs and self.there_is_at_least_two_different_actions_given_new_program(candidate_program):
+                        self.programs.append(candidate_program)
+                        candidate_program.add_team(self)
+                    if len(self.programs) == CONFIG['initial_team_size']:
+                        test = True
         else:
             for p in sample_programs:
                 p.add_team(self)
                 self.programs.append(p)
         self.correct_samples = []
-
-    def there_is_at_least_two_different_actions(self):
-        actions = [p.action for p in self.programs]
-        actions = set(actions)
-        if len(actions) < 2:
-            return False
-        else:
-            return True
 
     def there_is_at_least_two_different_actions_given_new_program(self, program):
         actions = [p.action for p in self.programs]
@@ -162,7 +161,7 @@ class Team:
                     self.programs[index].remove_team(self)
                     self.programs.pop(index)
                     test = True
-        
+
         if add_program:
             if len(new_programs) == 0:
                 print "WARNING! NO NEW PROGRAMS!"

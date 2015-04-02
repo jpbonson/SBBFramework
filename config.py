@@ -7,9 +7,10 @@ DEFAULT_CONFIG = {
     'program_population_size': 400,
     'team_population_size': 200, # must be half the population_size
     'max_generation_total': 20,
-    'runs_total': 3, # 25
+    'runs_total': 25,
     'total_calculation_registers': 1,
     'team_replacement_rate': 0.2,
+    'point_replacement_rate': 1.0,
 
     'mutation_program_remove_instruction_rate': 0.8,
     'mutation_program_add_instruction_rate': 0.9,
@@ -31,6 +32,7 @@ DEFAULT_CONFIG = {
     },
     'remove_introns': False,
     'use_complex_functions': False,
+    'enforce_initialize_at_least_one_action_per_class': False,
     'print_recall_per_generation_for_best_run': True,
     'diversity': {
         'fitness_sharing': False,
@@ -47,16 +49,17 @@ DEFAULT_CONFIG_V2 = {
     'program_population_size': 200,
     'team_population_size': 100, # must be half the population_size
     'max_generation_total': 100,
-    'runs_total': 3, # 25
+    'runs_total': 25,
     'total_calculation_registers': 1,
     'team_replacement_rate': 0.6,
+    'point_replacement_rate': 0.3,
 
     'mutation_program_remove_instruction_rate': 0.8,
     'mutation_program_add_instruction_rate': 0.9,
     'mutation_program_single_instruction_rate': 0.9,
     'mutation_program_action_rate': 0.1,
     'mutation_team_remove_rate': 0.7,
-    'mutation_team_add_rate': 0.8,
+    'mutation_team_add_rate': 0.7,
 
     'minimum_program_size': 1,
     'initial_program_size': 10,
@@ -67,10 +70,11 @@ DEFAULT_CONFIG_V2 = {
 
     'sampling': {
         'use_oversampling': True,
-        'sampling_size': 100,
+        'sampling_size': 120,
     },
     'remove_introns': False,
     'use_complex_functions': False,
+    'enforce_initialize_at_least_one_action_per_class': True,
     'print_recall_per_generation_for_best_run': True,
     'diversity': {
         'fitness_sharing': False,
@@ -86,6 +90,11 @@ DEFAULT_CONFIG_V2 = {
 # CONFIG = DEFAULT_CONFIG
 CONFIG = DEFAULT_CONFIG_V2
 
+# CONFIG['max_team_size'] = 6
 # DATA_FILE = "gisette"
-DATA_FILE = "shuttle"
-# DATA_FILE = "thyroid"
+
+# CONFIG['max_team_size'] = 14
+# DATA_FILE = "shuttle"
+
+CONFIG['max_team_size'] = 9
+DATA_FILE = "thyroid"
