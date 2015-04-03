@@ -323,7 +323,7 @@ class Algorithm:
             teams_population[worst_program_index].remove_programs_link()
             teams_population.pop(worst_program_index)
 
-        # 2. Remove programs are are not in a team
+        # 2. Remove programs are not in a team
         to_remove = []
         for p in programs_population:
             if len(p.teams) == 0:
@@ -337,7 +337,7 @@ class Algorithm:
         new_programs = []
         programs_to_clone = random.sample(programs_population, new_programs_to_create)
         for program in programs_to_clone:
-            clone = Program(self.current_generation, program.total_input_registers, program.total_output_registers,
+            clone = Program(self.current_generation, program.total_input_registers, program.total_classes,
                 random_mode=False, instructions=copy.deepcopy(program.instructions), action=program.action)
             clone.mutate()
             new_programs.append(clone)

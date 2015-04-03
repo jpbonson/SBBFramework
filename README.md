@@ -55,7 +55,8 @@ Results (with bug were all new program had action 0):
 100-50-200 (678) == 200-100-100 (476) == 50-25-500 (1105)
 melhor runtime: 200-100-100
 
-Results:
+-------------------
+Results (with another bug were all new program had action 0):
 200-100-100 (203) - 100-50-200 (273) - 200-100-200 (410) - 100-50-400 (542) ('balanced_team_mutation': True)
 200-100-100 < 200-100-200
 200-100-100 == 100-50-200
@@ -64,24 +65,30 @@ Results:
 200-100-100 (with balanced mutation) == 200-100-100 (without balanced mutation): with balanced mutation
 200-100-100 (with point repl0.3) == 200-100-100 (with point repl0.2): with point repl0.2
 
-100-50-200 (10/20 programs) - 100-50-200 (24/48 programs)
-100-50-200 (with point repl0.3) == 100-50-200 (with point repl0.2)
-100-50-200 (with action0.1) == 100-50-200 (with action0.3)
+100-50-200 (10/20 programs) == 100-50-200 (24/48 programs): 10/20 programs (24/48 levou tempo demais)
+100-50-200 (with point repl0.3) == 100-50-200 (with point repl0.2): repl0.2
+100-50-200 (with action0.1) == 100-50-200 (with action0.3): action0.3
 
-testar:
-- retestar analises anteriores
-- balanced mutation
-- aumentar mutation rate para actions
+-------------------
+Results:
+100-50-200 - 200-100-100 - 100-50-400 - 200-100-200
+
+10/20 programs e 15/30 programse 10/30 programs
+
+with point repl0.3 e with point repl0.2
+
+with action0.1 and with action0.3
+
+with 1 extra register and with 2 extra registers
+
+mutation rates?
 
 
+fixed another bug with mutation always adding programs with action 0
 
-analisar performance x tempo (levar em conta q esse 'e a thyroid, o mais rapido!)
-
-
-implementar:
-- training error?
-- balancear criacao de programs por action?
-
-- fixed bug
-- added new metrics
-- added option to balanced mutations
+TODO:
+- rerodar experimentos que nao houve diferenca (+ register extra)
+- definir parametros
+- rodar benchmarks (+rodar no server, com mais generations)
+- rodar intros e complex
+- rodar diversities
