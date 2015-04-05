@@ -71,24 +71,40 @@ Results (with another bug were all new program had action 0):
 
 -------------------
 Results:
-100-50-200 - 200-100-100 - 100-50-400 - 200-100-200
+100-50-200 (ok)
+200-100-100 (ok)
+200-100-200 (ok)
+100-50-200 (with 2 registers) (ok)
+100-50-400 (ok)
+100-50-200 (repl0.3) (ok)
+100-50-200 (action0.1) (ok)
+100-50-200 (10/30 programs) (ok)
 
-10/20 programs e 15/30 programse 10/30 programs
+100-50-200 > 200-100-100: 0.03156
+100-50-200 == 100-50-400: The Z-Score is -0.2522. The p-value is 0.80258. (mean == mean) ????????????
+200-100-100 < 200-100-200: 0.03156
+100-50-400 == 200-100-200: The Z-Score is 0.291. The p-value is 0.77182. (mean == mean)
+100-50-200 (with 1 registers) == 100-50-200 (with 2 registers): The Z-Score is 1.6201. The p-value is 0.10524. (mean > mean)
+100-50-200 (repl0.2) == 100-50-200 (repl0.3): The Z-Score is 1.2612. The p-value is 0.20766. (mean > mean)
+100-50-200 (action0.3) ? 100-50-200 (action0.1): The Z-Score is -0.097. The p-value is 0.92034. (mean == mean)
+100-50-200 (10/20 programs) ? 100-50-200 (10/30 programs): The Z-Score is 1.3582. The p-value is 0.17384. (mean > mean)
 
-with point repl0.3 e with point repl0.2
+resultado:
+100-50-200, with 1 registers, repl0.2, action0.1, 10/30 programs
 
-with action0.1 and with action0.3
+duvida: nao melhorou com mais generations?
 
-with 1 extra register and with 2 extra registers
-
-mutation rates?
-
-
-fixed another bug with mutation always adding programs with action 0
+120-60-200 == 100-50-200: The Z-Score is -0.7567. The p-value is 0.44726. (mean > mean)
+160-80-200 == 100-50-200: The Z-Score is 0.9507. The p-value is 0.34212. (mean < mean)
+160-80-200 == 200-100-100: The Z-Score is 1.0284. The p-value is 0.30302. (mean> mean)
+120-60-200 == 160-80-200: The Z-Score is 1.7075. The p-value is 0.08726. (mean > mean)
+120-60-200 == 120-60-400: The Z-Score is -1.106. The p-value is 0.267. (mean < mean)
+160-80-200 < 160-80-400: 0.02444
+120-60-400 == 160-80-400: The Z-Score is 0.1843. The p-value is 0.85716. (mean == mean)
+------------------- winner: 160-80-200
 
 TODO:
-- rerodar experimentos que nao houve diferenca (+ register extra)
-- definir parametros
-- rodar benchmarks (+rodar no server, com mais generations)
-- rodar intros e complex
+- analisar e definir parametros (+ trabalhar no projeto de visualization?)
+- rodar benchmarks (+rodar no server, com mais generations, OU rodar nesse PC, mas rodar sets de runs)
+- rodar introns e complex
 - rodar diversities

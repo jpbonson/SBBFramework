@@ -47,9 +47,9 @@ DEFAULT_CONFIG = {
 }
 
 DEFAULT_CONFIG_V2 = {
-    'program_population_size': 100,
-    'team_population_size': 50, # must be half the population_size
-    'max_generation_total': 400,
+    'program_population_size': 160,
+    'team_population_size': 80, # must be half the population_size
+    'max_generation_total': 500,
     'runs_total': 25,
     'total_calculation_registers': 1,
     'team_replacement_rate': 0.6,
@@ -58,13 +58,13 @@ DEFAULT_CONFIG_V2 = {
     'mutation_program_remove_instruction_rate': 0.8,
     'mutation_program_add_instruction_rate': 0.9,
     'mutation_program_single_instruction_rate': 0.9,
-    'mutation_program_action_rate': 0.3,
+    'mutation_program_action_rate': 0.1,
     'mutation_team_remove_rate': 0.7,
     'mutation_team_add_rate': 0.7,
 
-    'minimum_program_size': 1,
+    'minimum_program_size': 5,
     'initial_program_size': 10,
-    'max_program_size': 20,
+    'max_program_size': 30,
     'minimum_team_size': 2,
     'initial_team_size': 3,
     'max_team_size': 10,
