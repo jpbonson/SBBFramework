@@ -73,7 +73,7 @@ DEFAULT_CONFIG_V2 = {
         'use_oversampling': True,
         'sampling_size': 120,
     },
-    'remove_introns': False,
+    'remove_introns': True,
     'use_complex_functions': False,
     'enforce_initialize_at_least_one_action_per_class': True,
     'balanced_team_mutation': True,
@@ -83,7 +83,7 @@ DEFAULT_CONFIG_V2 = {
         'classwise_fitness_sharing': False,
         'genotype_fitness_maintanance': False,
         'genotype_configs': {
-            'p_value': 0.1,
+            'p_value': 0.2,
             'k': 8,
         },        
     },

@@ -103,8 +103,39 @@ duvida: nao melhorou com mais generations?
 120-60-400 == 160-80-400: The Z-Score is 0.1843. The p-value is 0.85716. (mean == mean)
 ------------------- winner: 160-80-200
 
+Results (Thyroid):
+
+default == fitness sharing: The Z-Score is 1.4552. The p-value is 0.1443.
+default == cw fitness sharing: The Z-Score is 1.2127. The p-value is 0.22628.
+default == genotype01: The Z-Score is -1.2709. The p-value is 0.20408.
+default == genotype02: The Z-Score is 0.553. The p-value is 0.58232.
+default == genotype03: The Z-Score is 0.1649. The p-value is 0.87288.
+genotype01 == genotype03: The Z-Score is 1.3194. The p-value is 0.18684.
+genotype01 == genotype02: The Z-Score is 1.4649. The p-value is 0.1443.
+genotype01 venceu (entre genotypes)
++ runs
+
+default == complex: The Z-Score is 1.1254. The p-value is 0.25848.
+
+default ? no introns (rerodar)
+complex ? complex + no introns (rerodar)
+intorns realmente aceleram?
+
+DONE:
+pre-tuning < no balance: The Z-Score is -4.5112. The p-value is 0. The result is significant at p≤ 0.05. The U-value is 79.5.
+no balance == default: The Z-Score is 0.2619. The p-value is 0.79486. The U-value is 298.5.
+pre-tuning ? default: The Z-Score is -5.0641. The p-value is 0. The result is significant at p≤ 0.01. The U-value is 51
+OK: Various modifications were made from the previous runs to try to improve the results. The point replacement rate was changed from 1.0 to 0.2, the populations from 400/200 to 160/80, the generations from 20 to 500, and balance restrictions were added, to ensure that all teams always have at least of action per class. The most impactful change was the modification of the generation and populations. The best solution across 25 runs was 0.94206 for the Thyroid dataset. The new best solution is 0.97135. The distribution of results improved with significance at p≤ 0.01 with the Mann-Whitney U-Test. The modification of the point replacement rate and the balance restrictions didn't significantly imprvoed the results, but were maintained in order to ensure the best functioning of the algorithm.
+
+------------------------------
+
+Results (Shuttle):
+
+
+
 TODO:
-- analisar e definir parametros (+ trabalhar no projeto de visualization?)
-- rodar benchmarks (+rodar no server, com mais generations, OU rodar nesse PC, mas rodar sets de runs)
+- rodar benchmarks para thyroid
+- rodar com e sem as melhorias
+- rodar benchmarks para shuttle (fazer mais runs? 50? sets de 10? no server?)
 - rodar introns e complex
 - rodar diversities

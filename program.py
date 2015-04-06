@@ -68,7 +68,8 @@ class Program:
 
     def execute(self, sample, testset=False):
         if CONFIG['remove_introns']:
-            self.remove_introns()
+            if len(self.instructions_without_introns) == 0:
+                self.remove_introns()
             instructions = self.instructions_without_introns
         else:
             instructions = self.instructions
