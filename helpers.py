@@ -8,7 +8,6 @@ import time
 import numpy
 from random import randint
 from collections import defaultdict
-from scipy.special import expit
 from config import *
 
 class Operations(object):

@@ -10,7 +10,6 @@ import numpy
 from random import randint
 from collections import defaultdict
 from collections import Counter
-from scipy.special import expit
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
 from helpers import *
