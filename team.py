@@ -110,7 +110,7 @@ class Team:
         accuracy = accuracy_score(desired_outputs, predicted_outputs)
         recall = recall_score(desired_outputs, predicted_outputs, average=None)
         macro_recall = numpy.mean(recall)
-        if testset: # t avoid wasting time processing metrics when they are not necessary
+        if testset: # to avoid wasting time processing metrics when they are not necessary
             self.conf_matrix = conf_matrix
             self.conts_per_class = [0] * self.total_classes
             self.recall = recall
