@@ -11,48 +11,36 @@ from random import randint
 from collections import defaultdict
 from scipy.special import expit
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
-from helpers import *
+from utils.helpers import *
 from config import *
 
 def reset_programs_ids():
     global next_program_id
     next_program_id = 0
 
-if CONFIG['use_complex_functions']:
-    GENOTYPE_OPTIONS = {
-        'modes': ['read-register', 'read-input'],
-        'op': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
-        'one-operand-instructions': ['ln', 'exp', 'cos'],
-        'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
-    }
-else:
-    GENOTYPE_OPTIONS = {
-        'modes': ['read-register', 'read-input'],
-        'op': ['+', '-', '*', '/'],
-        'one-operand-instructions': [],
-        'if-instructions': [],
-    }
+def get_program_id():
+    global next_program_id
+    next_program_id += 1
+    return next_program_id
 
 class Program:
-    def __init__(self, generation, total_input_registers, total_classes, random_mode=True, instructions=[], action=-1):
-        global next_program_id
-        next_program_id += 1
-        self.program_id = next_program_id
+    def __init__(self, generation, total_input_registers, total_classes, initialization=True, instructions=[], action=0):
+        self.program_id = get_program_id()
         self.generation = generation
         self.total_input_registers = total_input_registers
         self.total_output_registers = 1
-        self.total_general_registers = CONFIG['total_calculation_registers']+self.total_output_registers
+        self.total_general_registers = CONFIG['advanced_training_parameters']['extra_registers']+self.total_output_registers
         self.total_classes = total_classes
-        if random_mode:
+        if initialization:
             self.action = randint(0, self.total_classes-1)
             self.instructions = []
-            for i in range(CONFIG['initial_program_size']):
+            for i in range(CONFIG['training_parameters']['program_size']['initial']):
                 self.instructions.append(self.generate_random_instruction())
         else:
             self.action = action
             self.instructions = instructions
         self.teams = []
-        self.instructions_without_introns = []
+        self.instructions_without_introns = None
 
     def generate_random_instruction(self):
         instruction = {}
@@ -67,12 +55,9 @@ class Program:
         return instruction
 
     def execute(self, sample, testset=False):
-        if CONFIG['remove_introns']:
-            if len(self.instructions_without_introns) == 0:
-                self.remove_introns()
-            instructions = self.instructions_without_introns
-        else:
-            instructions = self.instructions
+        if not self.instructions_without_introns:
+            self.remove_introns()
+        instructions = self.instructions_without_introns
         
         # execute code for each input
         general_registers = [0] * self.total_general_registers
@@ -148,18 +133,23 @@ class Program:
 
     def mutate(self):
         mutation_chance = random.random()
-        if mutation_chance <= CONFIG['mutation_program_remove_instruction_rate'] and len(self.instructions) > CONFIG['minimum_program_size']:
+        if (mutation_chance <= CONFIG['training_parameters']['mutation']['program']['remove_instruction'] and 
+                len(self.instructions) > CONFIG['training_parameters']['program_size']['min']):
             index = randint(0, len(self.instructions)-1)
             self.instructions.pop(index)
+
         mutation_chance = random.random()
-        if mutation_chance <= CONFIG['mutation_program_add_instruction_rate'] and len(self.instructions) < CONFIG['max_program_size']:
+        if (mutation_chance <= CONFIG['training_parameters']['mutation']['program']['add_instruction'] and 
+                len(self.instructions) < CONFIG['training_parameters']['program_size']['max']):
             index = randint(0, len(self.instructions))
             self.instructions.insert(index, self.generate_random_instruction())
+
         mutation_chance = random.random()
-        if mutation_chance <= CONFIG['mutation_program_single_instruction_rate']:
+        if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_instruction']:
             self.mutate_single_instruction()
+        
         mutation_chance = random.random()
-        if mutation_chance <= CONFIG['mutation_program_action_rate']:
+        if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_action']:
             self.action = randint(0, self.total_classes-1)
 
     def mutate_single_instruction(self):

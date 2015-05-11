@@ -1,102 +1,94 @@
-USE_MSE3 = False
+import sys
 
-CURRENT_DIR = "C:/Users/jpbonson/Dropbox/Dalhousie Winter 2015/Genetic Algorithms/GeneticProgrammingSandbox/"
-# CURRENT_DIR = ""
-
-DEFAULT_CONFIG = {
-    'program_population_size': 400,
-    'team_population_size': 200, # must be half the population_size
-    'max_generation_total': 20,
-    'runs_total': 10,
-    'total_calculation_registers': 1,
-    'team_replacement_rate': 0.2,
-    'point_replacement_rate': 1.0,
-
-    'mutation_program_remove_instruction_rate': 0.8,
-    'mutation_program_add_instruction_rate': 0.9,
-    'mutation_program_single_instruction_rate': 0.9,
-    'mutation_program_action_rate': 0.1,
-    'mutation_team_remove_rate': 0.7,
-    'mutation_team_add_rate': 0.8,
-
-    'minimum_program_size': 1,
-    'initial_program_size': 10,
-    'max_program_size': 30,
-    'minimum_team_size': 2,
-    'initial_team_size': 3,
-    'max_team_size': 6,
-
-    'sampling': {
-        'use_oversampling': False,
-        'sampling_size': 120,
-    },
-    'remove_introns': False,
-    'use_complex_functions': False,
-    'enforce_initialize_at_least_one_action_per_class': False,
-    'balanced_team_mutation': False,
-    'print_recall_per_generation_for_best_run': True,
-    'diversity': {
-        'fitness_sharing': False,
-        'classwise_fitness_sharing': False,
-        'genotype_fitness_maintanance': False,
-        'genotype_configs': {
-            'p_value': 0.1,
-            'k': 8,
-        },        
-    },
-}
-
-DEFAULT_CONFIG_V2 = {
-    'program_population_size': 160,
-    'team_population_size': 80, # must be half the population_size
-    'max_generation_total': 500,
-    'runs_total': 10,
-    'total_calculation_registers': 1,
-    'team_replacement_rate': 0.6,
-    'point_replacement_rate': 0.2,
-
-    'mutation_program_remove_instruction_rate': 0.8,
-    'mutation_program_add_instruction_rate': 0.9,
-    'mutation_program_single_instruction_rate': 0.9,
-    'mutation_program_action_rate': 0.1,
-    'mutation_team_remove_rate': 0.7,
-    'mutation_team_add_rate': 0.8,
-
-    'minimum_program_size': 5,
-    'initial_program_size': 10,
-    'max_program_size': 30,
-    'minimum_team_size': 2,
-    'initial_team_size': 3,
-    'max_team_size': 10,
-
-    'sampling': {
+CONFIG = {
+    'task': 'classification',
+    'classification_parameters': { # only used if 'task' is 'classification'
+        'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
         'use_oversampling': True,
-        'sampling_size': 120,
+    }, 
+    'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
+        'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder
     },
-    'remove_introns': True,
-    'use_complex_functions': True,
-    'enforce_initialize_at_least_one_action_per_class': True,
-    'balanced_team_mutation': True,
-    'print_recall_per_generation_for_best_run': True,
-    'diversity': {
-        'fitness_sharing': False,
-        'classwise_fitness_sharing': True,
-        'genotype_fitness_maintanance': False,
-        'genotype_configs': {
-            'p_value': 0.1,
-            'k': 8,
-        },        
+
+    'training_parameters': {
+        'runs_total': 2,
+        'generations_total': 100,
+        'populations': {
+            'programs': 60,
+            'teams': 30, # must be half the population_size (?)
+            'points': 120,
+        },
+        'replacement_rate': {
+            'teams': 0.6,
+            'points': 0.2,
+        },
+        'mutation': {
+            'team': {
+                'remove_program': 0.7,
+                'add_program': 0.8,
+            },
+            'program': {
+                'remove_instruction': 0.8,
+                'add_instruction': 0.9,
+                'change_instruction': 0.9,
+                'change_action': 0.1,
+            },
+        },
+        'team_size': {
+            'max': 5,
+        },
+        'program_size': {
+            'initial': 10,
+            'min': 2,
+            'max': 30,
+        },
+    },
+
+    'advanced_training_parameters': {
+        'use_complex_functions': True,
+        'extra_registers': 1,
+        'diversity': {
+            'fitness_sharing': False,
+            'genotype_fitness_maintanance': False,
+            'genotype_configs': {
+                'p_value': 0.1,
+                'k': 8,
+            },        
+        },
+    },
+
+    'verbose': {
+        'show_actions_distribution_per_generation': False,
     },
 }
 
-# CONFIG = DEFAULT_CONFIG
-CONFIG = DEFAULT_CONFIG_V2
+# restrictions
+TASK_TYPES = ['classification', 'reinforcement']
+# WORKING_PATH = "C:/Users/jpbonson/Dropbox/Dalhousie Winter 2015/Genetic Algorithms/GeneticProgrammingSandbox/pSBB/"
+WORKING_PATH = "pSBB/"
 
-# CONFIG['max_team_size'] = 6
-# DATA_FILE = "gisette"
+if CONFIG['advanced_training_parameters']['use_complex_functions']:
+    GENOTYPE_OPTIONS = {
+        'modes': ['read-register', 'read-input'],
+        'op': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
+        'one-operand-instructions': ['ln', 'exp', 'cos'],
+        'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
+    }
+else:
+    GENOTYPE_OPTIONS = {
+        'modes': ['read-register', 'read-input'],
+        'op': ['+', '-', '*', '/'],
+        'one-operand-instructions': [],
+        'if-instructions': [],
+    }
 
-CONFIG['max_team_size'] = 14
-DATA_FILE = "shuttle"
+# refatorar complex instructions
+# class para instructions?
+# checar imports
 
-# CONFIG['max_team_size'] = 9
-# DATA_FILE = "thyroid"
+""" Check if the parameters in CONFIG are valid """
+def check_parameters():
+    if CONFIG['task'] not in TASK_TYPES:
+        sys.stderr.write("Error: Invalid 'task' in CONFIG! The valid values are "+str(TASK_TYPES)+"\n")
+        raise SystemExit
+check_parameters()

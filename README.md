@@ -5,4 +5,4 @@ python "C:\Users\jpbonson\Dropbox\Dalhousie Winter 2015\Genetic Algorithms\Genet
 E para acessar o Git:
 cd "C:\Users\jpbonson\Dropbox\Dalhousie Winter 2015\Genetic Algorithms\GeneticProgrammingSandbox"
 
-Quando mudar de SO, mudar a variavel CURRENT_DIR
+Quando mudar de SO, mudar a variavel WORKING_PATH

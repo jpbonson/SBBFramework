@@ -126,8 +126,8 @@ def get_class_distribution(Y):
     return cont
 
 def read_inputs_already_partitioned(data_name):
-    train = read_space_separated_file(CURRENT_DIR+"data/"+data_name+".train")
-    test = read_space_separated_file(CURRENT_DIR+"data/"+data_name+".test")
+    train = read_space_separated_file(WORKING_PATH+"datasets/"+data_name+".train")
+    test = read_space_separated_file(WORKING_PATH+"datasets/"+data_name+".test")
     return train, test
 
 def read_space_separated_file(file_path):

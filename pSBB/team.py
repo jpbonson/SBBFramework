@@ -11,7 +11,7 @@ from collections import defaultdict
 from collections import Counter
 from scipy.special import expit
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
-from helpers import *
+from utils.helpers import *
 from config import *
 from program import Program
 
@@ -19,11 +19,14 @@ def reset_teams_ids():
     global next_team_id
     next_team_id = 0
 
+def get_team_id():
+    global next_team_id
+    next_team_id += 1
+    return next_team_id
+
 class Team:
-    def __init__(self, generation, total_input_registers, total_classes, random_mode=True, sample_programs=[], sample_programs_per_class=[]):
-        global next_team_id
-        next_team_id += 1
-        self.team_id = next_team_id
+    def __init__(self, generation, total_input_registers, total_classes, programs, initialization=True):
+        self.team_id = get_team_id()
         self.generation = generation
         self.total_input_registers = total_input_registers
         self.total_classes = total_classes
@@ -36,48 +39,19 @@ class Team:
         self.recall = 0
         self.programs = []
         self.active_programs = []
-        if random_mode:
-            if CONFIG['enforce_initialize_at_least_one_action_per_class']:
-                for c in sample_programs_per_class:
-                    index = randint(0, len(c)-1)
-                    candidate_program = c[index]
-                    self.programs.append(candidate_program)
-                    candidate_program.add_team(self)
-            else:
-                test = False
-                while not test:
-                    index = randint(0, len(sample_programs)-1)
-                    candidate_program = sample_programs[index]
-                    if len(self.programs) == 0:
-                        self.programs.append(candidate_program)
-                        candidate_program.add_team(self)
-                    elif candidate_program not in self.programs and self.there_is_at_least_two_different_actions_given_new_program(candidate_program):
-                        self.programs.append(candidate_program)
-                        candidate_program.add_team(self)
-                    if len(self.programs) == CONFIG['initial_team_size']:
-                        test = True
+        if initialization:
+            # randomly gets one program per action
+            for action in programs: # programs is an array of programs per action
+                index = randint(0, len(action)-1)
+                program = action[index]
+                self.programs.append(program)
+                program.add_team(self)
         else:
-            for p in sample_programs:
-                p.add_team(self)
-                self.programs.append(p)
+            # add all programs to itself
+            for program in programs: # programs is an array of programs
+                self.programs.append(program)
+                program.add_team(self)
         self.correct_samples = []
-
-    def there_is_at_least_two_different_actions_given_new_program(self, program):
-        actions = [p.action for p in self.programs]
-        actions.append(program.action)
-        actions = set(actions)
-        if len(actions) < 2:
-            return False
-        else:
-            return True
-
-    def there_is_at_least_two_different_actions_removing_program(self, program):
-        actions = [p.action for p in self.programs if p != program]
-        actions = set(actions)
-        if len(actions) < 2:
-            return False
-        else:
-            return True
 
     def execute(self, data, testset=False):
         # execute code for each input
@@ -139,57 +113,46 @@ class Team:
             p.remove_team(self)
 
     def mutate(self, new_programs):
-        add_program = False
-        remove_program = False
-
+        """ Generates mutation chances and mutate the team if it is a valid mutation """
         mutation_chance = random.random()
-        if mutation_chance <= CONFIG['mutation_team_add_rate']:
-            add_program = True
-        mutation_chance = random.random()
-        if mutation_chance <= CONFIG['mutation_team_remove_rate']:
-            remove_program = True
+        if mutation_chance <= CONFIG['training_parameters']['mutation']['team']['remove_program']:
+            self.remove_program()
+        if len(self.programs) < CONFIG['training_parameters']['team_size']['max']:
+            mutation_chance = random.random()
+            if mutation_chance <= CONFIG['training_parameters']['mutation']['team']['add_program']:
+                self.add_program(new_programs)          
 
-        if len(self.programs) == CONFIG['minimum_team_size']:
-            remove_program = False
-        if len(self.programs) == CONFIG['max_team_size']:
-            add_program = False
+    def remove_program(self):
+        """ Remove a program from the team. A program is removible only if there is at least two programs for its action. """
+        # Get list of actions with more than one program
+        actions = [p.action for p in self.programs]
+        actions_count = Counter(actions)
+        valid_actions_to_remove = []
+        for key, value in actions_count.iteritems():
+            if value > 1:
+                valid_actions_to_remove.append(key)
+        if len(valid_actions_to_remove) == 0:
+            return
+        # Get list of programs for the removible actions
+        valid_programs_to_remove = [p for p in self.programs if p.action in valid_actions_to_remove]
+        # Randomly select a program to remove from the list
+        index = randint(0, len(valid_programs_to_remove)-1)
+        # Remove program
+        removed_program = valid_programs_to_remove[index]
+        removed_program.remove_team(self)
+        self.programs.remove(removed_program)
 
-        if remove_program:
-            if CONFIG['balanced_team_mutation']:
-                actions = [p.action for p in self.programs]
-                actions_count = Counter(actions)
-                valid_actions_to_remove = []
-                for key, value in actions_count.iteritems():
-                    if value > 1:
-                        valid_actions_to_remove.append(key)
-                if len(valid_actions_to_remove) == 0:
-                    return
-                valid_programs_to_remove = [p for p in self.programs if p.action in valid_actions_to_remove]
-                index = randint(0, len(valid_programs_to_remove)-1)
-                removed_program = valid_programs_to_remove[index]
-                removed_program.remove_team(self)
-                self.programs.remove(removed_program)
-                actions = [p.action for p in self.programs]
-            else:
-                test = False
-                while not test:
-                    index = randint(0, len(self.programs)-1)
-                    if self.there_is_at_least_two_different_actions_removing_program(self.programs[index]):
-                        self.programs[index].remove_team(self)
-                        self.programs.pop(index)
-                        test = True
-
-        if add_program:
-            if len(new_programs) == 0:
-                print "WARNING! NO NEW PROGRAMS!"
-                return
-            test = False
-            while not test:
-                index = randint(0, len(new_programs)-1)
-                if new_programs[index] not in self.programs:
-                    new_programs[index].add_team(self)
-                    self.programs.append(new_programs[index])
-                    test = True
+    def add_program(self, new_programs):
+        if len(new_programs) == 0:
+            print "WARNING! NO NEW PROGRAMS!"
+            return
+        test = False
+        while not test:
+            index = randint(0, len(new_programs)-1)
+            if new_programs[index] not in self.programs:
+                new_programs[index].add_team(self)
+                self.programs.append(new_programs[index])
+                test = True
 
     def get_programs_per_class(self, programs):
         programs_per_class = []
