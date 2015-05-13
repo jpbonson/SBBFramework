@@ -3,7 +3,6 @@ import math
 import time
 import numpy
 import copy
-from random import randint
 from collections import defaultdict
 from scipy.special import expit
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
@@ -29,7 +28,7 @@ class Program:
         self.total_general_registers = CONFIG['advanced_training_parameters']['extra_registers']+self.total_output_registers
         self.total_actions = total_actions
         if initialization:
-            self.action = randint(0, self.total_actions-1)
+            self.action = random.randrange(self.total_actions)
             self.instructions = []
             for i in range(CONFIG['training_parameters']['program_size']['initial']):
                 self.instructions.append(self.generate_random_instruction())
@@ -41,14 +40,14 @@ class Program:
 
     def generate_random_instruction(self):
         instruction = {}
-        mode = GENOTYPE_OPTIONS['modes'][randint(0, len(GENOTYPE_OPTIONS['modes'])-1)]
+        mode = random.choice(RESTRICTIONS['genotype_options']['modes'])
         instruction['mode'] = mode
-        instruction['target'] = randint(0, self.total_general_registers-1)
-        instruction['op'] = CONFIG['advanced_training_parameters']['use_operations'][randint(0, len(CONFIG['advanced_training_parameters']['use_operations'])-1)]
+        instruction['target'] = random.randrange(self.total_general_registers)
+        instruction['op'] = random.choice(CONFIG['advanced_training_parameters']['use_operations'])
         if mode == 'read-register':
-            instruction['source'] = randint(0, self.total_general_registers-1)
+            instruction['source'] = random.randrange(self.total_general_registers)
         else:
-            instruction['source'] = randint(0, self.total_input_registers-1)
+            instruction['source'] = random.randrange(self.total_input_registers)
         return instruction
 
     def execute(self, sample, testset=False):
@@ -66,27 +65,27 @@ class Program:
                 if if_conditional['op'] == 'if_lesser_than':
                     if not (if_conditional['target'] < if_conditional['source']):
                         if_conditional = None
-                        if i['op'] in GENOTYPE_OPTIONS['if-instructions']:
+                        if i['op'] in RESTRICTIONS['genotype_options']['if-instructions']:
                             skip_next = True
                         continue
                 if if_conditional['op'] == 'if_equal_or_higher_than':
                     if not (if_conditional['target'] >= if_conditional['source']):
                         if_conditional = None
-                        if i['op'] in GENOTYPE_OPTIONS['if-instructions']:
+                        if i['op'] in RESTRICTIONS['genotype_options']['if-instructions']:
                             skip_next = True
                         continue
                 if_conditional = None
             if skip_next:
-                if i['op'] in GENOTYPE_OPTIONS['if-instructions']:
+                if i['op'] in RESTRICTIONS['genotype_options']['if-instructions']:
                     skip_next = True
                 else:
                     skip_next = False
                 continue
             
-            if i['op'] in GENOTYPE_OPTIONS['if-instructions']:
+            if i['op'] in RESTRICTIONS['genotype_options']['if-instructions']:
                 if_conditional = i
                 continue
-            elif i['op'] in GENOTYPE_OPTIONS['one-operand-instructions']:
+            elif i['op'] in RESTRICTIONS['genotype_options']['one-operand-instructions']:
                 general_registers[i['target']] = Operation.execute(i['op'], general_registers[i['target']])
             else:
                 if i['mode'] == 'read-register':
@@ -107,7 +106,7 @@ class Program:
         # Run throught the instructions from the last to the first one
         for instruction in reversed(self.instructions):
             if instruction['target'] in relevant_registers:
-                if instruction['op'] in GENOTYPE_OPTIONS['if-instructions']:
+                if instruction['op'] in RESTRICTIONS['genotype_options']['if-instructions']:
                     if ignore_previous_if:
                         continue
                 else:
@@ -123,13 +122,12 @@ class Program:
         mutation_chance = random.random()
         if (mutation_chance <= CONFIG['training_parameters']['mutation']['program']['remove_instruction'] and 
                 len(self.instructions) > CONFIG['training_parameters']['program_size']['min']):
-            index = randint(0, len(self.instructions)-1)
-            self.instructions.pop(index)
+            self.instructions.remove(random.choice(self.instructions))
 
         mutation_chance = random.random()
         if (mutation_chance <= CONFIG['training_parameters']['mutation']['program']['add_instruction'] and 
                 len(self.instructions) < CONFIG['training_parameters']['program_size']['max']):
-            index = randint(0, len(self.instructions))
+            index = random.randrange(len(self.instructions))
             self.instructions.insert(index, self.generate_random_instruction())
 
         mutation_chance = random.random()
@@ -138,26 +136,25 @@ class Program:
         
         mutation_chance = random.random()
         if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_action']:
-            self.action = randint(0, self.total_actions-1)
+            self.action = random.randrange(self.total_actions)
 
     def mutate_single_instruction(self):
-        index = randint(0, len(self.instructions)-1)
-        instruction = self.instructions[index]
-        instruction_parameter = randint(0,3)
+        instruction = random.choice(self.instructions)
+        instruction_parameter = random.randrange(RESTRICTIONS['genotype_options']['instruction_size'])
         if instruction_parameter == 0:
-            if instruction['mode'] == GENOTYPE_OPTIONS['modes'][0]:
-                instruction['mode'] = GENOTYPE_OPTIONS['modes'][1]
+            if instruction['mode'] == RESTRICTIONS['genotype_options']['modes'][0]:
+                instruction['mode'] = RESTRICTIONS['genotype_options']['modes'][1]
             else:
-                instruction['mode'] = GENOTYPE_OPTIONS['modes'][0]
+                instruction['mode'] = RESTRICTIONS['genotype_options']['modes'][0]
         if instruction_parameter == 1:
-            instruction['target'] = randint(0, self.total_general_registers-1)
+            instruction['target'] = random.randrange(self.total_general_registers)
         if instruction_parameter == 2:
-            instruction['op'] = CONFIG['advanced_training_parameters']['use_operations'][randint(0, len(CONFIG['advanced_training_parameters']['use_operations'])-1)]
+            instruction['op'] = random.choice(CONFIG['advanced_training_parameters']['use_operations'])
         if instruction_parameter == 0 or instruction_parameter == 3:
             if instruction['mode'] == 'read-register':
-                instruction['source'] = randint(0, self.total_general_registers-1)
+                instruction['source'] = random.randrange(self.total_general_registers)
             else:
-                instruction['source'] = randint(0, self.total_input_registers-1)          
+                instruction['source'] = random.randrange(self.total_input_registers)
 
     def add_team(self, team):
         self.teams.append(team)
@@ -172,9 +169,9 @@ class Program:
         text += "\nTotal instructions: "+str(len(self.instructions))+", total introns: "+str(len(self.instructions)-len(self.instructions_without_introns))
         text += "\n----------------"
         for i in self.instructions:
-            if i['op'] in GENOTYPE_OPTIONS['one-operand-instructions']:
+            if i['op'] in RESTRICTIONS['genotype_options']['one-operand-instructions']:
                 text += "\n"+self.one_op_instruction_to_str(i)
-            elif i['op'] in GENOTYPE_OPTIONS['if-instructions']:
+            elif i['op'] in RESTRICTIONS['genotype_options']['if-instructions']:
                 text += "\n"+self.if_op_instruction_to_str(i)
             else:
                 text += "\n"+self.two_ops_instruction_to_str(i)
@@ -182,9 +179,9 @@ class Program:
         text += "\nTotal instructions (without introns): "+str(len(self.instructions_without_introns))
         text += "\n----------------"
         for i in self.instructions_without_introns:
-            if i['op'] in GENOTYPE_OPTIONS['one-operand-instructions']:
+            if i['op'] in RESTRICTIONS['genotype_options']['one-operand-instructions']:
                 text += "\n"+self.one_op_instruction_to_str(i)
-            elif i['op'] in GENOTYPE_OPTIONS['if-instructions']:
+            elif i['op'] in RESTRICTIONS['genotype_options']['if-instructions']:
                 text += "\n"+self.if_op_instruction_to_str(i)
             else:
                 text += "\n"+self.two_ops_instruction_to_str(i)

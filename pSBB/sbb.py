@@ -8,13 +8,12 @@ import time
 import copy
 import numpy
 import os
-from random import randint
 from collections import defaultdict
 from collections import Counter
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
 from utils.helpers import *
-from config import *
+from config import CONFIG, RESTRICTIONS
 
 class SBB:
     def __init__(self):
@@ -339,10 +338,10 @@ class SBB:
         return msg
 
     def write_output_file(self, final_best_team, msg):
-        if not os.path.exists(WORKING_PATH+"outputs/"):
-            os.makedirs(WORKING_PATH+"outputs/")
+        if not os.path.exists(RESTRICTIONS['working_path']+"outputs/"):
+            os.makedirs(RESTRICTIONS['working_path']+"outputs/")
         localtime = time.localtime()
         pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+str(localtime.tm_hour)+str(localtime.tm_min)+str(localtime.tm_sec)
-        text_file = open(WORKING_PATH+"outputs/"+str(CONFIG['classification_parameters']['dataset'])+"_output-"+pretty_localtime+".txt",'w')
+        text_file = open(RESTRICTIONS['working_path']+"outputs/"+str(CONFIG['classification_parameters']['dataset'])+"_output-"+pretty_localtime+".txt",'w')
         text_file.write(msg+final_best_team.to_str())
         text_file.close()

@@ -2,7 +2,6 @@ import random
 import math
 import time
 import numpy
-from random import randint
 from collections import defaultdict
 from collections import Counter
 from scipy.special import expit
@@ -38,8 +37,7 @@ class Team:
         if initialization:
             # randomly gets one program per action
             for action in programs: # programs is an array of programs per action
-                index = randint(0, len(action)-1)
-                program = action[index]
+                program = random.choice(action)
                 self.programs.append(program)
                 program.add_team(self)
         else:
@@ -132,9 +130,7 @@ class Team:
         # Get list of programs for the removible actions
         valid_programs_to_remove = [p for p in self.programs if p.action in valid_actions_to_remove]
         # Randomly select a program to remove from the list
-        index = randint(0, len(valid_programs_to_remove)-1)
-        # Remove program
-        removed_program = valid_programs_to_remove[index]
+        removed_program = random.choice(valid_programs_to_remove)
         removed_program.remove_team(self)
         self.programs.remove(removed_program)
 
@@ -144,10 +140,10 @@ class Team:
             return
         test = False
         while not test:
-            index = randint(0, len(new_programs)-1)
-            if new_programs[index] not in self.programs:
-                new_programs[index].add_team(self)
-                self.programs.append(new_programs[index])
+            new_program = random.choice(new_programs)
+            if new_program not in self.programs:
+                new_program.add_team(self)
+                self.programs.append(new_program)
                 test = True
 
     def get_programs_per_class(self, programs):

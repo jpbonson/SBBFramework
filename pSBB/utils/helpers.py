@@ -1,11 +1,11 @@
 from collections import defaultdict
-from config import WORKING_PATH, ROUND_DECIMALS_TO
+from config import RESTRICTIONS
 
-def round_value_to_decimals(value, round_decimals_to = ROUND_DECIMALS_TO):
+def round_value_to_decimals(value, round_decimals_to = RESTRICTIONS['round_to_decimals']):
     number = float(10**round_decimals_to)
     return int(value * number) / number
 
-def round_array_to_decimals(array, round_decimals_to = ROUND_DECIMALS_TO):
+def round_array_to_decimals(array, round_decimals_to = RESTRICTIONS['round_to_decimals']):
     new_array = []
     for value in array:
         new_array.append(round_value_to_decimals(value))
@@ -30,8 +30,8 @@ def get_class_distribution(Y):
     return cont
 
 def read_inputs_already_partitioned(data_name):
-    train = read_space_separated_file(WORKING_PATH+"datasets/"+data_name+".train")
-    test = read_space_separated_file(WORKING_PATH+"datasets/"+data_name+".test")
+    train = read_space_separated_file(RESTRICTIONS['working_path']+"datasets/"+data_name+".train")
+    test = read_space_separated_file(RESTRICTIONS['working_path']+"datasets/"+data_name+".test")
     return train, test
 
 def read_space_separated_file(file_path):
