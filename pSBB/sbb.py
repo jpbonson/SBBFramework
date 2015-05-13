@@ -112,7 +112,7 @@ class SBB:
         msg += self.generate_output_messages_for_best_team(best_run, final_best_team, actions_counts_per_generation_per_run)
         msg += "\n\nFinished execution, total elapsed time: "+str(round_value_to_decimals(sum(elapseds_per_run)))+" secs"
         msg += "\nElapsed times, mean: "+str(round_value_to_decimals(numpy.mean(elapseds_per_run)))+", std: "+str(round_value_to_decimals(numpy.std(elapseds_per_run)))
-        print msg
+        print msg+"\n"
         self.write_output_file(final_best_team, msg)
 
     def get_programs_per_class(self, programs):

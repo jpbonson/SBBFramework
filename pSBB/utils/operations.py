@@ -1,79 +1,38 @@
 import math
+import numpy
+import warnings
 
-class Operations(object):
-    @staticmethod
-    def sum(op1, op2):
-        try:
-            result = op1+op2
-        except ArithmeticError:
-            result = op1
-        if math.isnan(result) or math.isinf(result):
-            return op1
-        return result
+class Operation():
+    """
+    Class that provides protected execution of operations.
+    If an operation results in an ArithmeticEroor, NaN, or Infinity, it returns the
+    value of the 'target' register (ie. ignores the instruction)
+    """
 
     @staticmethod
-    def minus(op1, op2):
-        try:
-            result = op1-op2
-        except ArithmeticError:
-            result = op1
-        if math.isnan(result) or math.isinf(result):
-            return op1
-        return result
-
-    @staticmethod
-    def multi(op1, op2):
-        try:
-            result = op1*op2
-        except ArithmeticError:
-            result = op1
-        if math.isnan(result) or math.isinf(result):
-            return op1
-        return result
-
-    @staticmethod
-    def div(op1, op2):
-        # report: foi escolhida a PD porque a QA alterava bastante os resultados para numeros pequenos, que ocorrem nesses datasets do trabalho
-        # protected division
-        try:
-            if op2 != 0:
-                result = op1/op2
-            else:
-                result = 1
-        except ArithmeticError:
-            result = op1
-        if math.isnan(result) or math.isinf(result):
-            return op1
-        return result
-
-    @staticmethod
-    def ln(op1):
-        if op1 == 0.0:
-            return 1.0
-        try:
-            result = numpy.log(op1)
-        except ArithmeticError:
-            result = op1
-        if math.isnan(result) or math.isinf(result):
-            return op1
-        return result
-
-    @staticmethod
-    def exp(op1):
-        try:
-            result = math.exp(op1)
-        except ArithmeticError:
-            result = op1
-        if math.isnan(result) or math.isinf(result):
-            return op1
-        return result
-
-    @staticmethod
-    def cos(op1):
-        try:
-            result = numpy.cos(op1)
-        except ArithmeticError:
-            result = op1
-        if math.isnan(result) or math.isinf(result):
-            return op1
-        return result
+    def execute(operator, target, source=float('NaN')):  # unit test!
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore") # all errors are handled by this functions, there is no need for warnings here
+            error = False
+            try:
+                if operator == '+':
+                    result = target + source
+                elif operator == '-':
+                    result = target - source
+                elif operator == '*':
+                    result = target * source
+                elif operator == '/':
+                    result = target / source
+                elif operator == 'ln':
+                    result = numpy.log(target)
+                elif operator == 'exp':
+                    result = math.exp(target)
+                elif operator == 'cos':
+                    result = numpy.cos(target)
+                elif operator == 'sin':
+                    result = numpy.sin(target)
+            except ArithmeticError:
+                error = True
+            if error or math.isnan(result) or math.isinf(result):
+                return target
+            return result

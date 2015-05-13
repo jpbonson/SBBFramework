@@ -8,7 +8,7 @@ from collections import defaultdict
 from scipy.special import expit
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from utils.helpers import *
-from utils.operations import Operations
+from utils.operations import Operation
 from config import *
 
 def reset_programs_ids():
@@ -52,14 +52,15 @@ class Program:
         return instruction
 
     def execute(self, sample, testset=False):
+        """ Execute code for each input """
         if not self.instructions_without_introns:
-            self.remove_introns()
+            self.instructions_without_introns = self.remove_introns()
         instructions = self.instructions_without_introns
         
-        # execute code for each input
         general_registers = [0] * self.total_general_registers
         if_conditional = None
         skip_next = False
+
         for i in instructions:
             if if_conditional:
                 if if_conditional['op'] == 'if_lesser_than':
@@ -81,52 +82,42 @@ class Program:
                 else:
                     skip_next = False
                 continue
-            if i['op'] == '+':
-                op = Operations.sum
-            elif i['op'] == '-':
-                op = Operations.minus
-            elif i['op'] == '*':
-                op = Operations.multi
-            elif i['op'] == '/':
-                op = Operations.div
-            elif i['op'] == 'ln':
-                op = Operations.ln
-            elif i['op'] == 'exp':
-                op = Operations.exp
-            elif i['op'] == 'cos':
-                op = Operations.cos
-            elif i['op'] in GENOTYPE_OPTIONS['if-instructions']:
+            
+            if i['op'] in GENOTYPE_OPTIONS['if-instructions']:
                 if_conditional = i
                 continue
-            if i['op'] in GENOTYPE_OPTIONS['one-operand-instructions']:
-                general_registers[i['target']] = op(general_registers[i['target']])
+            elif i['op'] in GENOTYPE_OPTIONS['one-operand-instructions']:
+                general_registers[i['target']] = Operation.execute(i['op'], general_registers[i['target']])
             else:
                 if i['mode'] == 'read-register':
                     source =  general_registers[i['source']]
                 else:
                     source =  sample[i['source']]
-                general_registers[i['target']] = op(general_registers[i['target']], source)
+                general_registers[i['target']] = Operation.execute(i['op'], general_registers[i['target']], source)
         # get class output
         output = general_registers[0]
-        membership_outputs = expit(output) # apply sigmoid function before getting the output class
+        membership_outputs = expit(output) # apply sigmoid function before getting the output class # conferir!
         return membership_outputs
 
-    def remove_introns(self):
-        self.instructions_without_introns = []
+    def remove_introns(self): # fazer unit test!
+        """ Remove introns (ie. instructions that don't affect the final output) """
+        instructions_without_introns = []
         relevant_registers = [0]
-        ignore_if = False
-        for i, instruction in enumerate(reversed(self.instructions)):
+        ignore_previous_if = False
+        # Run throught the instructions from the last to the first one
+        for instruction in reversed(self.instructions):
             if instruction['target'] in relevant_registers:
-                if instruction['op'] in GENOTYPE_OPTIONS['one-operand-instructions']:
-                    if ignore_if or i == 0:
+                if instruction['op'] in GENOTYPE_OPTIONS['if-instructions']:
+                    if ignore_previous_if:
                         continue
                 else:
-                    ignore_if = False
-                    self.instructions_without_introns.insert(0, instruction)
+                    ignore_previous_if = False
+                    instructions_without_introns.insert(0, instruction)
                     if instruction['mode'] == 'read-register' and instruction['source'] not in relevant_registers:
                         relevant_registers.append(instruction['source'])
             else:
-                ignore_if = True
+                ignore_previous_if = True
+        return instructions_without_introns
 
     def mutate(self):
         mutation_chance = random.random()

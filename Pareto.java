@@ -22,6 +22,7 @@
 - conferir se os resultados estao realmente ok e sem bugs
 - implementar if de troca de sinal?
 - conferir se requirement.txt funciona
+- dar probabilidades para cada operator? (classificar entre simples e complex?)
 
 - implementar reinforcement learning para tictactoe
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions)

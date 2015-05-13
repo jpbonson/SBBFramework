@@ -71,19 +71,20 @@ TASK_TYPES = ['classification', 'reinforcement']
 WORKING_PATH = "pSBB/"
 ROUND_DECIMALS_TO = 5
 GENOTYPE_OPTIONS = {
-    'operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
     'modes': ['read-register', 'read-input'],
-    'one-operand-instructions': ['ln', 'exp', 'cos'],
+    'simple_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
+    'complex_operations': ['ln', 'exp', 'cos', 'sin'],
+    'one-operand-instructions': ['ln', 'exp', 'cos', 'sin'],
     'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
 }
 
-""" Check if the parameters in CONFIG are valid """
+""" Check if the parameters in CONFIG are valid using RESTRICTIONS """
 def check_parameters():
     if CONFIG['task'] not in TASK_TYPES:
         sys.stderr.write("Error: Invalid 'task' in CONFIG! The valid values are "+str(TASK_TYPES)+"\n")
         raise SystemExit
     for op in CONFIG['advanced_training_parameters']['use_operations']:  
-        if op not in GENOTYPE_OPTIONS['operations']:
+        if op not in GENOTYPE_OPTIONS['simple_operations'] and op not in GENOTYPE_OPTIONS['complex_operations']:
             sys.stderr.write("Error: Invalid 'use_operations' in CONFIG! The valid values are "+str(CONFIG['advanced_training_parameters']['use_operations'])+"\n")
             raise SystemExit
     if CONFIG['advanced_training_parameters']['diversity']['fitness_sharing'] and CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
