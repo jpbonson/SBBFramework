@@ -1,4 +1,3 @@
-- refatorar complex instructions
 - class para instructions
 - class para points (the point id should be the index of the point in this training dataset)
 - refatorar helpers
