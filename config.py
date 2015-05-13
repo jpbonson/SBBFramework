@@ -34,7 +34,7 @@ CONFIG = {
                 'change_action': 0.1,
             },
         },
-        'team_size': {
+        'team_size': { # the min size is the total number of actions
             'max': 5,
         },
         'program_size': {
@@ -45,50 +45,49 @@ CONFIG = {
     },
 
     'advanced_training_parameters': {
-        'use_complex_functions': True,
+        'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
             'fitness_sharing': False,
             'genotype_fitness_maintanance': False,
-            'genotype_configs': {
+            'genotype_fitness_maintanance_configs': {
                 'p_value': 0.1,
                 'k': 8,
             },        
         },
     },
 
-    'verbose': {
+    'verbose': { 
+        # useful to set to 'True' if you are going to execute long runs
+        # these values will be printed to the console and to the output file
+        'show_recall_per_action_per_generation': False,
+        'show_avg_dr_per_generations': False,
         'show_actions_distribution_per_generation': False,
     },
 }
 
 # restrictions
 TASK_TYPES = ['classification', 'reinforcement']
-# WORKING_PATH = "C:/Users/jpbonson/Dropbox/Dalhousie Winter 2015/Genetic Algorithms/GeneticProgrammingSandbox/pSBB/"
 WORKING_PATH = "pSBB/"
-
-if CONFIG['advanced_training_parameters']['use_complex_functions']:
-    GENOTYPE_OPTIONS = {
-        'modes': ['read-register', 'read-input'],
-        'op': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
-        'one-operand-instructions': ['ln', 'exp', 'cos'],
-        'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
-    }
-else:
-    GENOTYPE_OPTIONS = {
-        'modes': ['read-register', 'read-input'],
-        'op': ['+', '-', '*', '/'],
-        'one-operand-instructions': [],
-        'if-instructions': [],
-    }
-
-# refatorar complex instructions
-# class para instructions?
-# checar imports
+ROUND_DECIMALS_TO = 5
+GENOTYPE_OPTIONS = {
+    'operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
+    'modes': ['read-register', 'read-input'],
+    'one-operand-instructions': ['ln', 'exp', 'cos'],
+    'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
+}
 
 """ Check if the parameters in CONFIG are valid """
 def check_parameters():
     if CONFIG['task'] not in TASK_TYPES:
         sys.stderr.write("Error: Invalid 'task' in CONFIG! The valid values are "+str(TASK_TYPES)+"\n")
         raise SystemExit
+    for op in CONFIG['advanced_training_parameters']['use_operations']:  
+        if op not in GENOTYPE_OPTIONS['operations']:
+            sys.stderr.write("Error: Invalid 'use_operations' in CONFIG! The valid values are "+str(CONFIG['advanced_training_parameters']['use_operations'])+"\n")
+            raise SystemExit
+    if CONFIG['advanced_training_parameters']['diversity']['fitness_sharing'] and CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
+        sys.stderr.write("Error: Maximum of one diversity metric allowed!\n")
+        raise SystemExit
+
 check_parameters()

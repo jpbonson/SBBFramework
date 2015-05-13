@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
-## vim:ts=4:et:nowrap
-
 import random
 import math
 import time
@@ -12,6 +8,7 @@ from collections import defaultdict
 from scipy.special import expit
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from utils.helpers import *
+from utils.operations import Operations
 from config import *
 
 def reset_programs_ids():
@@ -24,15 +21,15 @@ def get_program_id():
     return next_program_id
 
 class Program:
-    def __init__(self, generation, total_input_registers, total_classes, initialization=True, instructions=[], action=0):
+    def __init__(self, generation, total_input_registers, total_actions, initialization=True, instructions=[], action=0):
         self.program_id = get_program_id()
         self.generation = generation
         self.total_input_registers = total_input_registers
         self.total_output_registers = 1
         self.total_general_registers = CONFIG['advanced_training_parameters']['extra_registers']+self.total_output_registers
-        self.total_classes = total_classes
+        self.total_actions = total_actions
         if initialization:
-            self.action = randint(0, self.total_classes-1)
+            self.action = randint(0, self.total_actions-1)
             self.instructions = []
             for i in range(CONFIG['training_parameters']['program_size']['initial']):
                 self.instructions.append(self.generate_random_instruction())
@@ -47,7 +44,7 @@ class Program:
         mode = GENOTYPE_OPTIONS['modes'][randint(0, len(GENOTYPE_OPTIONS['modes'])-1)]
         instruction['mode'] = mode
         instruction['target'] = randint(0, self.total_general_registers-1)
-        instruction['op'] = GENOTYPE_OPTIONS['op'][randint(0, len(GENOTYPE_OPTIONS['op'])-1)]
+        instruction['op'] = CONFIG['advanced_training_parameters']['use_operations'][randint(0, len(CONFIG['advanced_training_parameters']['use_operations'])-1)]
         if mode == 'read-register':
             instruction['source'] = randint(0, self.total_general_registers-1)
         else:
@@ -150,7 +147,7 @@ class Program:
         
         mutation_chance = random.random()
         if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_action']:
-            self.action = randint(0, self.total_classes-1)
+            self.action = randint(0, self.total_actions-1)
 
     def mutate_single_instruction(self):
         index = randint(0, len(self.instructions)-1)
@@ -164,7 +161,7 @@ class Program:
         if instruction_parameter == 1:
             instruction['target'] = randint(0, self.total_general_registers-1)
         if instruction_parameter == 2:
-            instruction['op'] = GENOTYPE_OPTIONS['op'][randint(0, len(GENOTYPE_OPTIONS['op'])-1)]
+            instruction['op'] = CONFIG['advanced_training_parameters']['use_operations'][randint(0, len(CONFIG['advanced_training_parameters']['use_operations'])-1)]
         if instruction_parameter == 0 or instruction_parameter == 3:
             if instruction['mode'] == 'read-register':
                 instruction['source'] = randint(0, self.total_general_registers-1)

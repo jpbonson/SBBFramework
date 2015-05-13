@@ -1,53 +1,42 @@
+- refatorar complex instructions
+- class para instructions
+- class para points (the point id should be the index of the point in this training dataset)
+- refatorar helpers
+- refatorar Operations class
+- salvar os resultados obtidos para os points, para reaproveita-los se os mesmos points reaparecerem
 - fazer mapping das actions para numeros
-
-- cofnerir codigo c++
-- preparar github
-- refatorar codigo do sandbox
-
-
-
-- cada dimensao da point population eh uma das dimensoes q vai ser maximizada no pareto, gerando as poker behaviors
-
-
-mandar email para Malcolm? perguntar sobre github?
-
-conferir codigo em C++
-
-- usar um random number generator:
-RNG = new Random( Integer.valueOf(arguments.get("seed")) ); (opcional)
-
-- criar point population (uma classe Point)
-- the point id should be the index of the point in this vector
-
+- consertar gambi de label -1
+- consertar toString()
+- conferir se a function está funcionando assim: 1 / (1 + Math.exp( -run( bid, feature, dim, REG )));
+- fazer output menos verboso
+- melhorar codigo do Operator (fazer tratamento comum a todos no final)
+- conferir: se overflow, ignroar instrucao
+- refatorar mais
+- implementar pareto front com fitness sharing para teams e points
+- usar um random number generator: RNG = new Random( Integer.valueOf(arguments.get("seed")) ); (opcional)
+- checar imports
 - conferir se esta compativel com os parametros do jSBB
 
-- implementar pareto front (conferir distanceToSqrd em Team)
-
-- conferir se os resultados estao realmente ok e sem bugs
-
+- conferir codigo c++
+- velocidade de rodar?
 - fazer testes unitarios
+- conferir se os resultados estao realmente ok e sem bugs
+- implementar if de troca de sinal?
+- conferir se requirement.txt funciona
 
--velocidade de rodar?
+- implementar reinforcement learning para tictactoe
+- implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions)
 
-- consertar gambi de label -1
--consertar toString()
+Observacoes:
+- cada dimensao da point population eh uma das dimensoes q vai ser maximizada no pareto, gerando as poker behaviors
 
-- remover fitness sharing? e outras coisas opcionais?
-
+jSBB:
 - teams always start with 2 learners
 - programsize = aleatorio entre 1 e 48
-
-- salvar os resultados obtidos para os points, para reaproveita-los se os mesmos points reaparecerem
-
-- instructions: +, -, *, /, cos, log, exp, if(dest < source)
-
-- conferir se a function está funcionando assim: 1 / (1 + Math.exp( -run( bid, feature, dim, REG )));
-
-- melhorar codigo do Operator (fazer tratamento comum a todos no final)
-
 - mutation de programas: add, remove, swap e change_instruction
-
-- reinforcement learning idea:
+- outras diferenças entre a implementação java: tratamento para overflow (usar valor anterior vs zerar), if (ser um if memso vs mudar o sinal do regsitrador)
+- se children tiverem os mesmos learners que os parents, obriga a mutacionar
+- novos learners naquele time só são gerados mutacionnando outros learners daquele mesmo time (ao inves de globalmente)
 
 public double evaluate( Team team, Point point )
     {
@@ -79,10 +68,6 @@ public double evaluate( Team team, Point point )
         else
           return 0.0;
     }
-
-- outras diferenças entre a implementação java: tratamento para overflow (usar valor anterior vs zerar), if (ser um if memso vs mudar o sinal do regsitrador)
-- se children iverem os mesmos learners que os parents, obriga a mutacionar
-- novos learners naquele time só são gerados mutacionnando outros learners daquele mesmo time (ao inves de globalmente)
 
 package sbbj_fast;
 

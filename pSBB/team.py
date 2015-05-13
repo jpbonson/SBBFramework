@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
-## vim:ts=4:et:nowrap
-
 import random
 import math
 import time
@@ -25,11 +21,11 @@ def get_team_id():
     return next_team_id
 
 class Team:
-    def __init__(self, generation, total_input_registers, total_classes, programs, initialization=True):
+    def __init__(self, generation, total_input_registers, total_actions, programs, initialization=True):
         self.team_id = get_team_id()
         self.generation = generation
         self.total_input_registers = total_input_registers
-        self.total_classes = total_classes
+        self.total_actions = total_actions
         self.accuracies_per_class = []
         self.conts_per_class = []
         self.conf_matrix = []
@@ -86,7 +82,7 @@ class Team:
         macro_recall = numpy.mean(recall)
         if testset: # to avoid wasting time processing metrics when they are not necessary
             self.conf_matrix = conf_matrix
-            self.conts_per_class = [0] * self.total_classes
+            self.conts_per_class = [0] * self.total_actions
             self.recall = recall
             for p, d in zip(predicted_outputs, desired_outputs):
                 if p == d:
@@ -100,12 +96,12 @@ class Team:
         return accuracy, macro_recall
 
     def print_metrics(self):
-        r = Operations.round_to_decimals
+        r = round_value_to_decimals
         teams_members_ids = [("("+str(p.program_id)+":"+str(p.generation)+")", p.action) for p in self.programs]
         teams_members_ids.sort(key=lambda tup: tup[1])
         m = str(self.team_id)+":"+str(self.generation)+", f: "+str(r(self.fitness))+", team size: "+str(len(self.programs))+", team members: "+str(teams_members_ids)
         m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset))+", mrecall: "+str(r(self.macro_recall_trainingset))
-        m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.macro_recall_testset))+", recall: "+str(self.recall)
+        m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.macro_recall_testset))+", recall: "+str(round_array_to_decimals(self.recall))
         return m
 
     def remove_programs_link(self):
@@ -156,7 +152,7 @@ class Team:
 
     def get_programs_per_class(self, programs):
         programs_per_class = []
-        for class_index in range(self.output_size):
+        for class_index in range(self.total_actions):
             values = [p for p in programs if p.action == class_index]
             if len(values) == 0:
                 print "WARNING! No programs for class "+str(class_index)
