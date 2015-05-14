@@ -1,15 +1,10 @@
 import random
-import math
-import time
 import numpy
-import copy
-from collections import defaultdict
 from scipy.special import expit
-from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
+from instruction import Instruction
 from utils.helpers import remove_introns
 from utils.operations import Operation
-from instruction import Instruction
-from config import CONFIG, RESTRICTIONS
+from config import CONFIG, RESTRICTIONS, INSTANCES
 
 def reset_programs_ids():
     global next_program_id
@@ -25,13 +20,12 @@ class Program:
         self.program_id = get_program_id()
         self.generation = generation
         self.total_inputs = total_inputs
-        self.total_registers = RESTRICTIONS['genotype_options']['output_registers']+CONFIG['advanced_training_parameters']['extra_registers']
         self.total_actions = total_actions
         if initialization:
             self.action = random.randrange(self.total_actions)
             self.instructions = []
             for i in range(CONFIG['training_parameters']['program_size']['initial']):
-                self.instructions.append(Instruction(self.total_registers, self.total_inputs))
+                self.instructions.append(Instruction(self.total_inputs))
         else:
             self.action = action
             self.instructions = instructions
@@ -44,7 +38,7 @@ class Program:
             self.instructions_without_introns = remove_introns(self.instructions)
         instructions = self.instructions_without_introns
         
-        general_registers = [0] * self.total_registers
+        general_registers = [0] * INSTANCES['total_registers']
         if_conditional = None
         skip_next = False
 
@@ -81,7 +75,8 @@ class Program:
                 general_registers[i.target] = Operation.execute(i.op, general_registers[i.target], source)
         # get class output
         output = general_registers[0]
-        membership_outputs = expit(output) # apply sigmoid function before getting the output class # conferir!
+        # apply sigmoid function before getting the output class
+        membership_outputs = expit(output)
         return membership_outputs
 
     def mutate(self):
@@ -94,7 +89,7 @@ class Program:
         if (mutation_chance <= CONFIG['training_parameters']['mutation']['program']['add_instruction'] and 
                 len(self.instructions) < CONFIG['training_parameters']['program_size']['max']):
             index = random.randrange(len(self.instructions))
-            self.instructions.insert(index, Instruction(self.total_registers, self.total_inputs))
+            self.instructions.insert(index, Instruction(self.total_inputs))
 
         mutation_chance = random.random()
         if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_instruction']:

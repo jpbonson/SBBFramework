@@ -12,7 +12,7 @@ CONFIG = {
 
     'training_parameters': {
         'runs_total': 2,
-        'generations_total': 100,
+        'generations_total': 10,
         'populations': {
             'programs': 60,
             'teams': 30, # must be half the population_size (?)
@@ -81,6 +81,10 @@ RESTRICTIONS = {
     }
 }
 
+INSTANCES = {
+    'total_registers': None,
+}
+
 """ Check if the parameters in CONFIG are valid using RESTRICTIONS """
 def check_parameters():
     if CONFIG['task'] not in RESTRICTIONS['task_types']:
@@ -98,4 +102,8 @@ def check_parameters():
         sys.stderr.write("Error: Maximum of one diversity metric allowed!\n")
         raise SystemExit
 
+def create_instances():
+    INSTANCES['total_registers'] = RESTRICTIONS['genotype_options']['output_registers']+CONFIG['advanced_training_parameters']['extra_registers']
+
 check_parameters()
+create_instances()

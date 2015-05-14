@@ -1,14 +1,10 @@
 import random
-import math
-import time
 import numpy
-from collections import defaultdict
 from collections import Counter
-from scipy.special import expit
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
-from utils.helpers import *
-from config import CONFIG, RESTRICTIONS
 from program import Program
+from utils.helpers import get_X, get_Y, round_value_to_decimals, round_array_to_decimals
+from config import CONFIG, RESTRICTIONS
 
 def reset_teams_ids():
     global next_team_id
