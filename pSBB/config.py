@@ -72,11 +72,12 @@ RESTRICTIONS = {
     'round_to_decimals': 5,
     'genotype_options': {
         'modes': ['read-register', 'read-input'],
-        'simple_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
-        'complex_operations': ['ln', 'exp', 'cos', 'sin'],
+        'simple_operations': ['+', '-', '*', '/'],
+        'complex_operations': ['ln', 'exp', 'cos', 'sin', 'if_lesser_than', 'if_equal_or_higher_than'],
         'one-operand-instructions': ['ln', 'exp', 'cos', 'sin'],
         'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
         'instruction_size': 4,
+        'output_registers': 1,
     }
 }
 

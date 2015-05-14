@@ -1,7 +1,6 @@
 - class para instructions
 - class para points (the point id should be the index of the point in this training dataset)
 - refatorar helpers
-- refatorar Operations class
 - salvar os resultados obtidos para os points, para reaproveita-los se os mesmos points reaparecerem
 - fazer mapping das actions para numeros
 - consertar gambi de label -1

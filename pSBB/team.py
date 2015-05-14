@@ -7,7 +7,7 @@ from collections import Counter
 from scipy.special import expit
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from utils.helpers import *
-from config import *
+from config import CONFIG, RESTRICTIONS
 from program import Program
 
 def reset_teams_ids():
@@ -20,10 +20,10 @@ def get_team_id():
     return next_team_id
 
 class Team:
-    def __init__(self, generation, total_input_registers, total_actions, programs, initialization=True):
+    def __init__(self, generation, total_inputs, total_actions, programs, initialization=True):
         self.team_id = get_team_id()
         self.generation = generation
-        self.total_input_registers = total_input_registers
+        self.total_inputs = total_inputs
         self.total_actions = total_actions
         self.accuracies_per_class = []
         self.conts_per_class = []
@@ -93,15 +93,6 @@ class Team:
                     self.correct_samples.append(i)
         return accuracy, macro_recall
 
-    def print_metrics(self):
-        r = round_value_to_decimals
-        teams_members_ids = [("("+str(p.program_id)+":"+str(p.generation)+")", p.action) for p in self.programs]
-        teams_members_ids.sort(key=lambda tup: tup[1])
-        m = str(self.team_id)+":"+str(self.generation)+", f: "+str(r(self.fitness))+", team size: "+str(len(self.programs))+", team members: "+str(teams_members_ids)
-        m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset))+", mrecall: "+str(r(self.macro_recall_trainingset))
-        m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.macro_recall_testset))+", recall: "+str(round_array_to_decimals(self.recall))
-        return m
-
     def remove_programs_link(self):
         for p in self.programs:
             p.remove_team(self)
@@ -162,11 +153,22 @@ class Team:
             total += len(p.instructions)-len(p.instructions_without_introns)
         return total/float(len(self.programs))
 
-    def to_str(self):
-        text = "\nCode for team "+str(self.team_id)+" from generation "+str(self.generation)+", team size: "+str(len(self.programs))
+    def print_metrics(self):
+        r = round_value_to_decimals
+        teams_members_ids = [p.__repr__() for p in self.programs]
+        m = str(self.team_id)+":"+str(self.generation)+", fitness: "+str(r(self.fitness))+", team size: "+str(len(self.programs))+", team members: "+str(teams_members_ids)
+        m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset))+", mrecall: "+str(r(self.macro_recall_trainingset))
+        m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.macro_recall_testset))+", recall: "+str(round_array_to_decimals(self.recall))
+        return m
+
+    def __repr__(self): 
+        return "("+str(self.team_id)+":"+str(self.generation)+")"
+
+    def __str__(self):
+        text = "\nTeam "+self.__repr__()+", team size: "+str(len(self.programs))
         text += "\n################"
         for p in self.programs:
-            text += "\n"+p.to_str()
+            text += "\n"+str(p)
         text += "\n################"
         return text
 

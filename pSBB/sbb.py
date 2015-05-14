@@ -36,14 +36,14 @@ class SBB:
         recall_per_generation_per_run = []
         avg_dr_per_generations = [0.0] * CONFIG['training_parameters']['generations_total']
 
-        msg = ""
+        msg = "\nCONFIG: "+str(CONFIG)+"\n"
         features_size = len(train[0])-1
         if CONFIG['task'] == 'classification':
             msg += "\nDataset info:"   
             msg += "\nClass Distributions (test dataset): "+str(class_dist)+", for a total of "+str(len(Y_test))+" samples"
             msg += ("\ntotal samples (train): "+str(len(train)))
             msg += ("\ntotal samples (test): "+str(len(test)))
-            msg += ("\ntotal_input_registers: "+str(features_size))
+            msg += ("\ntotal_inputs: "+str(features_size))
             msg += ("\ntotal_classes: "+str(self.total_actions))
             print msg
 
@@ -61,7 +61,7 @@ class SBB:
             reset_teams_ids()
             programs_population =[]
             for i in range(CONFIG['training_parameters']['populations']['programs']):
-                program = Program(generation=0, total_input_registers=features_size, total_actions=self.total_actions, 
+                program = Program(generation=0, total_inputs=features_size, total_actions=self.total_actions, 
                     initialization=True)
                 programs_population.append(program)
 
@@ -69,7 +69,7 @@ class SBB:
 
             teams_population = []
             for t in range(CONFIG['training_parameters']['populations']['teams']):
-                team = Team(generation=0, total_input_registers=features_size, total_actions=self.total_actions, 
+                team = Team(generation=0, total_inputs=features_size, total_actions=self.total_actions, 
                     programs=programs_per_class, initialization=True)
                 teams_population.append(team)
             self.current_generation = 0
@@ -82,7 +82,7 @@ class SBB:
                 fitness = [p.fitness for p in teams_population]
                 best_program = teams_population[fitness.index(max(fitness))]
                 best_program.execute(test, testset=True) # analisar o melhor individuo gerado com o test set
-                print("Best program: "+best_program.print_metrics())
+                print("Best team: "+best_program.print_metrics())
                 best_programs_per_generation.append(best_program)
                 recall_per_generation.append(best_program.recall)
                 avg_dr_per_generations[self.current_generation-1] += best_program.macro_recall_testset
@@ -90,7 +90,7 @@ class SBB:
                 actions_counts.append(actions_count.values())
                 print "Actions Counter: "+str(actions_count)
 
-            print("\nRun's best program: "+best_program.print_metrics())
+            print("\nRun's best team: "+best_program.print_metrics())
             best_teams_per_run.append(best_program)
             print("\nFinishing run: "+str(run_id))
             end_per_run = time.time()
@@ -106,12 +106,11 @@ class SBB:
         final_best_team = best_teams_per_run[best_run]
 
         # Generate final outputs
-        msg += "\n\nCONFIG: "+str(CONFIG)+"\n"
         msg += self.generate_output_messages_per_run(best_teams_per_run)
         msg += self.generate_output_messages_for_best_team(best_run, final_best_team, actions_counts_per_generation_per_run)
         msg += "\n\nFinished execution, total elapsed time: "+str(round_value_to_decimals(sum(elapseds_per_run)))+" secs"
-        msg += "\nElapsed times, mean: "+str(round_value_to_decimals(numpy.mean(elapseds_per_run)))+", std: "+str(round_value_to_decimals(numpy.std(elapseds_per_run)))
-        print msg+"\n"
+        msg += "\nElapsed times, mean: "+str(round_value_to_decimals(numpy.mean(elapseds_per_run)))+", std: "+str(round_value_to_decimals(numpy.std(elapseds_per_run)))+"\n"
+        print msg
         self.write_output_file(final_best_team, msg)
 
     def get_programs_per_class(self, programs):
@@ -270,7 +269,7 @@ class SBB:
         new_programs = []
         programs_to_clone = random.sample(programs_population, new_programs_to_create)
         for program in programs_to_clone:
-            clone = Program(self.current_generation, program.total_input_registers, program.total_actions,
+            clone = Program(self.current_generation, program.total_inputs, program.total_actions,
                 initialization=False, instructions=copy.deepcopy(program.instructions), action=program.action)
             clone.mutate()
             new_programs.append(clone)
@@ -283,7 +282,7 @@ class SBB:
             teams_to_clone.append(selected)
 
         for team in teams_to_clone:
-            clone = Team(self.current_generation, team.total_input_registers, team.total_actions, 
+            clone = Team(self.current_generation, team.total_inputs, team.total_actions, 
                 programs=team.programs, initialization=False)
             clone.mutate(new_programs)
             teams_population.append(clone)
@@ -311,14 +310,14 @@ class SBB:
         for run_id in range(CONFIG['training_parameters']['runs_total']):
             best_program = best_teams_per_run[run_id]
             dr_metric_per_run.append(round_value_to_decimals(best_program.macro_recall_testset))
-            msg += "\n"+str(run_id)+" Run best program: "+best_program.print_metrics()
+            msg += "\n"+str(run_id)+" Run best program: "+best_program.print_metrics()+"\n"
         msg += "\n\nTest DR per run: "+str(dr_metric_per_run)
         msg += "\nTest DR, mean: "+str(numpy.mean(dr_metric_per_run))+", std: "+str(numpy.std(dr_metric_per_run))
         return msg
 
     def generate_output_messages_for_best_team(self, best_run, final_best_team, actions_counts_per_generation_per_run):
         msg = ""
-        msg += "\n\n################# Overall Best:"
+        msg += "\n\n#################### OVERALL BEST TEAM ####################"
         msg += "\n"+str(best_run)+" Run best program: "+final_best_team.print_metrics()
 
         if CONFIG['task'] == 'classification':
@@ -343,5 +342,5 @@ class SBB:
         localtime = time.localtime()
         pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+str(localtime.tm_hour)+str(localtime.tm_min)+str(localtime.tm_sec)
         text_file = open(RESTRICTIONS['working_path']+"outputs/"+str(CONFIG['classification_parameters']['dataset'])+"_output-"+pretty_localtime+".txt",'w')
-        text_file.write(msg+final_best_team.to_str())
+        text_file.write(msg+str(final_best_team))
         text_file.close()

@@ -1,8 +1,7 @@
 # GeneticProgramming
 
-Para usar no Windows, com o Anaconda:
-python "C:\Users\jpbonson\Dropbox\Dalhousie Winter 2015\Genetic Algorithms\GeneticProgrammingSandbox\main.py"
-E para acessar o Git:
-cd "C:\Users\jpbonson\Dropbox\Dalhousie Winter 2015\Genetic Algorithms\GeneticProgrammingSandbox"
+To run all tests, execute in the main folder:
+nosetests
 
-Quando mudar de SO, mudar a variavel WORKING_PATH
+You can also execute individual tests files regurlarly using the file name:
+python tests/unit_tests/unit_tests.py
