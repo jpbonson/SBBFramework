@@ -16,6 +16,7 @@ class ClassificationEnvironment:
         self.total_actions = len(self.testset_class_distribution)
         self.total_inputs = len(self.train[0])-1
         self.trainsubsets_per_class = self.__get_data_per_class(self.train)
+        self.sample = None
 
     def __initialize_datasets(self):
         print("\nReading inputs from data: "+CONFIG['classification_parameters']['dataset'])
@@ -74,7 +75,13 @@ class ClassificationEnvironment:
             subsets_per_class.append(values)
         return subsets_per_class
 
-    def get_sample(self, previous_samples=None):
+    def reset(self):
+        self.sample = None
+
+    def setup(self):
+        self.sample = self.__get_sample(previous_samples=self.sample)
+
+    def __get_sample(self, previous_samples=None):
         print("Sampling")
         num_samples_per_class = CONFIG['training_parameters']['populations']['points']/len(self.trainsubsets_per_class)
 
@@ -120,13 +127,23 @@ class ClassificationEnvironment:
         random.shuffle(sample)
         return sample
 
-    def evaluate(self, team, dataset, testset=False):
+    def evaluate(self, team, testset=False):
         outputs = []
+        if testset:
+            dataset = self.test
+        else:
+            dataset = self.sample
         X = self.__get_X(dataset)
         Y = self.__get_Y(dataset)
         for x in X:
             outputs.append(team.execute(x))
-        return self.__calculate_metrics(outputs, Y, testset)
+        score, extra_metrics = self.__calculate_team_metrics(outputs, Y, testset)
+        if testset:
+            team.score_testset = score
+            team.extra_metrics = extra_metrics
+        else:
+            team.fitness = score
+            team.score_trainingset = score
 
     def __get_X(self, data):
         return [x[:-1] for x in data]
@@ -142,7 +159,7 @@ class ClassificationEnvironment:
             Y = [y-1 for y in Y]  # added -1 due to class labels starting at 1
         return Y
 
-    def __calculate_metrics(self, predicted_outputs, desired_outputs, testset=False):
+    def __calculate_team_metrics(self, predicted_outputs, desired_outputs, testset=False):
         extra_metrics = {}
         recall = recall_score(desired_outputs, predicted_outputs, average=None)
         macro_recall = numpy.mean(recall)
@@ -157,12 +174,12 @@ class ClassificationEnvironment:
             extra_metrics['accuracies_per_class'] = [x/float(len(predicted_outputs)) for x in conts_per_class]
         return macro_recall, extra_metrics
 
-    def print_metrics(self, msg):
+    def metrics(self):
+        msg = ""
         msg += "\nDataset info:"   
         msg += "\nClass Distributions (test dataset): "+str(self.testset_class_distribution)+", for a total of "+str(len(self.test_Y))+" samples"
         msg += ("\ntotal samples (train): "+str(len(self.train)))
         msg += ("\ntotal samples (test): "+str(len(self.test)))
         msg += ("\ntotal_inputs: "+str(self.total_inputs))
         msg += ("\ntotal_classes: "+str(self.total_actions))
-        print msg
         return msg

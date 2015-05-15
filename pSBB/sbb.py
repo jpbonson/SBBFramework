@@ -20,21 +20,24 @@ class SBB:
         self.current_generation = 0
 
     def run(self):
+        print "\nStarting pSBB\n\n"
         best_teams_per_run = []
         elapseds_per_run = []
         actions_per_generation_per_run = []
         # recall_per_generation_per_run = []
         avg_score_per_generations_across_runs = [0.0] * CONFIG['training_parameters']['generations_total']
 
-        msg = "\nCONFIG: "+str(CONFIG)+"\n"
         environment = self.__initialize_environment()
-        msg = environment.print_metrics(msg)
+
+        msg = "\nCONFIG: "+str(CONFIG)+"\n"
+        msg += environment.metrics()
+        print msg
 
         for run_id in range(1, CONFIG['training_parameters']['runs_total']+1):
             actions_counts = []
             # recall_per_generation = []
-            best_programs_per_generation = []
-            start_per_run = time.time()
+            best_teams_per_generation = []
+            start_time = time.time()
             print("\nStarting run: "+str(run_id))       
 
             self.current_generation = 0
@@ -43,34 +46,32 @@ class SBB:
             programs_population = self.__initialize_program_population()
             teams_population = self.__initialize_team_population(programs_population)
             
-            sample = None
+            environment.reset()
             while not self.stop_criterion():
                 self.current_generation += 1
-                sample = environment.get_sample(previous_samples=sample)
+                environment.setup()
                 print("\n>>>>> Executing generation: "+str(self.current_generation)+", run: "+str(run_id))
-                teams_population, programs_population = self.selection(environment, teams_population, programs_population, sample)
+                teams_population, programs_population = self.selection(environment, teams_population, programs_population)
 
                 fitness = [p.fitness for p in teams_population]
-                best_program = teams_population[fitness.index(max(fitness))]
-                score, extra_metrics = environment.evaluate(best_program, environment.test, testset=True)
-                best_program.score_testset = score
-                best_program.extra_metrics = extra_metrics
-                print("Best team: "+best_program.print_metrics())
+                best_team = teams_population[fitness.index(max(fitness))]
+                environment.evaluate(best_team, testset=True)
+                print("Best team: "+best_team.print_metrics())
 
-                best_programs_per_generation.append(best_program)
-                # recall_per_generation.append(best_program.recall)
-                avg_score_per_generations_across_runs[self.current_generation-1] += best_program.score_testset
+                best_teams_per_generation.append(best_team)
+                # recall_per_generation.append(best_team.recall)
+                avg_score_per_generations_across_runs[self.current_generation-1] += best_team.score_testset
                 actions_count = Counter([p.action for p in programs_population])
                 actions_counts.append(actions_count.values())
                 print "Actions Counter: "+str(actions_count)
 
-            print("\n"+str(run_id)+" Run's best team: "+best_program.print_metrics())
-            elapsed_per_run = time.time() - start_per_run
-            best_teams_per_run.append(best_program)
-            elapseds_per_run.append(elapsed_per_run)
+            print("\n"+str(run_id)+" Run's best team: "+best_team.print_metrics())
+            elapsed_time = time.time() - start_time
+            best_teams_per_run.append(best_team)
+            elapseds_per_run.append(elapsed_time)
             actions_per_generation_per_run.append(actions_counts)
             # recall_per_generation_per_run.append(recall_per_generation)
-            print("\nFinished run execution, elapsed time: "+str(elapsed_per_run)+" secs")
+            print("\nFinished run execution, elapsed time: "+str(elapsed_time)+" secs")
 
         # Get best run
         best_result_metric = [p.score_testset for p in best_teams_per_run]
@@ -130,12 +131,10 @@ class SBB:
             return True
         return False
 
-    def selection(self, environment, teams_population, programs_population, training_data):
+    def selection(self, environment, teams_population, programs_population):
         # execute teams to calculate fitness
         for t in teams_population:
-            score, extra_metrics = environment.evaluate(t, training_data)
-            t.fitness = score
-            t.score_trainingset = score
+            environment.evaluate(t)
 
         if CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
             for t in teams_population:
@@ -220,9 +219,9 @@ class SBB:
         msg += "\n\n################# RESULT PER RUN ####################"
         score_per_run = []
         for run_id in range(CONFIG['training_parameters']['runs_total']):
-            best_program = best_teams_per_run[run_id]
-            score_per_run.append(round_value_to_decimals(best_program.score_testset))
-            msg += "\n"+str(run_id)+" Run best team: "+best_program.print_metrics()+"\n"
+            best_team = best_teams_per_run[run_id]
+            score_per_run.append(round_value_to_decimals(best_team.score_testset))
+            msg += "\n"+str(run_id)+" Run best team: "+best_team.print_metrics()+"\n"
         msg += "\n\nTest score per run: "+str(score_per_run)
         msg += "\nTest score, mean: "+str(numpy.mean(score_per_run))+", std: "+str(numpy.std(score_per_run))
         return msg
