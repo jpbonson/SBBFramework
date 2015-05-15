@@ -16,18 +16,11 @@ def get_program_id():
     return next_program_id
 
 class Program:
-    def __init__(self, generation, environment, initialization=True, instructions=[], action=0):
+    def __init__(self, generation, instructions, action):
         self.program_id = get_program_id()
         self.generation = generation
-        self.environment = environment
-        if initialization:
-            self.action = random.randrange(self.environment.total_actions)
-            self.instructions = []
-            for i in range(CONFIG['training_parameters']['program_size']['initial']):
-                self.instructions.append(Instruction(self.environment.total_inputs))
-        else:
-            self.action = action
-            self.instructions = instructions
+        self.action = action
+        self.instructions = instructions
         self.teams = []
         self.instructions_without_introns = None
 
@@ -93,11 +86,11 @@ class Program:
         if (mutation_chance <= CONFIG['training_parameters']['mutation']['program']['add_instruction'] and 
                 len(self.instructions) < CONFIG['training_parameters']['program_size']['max']):
             index = random.randrange(len(self.instructions))
-            self.instructions.insert(index, Instruction(self.environment.total_inputs))
+            self.instructions.insert(index, Instruction())
         
         mutation_chance = random.random()
         if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_action']:
-            self.action = random.randrange(self.environment.total_actions)
+            self.action = random.randrange(RESTRICTIONS['total_actions'])
 
     def add_team(self, team):
         self.teams.append(team)

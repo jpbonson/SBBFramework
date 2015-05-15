@@ -2,8 +2,7 @@ import random
 from config import CONFIG, RESTRICTIONS
 
 class Instruction:
-    def __init__(self, total_inputs, mode = None, target = None, op = None, source = None):
-        self.total_inputs = total_inputs
+    def __init__(self, mode = None, target = None, op = None, source = None):
         self.mode = mode
         self.target = target
         self.op = op
@@ -18,7 +17,7 @@ class Instruction:
             if self.mode == 'read-register':
                 self.source = random.randrange(RESTRICTIONS['genotype_options']['total_registers'])
             else:
-                self.source = random.randrange(self.total_inputs)
+                self.source = random.randrange(RESTRICTIONS['total_inputs'])
 
     def mutate(self):
         instruction_parameter = random.randrange(RESTRICTIONS['genotype_options']['instruction_size'])
@@ -35,7 +34,7 @@ class Instruction:
             if self.mode == 'read-register':
                 self.source = random.randrange(RESTRICTIONS['genotype_options']['total_registers'])
             else:
-                self.source = random.randrange(self.total_inputs)
+                self.source = random.randrange(RESTRICTIONS['total_inputs'])
 
     def __repr__(self):
         if self.op in RESTRICTIONS['genotype_options']['one-operand-instructions']:

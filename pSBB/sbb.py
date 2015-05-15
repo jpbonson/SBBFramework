@@ -10,6 +10,7 @@ import os
 from collections import defaultdict, Counter
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
+from instruction import Instruction
 from environments.classification_environment import ClassificationEnvironment
 from utils.helpers import round_value_to_decimals, round_array_to_decimals
 from config import CONFIG, RESTRICTIONS
@@ -17,7 +18,6 @@ from config import CONFIG, RESTRICTIONS
 class SBB:
     def __init__(self):
         self.current_generation = 0
-        self.environment = ClassificationEnvironment()
 
     def run(self):
         best_teams_per_run = []
@@ -27,7 +27,8 @@ class SBB:
         score_per_generations = [0.0] * CONFIG['training_parameters']['generations_total']
 
         msg = "\nCONFIG: "+str(CONFIG)+"\n"
-        msg = self.environment.print_metrics(msg)
+        environment = self.__initialize_environment()
+        msg = environment.print_metrics(msg)
 
         for run_id in range(1, CONFIG['training_parameters']['runs_total']+1):
             actions_counts = []
@@ -36,29 +37,22 @@ class SBB:
             start_per_run = time.time()
             print("\nStarting run: "+str(run_id))       
 
-            # random initialize population
-            reset_programs_ids()
-            reset_teams_ids()
-            programs_population =[]
-            for i in range(CONFIG['training_parameters']['populations']['programs']):
-                program = Program(generation=0, environment=self.environment, initialization=True)
-                programs_population.append(program)
-
-            teams_population = []
-            for t in range(CONFIG['training_parameters']['populations']['teams']):
-                team = Team(generation=0,  environment=self.environment, programs=programs_population, initialization=True)
-                teams_population.append(team)
             self.current_generation = 0
+
+            # randomly initialize populations
+            programs_population = self.__initialize_program_population()
+            teams_population = self.__initialize_team_population(programs_population)
+            
             sample = None
             while not self.stop_criterion():
                 self.current_generation += 1
-                sample = self.environment.get_sample(previous_samples=sample)
+                sample = environment.get_sample(previous_samples=sample)
                 print("\n>>>>> Executing generation: "+str(self.current_generation)+", run: "+str(run_id))
-                teams_population, programs_population = self.selection(teams_population, programs_population, sample)
+                teams_population, programs_population = self.selection(environment, teams_population, programs_population, sample)
 
                 fitness = [p.fitness for p in teams_population]
                 best_program = teams_population[fitness.index(max(fitness))]
-                score, extra_metrics = self.environment.evaluate(best_program, self.environment.test, testset=True)
+                score, extra_metrics = environment.evaluate(best_program, environment.test, testset=True)
                 best_program.score_testset = score
                 best_program.extra_metrics = extra_metrics
                 print("Best team: "+best_program.print_metrics())
@@ -91,15 +85,55 @@ class SBB:
         print msg
         self.write_output_file(final_best_team, msg)
 
+    def __initialize_environment(self):
+        environment = ClassificationEnvironment()
+        RESTRICTIONS['total_actions'] = environment.total_actions
+        RESTRICTIONS['total_inputs'] = environment.total_inputs
+        return environment
+
+    def __initialize_program_population(self):
+        reset_programs_ids()
+        programs_population =[]
+        for i in range(CONFIG['training_parameters']['populations']['programs']):
+            action = random.randrange(RESTRICTIONS['total_actions'])
+            instructions = []
+            for i in range(CONFIG['training_parameters']['program_size']['initial']):
+                instructions.append(Instruction(RESTRICTIONS['total_inputs']))
+            program = Program(self.current_generation, instructions, action)
+            programs_population.append(program)
+        return programs_population
+
+    def __initialize_team_population(self, programs_population):
+        reset_teams_ids()
+        teams_population = []
+        for t in range(CONFIG['training_parameters']['populations']['teams']):
+            selected_programs = []
+            programs_per_action = self.__get_programs_per_action(programs_population)
+            for programs in programs_per_action:
+                selected_programs.append(random.choice(programs))
+            team = Team(self.current_generation, selected_programs)
+            teams_population.append(team)
+        return teams_population
+
+    def __get_programs_per_action(self, programs):
+        programs_per_action = []
+        for class_index in range(RESTRICTIONS['total_actions']):
+            values = [p for p in programs if p.action == class_index]
+            if len(values) == 0:
+                print "WARNING! No programs for class "+str(class_index)
+                raise Exception # to improve
+            programs_per_action.append(values)
+        return programs_per_action
+
     def stop_criterion(self):
         if self.current_generation == CONFIG['training_parameters']['generations_total']:
             return True
         return False
 
-    def selection(self, teams_population, programs_population, training_data):
+    def selection(self, environment, teams_population, programs_population, training_data):
         # execute teams to calculate fitness
         for t in teams_population:
-            score, extra_metrics = self.environment.evaluate(t, training_data)
+            score, extra_metrics = environment.evaluate(t, training_data)
             t.fitness = score
             t.score_trainingset = score
 
@@ -149,8 +183,7 @@ class SBB:
         new_programs = []
         programs_to_clone = random.sample(programs_population, new_programs_to_create)
         for program in programs_to_clone:
-            clone = Program(self.current_generation, self.environment, initialization=False, 
-                instructions=copy.deepcopy(program.instructions), action=program.action)
+            clone = Program(self.current_generation, copy.deepcopy(program.instructions), program.action)
             clone.mutate()
             new_programs.append(clone)
 
@@ -162,7 +195,7 @@ class SBB:
             teams_to_clone.append(selected)
 
         for team in teams_to_clone:
-            clone = Team(self.current_generation, self.environment, programs=team.programs, initialization=False)
+            clone = Team(self.current_generation, team.programs)
             clone.mutate(new_programs)
             teams_population.append(clone)
 

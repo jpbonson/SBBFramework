@@ -16,38 +16,18 @@ def get_team_id():
     return next_team_id
 
 class Team:
-    def __init__(self, generation, environment, programs, initialization=True):
+    def __init__(self, generation, programs):
         self.team_id = get_team_id()
         self.generation = generation
-        self.environment = environment
         self.fitness = -1
-        self.score_trainingset = 0
-        self.score_testset = 0
+        self.score_trainingset = -1
+        self.score_testset = -1
         self.extra_metrics = {}
         self.programs = []
         self.active_programs = []
-        if initialization:
-            # randomly gets one program per action
-            programs_per_class = self.__get_programs_per_class(programs)
-            for action in programs_per_class: # programs is an array of programs per action
-                program = random.choice(action)
-                self.programs.append(program)
-                program.add_team(self)
-        else:
-            # add all programs to itself
-            for program in programs: # programs is an array of programs
-                self.programs.append(program)
-                program.add_team(self)
-
-    def __get_programs_per_class(self, programs):
-        programs_per_class = []
-        for class_index in range(self.environment.total_actions):
-            values = [p for p in programs if p.action == class_index]
-            if len(values) == 0:
-                print "WARNING! No programs for class "+str(class_index)
-                raise Exception # to improve
-            programs_per_class.append(values)
-        return programs_per_class
+        for program in programs:
+            self.programs.append(program)
+            program.add_team(self)
 
     def execute(self, input_registers):
         partial_outputs = []
