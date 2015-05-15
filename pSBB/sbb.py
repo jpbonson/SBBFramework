@@ -24,7 +24,7 @@ class SBB:
         elapseds_per_run = []
         actions_per_generation_per_run = []
         # recall_per_generation_per_run = []
-        score_per_generations = [0.0] * CONFIG['training_parameters']['generations_total']
+        avg_score_per_generations_across_runs = [0.0] * CONFIG['training_parameters']['generations_total']
 
         msg = "\nCONFIG: "+str(CONFIG)+"\n"
         environment = self.__initialize_environment()
@@ -59,7 +59,7 @@ class SBB:
 
                 best_programs_per_generation.append(best_program)
                 # recall_per_generation.append(best_program.recall)
-                score_per_generations[self.current_generation-1] += best_program.score_testset
+                avg_score_per_generations_across_runs[self.current_generation-1] += best_program.score_testset
                 actions_count = Counter([p.action for p in programs_population])
                 actions_counts.append(actions_count.values())
                 print "Actions Counter: "+str(actions_count)
@@ -166,7 +166,7 @@ class SBB:
         while len(teams_population) > new_teams_population_len:
             fitness = [t.fitness for t in teams_population]
             worst_program_index = fitness.index(min(fitness))
-            teams_population[worst_program_index].remove_programs_link()
+            teams_population[worst_program_index].remove_references()
             teams_population.pop(worst_program_index)
 
         # 2. Remove programs are not in a team
@@ -240,8 +240,8 @@ class SBB:
         #         msg += "\n\nrecall_per_action_per_generation: "+str(temp)
             
         if CONFIG['verbose']['show_avg_dr_per_generations']:
-            score_per_generations = [round_value_to_decimals(x/float(CONFIG['training_parameters']['runs_total']), round_decimals_to = 3) for x in score_per_generations]
-            msg += "\n\navg_dr_per_generations: "+str(score_per_generations)
+            avg_score_per_generations_across_runs = [round_value_to_decimals(x/float(CONFIG['training_parameters']['runs_total']), round_decimals_to = 3) for x in avg_score_per_generations_across_runs]
+            msg += "\n\navg_avg_score_per_generations_across_runs: "+str(avg_score_per_generations_across_runs)
 
         if CONFIG['verbose']['show_actions_distribution_per_generation']:
             msg += "\n\nActions Distribution (per gen.): "+str(actions_per_generation_per_run[best_run])

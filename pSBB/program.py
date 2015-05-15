@@ -1,5 +1,4 @@
 import random
-import numpy
 from scipy.special import expit
 from instruction import Instruction
 from utils.helpers import remove_introns

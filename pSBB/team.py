@@ -1,10 +1,7 @@
 import random
-import numpy
 from collections import Counter
-from program import Program
-from environments.classification_environment import ClassificationEnvironment
 from utils.helpers import round_value_to_decimals, round_array_to_decimals
-from config import CONFIG, RESTRICTIONS
+from config import CONFIG
 
 def reset_teams_ids():
     global next_team_id
@@ -39,21 +36,17 @@ class Team:
             self.active_programs.append(selected_program.program_id)
         return output_class
 
-    def remove_programs_link(self):
-        for p in self.programs:
-            p.remove_team(self)
-
     def mutate(self, new_programs):
         """ Generates mutation chances and mutate the team if it is a valid mutation """
         mutation_chance = random.random()
         if mutation_chance <= CONFIG['training_parameters']['mutation']['team']['remove_program']:
-            self.remove_program()
+            self.__remove_program()
         if len(self.programs) < CONFIG['training_parameters']['team_size']['max']:
             mutation_chance = random.random()
             if mutation_chance <= CONFIG['training_parameters']['mutation']['team']['add_program']:
-                self.add_program(new_programs)          
+                self.__add_program(new_programs)          
 
-    def remove_program(self):
+    def __remove_program(self):
         """ Remove a program from the team. A program is removible only if there is at least two programs for its action. """
         # Get list of actions with more than one program
         actions = [p.action for p in self.programs]
@@ -71,7 +64,7 @@ class Team:
         removed_program.remove_team(self)
         self.programs.remove(removed_program)
 
-    def add_program(self, new_programs):
+    def __add_program(self, new_programs):
         if len(new_programs) == 0:
             print "WARNING! NO NEW PROGRAMS!"
             return
@@ -82,6 +75,13 @@ class Team:
                 new_program.add_team(self)
                 self.programs.append(new_program)
                 test = True
+
+    def remove_references(self):
+        """
+        Remove all references from this object to other objects, so it can be safely deleted.
+        """
+        for p in self.programs:
+            p.remove_team(self)
 
     def print_metrics(self):
         r = round_value_to_decimals
