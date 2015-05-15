@@ -12,7 +12,7 @@ CONFIG = {
 
     'training_parameters': {
         'runs_total': 2,
-        'generations_total': 10,
+        'generations_total': 30,
         'populations': {
             'programs': 60,
             'teams': 30, # must be half the population_size (?)
@@ -28,9 +28,9 @@ CONFIG = {
                 'add_program': 0.8,
             },
             'program': {
-                'remove_instruction': 0.8,
-                'add_instruction': 0.9,
-                'change_instruction': 0.9,
+                'remove_instruction': 0.7,
+                'add_instruction': 0.8,
+                'change_instruction': 0.8,
                 'change_action': 0.1,
             },
         },
@@ -38,9 +38,9 @@ CONFIG = {
             'max': 5,
         },
         'program_size': {
-            'initial': 10,
+            'initial': 3,
             'min': 2,
-            'max': 30,
+            'max': 5,
         },
     },
 
@@ -78,12 +78,10 @@ RESTRICTIONS = {
         'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
         'instruction_size': 4,
         'output_registers': 1,
+        'total_registers': 1+CONFIG['advanced_training_parameters']['extra_registers'],
     }
 }
 
-INSTANCES = {
-    'total_registers': None,
-}
 
 """ Check if the parameters in CONFIG are valid using RESTRICTIONS """
 def check_parameters():
@@ -102,8 +100,4 @@ def check_parameters():
         sys.stderr.write("Error: Maximum of one diversity metric allowed!\n")
         raise SystemExit
 
-def create_instances():
-    INSTANCES['total_registers'] = RESTRICTIONS['genotype_options']['output_registers']+CONFIG['advanced_training_parameters']['extra_registers']
-
 check_parameters()
-create_instances()

@@ -1,5 +1,5 @@
 import random
-from config import CONFIG, RESTRICTIONS, INSTANCES
+from config import CONFIG, RESTRICTIONS
 
 class Instruction:
     def __init__(self, total_inputs, mode = None, target = None, op = None, source = None):
@@ -11,12 +11,12 @@ class Instruction:
         if mode is None:
             self.mode = random.choice(RESTRICTIONS['genotype_options']['modes'])
         if target is None:
-            self.target = random.randrange(INSTANCES['total_registers'])
+            self.target = random.randrange(RESTRICTIONS['genotype_options']['total_registers'])
         if op is None:
             self.op = random.choice(CONFIG['advanced_training_parameters']['use_operations'])
         if source is None:
             if self.mode == 'read-register':
-                self.source = random.randrange(INSTANCES['total_registers'])
+                self.source = random.randrange(RESTRICTIONS['genotype_options']['total_registers'])
             else:
                 self.source = random.randrange(self.total_inputs)
 
@@ -28,12 +28,12 @@ class Instruction:
             else:
                 self.mode = RESTRICTIONS['genotype_options']['modes'][0]
         if instruction_parameter == 1:
-            self.target = random.randrange(INSTANCES['total_registers'])
+            self.target = random.randrange(RESTRICTIONS['genotype_options']['total_registers'])
         if instruction_parameter == 2:
             self.op = random.choice(CONFIG['advanced_training_parameters']['use_operations'])
         if instruction_parameter == 0 or instruction_parameter == 3:
             if self.mode == 'read-register':
-                self.source = random.randrange(INSTANCES['total_registers'])
+                self.source = random.randrange(RESTRICTIONS['genotype_options']['total_registers'])
             else:
                 self.source = random.randrange(self.total_inputs)
 

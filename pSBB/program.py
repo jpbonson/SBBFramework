@@ -4,7 +4,7 @@ from scipy.special import expit
 from instruction import Instruction
 from utils.helpers import remove_introns
 from utils.operations import Operation
-from config import CONFIG, RESTRICTIONS, INSTANCES
+from config import CONFIG, RESTRICTIONS
 
 def reset_programs_ids():
     global next_program_id
@@ -16,11 +16,11 @@ def get_program_id():
     return next_program_id
 
 class Program:
-    def __init__(self, generation, total_inputs, total_actions, initialization=True, instructions=[], action=0):
+    def __init__(self, generation, environment, initialization=True, instructions=[], action=0):
         self.program_id = get_program_id()
         self.generation = generation
-        self.total_inputs = total_inputs
-        self.total_actions = total_actions
+        self.total_inputs = environment.total_inputs
+        self.total_actions = environment.total_actions
         if initialization:
             self.action = random.randrange(self.total_actions)
             self.instructions = []
@@ -38,7 +38,7 @@ class Program:
             self.instructions_without_introns = remove_introns(self.instructions)
         instructions = self.instructions_without_introns
         
-        general_registers = [0] * INSTANCES['total_registers']
+        general_registers = [0] * RESTRICTIONS['genotype_options']['total_registers']
         if_conditional = None
         skip_next = False
 
@@ -86,15 +86,15 @@ class Program:
             self.instructions.remove(random.choice(self.instructions))
 
         mutation_chance = random.random()
+        if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_instruction']:
+            instruction = random.choice(self.instructions)
+            instruction.mutate()
+ 
+        mutation_chance = random.random()
         if (mutation_chance <= CONFIG['training_parameters']['mutation']['program']['add_instruction'] and 
                 len(self.instructions) < CONFIG['training_parameters']['program_size']['max']):
             index = random.randrange(len(self.instructions))
             self.instructions.insert(index, Instruction(self.total_inputs))
-
-        mutation_chance = random.random()
-        if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_instruction']:
-            instruction = random.choice(self.instructions)
-            instruction.mutate()
         
         mutation_chance = random.random()
         if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_action']:

@@ -3,7 +3,8 @@ import numpy
 from collections import Counter
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from program import Program
-from utils.helpers import get_X, get_Y, round_value_to_decimals, round_array_to_decimals
+from environments.classification_environment import ClassificationEnvironment
+from utils.helpers import round_value_to_decimals, round_array_to_decimals
 from config import CONFIG, RESTRICTIONS
 
 def reset_teams_ids():
@@ -16,13 +17,12 @@ def get_team_id():
     return next_team_id
 
 class Team:
-    def __init__(self, generation, total_inputs, total_actions, programs, initialization=True):
+    def __init__(self, generation, environment, programs, initialization=True):
         self.team_id = get_team_id()
         self.generation = generation
-        self.total_inputs = total_inputs
-        self.total_actions = total_actions
+        self.total_inputs = environment.total_inputs
+        self.total_actions = environment.total_actions
         self.accuracies_per_class = []
-        self.conts_per_class = []
         self.conf_matrix = []
         self.fitness = -1
         self.accuracy_trainingset = 0
@@ -46,8 +46,8 @@ class Team:
     def execute(self, data, testset=False):
         # execute code for each input
         outputs = []
-        X = get_X(data)
-        Y = get_Y(data)
+        X = ClassificationEnvironment.get_X(data)
+        Y = ClassificationEnvironment.get_Y(data)
         for x in X:
             partial_outputs = []
             for program in self.programs:
@@ -76,12 +76,12 @@ class Team:
         macro_recall = numpy.mean(recall)
         if testset: # to avoid wasting time processing metrics when they are not necessary
             self.conf_matrix = conf_matrix
-            self.conts_per_class = [0] * self.total_actions
+            conts_per_class = [0] * self.total_actions
             self.recall = recall
             for p, d in zip(predicted_outputs, desired_outputs):
                 if p == d:
-                    self.conts_per_class[d] += 1.0
-            self.accuracies_per_class = [x/float(len(predicted_outputs)) for x in self.conts_per_class]
+                    conts_per_class[d] += 1.0
+            self.accuracies_per_class = [x/float(len(predicted_outputs)) for x in conts_per_class]
         else:
             self.correct_samples = []
             for i, (p, d) in enumerate(zip(predicted_outputs, desired_outputs)):

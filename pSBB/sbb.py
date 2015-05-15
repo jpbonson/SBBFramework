@@ -10,40 +10,24 @@ import os
 from collections import defaultdict, Counter
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
-from utils.helpers import get_class_distribution, read_inputs_already_partitioned, get_Y, round_value_to_decimals, round_array_to_decimals
+from environments.classification_environment import ClassificationEnvironment
+from utils.helpers import round_value_to_decimals, round_array_to_decimals
 from config import CONFIG, RESTRICTIONS
 
 class SBB:
     def __init__(self):
         self.current_generation = 0
-        self.total_actions = -1
+        self.environment = ClassificationEnvironment()
 
     def run(self):
-        best_teams_per_run = []
-        print("\nReading inputs from data: "+CONFIG['classification_parameters']['dataset'])
-        train, test = read_inputs_already_partitioned(CONFIG['classification_parameters']['dataset'])
-        normalization_params = self.get_normalization_params(train, test)
-        train = self.normalize(normalization_params, train)
-        test = self.normalize(normalization_params, test)
-        Y_test = get_Y(test)
-        class_dist = get_class_distribution(Y_test)
-        self.total_actions = len(class_dist)
-        trainsubsets_per_class = self.get_data_per_class(train)
         elapseds_per_run = []
+        best_teams_per_run = []
         actions_counts_per_generation_per_run = []
         recall_per_generation_per_run = []
         avg_dr_per_generations = [0.0] * CONFIG['training_parameters']['generations_total']
 
         msg = "\nCONFIG: "+str(CONFIG)+"\n"
-        features_size = len(train[0])-1
-        if CONFIG['task'] == 'classification':
-            msg += "\nDataset info:"   
-            msg += "\nClass Distributions (test dataset): "+str(class_dist)+", for a total of "+str(len(Y_test))+" samples"
-            msg += ("\ntotal samples (train): "+str(len(train)))
-            msg += ("\ntotal samples (test): "+str(len(test)))
-            msg += ("\ntotal_inputs: "+str(features_size))
-            msg += ("\ntotal_classes: "+str(self.total_actions))
-            print msg
+        msg = self.environment.print_metrics(msg)
 
         for run_id in range(1, CONFIG['training_parameters']['runs_total']+1):
             actions_counts = []
@@ -51,35 +35,31 @@ class SBB:
             best_programs_per_generation = []
             start_per_run = time.time()
             print("\nStarting run: "+str(run_id))       
-            random.shuffle(train)
-            random.shuffle(test)
 
             # random initialize population
             reset_programs_ids()
             reset_teams_ids()
             programs_population =[]
             for i in range(CONFIG['training_parameters']['populations']['programs']):
-                program = Program(generation=0, total_inputs=features_size, total_actions=self.total_actions, 
-                    initialization=True)
+                program = Program(generation=0, environment=self.environment, initialization=True)
                 programs_population.append(program)
 
             programs_per_class = self.get_programs_per_class(programs_population)
 
             teams_population = []
             for t in range(CONFIG['training_parameters']['populations']['teams']):
-                team = Team(generation=0, total_inputs=features_size, total_actions=self.total_actions, 
-                    programs=programs_per_class, initialization=True)
+                team = Team(generation=0,  environment=self.environment, programs=programs_per_class, initialization=True)
                 teams_population.append(team)
             self.current_generation = 0
             sample = None
             while not self.stop_criterion():
                 self.current_generation += 1
-                sample = self.get_sample(trainsubsets_per_class, previous_samples=sample)
+                sample = self.environment.get_sample(previous_samples=sample)
                 print("\n>>>>> Executing generation: "+str(self.current_generation)+", run: "+str(run_id))
                 teams_population, programs_population = self.selection(teams_population, programs_population, sample)
                 fitness = [p.fitness for p in teams_population]
                 best_program = teams_population[fitness.index(max(fitness))]
-                best_program.execute(test, testset=True) # analisar o melhor individuo gerado com o test set
+                best_program.execute(self.environment.test, testset=True) # analisar o melhor individuo gerado com o test set
                 print("Best team: "+best_program.print_metrics())
                 best_programs_per_generation.append(best_program)
                 recall_per_generation.append(best_program.recall)
@@ -113,7 +93,7 @@ class SBB:
 
     def get_programs_per_class(self, programs):
         programs_per_class = []
-        for class_index in range(self.total_actions):
+        for class_index in range(self.environment.total_actions):
             values = [p for p in programs if p.action == class_index]
             if len(values) == 0:
                 print "WARNING! No programs for class "+str(class_index)
@@ -121,90 +101,13 @@ class SBB:
             programs_per_class.append(values)
         return programs_per_class
 
-    def get_data_per_class(self, data):
-        subsets_per_class = []
-        for class_index in range(self.total_actions):
-            values = [line for line in data if line[-1]-1 == class_index] # added -1 due to class labels starting at 1 instead of 0
-            subsets_per_class.append(values)
-        return subsets_per_class
-
-    def get_sample(self, new_subsets_per_class, previous_samples=None):
-        print("Sampling")
-        num_samples_per_class = CONFIG['training_parameters']['populations']['points']/len(new_subsets_per_class)
-
-        if not previous_samples or CONFIG['training_parameters']['replacement_rate']['points'] == 1.0: # first sampling
-            # get samples per class
-            samples_per_class = []
-            for subset in new_subsets_per_class:
-                if len(subset) <= num_samples_per_class:
-                    sample = subset
-                else:
-                    sample = random.sample(subset, num_samples_per_class)
-                samples_per_class.append(sample)
-        else:
-            current_subsets_per_class = self.get_data_per_class(previous_samples)
-            num_samples_per_class_to_maintain = int(round(num_samples_per_class*(1.0-CONFIG['training_parameters']['replacement_rate']['points'])))
-            num_samples_per_class_to_add = num_samples_per_class - num_samples_per_class_to_maintain
-
-            # obtain the data points that will be maintained
-            maintained_subsets_per_class = []
-            for subset in current_subsets_per_class:
-                maintained_subsets_per_class.append(random.sample(subset, num_samples_per_class_to_maintain))
-
-            # add the new data points
-            for i, subset in enumerate(maintained_subsets_per_class):
-                if len(new_subsets_per_class[i]) <= num_samples_per_class_to_add:
-                    subset += new_subsets_per_class[i]
-                else:
-                    subset += random.sample(new_subsets_per_class[i], num_samples_per_class_to_add)
-            samples_per_class = maintained_subsets_per_class
-
-        # ensure that the sampling is balanced for all classes, using oversampling for the unbalanced ones
-        if CONFIG['classification_parameters']['use_oversampling']:
-            for sample in samples_per_class:
-                while len(sample) < num_samples_per_class:
-                    to_sample = num_samples_per_class-len(sample)
-                    if to_sample > len(sample):
-                        to_sample = len(sample)
-                    sample += random.sample(sample, to_sample)
-
-        # join samples per class
-        sample = sum(samples_per_class, [])
-
-        random.shuffle(sample)
-        return sample
-
-    def get_normalization_params(self, train, test):
-        normalization_params = []
-        data = numpy.array(train+test)
-        attributes_len = len(data[0])
-        for index in range(attributes_len-1): # dont get the class' labels column
-            column = data[:,index]
-            normalization_params.append({'mean':numpy.mean(column), 'range':max(column)-min(column)})
-        normalization_params.append({'mean': 0.0, 'range': 1.0}) # default values so the class labels will not change
-        return normalization_params
-
-    def normalize(self, normalization_params, data):
-        # normalized_data = [[(cell-normalization_params[i]['mean'])/normalization_params[i]['range'] for i, cell in enumerate(line)] for line in data]
-        normalized_data = []
-        for line in data:
-            new_line = []
-            for i, cell in enumerate(line):
-                if normalization_params[i]['range'] == 0.0:
-                    cell = 0.0
-                else:
-                    cell = (cell-normalization_params[i]['mean'])/normalization_params[i]['range']
-                new_line.append(cell)
-            normalized_data.append(new_line)
-        return normalized_data
-
     def stop_criterion(self):
         if self.current_generation == CONFIG['training_parameters']['generations_total']:
             return True
         return False
 
     def selection(self, teams_population, programs_population, training_data):
-        labels = get_Y(training_data)
+        labels = ClassificationEnvironment.get_Y(training_data)
         total_hits_per_sample = defaultdict(int)
         # execute teams to calculate the total_hits_per_sample and the correct_samples per team
         for t in teams_population:
@@ -267,8 +170,8 @@ class SBB:
         new_programs = []
         programs_to_clone = random.sample(programs_population, new_programs_to_create)
         for program in programs_to_clone:
-            clone = Program(self.current_generation, program.total_inputs, program.total_actions,
-                initialization=False, instructions=copy.deepcopy(program.instructions), action=program.action)
+            clone = Program(self.current_generation, self.environment, initialization=False, 
+                instructions=copy.deepcopy(program.instructions), action=program.action)
             clone.mutate()
             new_programs.append(clone)
 
@@ -280,8 +183,7 @@ class SBB:
             teams_to_clone.append(selected)
 
         for team in teams_to_clone:
-            clone = Team(self.current_generation, team.total_inputs, team.total_actions, 
-                programs=team.programs, initialization=False)
+            clone = Team(self.current_generation, self.environment, programs=team.programs, initialization=False)
             clone.mutate(new_programs)
             teams_population.append(clone)
 

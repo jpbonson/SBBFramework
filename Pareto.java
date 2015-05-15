@@ -1,7 +1,8 @@
-- conferir se mutations de instructions nao estao afetando as instructions dos pais!
 - class para points (the point id should be the index of the point in this training dataset)
 - fazer classes Environment (usar Enviroment e heranca para ter ClassificationEnvironment e ReinforcementEnvironment?)
 - refatorar helpers
+- classe logger?
+- usar methods private
 - salvar os resultados obtidos para os points, para reaproveita-los se os mesmos points reaparecerem
 - fazer mapping das actions para numeros
 - consertar gambi de label -1
@@ -23,6 +24,7 @@
 - identar ifs nas instructions?
 - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
 - implementar tradutor que le o objeto do time e computa resultados?
+- adicionar mais documentacao
 
 - implementar reinforcement learning para tictactoe
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions)
