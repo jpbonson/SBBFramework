@@ -1,7 +1,6 @@
-- fix get_X e get_Y
 - fix prints em sbb.py e team.py para usarem 'extra_metrics'
-- modificar execute() em team.py para ser compativel com reinforcement learning
 - consertar os "warnings!"
+- refatorar ClassificationEnvironment
 - class para points (the point id should be the index of the point in this training dataset)
 - fazer classes Environment (usar Enviroment e heranca para ter ClassificationEnvironment e ReinforcementEnvironment?)
 - refatorar helpers

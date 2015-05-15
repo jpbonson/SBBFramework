@@ -11,7 +11,7 @@ class ClassificationEnvironment:
 
     def __init__(self):
         self.train, self.test = self.__initialize_datasets()
-        self.test_Y = ClassificationEnvironment.get_Y(self.test)
+        self.test_Y = self.__get_Y(self.test)
         self.testset_class_distribution = self.__get_class_distribution(self.test_Y)
         self.total_actions = len(self.testset_class_distribution)
         self.total_inputs = len(self.train[0])-1
@@ -122,11 +122,25 @@ class ClassificationEnvironment:
 
     def evaluate(self, team, dataset, testset=False):
         outputs = []
-        X = ClassificationEnvironment.get_X(dataset)
-        Y = ClassificationEnvironment.get_Y(dataset)
+        X = self.__get_X(dataset)
+        Y = self.__get_Y(dataset)
         for x in X:
             outputs.append(team.execute(x))
         return self.__calculate_metrics(outputs, Y, testset)
+
+    def __get_X(self, data):
+        return [x[:-1] for x in data]
+
+    def __get_Y(self, data):
+        """
+        Get the class labels
+        """
+        Y = [x[-1:] for x in data]
+        Y = sum(Y, [])
+        Y = [int(y) for y in Y]
+        if 0 not in Y:
+            Y = [y-1 for y in Y]  # added -1 due to class labels starting at 1
+        return Y
 
     def __calculate_metrics(self, predicted_outputs, desired_outputs, testset=False):
         extra_metrics = {}
@@ -152,19 +166,3 @@ class ClassificationEnvironment:
         msg += ("\ntotal_classes: "+str(self.total_actions))
         print msg
         return msg
-
-    @staticmethod
-    def get_X(data):
-        return [x[:-1] for x in data]
-
-    @staticmethod
-    def get_Y(data):
-        """
-        Get the class labels
-        """
-        Y = [x[-1:] for x in data]
-        Y = sum(Y, [])
-        Y = [int(y) for y in Y]
-        if 0 not in Y:
-            Y = [y-1 for y in Y]  # added -1 due to class labels starting at 1
-        return Y
