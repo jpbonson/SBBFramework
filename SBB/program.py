@@ -16,18 +16,18 @@ def get_program_id():
 
 class Program:
     def __init__(self, generation, instructions, action):
-        self.program_id = get_program_id()
         self.generation = generation
-        self.action = action
         self.instructions = instructions
-        self.teams = []
-        self.instructions_without_introns = None
+        self.action = action
+        self.program_id_ = get_program_id()     
+        self.teams_ = []
+        self.instructions_without_introns_ = None
 
     def execute(self, input_registers): # move code to C or Cython?
         """ Execute code for each input """
-        if not self.instructions_without_introns:
-            self.instructions_without_introns = remove_introns(self.instructions)
-        instructions = self.instructions_without_introns
+        if not self.instructions_without_introns_:
+            self.instructions_without_introns_ = remove_introns(self.instructions)
+        instructions = self.instructions_without_introns_
         
         general_registers = [0] * RESTRICTIONS['genotype_options']['total_registers']
         if_conditional = None
@@ -92,24 +92,24 @@ class Program:
             self.action = random.randrange(RESTRICTIONS['total_actions'])
 
     def add_team(self, team):
-        self.teams.append(team)
+        self.teams_.append(team)
 
     def remove_team(self, team):
-        self.teams.remove(team)
+        self.teams_.remove(team)
 
     def __repr__(self):
-        return "("+str(self.program_id)+":"+str(self.generation)+", "+str(self.action)+")"
+        return "("+str(self.program_id_)+":"+str(self.generation)+", "+str(self.action)+")"
 
     def __str__(self):
         text = "\nCode for program "+self.__repr__()
-        teams_ids = [t.__repr__() for t in self.teams]
+        teams_ids = [t.__repr__() for t in self.teams_]
         text += "\nParticipate in the teams ("+str(len(teams_ids))+"): "+str(teams_ids)
         text += "\nTotal instructions: "+str(len(self.instructions))
         text += "\n----------------\n"
         text += "\n".join([str(i) for i in self.instructions])
         text += "\n++++++++++++++++"
-        text += "\nTotal instructions (without introns): "+str(len(self.instructions_without_introns))
+        text += "\nTotal instructions (without introns): "+str(len(self.instructions_without_introns_))
         text += "\n----------------\n"
-        text += "\n".join([str(i) for i in self.instructions_without_introns])
+        text += "\n".join([str(i) for i in self.instructions_without_introns_])
         text += "\n----------------"
         return text

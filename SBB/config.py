@@ -67,7 +67,7 @@ CONFIG = {
 
 RESTRICTIONS = {
     'task_types': ['classification', 'reinforcement'],
-    'working_path': "pSBB/",
+    'working_path': "SBB/",
     'round_to_decimals': 5,
     'genotype_options': {
         'modes': ['read-register', 'read-input'],

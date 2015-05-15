@@ -133,26 +133,26 @@ class ClassificationEnvironment:
             sample = random.sample(subset, sample_size)
         return sample
 
-    def evaluate(self, team, testset=False):
+    def evaluate(self, team, training=False):
         """
         Evaluate the team using the environment inputs.
         """
-        outputs = []
-        if testset:
-            dataset = self.test_
-        else:
+        if training:
             dataset = self.sample_
+        else:
+            dataset = self.test_
         X = self._get_X(dataset)
         Y = self._get_Y(dataset)
+        outputs = []
         for x in X:
             outputs.append(team.execute(x))
-        score, extra_metrics = self._calculate_team_metrics(outputs, Y, testset)
-        if testset:
-            team.score_testset = score
-            team.extra_metrics = extra_metrics
-        else:
+        score, extra_metrics = self._calculate_team_metrics(outputs, Y, training)
+        if training:
             team.fitness = score
             team.score_trainingset = score
+        else:
+            team.score_testset = score
+            team.extra_metrics = extra_metrics
 
     def _get_X(self, data):
         """
@@ -171,11 +171,11 @@ class ClassificationEnvironment:
             Y = [y-1 for y in Y]  # added -1 due to class labels starting at 1 # gambiarra
         return Y
 
-    def _calculate_team_metrics(self, predicted_outputs, desired_outputs, testset=False):
+    def _calculate_team_metrics(self, predicted_outputs, desired_outputs, training=False):
         extra_metrics = {}
         recall = recall_score(desired_outputs, predicted_outputs, average=None)
         macro_recall = numpy.mean(recall)
-        if testset: # to avoid wasting time processing metrics when they are not necessary
+        if not training: # to avoid wasting time processing metrics when they are not necessary
             extra_metrics['recall_per_action'] = recall
             extra_metrics['accuracy'] = accuracy_score(desired_outputs, predicted_outputs)
             extra_metrics['confusion_matrix'] = confusion_matrix(desired_outputs, predicted_outputs)

@@ -1,0 +1,112 @@
+
+CONFIG: {'task': 'classification', 'verbose': {'show_avg_dr_per_generations': False, 'show_actions_distribution_per_generation': False, 'show_recall_per_action_per_generation': False}, 'classification_parameters': {'use_oversampling': True, 'dataset': 'thyroid'}, 'reinforcement_parameters': {'environment': 'tictactoe'}, 'advanced_training_parameters': {'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'], 'extra_registers': 1, 'diversity': {'genotype_fitness_maintanance': False, 'genotype_fitness_maintanance_configs': {'p_value': 0.1, 'k': 8}}}, 'training_parameters': {'team_size': {'max': 5}, 'program_size': {'max': 5, 'initial': 3, 'min': 2}, 'populations': {'teams': 30, 'points': 120, 'programs': 60}, 'generations_total': 30, 'mutation': {'program': {'change_action': 0.1, 'change_instruction': 0.8, 'add_instruction': 0.8, 'remove_instruction': 0.7}, 'team': {'add_program': 0.8, 'remove_program': 0.7}}, 'replacement_rate': {'points': 0.2, 'teams': 0.6}, 'runs_total': 2}}
+
+### Dataset Info:
+class distribution (train set, 3772 samples): Counter({2: 3488, 1: 191, 0: 93})
+class distribution (test set, 3428 samples): Counter({2: 3178, 1: 177, 0: 73})
+total inputs: 21
+total actions: 3
+actions mapping: 
+
+################# RESULT PER RUN ####################
+0 Run best team: 549:29
+team members (5): ['(405:14, 0)', '(551:20, 2)', '(581:22, 2)', '(612:23, 1)', '(769:29, 1)']
+fitness (train): 0.55833, score (train): 0.55833, score (test): 0.53014
+
+1 Run best team: 526:28
+team members (5): ['(62:1, 0)', '(122:3, 2)', '(415:15, 1)', '(551:20, 1)', '(610:22, 1)']
+fitness (train): 0.53333, score (train): 0.53333, score (test): 0.53716
+
+
+Test score per run: [0.53014, 0.53716]
+Test score, mean: 0.53365, std: 0.00351
+
+#################### OVERALL BEST TEAM ####################
+1 Run best team: 526:28
+team members (5): ['(62:1, 0)', '(122:3, 2)', '(415:15, 1)', '(551:20, 1)', '(610:22, 1)']
+fitness (train): 0.53333, score (train): 0.53333, score (test): 0.53716
+
+Finished execution, total elapsed time: 16.37994 secs
+Elapsed times, mean: 8.18997, std: 0.94829
+
+Team (526:28), team size: 5
+################
+
+Code for program (62:1, 0)
+Participate in the teams (30): ['(526:28)', '(530:28)', '(533:28)', '(534:28)', '(541:29)', '(542:29)', '(543:29)', '(546:29)', '(549:29)', '(550:29)', '(551:29)', '(552:29)', '(553:30)', '(554:30)', '(555:30)', '(556:30)', '(557:30)', '(558:30)', '(559:30)', '(560:30)', '(561:30)', '(562:30)', '(563:30)', '(564:30)', '(565:30)', '(566:30)', '(567:30)', '(568:30)', '(569:30)', '(570:30)']
+Total instructions: 3
+----------------
+r[0] = r[0] / i[6]
+r[1] = r[1] - i[12]
+r[1] = r[1] / i[8]
+++++++++++++++++
+Total instructions (without introns): 1
+----------------
+r[0] = r[0] / i[6]
+----------------
+
+Code for program (122:3, 2)
+Participate in the teams (30): ['(526:28)', '(530:28)', '(533:28)', '(534:28)', '(541:29)', '(542:29)', '(543:29)', '(546:29)', '(549:29)', '(550:29)', '(551:29)', '(552:29)', '(553:30)', '(554:30)', '(555:30)', '(556:30)', '(557:30)', '(558:30)', '(559:30)', '(560:30)', '(561:30)', '(562:30)', '(563:30)', '(564:30)', '(565:30)', '(566:30)', '(567:30)', '(568:30)', '(569:30)', '(570:30)']
+Total instructions: 4
+----------------
+r[0] = cos(r[0])
+r[1] = cos(r[1])
+r[0] = r[0] - r[0]
+r[1] = cos(r[1])
+++++++++++++++++
+Total instructions (without introns): 2
+----------------
+r[0] = cos(r[0])
+r[0] = r[0] - r[0]
+----------------
+
+Code for program (415:15, 1)
+Participate in the teams (24): ['(526:28)', '(530:28)', '(533:28)', '(534:28)', '(541:29)', '(543:29)', '(546:29)', '(549:29)', '(550:29)', '(551:29)', '(552:29)', '(553:30)', '(554:30)', '(556:30)', '(557:30)', '(558:30)', '(559:30)', '(562:30)', '(563:30)', '(565:30)', '(566:30)', '(567:30)', '(568:30)', '(569:30)']
+Total instructions: 3
+----------------
+r[0] = r[0] - i[4]
+r[1] = r[1] * i[8]
+r[0] = r[0] + i[17]
+++++++++++++++++
+Total instructions (without introns): 2
+----------------
+r[0] = r[0] - i[4]
+r[0] = r[0] + i[17]
+----------------
+
+Code for program (551:20, 1)
+Participate in the teams (12): ['(526:28)', '(533:28)', '(542:29)', '(543:29)', '(546:29)', '(552:29)', '(555:30)', '(556:30)', '(558:30)', '(559:30)', '(564:30)', '(568:30)']
+Total instructions: 5
+----------------
+r[1] = r[1] * i[0]
+r[1] = r[1] - r[1]
+r[0] = r[0] - r[0]
+r[0] = r[0] - i[15]
+r[0] = r[0] + i[17]
+++++++++++++++++
+Total instructions (without introns): 3
+----------------
+r[0] = r[0] - r[0]
+r[0] = r[0] - i[15]
+r[0] = r[0] + i[17]
+----------------
+
+Code for program (610:22, 1)
+Participate in the teams (28): ['(526:28)', '(530:28)', '(533:28)', '(534:28)', '(541:29)', '(542:29)', '(543:29)', '(546:29)', '(549:29)', '(550:29)', '(551:29)', '(552:29)', '(553:30)', '(554:30)', '(555:30)', '(556:30)', '(557:30)', '(558:30)', '(560:30)', '(561:30)', '(563:30)', '(564:30)', '(565:30)', '(566:30)', '(567:30)', '(568:30)', '(569:30)', '(570:30)']
+Total instructions: 5
+----------------
+if r[1] < i[13]:
+r[0] = r[0] / i[6]
+if r[0] >= i[6]:
+r[0] = r[0] - i[4]
+r[0] = r[0] + i[9]
+++++++++++++++++
+Total instructions (without introns): 5
+----------------
+if r[1] < i[13]:
+r[0] = r[0] / i[6]
+if r[0] >= i[6]:
+r[0] = r[0] - i[4]
+r[0] = r[0] + i[9]
+----------------
+################

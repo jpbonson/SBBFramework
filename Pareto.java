@@ -2,7 +2,6 @@
 - consertar os "warnings!"
 - usar apenas um _ no methods
 - usar _ no final dos atributos internos (que nao vieram de parametros)
-- refatorar ClassificationEnvironment
 - refatorar sbb.py
 - class para points (the point id should be the index of the point in this training dataset)
 - fazer classes Environment (usar Enviroment e heranca para ter ClassificationEnvironment e ReinforcementEnvironment?)

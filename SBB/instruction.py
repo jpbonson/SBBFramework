@@ -2,6 +2,10 @@ import random
 from config import CONFIG, RESTRICTIONS
 
 class Instruction:
+    """
+    The class that represents an instruction of a program, eg.: r[1] = r[1] / r[0]
+    """
+
     def __init__(self, mode = None, target = None, op = None, source = None):
         self.mode = mode
         self.target = target
@@ -38,17 +42,17 @@ class Instruction:
 
     def __repr__(self):
         if self.op in RESTRICTIONS['genotype_options']['one-operand-instructions']:
-            text = self.one_op_instruction_to_str()
+            text = self._one_op_instruction_to_str()
         elif self.op in RESTRICTIONS['genotype_options']['if-instructions']:
-            text = self.if_op_instruction_to_str()
+            text = self._if_op_instruction_to_str()
         else:
-            text = self.two_ops_instruction_to_str()
+            text = self._two_ops_instruction_to_str()
         return text
 
-    def one_op_instruction_to_str(self):
+    def _one_op_instruction_to_str(self):
         return "r["+str(self.target)+"] = "+self.op+"(r["+str(self.target)+"])"
 
-    def if_op_instruction_to_str(self):
+    def _if_op_instruction_to_str(self):
         if self.mode == 'read-register':
             source = "r["+str(self.source)+"]:"
         else:
@@ -58,7 +62,7 @@ class Instruction:
         else:
             return "if r["+str(self.target)+"] >= "+source
 
-    def two_ops_instruction_to_str(self):
+    def _two_ops_instruction_to_str(self):
         instruction_text = "r["+str(self.target)+"] = r["+str(self.target)+"] "+self.op+" "
         if self.mode == 'read-register':
             instruction_text += "r["+str(self.source)+"]"

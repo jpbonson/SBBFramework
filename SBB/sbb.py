@@ -55,7 +55,7 @@ class SBB:
 
                 fitness = [p.fitness for p in teams_population]
                 best_team = teams_population[fitness.index(max(fitness))]
-                environment.evaluate(best_team, testset=True)
+                environment.evaluate(best_team)
                 print("best team: "+best_team.print_metrics())
 
                 best_teams_per_generation.append(best_team)
@@ -132,7 +132,7 @@ class SBB:
     def selection(self, environment, teams_population, programs_population):
         # execute teams to calculate fitness
         for t in teams_population:
-            environment.evaluate(t)
+            environment.evaluate(t, training=True)
 
         if CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
             for t in teams_population:
@@ -162,14 +162,15 @@ class SBB:
         new_teams_population_len = len(teams_population) - teams_to_be_replaced
         while len(teams_population) > new_teams_population_len:
             fitness = [t.fitness for t in teams_population]
-            worst_program_index = fitness.index(min(fitness))
-            teams_population[worst_program_index].remove_references()
-            teams_population.pop(worst_program_index)
+            worst_team_index = fitness.index(min(fitness))
+            worst_team = teams_population[worst_team_index]
+            worst_team.remove_references()
+            teams_population.remove(worst_team)
 
         # 2. Remove programs are not in a team
         to_remove = []
         for p in programs_population:
-            if len(p.teams) == 0:
+            if len(p.teams_) == 0:
                 to_remove.append(p)
         for p in programs_population:
             if p in to_remove:
