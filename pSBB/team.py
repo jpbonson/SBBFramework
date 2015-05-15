@@ -86,10 +86,11 @@ class Team:
     def print_metrics(self):
         r = round_value_to_decimals
         teams_members_ids = [p.__repr__() for p in self.programs]
-        m = str(self.team_id)+":"+str(self.generation)+", team members ("+str(len(self.programs))+"): "+str(teams_members_ids)
+        m = str(self.team_id)+":"+str(self.generation)
         # m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset)) +", mrecall: "+str(r(self.score_trainingset))
         # m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.score_testset))+", recall: "+str(round_array_to_decimals(self.recall))
         m += "\nfitness (train): "+str(r(self.fitness))+", score (train): "+str(r(self.score_trainingset))+", score (test): "+str(r(self.score_testset))
+        m += "\nteam members ("+str(len(self.programs))+"): "+str(teams_members_ids)
         #  print extra_metrics (versao sem verbose ser sem extra_metrics e sem action_counter?)
         return m
 

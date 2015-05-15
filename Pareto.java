@@ -1,11 +1,14 @@
 - fix prints em sbb.py e team.py para usarem 'extra_metrics'
 - consertar os "warnings!"
+- usar apenas um _ no methods
+- usar _ no final dos atributos internos (que nao vieram de parametros)
 - refatorar ClassificationEnvironment
 - refatorar sbb.py
 - class para points (the point id should be the index of the point in this training dataset)
 - fazer classes Environment (usar Enviroment e heranca para ter ClassificationEnvironment e ReinforcementEnvironment?)
 - refatorar helpers
 - classe logger?
+- permitir rodar dataset iris
 - usar methods private
 - salvar os resultados obtidos para os points, para reaproveita-los se os mesmos points reaparecerem
 - fazer mapping das actions para numeros / consertar gambi de label -1
@@ -28,6 +31,7 @@
 - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
 - implementar tradutor que le o objeto do time e computa resultados?
 - adicionar mais documentacao
+- remover comentarios em portugues
 
 - implementar reinforcement learning para tictactoe
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions)

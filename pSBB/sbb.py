@@ -7,7 +7,7 @@ import time
 import copy
 import numpy
 import os
-from collections import defaultdict, Counter
+from collections import Counter
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
 from instruction import Instruction
@@ -56,14 +56,14 @@ class SBB:
                 fitness = [p.fitness for p in teams_population]
                 best_team = teams_population[fitness.index(max(fitness))]
                 environment.evaluate(best_team, testset=True)
-                print("Best team: "+best_team.print_metrics())
+                print("best team: "+best_team.print_metrics())
 
                 best_teams_per_generation.append(best_team)
                 # recall_per_generation.append(best_team.recall)
                 avg_score_per_generations_across_runs[self.current_generation-1] += best_team.score_testset
                 actions_count = Counter([p.action for p in programs_population])
                 actions_counts.append(actions_count.values())
-                print "Actions Counter: "+str(actions_count)
+                print "actions distribution: "+str(actions_count)
 
             print("\n"+str(run_id)+" Run's best team: "+best_team.print_metrics())
             elapsed_time = time.time() - start_time
@@ -88,8 +88,6 @@ class SBB:
 
     def __initialize_environment(self):
         environment = ClassificationEnvironment()
-        RESTRICTIONS['total_actions'] = environment.total_actions
-        RESTRICTIONS['total_inputs'] = environment.total_inputs
         return environment
 
     def __initialize_program_population(self):
@@ -244,7 +242,6 @@ class SBB:
 
         if CONFIG['verbose']['show_actions_distribution_per_generation']:
             msg += "\n\nActions Distribution (per gen.): "+str(actions_per_generation_per_run[best_run])
-        msg += "\n\nActions Distribution (last gen.): "+str(actions_per_generation_per_run[best_run][-1])
         return msg
 
     def write_output_file(self, final_best_team, msg):

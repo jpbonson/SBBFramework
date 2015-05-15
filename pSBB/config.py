@@ -78,7 +78,9 @@ RESTRICTIONS = {
         'instruction_size': 4,
         'output_registers': 1,
         'total_registers': 1+CONFIG['advanced_training_parameters']['extra_registers'],
-    }
+    },
+    'total_actions': -1, # initialized by the environment
+    'total_inputs': -1, # initialized by the environment
 }
 
 
