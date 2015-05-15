@@ -31,7 +31,7 @@ class Program:
         self.teams = []
         self.instructions_without_introns = None
 
-    def execute(self, sample, testset=False): # move code to C or Cython?
+    def execute(self, input_registers): # move code to C or Cython?
         """ Execute code for each input """
         if not self.instructions_without_introns:
             self.instructions_without_introns = remove_introns(self.instructions)
@@ -70,7 +70,7 @@ class Program:
                 if i.mode == 'read-register':
                     source =  general_registers[i.source]
                 else:
-                    source =  sample[i.source]
+                    source =  input_registers[i.source]
                 general_registers[i.target] = Operation.execute(i.op, general_registers[i.target], source)
         # get class output
         output = general_registers[0]

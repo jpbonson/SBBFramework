@@ -49,28 +49,15 @@ class Team:
             programs_per_class.append(values)
         return programs_per_class
 
-    def execute(self, data, testset=False): # modificar para ser compativel com reinforcement learning
-        # execute code for each input
-        outputs = []
-        X = ClassificationEnvironment.get_X(data)
-        Y = ClassificationEnvironment.get_Y(data)
-        for x in X:
-            partial_outputs = []
-            for program in self.programs:
-                partial_outputs.append(program.execute(x, testset=False))
-            selected_program = self.programs[partial_outputs.index(max(partial_outputs))]
-            output_class = selected_program.action
-            outputs.append(output_class)
-            if selected_program.program_id not in self.active_programs:
-                self.active_programs.append(selected_program.program_id)
-        # calculate fitness and accuracy
-        score, extra_metrics = self.environment.evaluate(outputs, Y, testset)
-        if testset:
-            self.score_testset = score
-            self.extra_metrics = extra_metrics
-        else:
-            self.fitness = score
-            self.score_trainingset = score
+    def execute(self, input_registers):
+        partial_outputs = []
+        for program in self.programs:
+            partial_outputs.append(program.execute(input_registers))
+        selected_program = self.programs[partial_outputs.index(max(partial_outputs))]
+        output_class = selected_program.action
+        if selected_program.program_id not in self.active_programs:
+            self.active_programs.append(selected_program.program_id)
+        return output_class
 
     def remove_programs_link(self):
         for p in self.programs:

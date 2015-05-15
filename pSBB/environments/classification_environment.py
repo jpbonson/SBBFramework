@@ -120,7 +120,15 @@ class ClassificationEnvironment:
         random.shuffle(sample)
         return sample
 
-    def evaluate(self, predicted_outputs, desired_outputs, testset=False):
+    def evaluate(self, team, dataset, testset=False):
+        outputs = []
+        X = ClassificationEnvironment.get_X(dataset)
+        Y = ClassificationEnvironment.get_Y(dataset)
+        for x in X:
+            outputs.append(team.execute(x))
+        return self.__calculate_metrics(outputs, Y, testset)
+
+    def __calculate_metrics(self, predicted_outputs, desired_outputs, testset=False):
         extra_metrics = {}
         recall = recall_score(desired_outputs, predicted_outputs, average=None)
         macro_recall = numpy.mean(recall)

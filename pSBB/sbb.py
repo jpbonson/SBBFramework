@@ -55,10 +55,14 @@ class SBB:
                 sample = self.environment.get_sample(previous_samples=sample)
                 print("\n>>>>> Executing generation: "+str(self.current_generation)+", run: "+str(run_id))
                 teams_population, programs_population = self.selection(teams_population, programs_population, sample)
+
                 fitness = [p.fitness for p in teams_population]
                 best_program = teams_population[fitness.index(max(fitness))]
-                best_program.execute(self.environment.test, testset=True) # analisar o melhor individuo gerado com o test set
+                score, extra_metrics = self.environment.evaluate(best_program, self.environment.test, testset=True)
+                best_program.score_testset = score
+                best_program.extra_metrics = extra_metrics
                 print("Best team: "+best_program.print_metrics())
+
                 best_programs_per_generation.append(best_program)
                 # recall_per_generation.append(best_program.recall)
                 score_per_generations[self.current_generation-1] += best_program.score_testset
@@ -95,7 +99,9 @@ class SBB:
     def selection(self, teams_population, programs_population, training_data):
         # execute teams to calculate fitness
         for t in teams_population:
-            t.execute(training_data)
+            score, extra_metrics = self.environment.evaluate(t, training_data)
+            t.fitness = score
+            t.score_trainingset = score
 
         if CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
             for t in teams_population:
