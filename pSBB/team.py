@@ -1,7 +1,6 @@
 import random
 import numpy
 from collections import Counter
-from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from program import Program
 from environments.classification_environment import ClassificationEnvironment
 from utils.helpers import round_value_to_decimals, round_array_to_decimals
@@ -20,19 +19,17 @@ class Team:
     def __init__(self, generation, environment, programs, initialization=True):
         self.team_id = get_team_id()
         self.generation = generation
-        self.total_inputs = environment.total_inputs
-        self.total_actions = environment.total_actions
-        self.accuracies_per_class = []
-        self.conf_matrix = []
+        self.environment = environment
         self.fitness = -1
-        self.accuracy_trainingset = 0
-        self.accuracy_testset = 0
-        self.recall = 0
+        self.score_trainingset = 0
+        self.score_testset = 0
+        self.extra_metrics = {}
         self.programs = []
         self.active_programs = []
         if initialization:
             # randomly gets one program per action
-            for action in programs: # programs is an array of programs per action
+            programs_per_class = self.__get_programs_per_class(programs)
+            for action in programs_per_class: # programs is an array of programs per action
                 program = random.choice(action)
                 self.programs.append(program)
                 program.add_team(self)
@@ -41,9 +38,18 @@ class Team:
             for program in programs: # programs is an array of programs
                 self.programs.append(program)
                 program.add_team(self)
-        self.correct_samples = []
 
-    def execute(self, data, testset=False):
+    def __get_programs_per_class(self, programs):
+        programs_per_class = []
+        for class_index in range(self.environment.total_actions):
+            values = [p for p in programs if p.action == class_index]
+            if len(values) == 0:
+                print "WARNING! No programs for class "+str(class_index)
+                raise Exception # to improve
+            programs_per_class.append(values)
+        return programs_per_class
+
+    def execute(self, data, testset=False): # modificar para ser compativel com reinforcement learning
         # execute code for each input
         outputs = []
         X = ClassificationEnvironment.get_X(data)
@@ -58,36 +64,13 @@ class Team:
             if selected_program.program_id not in self.active_programs:
                 self.active_programs.append(selected_program.program_id)
         # calculate fitness and accuracy
-        accuracy, macro_recall = self.calculate_performance_metrics(outputs, Y, testset)
-        fitness = accuracy
-
+        score, extra_metrics = self.environment.evaluate(outputs, Y, testset)
         if testset:
-            self.accuracy_testset = accuracy
-            self.macro_recall_testset = macro_recall
+            self.score_testset = score
+            self.extra_metrics = extra_metrics
         else:
-            self.fitness = fitness
-            self.accuracy_trainingset = accuracy
-            self.macro_recall_trainingset = macro_recall
-
-    def calculate_performance_metrics(self, predicted_outputs, desired_outputs, testset=False):
-        conf_matrix = confusion_matrix(desired_outputs, predicted_outputs)
-        accuracy = accuracy_score(desired_outputs, predicted_outputs)
-        recall = recall_score(desired_outputs, predicted_outputs, average=None)
-        macro_recall = numpy.mean(recall)
-        if testset: # to avoid wasting time processing metrics when they are not necessary
-            self.conf_matrix = conf_matrix
-            conts_per_class = [0] * self.total_actions
-            self.recall = recall
-            for p, d in zip(predicted_outputs, desired_outputs):
-                if p == d:
-                    conts_per_class[d] += 1.0
-            self.accuracies_per_class = [x/float(len(predicted_outputs)) for x in conts_per_class]
-        else:
-            self.correct_samples = []
-            for i, (p, d) in enumerate(zip(predicted_outputs, desired_outputs)):
-                if p == d:
-                    self.correct_samples.append(i)
-        return accuracy, macro_recall
+            self.fitness = score
+            self.score_trainingset = score
 
     def remove_programs_link(self):
         for p in self.programs:
@@ -133,28 +116,14 @@ class Team:
                 self.programs.append(new_program)
                 test = True
 
-    def get_programs_per_class(self, programs):
-        programs_per_class = []
-        for class_index in range(self.total_actions):
-            values = [p for p in programs if p.action == class_index]
-            if len(values) == 0:
-                print "WARNING! No programs for class "+str(class_index)
-                raise Exception
-            programs_per_class.append(values)
-        return programs_per_class
-
-    def avg_introns(self):
-        total = 0.0
-        for p in self.programs:
-            total += len(p.instructions)-len(p.instructions_without_introns)
-        return total/float(len(self.programs))
-
     def print_metrics(self):
         r = round_value_to_decimals
         teams_members_ids = [p.__repr__() for p in self.programs]
-        m = str(self.team_id)+":"+str(self.generation)+", fitness: "+str(r(self.fitness))+", team size: "+str(len(self.programs))+", team members: "+str(teams_members_ids)
-        m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset))+", mrecall: "+str(r(self.macro_recall_trainingset))
-        m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.macro_recall_testset))+", recall: "+str(round_array_to_decimals(self.recall))
+        m = str(self.team_id)+":"+str(self.generation)+", team members ("+str(len(self.programs))+"): "+str(teams_members_ids)
+        # m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset)) +", mrecall: "+str(r(self.score_trainingset))
+        # m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.score_testset))+", recall: "+str(round_array_to_decimals(self.recall))
+        m += "\nfitness (train): "+str(r(self.fitness))+", score (train): "+str(r(self.score_trainingset))+", score (test): "+str(r(self.score_testset))
+        #  print extra_metrics (versao sem verbose ser sem extra_metrics e sem action_counter?)
         return m
 
     def __repr__(self): 

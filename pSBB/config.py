@@ -48,7 +48,6 @@ CONFIG = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
-            'fitness_sharing': False,
             'genotype_fitness_maintanance': False,
             'genotype_fitness_maintanance_configs': {
                 'p_value': 0.1,
@@ -95,9 +94,9 @@ def check_parameters():
             sys.stderr.write("Error: Invalid 'use_operations' in CONFIG! The valid values are "+str(valid_operations)+"\n")
             raise SystemExit
 
-    if (CONFIG['advanced_training_parameters']['diversity']['fitness_sharing'] and 
-            CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']):
-        sys.stderr.write("Error: Maximum of one diversity metric allowed!\n")
-        raise SystemExit
+    # if (CONFIG['advanced_training_parameters']['diversity']['fitness_sharing'] and 
+    #         CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']):
+    #     sys.stderr.write("Error: Maximum of one diversity metric allowed!\n")
+    #     raise SystemExit
 
 check_parameters()

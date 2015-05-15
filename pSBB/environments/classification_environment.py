@@ -1,6 +1,7 @@
 from collections import defaultdict
 import random
 import numpy
+from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from ..config import CONFIG, RESTRICTIONS
 
 class ClassificationEnvironment:
@@ -118,6 +119,21 @@ class ClassificationEnvironment:
 
         random.shuffle(sample)
         return sample
+
+    def evaluate(self, predicted_outputs, desired_outputs, testset=False):
+        extra_metrics = {}
+        recall = recall_score(desired_outputs, predicted_outputs, average=None)
+        macro_recall = numpy.mean(recall)
+        if testset: # to avoid wasting time processing metrics when they are not necessary
+            extra_metrics['accuracy'] = accuracy_score(desired_outputs, predicted_outputs)
+            extra_metrics['recall'] = recall
+            extra_metrics['conf_matrix'] = confusion_matrix(desired_outputs, predicted_outputs)
+            conts_per_class = [0] * self.total_actions
+            for p, d in zip(predicted_outputs, desired_outputs):
+                if p == d:
+                    conts_per_class[d] += 1.0
+            extra_metrics['accuracies_per_class'] = [x/float(len(predicted_outputs)) for x in conts_per_class]
+        return macro_recall, extra_metrics
 
     def print_metrics(self, msg):
         msg += "\nDataset info:"   
