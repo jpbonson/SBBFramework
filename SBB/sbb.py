@@ -11,6 +11,7 @@ from collections import Counter
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
 from instruction import Instruction
+from diversity_maintenance import DiversityMaintenance
 from environments.classification_environment import ClassificationEnvironment
 from utils.helpers import round_value_to_decimals, weighted_choice
 from config import CONFIG, RESTRICTIONS
@@ -22,11 +23,13 @@ class SBB:
     def run(self):
         print "\n### Starting pSBB"
 
+        # prepare metrics
         elapseds_per_run = []
         best_teams_per_run = []
         avg_score_per_generations_across_runs = [0.0] * (CONFIG['training_parameters']['generations_total']+1)
         recall_per_generation_per_run = [] # only for classification task
 
+        # initialize environment
         environment = self._initialize_environment()
 
         msg = ""
@@ -131,34 +134,15 @@ class SBB:
         return False
 
     def _selection(self, environment, teams_population, programs_population):
-        # execute teams to calculate fitness
+        # 1. Execute teams to calculate fitnessteams_population
         for t in teams_population:
             environment.evaluate(t, training=True)
 
+        # 2. Apply diversity maintenance
         if CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
-            for t in teams_population:
-                # create array of distances to other teams
-                distances = []
-                for other_t in teams_population:
-                    if t != other_t:
-                        num_programs_intersection = len(set(t.active_programs_).intersection(other_t.active_programs_))
-                        num_programs_union = len(set(t.active_programs_).union(other_t.active_programs_))
-                        if num_programs_union > 0:
-                            distance = 1.0 - (float(num_programs_intersection)/float(num_programs_union))
-                        else:
-                            distance = 1.0
-                        distances.append(distance)
-                # get mean of the k nearest neighbours
-                sorted_list = sorted(distances)
-                k = CONFIG['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['k']
-                min_values = sorted_list[:k]
-                diversity = numpy.mean(min_values)
-                # calculate fitness
-                p = CONFIG['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value']
-                raw_fitness = t.fitness_
-                t.fitness = (1.0-p)*(raw_fitness) + p*diversity
+            teams_population = DiversityMaintenance.genotype_diversity(teams_population)
 
-        # 1. Remove worst teams
+        # 3. Remove worst teams
         teams_to_be_replaced = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
         new_teams_population_len = len(teams_population) - teams_to_be_replaced
         while len(teams_population) > new_teams_population_len:
@@ -168,7 +152,7 @@ class SBB:
             worst_team.remove_references()
             teams_population.remove(worst_team)
 
-        # 2. Remove programs are not in a team
+        # 4. Remove programs are not in a team
         to_remove = []
         for p in programs_population:
             if len(p.teams_) == 0:
@@ -177,16 +161,16 @@ class SBB:
             if p in to_remove:
                 programs_population.remove(p)
 
-        # 3. Create new mutated programs
+        # 5. Create new mutated programs
         new_programs_to_create = CONFIG['training_parameters']['populations']['programs'] - len(programs_population)
-        new_programs = []
         programs_to_clone = random.sample(programs_population, new_programs_to_create)
+        new_programs = []
         for program in programs_to_clone:
             clone = Program(self.current_generation_, copy.deepcopy(program.instructions), program.action)
             clone.mutate()
             new_programs.append(clone)
 
-        # 4. Add new teams, cloning the old ones and adding or removing programs (if adding, can only add a new program)
+        # 6. Add new teams, cloning the old ones and mutating (if adding a program, can only add a new created program)
         new_teams_to_create = CONFIG['training_parameters']['populations']['teams'] - len(teams_population)
         teams_to_clone = []
         while len(teams_to_clone) < new_teams_to_create:
@@ -199,7 +183,7 @@ class SBB:
             clone.mutate(new_programs)
             teams_population.append(clone)
 
-        # 5. Add new programs to population, so it has the same size as before
+        # 7. Add new programs to population, so it has the same size as before
         for p in new_programs:
             programs_population.append(p)
 

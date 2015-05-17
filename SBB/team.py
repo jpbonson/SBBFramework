@@ -44,7 +44,9 @@ class Team:
         return output_class
 
     def mutate(self, new_programs):
-        """ Generates mutation chances and mutate the team if it is a valid mutation """
+        """
+        Generates mutation chances and mutate the team if it is a valid mutation
+        """
         mutation_chance = random.random()
         if mutation_chance <= CONFIG['training_parameters']['mutation']['team']['remove_program']:
             self._randomly_remove_program()
@@ -54,7 +56,9 @@ class Team:
                 self._randomly_add_program(new_programs)          
 
     def _randomly_remove_program(self):
-        """ Remove a program from the team. A program is removible only if there is at least two programs for its action. """
+        """
+        Remove a program from the team. A program is removible only if there is at least two programs for its action
+        """
         # Get list of actions with more than one program
         actions = [p.action for p in self.programs]
         actions_count = Counter(actions)

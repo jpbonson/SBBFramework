@@ -24,14 +24,16 @@ class Program:
         self.instructions_without_introns_ = None
 
     def execute(self, input_registers): # move code to C or Cython?
-        """ Execute code for each input """
+        """
+        Execute code for each input
+        """
         if not self.instructions_without_introns_:
             self.instructions_without_introns_ = remove_introns(self.instructions)
         instructions = self.instructions_without_introns_
         
-        general_registers = [0] * RESTRICTIONS['genotype_options']['total_registers']
         if_conditional = None
         skip_next = False
+        general_registers = [0] * RESTRICTIONS['genotype_options']['total_registers']
 
         for i in instructions:
             if if_conditional:
@@ -64,9 +66,9 @@ class Program:
                 else:
                     source =  input_registers[i.source]
                 general_registers[i.target] = Operation.execute(i.op, general_registers[i.target], source)
-        # get class output
+        # get action output
         output = general_registers[0]
-        # apply sigmoid function before getting the output class
+        # apply sigmoid function before getting the output action
         membership_outputs = expit(output)
         return membership_outputs
 

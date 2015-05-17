@@ -49,7 +49,7 @@ CONFIG = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
-            'genotype_fitness_maintanance': False,
+            'genotype_fitness_maintanance': True,
         },
         'diversity_configs': {
             'genotype_fitness_maintanance': {

@@ -1,4 +1,3 @@
-- refatorar _selection() in sbb.py
 - class para points (the point id should be the index of the point in this training dataset)
 - fazer classes Environment (usar Enviroment e heranca para ter ClassificationEnvironment e ReinforcementEnvironment?)
 - permitir rodar dataset iris
