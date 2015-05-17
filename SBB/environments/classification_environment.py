@@ -148,11 +148,11 @@ class ClassificationEnvironment:
             outputs.append(team.execute(x))
         score, extra_metrics = self._calculate_team_metrics(outputs, Y, training)
         if training:
-            team.fitness = score
-            team.score_trainingset = score
+            team.fitness_ = score
+            team.score_trainingset_ = score
         else:
-            team.score_testset = score
-            team.extra_metrics = extra_metrics
+            team.score_testset_ = score
+            team.extra_metrics_ = extra_metrics
 
     def _get_X(self, data):
         """

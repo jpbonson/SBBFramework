@@ -18,12 +18,12 @@ class Team:
         self.programs = []
         for program in programs:
             self._add_program(program)
-        self.team_id = get_team_id()
-        self.fitness = -1
-        self.score_trainingset = -1
-        self.score_testset = -1
-        self.extra_metrics = {}
-        self.active_programs = []
+        self.team_id_ = get_team_id()
+        self.fitness_ = -1
+        self.score_trainingset_ = -1
+        self.score_testset_ = -1
+        self.extra_metrics_ = {}
+        self.active_programs_ = []
 
     def _add_program(self, program):
         self.programs.append(program)
@@ -39,8 +39,8 @@ class Team:
             partial_outputs.append(program.execute(input_registers))
         selected_program = self.programs[partial_outputs.index(max(partial_outputs))]
         output_class = selected_program.action
-        if selected_program.program_id_ not in self.active_programs:
-            self.active_programs.append(selected_program.program_id_)
+        if selected_program.program_id_ not in self.active_programs_:
+            self.active_programs_.append(selected_program.program_id_)
         return output_class
 
     def mutate(self, new_programs):
@@ -91,16 +91,16 @@ class Team:
     def print_metrics(self):
         r = round_value_to_decimals
         teams_members_ids = [p.__repr__() for p in self.programs]
-        m = str(self.team_id)+":"+str(self.generation)
-        # m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset)) +", mrecall: "+str(r(self.score_trainingset))
-        # m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.score_testset))+", recall: "+str(round_array_to_decimals(self.recall))
+        m = str(self.team_id_)+":"+str(self.generation)
+        # m += "\nTRAIN: acc: "+str(r(self.accuracy_trainingset)) +", mrecall: "+str(r(self.score_trainingset_))
+        # m += "\nTEST: acc: "+str(r(self.accuracy_testset))+", mrecall: "+str(r(self.score_testset_))+", recall: "+str(round_array_to_decimals(self.recall))
         m += "\nteam members ("+str(len(self.programs))+"): "+str(teams_members_ids)
-        m += "\nfitness (train): "+str(r(self.fitness))+", score (train): "+str(r(self.score_trainingset))+", score (test): "+str(r(self.score_testset))
+        m += "\nfitness (train): "+str(r(self.fitness_))+", score (train): "+str(r(self.score_trainingset_))+", score (test): "+str(r(self.score_testset_))
         #  print extra_metrics (versao sem verbose ser sem extra_metrics e sem action_counter?)
         return m
 
     def __repr__(self): 
-        return "("+str(self.team_id)+":"+str(self.generation)+")"
+        return "("+str(self.team_id_)+":"+str(self.generation)+")"
 
     def __str__(self):
         text = "\nTeam "+self.__repr__()+", team size: "+str(len(self.programs))
@@ -109,5 +109,3 @@ class Team:
             text += "\n"+str(p)
         text += "\n################"
         return text
-
-

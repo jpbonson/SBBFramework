@@ -53,14 +53,14 @@ class SBB:
                 print("\n>>>>> Executing generation: "+str(self.current_generation)+", run: "+str(run_id))
                 teams_population, programs_population = self.selection(environment, teams_population, programs_population)
 
-                fitness = [p.fitness for p in teams_population]
+                fitness = [p.fitness_ for p in teams_population]
                 best_team = teams_population[fitness.index(max(fitness))]
                 environment.evaluate(best_team)
                 print("best team: "+best_team.print_metrics())
 
                 best_teams_per_generation.append(best_team)
                 # recall_per_generation.append(best_team.recall)
-                avg_score_per_generations_across_runs[self.current_generation-1] += best_team.score_testset
+                avg_score_per_generations_across_runs[self.current_generation-1] += best_team.score_testset_
                 actions_count = Counter([p.action for p in programs_population])
                 actions_counts.append(actions_count.values())
                 print "actions distribution: "+str(actions_count)
@@ -74,7 +74,7 @@ class SBB:
             print("\nFinished run execution, elapsed time: "+str(elapsed_time)+" secs")
 
         # Get best run
-        best_result_metric = [p.score_testset for p in best_teams_per_run]
+        best_result_metric = [p.score_testset_ for p in best_teams_per_run]
         best_run = best_result_metric.index(max(best_result_metric))
         final_best_team = best_teams_per_run[best_run]
 
@@ -161,7 +161,7 @@ class SBB:
         teams_to_be_replaced = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
         new_teams_population_len = len(teams_population) - teams_to_be_replaced
         while len(teams_population) > new_teams_population_len:
-            fitness = [t.fitness for t in teams_population]
+            fitness = [t.fitness_ for t in teams_population]
             worst_team_index = fitness.index(min(fitness))
             worst_team = teams_population[worst_team_index]
             worst_team.remove_references()
@@ -204,12 +204,12 @@ class SBB:
         return teams_population, programs_population
 
     def weighted_random_choice(self, chromosomes):
-        fitness = [p.fitness for p in chromosomes]
-        total = sum(chromosome.fitness for chromosome in chromosomes)
+        fitness = [p.fitness_ for p in chromosomes]
+        total = sum(chromosome.fitness_ for chromosome in chromosomes)
         pick = random.uniform(0, total)
         current = 0
         for chromosome in chromosomes:
-            current += chromosome.fitness
+            current += chromosome.fitness_
             if current > pick:
                 return chromosome
 
@@ -219,7 +219,7 @@ class SBB:
         score_per_run = []
         for run_id in range(CONFIG['training_parameters']['runs_total']):
             best_team = best_teams_per_run[run_id]
-            score_per_run.append(round_value_to_decimals(best_team.score_testset))
+            score_per_run.append(round_value_to_decimals(best_team.score_testset_))
             msg += "\n"+str(run_id)+" Run best team: "+best_team.print_metrics()+"\n"
         msg += "\n\nTest score per run: "+str(score_per_run)
         msg += "\nTest score, mean: "+str(numpy.mean(score_per_run))+", std: "+str(numpy.std(score_per_run))
