@@ -12,24 +12,24 @@ from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
 from instruction import Instruction
 from environments.classification_environment import ClassificationEnvironment
-from utils.helpers import round_value_to_decimals, round_array_to_decimals
+from utils.helpers import round_value_to_decimals, round_array_to_decimals, weighted_choice
 from config import CONFIG, RESTRICTIONS
 
 class SBB:
     def __init__(self):
-        self.current_generation = 0
+        self.current_generation_ = 0
 
     def run(self):
-        print "\nStarting pSBB\n\n"
+        print "\n### Starting pSBB"
         best_teams_per_run = []
         elapseds_per_run = []
         actions_per_generation_per_run = []
         # recall_per_generation_per_run = []
         avg_score_per_generations_across_runs = [0.0] * CONFIG['training_parameters']['generations_total']
 
-        environment = self.__initialize_environment()
+        environment = self._initialize_environment()
 
-        msg = "\nCONFIG: "+str(CONFIG)+"\n"
+        msg = "\n### CONFIG: "+str(CONFIG)+"\n"
         msg += environment.metrics()
         print msg
 
@@ -40,32 +40,32 @@ class SBB:
             start_time = time.time()
             print("\nStarting run: "+str(run_id))       
 
-            self.current_generation = 0
+            self.current_generation_ = 0
 
             # randomly initialize populations
-            programs_population = self.__initialize_program_population()
-            teams_population = self.__initialize_team_population(programs_population)
+            programs_population = self._initialize_program_population()
+            teams_population = self._initialize_team_population(programs_population)
             
             environment.reset()
-            while not self.stop_criterion():
-                self.current_generation += 1
+            while not self._stop_criterion():
+                self.current_generation_ += 1
                 environment.setup()
-                print("\n>>>>> Executing generation: "+str(self.current_generation)+", run: "+str(run_id))
-                teams_population, programs_population = self.selection(environment, teams_population, programs_population)
+                print("\n>>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_id))
+                teams_population, programs_population = self._selection(environment, teams_population, programs_population)
 
                 fitness = [p.fitness_ for p in teams_population]
                 best_team = teams_population[fitness.index(max(fitness))]
                 environment.evaluate(best_team)
-                print("best team: "+best_team.print_metrics())
+                print("best team: "+best_team.metrics())
 
                 best_teams_per_generation.append(best_team)
                 # recall_per_generation.append(best_team.recall)
-                avg_score_per_generations_across_runs[self.current_generation-1] += best_team.score_testset_
+                avg_score_per_generations_across_runs[self.current_generation_-1] += best_team.score_testset_
                 actions_count = Counter([p.action for p in programs_population])
                 actions_counts.append(actions_count.values())
                 print "actions distribution: "+str(actions_count)
 
-            print("\n"+str(run_id)+" Run's best team: "+best_team.print_metrics())
+            print("\n"+str(run_id)+" Run's best team: "+best_team.metrics())
             elapsed_time = time.time() - start_time
             best_teams_per_run.append(best_team)
             elapseds_per_run.append(elapsed_time)
@@ -79,18 +79,18 @@ class SBB:
         final_best_team = best_teams_per_run[best_run]
 
         # Generate final outputs
-        msg += self.generate_output_messages_per_run(best_teams_per_run)
-        msg += self.generate_output_messages_for_best_team(best_run, final_best_team, actions_per_generation_per_run)
+        msg += self._generate_output_messages_per_run(best_teams_per_run)
+        msg += self._generate_output_messages_for_best_team(best_run, final_best_team, actions_per_generation_per_run)
         msg += "\n\nFinished execution, total elapsed time: "+str(round_value_to_decimals(sum(elapseds_per_run)))+" secs"
         msg += "\nElapsed times, mean: "+str(round_value_to_decimals(numpy.mean(elapseds_per_run)))+", std: "+str(round_value_to_decimals(numpy.std(elapseds_per_run)))+"\n"
         print msg
-        self.write_output_file(final_best_team, msg)
+        self._write_output_file(final_best_team, msg)
 
-    def __initialize_environment(self):
+    def _initialize_environment(self):
         environment = ClassificationEnvironment()
         return environment
 
-    def __initialize_program_population(self):
+    def _initialize_program_population(self):
         reset_programs_ids()
         programs_population =[]
         for i in range(CONFIG['training_parameters']['populations']['programs']):
@@ -98,38 +98,37 @@ class SBB:
             instructions = []
             for i in range(CONFIG['training_parameters']['program_size']['initial']):
                 instructions.append(Instruction(RESTRICTIONS['total_inputs']))
-            program = Program(self.current_generation, instructions, action)
+            program = Program(self.current_generation_, instructions, action)
             programs_population.append(program)
         return programs_population
 
-    def __initialize_team_population(self, programs_population):
+    def _initialize_team_population(self, programs_population):
         reset_teams_ids()
         teams_population = []
         for t in range(CONFIG['training_parameters']['populations']['teams']):
             selected_programs = []
-            programs_per_action = self.__get_programs_per_action(programs_population)
+            programs_per_action = self._get_programs_per_action(programs_population)
             for programs in programs_per_action:
                 selected_programs.append(random.choice(programs))
-            team = Team(self.current_generation, selected_programs)
+            team = Team(self.current_generation_, selected_programs)
             teams_population.append(team)
         return teams_population
 
-    def __get_programs_per_action(self, programs):
+    def _get_programs_per_action(self, programs):
         programs_per_action = []
         for class_index in range(RESTRICTIONS['total_actions']):
             values = [p for p in programs if p.action == class_index]
             if len(values) == 0:
-                print "WARNING! No programs for class "+str(class_index)
-                raise Exception # to improve
+                raise StandardError("_get_programs_per_action() wasn't able to get programs for the action "+str(class_index)+". You got a bug.")
             programs_per_action.append(values)
         return programs_per_action
 
-    def stop_criterion(self):
-        if self.current_generation == CONFIG['training_parameters']['generations_total']:
+    def _stop_criterion(self):
+        if self.current_generation_ == CONFIG['training_parameters']['generations_total']:
             return True
         return False
 
-    def selection(self, environment, teams_population, programs_population):
+    def _selection(self, environment, teams_population, programs_population):
         # execute teams to calculate fitness
         for t in teams_population:
             environment.evaluate(t, training=True)
@@ -140,8 +139,8 @@ class SBB:
                 distances = []
                 for other_t in teams_population:
                     if t != other_t:
-                        num_programs_intersection = len(set(t.active_programs).intersection(other_t.active_programs))
-                        num_programs_union = len(set(t.active_programs).union(other_t.active_programs))
+                        num_programs_intersection = len(set(t.active_programs_).intersection(other_t.active_programs_))
+                        num_programs_union = len(set(t.active_programs_).union(other_t.active_programs_))
                         if num_programs_union > 0:
                             distance = 1.0 - (float(num_programs_intersection)/float(num_programs_union))
                         else:
@@ -149,12 +148,12 @@ class SBB:
                         distances.append(distance)
                 # get mean of the k nearest neighbours
                 sorted_list = sorted(distances)
-                k = CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance_configs']['k']
+                k = CONFIG['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['k']
                 min_values = sorted_list[:k]
                 diversity = numpy.mean(min_values)
                 # calculate fitness
-                p = CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance_configs']['p_value']
-                raw_fitness = t.fitness
+                p = CONFIG['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value']
+                raw_fitness = t.fitness_
                 t.fitness = (1.0-p)*(raw_fitness) + p*diversity
 
         # 1. Remove worst teams
@@ -181,7 +180,7 @@ class SBB:
         new_programs = []
         programs_to_clone = random.sample(programs_population, new_programs_to_create)
         for program in programs_to_clone:
-            clone = Program(self.current_generation, copy.deepcopy(program.instructions), program.action)
+            clone = Program(self.current_generation_, copy.deepcopy(program.instructions), program.action)
             clone.mutate()
             new_programs.append(clone)
 
@@ -189,11 +188,12 @@ class SBB:
         new_teams_to_create = CONFIG['training_parameters']['populations']['teams'] - len(teams_population)
         teams_to_clone = []
         while len(teams_to_clone) < new_teams_to_create:
-            selected = self.weighted_random_choice(teams_population)
-            teams_to_clone.append(selected)
+            fitness = [team.fitness_ for team in teams_population]
+            index = weighted_choice(fitness)
+            teams_to_clone.append(teams_population[index])
 
         for team in teams_to_clone:
-            clone = Team(self.current_generation, team.programs)
+            clone = Team(self.current_generation_, team.programs)
             clone.mutate(new_programs)
             teams_population.append(clone)
 
@@ -203,32 +203,22 @@ class SBB:
 
         return teams_population, programs_population
 
-    def weighted_random_choice(self, chromosomes):
-        fitness = [p.fitness_ for p in chromosomes]
-        total = sum(chromosome.fitness_ for chromosome in chromosomes)
-        pick = random.uniform(0, total)
-        current = 0
-        for chromosome in chromosomes:
-            current += chromosome.fitness_
-            if current > pick:
-                return chromosome
-
-    def generate_output_messages_per_run(self, best_teams_per_run):
+    def _generate_output_messages_per_run(self, best_teams_per_run):
         msg = ""
         msg += "\n\n################# RESULT PER RUN ####################"
         score_per_run = []
         for run_id in range(CONFIG['training_parameters']['runs_total']):
             best_team = best_teams_per_run[run_id]
             score_per_run.append(round_value_to_decimals(best_team.score_testset_))
-            msg += "\n"+str(run_id)+" Run best team: "+best_team.print_metrics()+"\n"
+            msg += "\n"+str(run_id)+" Run best team: "+best_team.metrics()+"\n"
         msg += "\n\nTest score per run: "+str(score_per_run)
         msg += "\nTest score, mean: "+str(numpy.mean(score_per_run))+", std: "+str(numpy.std(score_per_run))
         return msg
 
-    def generate_output_messages_for_best_team(self, best_run, final_best_team, actions_per_generation_per_run):
+    def _generate_output_messages_for_best_team(self, best_run, final_best_team, actions_per_generation_per_run):
         msg = ""
         msg += "\n\n#################### OVERALL BEST TEAM ####################"
-        msg += "\n"+str(best_run)+" Run best team: "+final_best_team.print_metrics()
+        msg += "\n"+str(best_run)+" Run best team: "+final_best_team.metrics()
 
         # if CONFIG['task'] == 'classification':
         #     msg += "\n\nAcc per classes: "+str(round_array_to_decimals(final_best_team.accuracies_per_class))
@@ -245,7 +235,7 @@ class SBB:
             msg += "\n\nActions Distribution (per gen.): "+str(actions_per_generation_per_run[best_run])
         return msg
 
-    def write_output_file(self, final_best_team, msg):
+    def _write_output_file(self, final_best_team, msg):
         if not os.path.exists(RESTRICTIONS['working_path']+"outputs/"):
             os.makedirs(RESTRICTIONS['working_path']+"outputs/")
         localtime = time.localtime()

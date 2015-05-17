@@ -1,5 +1,6 @@
 import sys
 
+# user configurable options
 CONFIG = {
     'task': 'classification',
     'classification_parameters': { # only used if 'task' is 'classification'
@@ -49,7 +50,9 @@ CONFIG = {
         'extra_registers': 1,
         'diversity': {
             'genotype_fitness_maintanance': False,
-            'genotype_fitness_maintanance_configs': {
+        },
+        'diversity_configs': {
+            'genotype_fitness_maintanance': {
                 'p_value': 0.1,
                 'k': 8,
             },        
@@ -65,6 +68,7 @@ CONFIG = {
     },
 }
 
+# restrictions used to validate CONFIG and to control the system low-level configurations
 RESTRICTIONS = {
     'task_types': ['classification', 'reinforcement'],
     'working_path': "SBB/",
@@ -96,9 +100,12 @@ def check_parameters():
             sys.stderr.write("Error: Invalid 'use_operations' in CONFIG! The valid values are "+str(valid_operations)+"\n")
             raise SystemExit
 
-    # if (CONFIG['advanced_training_parameters']['diversity']['fitness_sharing'] and 
-    #         CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']):
-    #     sys.stderr.write("Error: Maximum of one diversity metric allowed!\n")
-    #     raise SystemExit
+    one_active_diversity = False
+    for _, value in CONFIG['advanced_training_parameters']['diversity'].iteritems():
+        if value and one_active_diversity:
+            sys.stderr.write("Error: Maximum of one active diversity metric allowed!\n")
+            raise SystemExit
+        if value and not one_active_diversity:
+            one_active_diversity = True
 
 check_parameters()

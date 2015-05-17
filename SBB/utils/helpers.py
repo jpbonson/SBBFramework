@@ -1,3 +1,4 @@
+import random
 from ..config import RESTRICTIONS
 
 def round_value_to_decimals(value, round_decimals_to = RESTRICTIONS['round_to_decimals']):
@@ -9,6 +10,18 @@ def round_array_to_decimals(array, round_decimals_to = RESTRICTIONS['round_to_de
     for value in array:
         new_array.append(round_value_to_decimals(value))
     return new_array
+
+def weighted_choice(weights):
+    """
+    Randomly return an index from an array of weights so that higher weights have a higher chance of being selected.
+    """
+    pick = random.uniform(0, sum(weights))
+    current = 0
+    for index, f in enumerate(weights):
+        current += f
+        if current > pick:
+            return index
+    raise IndexError("weighted_choice() wasn't able to return an index")
 
 def remove_introns(instructions): # move code to C or Cython?
     """ Remove introns (ie. instructions that don't affect the final output) """

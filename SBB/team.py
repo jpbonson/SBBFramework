@@ -72,7 +72,7 @@ class Team:
 
     def _randomly_add_program(self, new_programs):
         if len(new_programs) == 0:
-            print "WARNING! NO NEW PROGRAMS!"
+            print "Warning! No new programs to add from this generation! If this warning is occuring often you probably got a bug."
             return
         test = False
         while not test:
@@ -88,7 +88,7 @@ class Team:
         for p in self.programs:
             p.remove_team(self)
 
-    def print_metrics(self):
+    def metrics(self):
         r = round_value_to_decimals
         teams_members_ids = [p.__repr__() for p in self.programs]
         m = str(self.team_id_)+":"+str(self.generation)
