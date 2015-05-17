@@ -12,7 +12,7 @@ from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
 from instruction import Instruction
 from environments.classification_environment import ClassificationEnvironment
-from utils.helpers import round_value_to_decimals, round_array_to_decimals, weighted_choice
+from utils.helpers import round_value_to_decimals, weighted_choice
 from config import CONFIG, RESTRICTIONS
 
 class SBB:
@@ -21,74 +21,76 @@ class SBB:
 
     def run(self):
         print "\n### Starting pSBB"
-        best_teams_per_run = []
+
         elapseds_per_run = []
-        actions_per_generation_per_run = []
-        # recall_per_generation_per_run = []
-        avg_score_per_generations_across_runs = [0.0] * CONFIG['training_parameters']['generations_total']
+        best_teams_per_run = []
+        avg_score_per_generations_across_runs = [0.0] * (CONFIG['training_parameters']['generations_total']+1)
+        recall_per_generation_per_run = [] # only for classification task
 
         environment = self._initialize_environment()
 
-        msg = "\n### CONFIG: "+str(CONFIG)+"\n"
-        msg += environment.metrics()
-        print msg
+        msg = ""
+        if CONFIG['advanced_training_parameters']['verbose'] > 0:
+            msg += "\n### CONFIG: "+str(CONFIG)+"\n"
+            msg += environment.metrics()
+            print msg
 
         for run_id in range(1, CONFIG['training_parameters']['runs_total']+1):
-            actions_counts = []
-            # recall_per_generation = []
-            best_teams_per_generation = []
+            print("\nStarting run: "+str(run_id))
+
             start_time = time.time()
-            print("\nStarting run: "+str(run_id))       
+            best_teams_per_generation = []
+            recall_per_generation = [] # only for classification task
 
+            # 1. Randomly initialize populations
             self.current_generation_ = 0
-
-            # randomly initialize populations
             programs_population = self._initialize_program_population()
             teams_population = self._initialize_team_population(programs_population)
             
             environment.reset()
             while not self._stop_criterion():
                 self.current_generation_ += 1
-                environment.setup()
                 print("\n>>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_id))
+                
+                # 2. Selection
+                environment.setup()
                 teams_population, programs_population = self._selection(environment, teams_population, programs_population)
 
-                fitness = [p.fitness_ for p in teams_population]
-                best_team = teams_population[fitness.index(max(fitness))]
+                # prepare and print metrics (per generation)
+                best_team = self._best_team(teams_population)
                 environment.evaluate(best_team)
                 print("best team: "+best_team.metrics())
 
-                best_teams_per_generation.append(best_team)
-                # recall_per_generation.append(best_team.recall)
-                avg_score_per_generations_across_runs[self.current_generation_-1] += best_team.score_testset_
-                actions_count = Counter([p.action for p in programs_population])
-                actions_counts.append(actions_count.values())
-                print "actions distribution: "+str(actions_count)
+                if CONFIG['advanced_training_parameters']['verbose'] > 0:
+                    print "actions distribution: "+str(Counter([p.action for p in programs_population]))
 
+                best_teams_per_generation.append(best_team)
+                avg_score_per_generations_across_runs[self.current_generation_] += best_team.score_testset_
+                if CONFIG['task'] == 'classification':
+                    recall_per_generation.append(best_team.extra_metrics_['recall_per_action'])
+
+            # prepare and print metrics (per run)
             print("\n"+str(run_id)+" Run's best team: "+best_team.metrics())
             elapsed_time = time.time() - start_time
-            best_teams_per_run.append(best_team)
             elapseds_per_run.append(elapsed_time)
-            actions_per_generation_per_run.append(actions_counts)
-            # recall_per_generation_per_run.append(recall_per_generation)
-            print("\nFinished run execution, elapsed time: "+str(elapsed_time)+" secs")
+            best_teams_per_run.append(best_team)
+            if CONFIG['task'] == 'classification':
+                recall_per_generation_per_run.append(recall_per_generation)
+            print("\nFinished run "+str(run_id)+", elapsed time: "+str(elapsed_time)+" secs")
 
-        # Get best run
-        best_result_metric = [p.score_testset_ for p in best_teams_per_run]
-        best_run = best_result_metric.index(max(best_result_metric))
-        final_best_team = best_teams_per_run[best_run]
-
-        # Generate final outputs
-        msg += self._generate_output_messages_per_run(best_teams_per_run)
-        msg += self._generate_output_messages_for_best_team(best_run, final_best_team, actions_per_generation_per_run)
-        msg += "\n\nFinished execution, total elapsed time: "+str(round_value_to_decimals(sum(elapseds_per_run)))+" secs"
-        msg += "\nElapsed times, mean: "+str(round_value_to_decimals(numpy.mean(elapseds_per_run)))+", std: "+str(round_value_to_decimals(numpy.std(elapseds_per_run)))+"\n"
+        # 3. Finalize execution (get final metrics, print to output, print to file)
+        best_team_overall, best_run = self._best_team_overall(best_teams_per_run)
+        msg += self._generate_output_messages_for_best_team_per_run(best_teams_per_run)
+        msg += self._generate_output_messages_for_best_team_overall(best_run, best_team_overall, recall_per_generation_per_run[best_run], avg_score_per_generations_across_runs)
+        msg += "\n\nFinished execution, total elapsed time: "+str(round_value_to_decimals(sum(elapseds_per_run)))+" secs "
+        msg += "(mean: "+str(round_value_to_decimals(numpy.mean(elapseds_per_run)))+", std: "+str(round_value_to_decimals(numpy.std(elapseds_per_run)))+")"
         print msg
-        self._write_output_file(final_best_team, msg)
+        self._write_output_file(best_team_overall, msg)
 
     def _initialize_environment(self):
-        environment = ClassificationEnvironment()
-        return environment
+        if CONFIG['task'] == 'classification':
+            return ClassificationEnvironment()
+        raise ValueError("No environment exists for "+str(CONFIG['task']))
 
     def _initialize_program_population(self):
         reset_programs_ids()
@@ -203,9 +205,19 @@ class SBB:
 
         return teams_population, programs_population
 
-    def _generate_output_messages_per_run(self, best_teams_per_run):
-        msg = ""
-        msg += "\n\n################# RESULT PER RUN ####################"
+    def _best_team(self, teams_population):
+        fitness = [p.fitness_ for p in teams_population]
+        best_team = teams_population[fitness.index(max(fitness))]
+        return best_team
+
+    def _best_team_overall(self, best_teams_per_run):
+        best_result_metric = [p.score_testset_ for p in best_teams_per_run]
+        best_run = best_result_metric.index(max(best_result_metric))
+        best_team_overall = best_teams_per_run[best_run]
+        return best_team_overall, best_run
+
+    def _generate_output_messages_for_best_team_per_run(self, best_teams_per_run):
+        msg = "\n\n################# RESULT PER RUN ####################"
         score_per_run = []
         for run_id in range(CONFIG['training_parameters']['runs_total']):
             best_team = best_teams_per_run[run_id]
@@ -215,31 +227,25 @@ class SBB:
         msg += "\nTest score, mean: "+str(numpy.mean(score_per_run))+", std: "+str(numpy.std(score_per_run))
         return msg
 
-    def _generate_output_messages_for_best_team(self, best_run, final_best_team, actions_per_generation_per_run):
-        msg = ""
-        msg += "\n\n#################### OVERALL BEST TEAM ####################"
-        msg += "\n"+str(best_run)+" Run best team: "+final_best_team.metrics()
+    def _generate_output_messages_for_best_team_overall(self, best_run, best_team_overall, recall_per_generation, avg_score_per_generations_across_runs):
+        msg = "\n\n#################### OVERALL BEST TEAM ####################"
+        msg += "\n"+str(best_run)+" Run best team: "+best_team_overall.metrics()
 
-        # if CONFIG['task'] == 'classification':
-        #     msg += "\n\nAcc per classes: "+str(round_array_to_decimals(final_best_team.accuracies_per_class))
-        #     msg += "\nConfusion Matrix:\n"+str(final_best_team.conf_matrix)
-        #     if CONFIG['verbose']['show_recall_per_action_per_generation']:
-        #         temp = [[round_value_to_decimals(x, round_decimals_to = 3) for x in a] for a in recall_per_generation_per_run[best_run]]
-        #         msg += "\n\nrecall_per_action_per_generation: "+str(temp)
+        if CONFIG['advanced_training_parameters']['verbose'] == 2 and CONFIG['task'] == 'classification':
+            msg += "\n\nrecall_per_action_per_generation: "+str(recall_per_generation)
+            msg += "\n\naccuracy: "+str(best_team_overall.extra_metrics_['accuracy'])
+            msg += "\n\nconfusion matrix:\n"+str(best_team_overall.extra_metrics_['confusion_matrix'])
             
-        if CONFIG['verbose']['show_avg_dr_per_generations']:
-            avg_score_per_generations_across_runs = [round_value_to_decimals(x/float(CONFIG['training_parameters']['runs_total']), round_decimals_to = 3) for x in avg_score_per_generations_across_runs]
+        if CONFIG['advanced_training_parameters']['verbose'] == 2:
+            avg_score_per_generations_across_runs = [round_value_to_decimals(x/float(CONFIG['training_parameters']['runs_total'])) for x in avg_score_per_generations_across_runs]
             msg += "\n\navg_avg_score_per_generations_across_runs: "+str(avg_score_per_generations_across_runs)
-
-        if CONFIG['verbose']['show_actions_distribution_per_generation']:
-            msg += "\n\nActions Distribution (per gen.): "+str(actions_per_generation_per_run[best_run])
         return msg
 
-    def _write_output_file(self, final_best_team, msg):
+    def _write_output_file(self, best_team_overall, msg):
         if not os.path.exists(RESTRICTIONS['working_path']+"outputs/"):
             os.makedirs(RESTRICTIONS['working_path']+"outputs/")
         localtime = time.localtime()
         pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+str(localtime.tm_hour)+str(localtime.tm_min)+str(localtime.tm_sec)
         text_file = open(RESTRICTIONS['working_path']+"outputs/"+str(CONFIG['classification_parameters']['dataset'])+"_output-"+pretty_localtime+".txt",'w')
-        text_file.write(msg+str(final_best_team))
+        text_file.write(msg+str(best_team_overall))
         text_file.close()

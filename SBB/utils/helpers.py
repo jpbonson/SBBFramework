@@ -24,7 +24,9 @@ def weighted_choice(weights):
     raise IndexError("weighted_choice() wasn't able to return an index")
 
 def remove_introns(instructions): # move code to C or Cython?
-    """ Remove introns (ie. instructions that don't affect the final output) """
+    """
+    Remove introns (ie. instructions that don't affect the final output)
+    """
     instructions_without_introns = []
     relevant_registers = [0]
     ignore_previous_if = False

@@ -1,15 +1,11 @@
-- fix prints em sbb.py e team.py para usarem 'extra_metrics'
-- refatorar sbb.py
+- refatorar _selection() in sbb.py
 - class para points (the point id should be the index of the point in this training dataset)
 - fazer classes Environment (usar Enviroment e heranca para ter ClassificationEnvironment e ReinforcementEnvironment?)
-- classe logger?
 - permitir rodar dataset iris
 - salvar os resultados obtidos para os points, para reaproveita-los se os mesmos points reaparecerem
 - fazer mapping das actions para numeros / consertar gambi de label -1
-- fazer opcao de output menos verboso
 - implementar pareto front com fitness sharing para teams e points
 - usar um random number generator: RNG = new Random( Integer.valueOf(arguments.get("seed")) ); (opcional)
-- checar imports
 - conferir se esta compativel com os parametros do jSBB (swap instructions?)
 - implementar diversity como heranca, ou de alguma forma facilmente extendivel
 
@@ -24,6 +20,7 @@
 - implementar tradutor que le o objeto do time e computa resultados?
 - adicionar mais documentacao
 - remover comentarios em portugues
+- classe logger?
 
 - implementar reinforcement learning para tictactoe
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions)

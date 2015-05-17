@@ -2,6 +2,7 @@ import random
 from collections import defaultdict, Counter
 import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
+from ..utils.helpers import round_array_to_decimals
 from ..config import CONFIG, RESTRICTIONS
 
 class ClassificationEnvironment:
@@ -176,7 +177,7 @@ class ClassificationEnvironment:
         recall = recall_score(desired_outputs, predicted_outputs, average=None)
         macro_recall = numpy.mean(recall)
         if not training: # to avoid wasting time processing metrics when they are not necessary
-            extra_metrics['recall_per_action'] = recall
+            extra_metrics['recall_per_action'] = round_array_to_decimals(recall)
             extra_metrics['accuracy'] = accuracy_score(desired_outputs, predicted_outputs)
             extra_metrics['confusion_matrix'] = confusion_matrix(desired_outputs, predicted_outputs)
         return macro_recall, extra_metrics

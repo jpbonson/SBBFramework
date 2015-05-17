@@ -57,14 +57,9 @@ CONFIG = {
                 'k': 8,
             },        
         },
-    },
-
-    'verbose': { 
-        # useful to set to 'True' if you are going to execute long runs
-        # these values will be printed to the console and to the output file
-        'show_recall_per_action_per_generation': False,
-        'show_avg_dr_per_generations': False,
-        'show_actions_distribution_per_generation': False,
+        'verbose': 1, # default = 1
+                      # = 2 if you are new to SBB, is debugging or are going to run really long jobs (ie. want the maximum information)
+                      # = 0 for just the necessary minimum information
     },
 }
 
@@ -85,6 +80,7 @@ RESTRICTIONS = {
     },
     'total_actions': -1, # initialized by the environment
     'total_inputs': -1, # initialized by the environment
+    'verbose_levels': [0, 1, 2],
 }
 
 
@@ -107,5 +103,9 @@ def check_parameters():
             raise SystemExit
         if value and not one_active_diversity:
             one_active_diversity = True
+
+    if CONFIG['advanced_training_parameters']['verbose'] not in RESTRICTIONS['verbose_levels']:
+        sys.stderr.write("Error: Invalid 'verbose' in CONFIG! The valid values are "+str(RESTRICTIONS['verbose_levels'])+"\n")
+        raise SystemExit
 
 check_parameters()
