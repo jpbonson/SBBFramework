@@ -1,12 +1,10 @@
-- class para points (the point id should be the index of the point in this training dataset)
 - fazer classes Environment (usar Enviroment e heranca para ter ClassificationEnvironment e ReinforcementEnvironment?)
-- permitir rodar dataset iris
-- salvar os resultados obtidos para os points, para reaproveita-los se os mesmos points reaparecerem
 - fazer mapping das actions para numeros / consertar gambi de label -1
+- permitir rodar dataset iris
+- class para points (the point id should be the index of the point in this training dataset)
+- salvar os resultados obtidos para os points, para reaproveita-los se os mesmos points reaparecerem
 - implementar pareto front com fitness sharing para teams e points
-- usar um random number generator: RNG = new Random( Integer.valueOf(arguments.get("seed")) ); (opcional)
-- conferir se esta compativel com os parametros do jSBB (swap instructions?)
-- implementar diversity como heranca, ou de alguma forma facilmente extendivel
+- conferir se esta compativel com os parametros do jSBB (seed 0, Pgap 4, Mgap 4, pBidSwap 0.1)
 
 - conferir codigo c++
 - velocidade de rodar?
@@ -40,31 +38,6 @@ jSBB:
 - outras diferenças entre a implementação java: tratamento para overflow (usar valor anterior vs zerar), if (ser um if memso vs mudar o sinal do regsitrador)
 - se children tiverem os mesmos learners que os parents, obriga a mutacionar
 - novos learners naquele time só são gerados mutacionnando outros learners daquele mesmo time (ao inves de globalmente)
-
-
-seed 0
-envType datasetEnv
-Psize 16
-Msize 16
-pd 0.1
-pa 0.1
-mua 0.1 
-omega 9
-t 100
-Pgap 4
-Mgap 4
-trainSetName dataset.train
-testSetName dataset.test
-trainSetSize 3772
-testSetSize 3427
-setDim 21
-maxProgSize 48
-pBidMutate 0.1
-pBidSwap 0.1
-pBidDelete 0.1
-pBidAdd 0.1
-statMod 10
-
 
 public double evaluate( Team team, Point point )
     {

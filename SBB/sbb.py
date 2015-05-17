@@ -7,6 +7,7 @@ import time
 import copy
 import numpy
 import os
+import sys
 from collections import Counter
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
@@ -19,6 +20,9 @@ from config import CONFIG, RESTRICTIONS
 class SBB:
     def __init__(self):
         self.current_generation_ = 0
+        if not CONFIG['advanced_training_parameters']['seed']:
+            CONFIG['advanced_training_parameters']['seed'] = random.randint(0, sys.maxint) # based on the system time
+        random.seed(CONFIG['advanced_training_parameters']['seed'])
 
     def run(self):
         print "\n### Starting pSBB"

@@ -46,6 +46,7 @@ CONFIG = {
     },
 
     'advanced_training_parameters': {
+        'seed': None, # default = None
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
