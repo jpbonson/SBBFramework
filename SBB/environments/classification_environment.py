@@ -12,15 +12,15 @@ class ClassificationEnvironment:
 
     def __init__(self):
         self.train_, self.test_ = self._initialize_datasets()
-        self.trainset_class_distribution_ = Counter(self._get_Y(self.train_))
-        self.testset_class_distribution_ = Counter(self._get_Y(self.test_))
+        self.trainset_class_distribution_ = Counter(flatten(self._get_Y(self.train_)))
+        self.testset_class_distribution_ = Counter(flatten(self._get_Y(self.test_)))
         self.total_actions_ = len(self.testset_class_distribution_)
         self.total_inputs_ = len(self.train_[0])-1
         self.trainset_per_action_ = self._get_data_per_action(self.train_)
         self.sample_ = None
         RESTRICTIONS['total_actions'] = self.total_actions_
         RESTRICTIONS['total_inputs'] = self.total_inputs_
-        RESTRICTIONS['action_mapping'] = {}
+        RESTRICTIONS['action_mapping'] = self.action_mapping_
 
     def _initialize_datasets(self):
         """
@@ -43,15 +43,42 @@ class ClassificationEnvironment:
             content = f.readlines()
             content = [x.strip('\n').strip() for x in content]
             content = [x.split(' ') for x in content]
-            content = [[float(y) for y in x]for x in content] # gambiarra (a ultima coluna nao deveria ser convertida para float)
+            X = self._get_X(content)
+            Y = self._get_Y(content)
+            self.action_mapping_ = self._create_action_mapping(Y)
+            Y = self._apply_action_mapping(Y)
+            content = numpy.append(X, Y, axis = 1)
+            content = [[float(y) for y in x]for x in content]
         return content
+
+    def _get_X(self, data):
+        """
+        Get the inputs
+        """
+        return [x[:-1] for x in data]
+
+    def _get_Y(self, data):
+        """
+        Get the labels
+        """
+        return [x[-1:] for x in data]
+
+    def _create_action_mapping(self, Y):
+        action_mapping_ = {}
+        labels = sorted(set(flatten(Y)))
+        for i, label in enumerate(labels):
+            action_mapping_[label] = i
+        return action_mapping_
+
+    def _apply_action_mapping(self, Y):
+        return [[self.action_mapping_[y] for y in x]for x in Y]
 
     def _get_normalization_params(self, train, test):
         """
         Get the mean and range for each column from the total dataset (train+test), excluding the labels column.
         """
         normalization_params = []
-        data = numpy.array(train+test)
+        data = numpy.append(train, test, axis = 0)
         attributes_len = len(data[0])
         for index in range(attributes_len-1): # dont get normalization parameters for the labels column
             column = data[:,index]
@@ -78,7 +105,7 @@ class ClassificationEnvironment:
     def _get_data_per_action(self, data):
         subsets_per_class = []
         for class_index in range(self.total_actions_):
-            values = [line for line in data if line[-1]-1 == class_index] # added -1 due to class labels starting at 1 instead of 0 # gambiarra
+            values = [line for line in data if line[-1] == class_index]
             subsets_per_class.append(values)
         return subsets_per_class
 
@@ -144,7 +171,7 @@ class ClassificationEnvironment:
         else:
             dataset = self.test_
         X = self._get_X(dataset)
-        Y = self._get_Y(dataset)
+        Y = flatten(self._get_Y(dataset))
         outputs = []
         for x in X:
             outputs.append(team.execute(x))
@@ -155,23 +182,6 @@ class ClassificationEnvironment:
         else:
             team.score_testset_ = score
             team.extra_metrics_ = extra_metrics
-
-    def _get_X(self, data):
-        """
-        Get the inputs
-        """
-        return [x[:-1] for x in data]
-
-    def _get_Y(self, data):
-        """
-        Get the labels
-        """
-        Y = [x[-1:] for x in data]
-        Y = flatten(Y)
-        Y = [int(y) for y in Y]
-        if 0 not in Y:
-            Y = [y-1 for y in Y]  # added -1 due to class labels starting at 1 # gambiarra
-        return Y
 
     def _calculate_team_metrics(self, predicted_outputs, desired_outputs, training=False):
         extra_metrics = {}
@@ -190,5 +200,5 @@ class ClassificationEnvironment:
         msg += "\nclass distribution (test set, "+str(len(self.test_))+" samples): "+str(self.testset_class_distribution_)
         msg += "\ntotal inputs: "+str(self.total_inputs_)
         msg += "\ntotal actions: "+str(self.total_actions_)
-        msg += "\nactions mapping: "
+        msg += "\nactions mapping: "+str(self.action_mapping_)
         return msg

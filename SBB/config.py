@@ -4,7 +4,7 @@ import sys
 CONFIG = {
     'task': 'classification',
     'classification_parameters': { # only used if 'task' is 'classification'
-        'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
+        'dataset': 'iris', # must have a .train and a .test file in the pSBB/datasets folder
         'use_oversampling': True,
     }, 
     'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
