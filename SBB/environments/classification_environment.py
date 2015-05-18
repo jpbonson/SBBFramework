@@ -2,7 +2,7 @@ import random
 from collections import defaultdict, Counter
 import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
-from ..utils.helpers import round_array_to_decimals
+from ..utils.helpers import round_array_to_decimals, flatten
 from ..config import CONFIG, RESTRICTIONS
 
 class ClassificationEnvironment:
@@ -20,6 +20,7 @@ class ClassificationEnvironment:
         self.sample_ = None
         RESTRICTIONS['total_actions'] = self.total_actions_
         RESTRICTIONS['total_inputs'] = self.total_inputs_
+        RESTRICTIONS['action_mapping'] = {}
 
     def _initialize_datasets(self):
         """
@@ -122,7 +123,7 @@ class ClassificationEnvironment:
                     sample += self._sample(sample, total_samples_per_class-len(sample))
 
         # join samples per class
-        sample = sum(samples_per_class, [])
+        sample = flatten(samples_per_class)
 
         random.shuffle(sample)
         return sample
@@ -166,7 +167,7 @@ class ClassificationEnvironment:
         Get the labels
         """
         Y = [x[-1:] for x in data]
-        Y = sum(Y, [])
+        Y = flatten(Y)
         Y = [int(y) for y in Y]
         if 0 not in Y:
             Y = [y-1 for y in Y]  # added -1 due to class labels starting at 1 # gambiarra

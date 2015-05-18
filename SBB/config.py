@@ -81,6 +81,7 @@ RESTRICTIONS = {
     },
     'total_actions': -1, # initialized by the environment
     'total_inputs': -1, # initialized by the environment
+    'action_mapping': {}, # initialized by the environment
     'verbose_levels': [0, 1, 2],
 }
 

@@ -11,6 +11,9 @@ def round_array_to_decimals(array, round_decimals_to = RESTRICTIONS['round_to_de
         new_array.append(round_value_to_decimals(value))
     return new_array
 
+def flatten(list_of_lists):
+    return sum(list_of_lists, [])
+
 def weighted_choice(weights):
     """
     Randomly return an index from an array of weights so that higher weights have a higher chance of being selected.
