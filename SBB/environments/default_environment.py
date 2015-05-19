@@ -1,6 +1,10 @@
 import abc
 
 class DefaultEnvironment():
+    """
+    Abstract class for environments. All environments must implement these 
+    methods to be able to work with SBB.
+    """
     __metaclass__  = abc.ABCMeta
 
     @abc.abstractmethod

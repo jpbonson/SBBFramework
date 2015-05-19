@@ -1,10 +1,23 @@
 import random
-from collections import defaultdict, Counter
+from collections import Counter
 import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from default_environment import DefaultEnvironment
 from ..utils.helpers import round_array_to_decimals, flatten
 from ..config import CONFIG, RESTRICTIONS
+
+class ClassificationPoint():
+    """
+    Encapsulates a dataset value as a point.
+    """
+
+    def __init__(self, point_id, inputs, output):
+        self.point_id = point_id
+        self.inputs = inputs
+        self.output = output
+
+    def __repr__(self): 
+        return "("+str(self.point_id)+": "+str(self.inputs)+", "+str(self.output)+")"
 
 class ClassificationEnvironment(DefaultEnvironment):
     """
@@ -12,12 +25,14 @@ class ClassificationEnvironment(DefaultEnvironment):
     """
 
     def __init__(self):
-        self.train_, self.test_ = self._initialize_datasets()
-        self.trainset_class_distribution_ = Counter(flatten(self._get_Y(self.train_)))
-        self.testset_class_distribution_ = Counter(flatten(self._get_Y(self.test_)))
+        train, test = self._initialize_datasets()
+        self.train_population_ = self._create_point_population(train)
+        self.test_population_ = self._create_point_population(test)
+        self.trainset_class_distribution_ = Counter([p.output for p in self.train_population_])
+        self.testset_class_distribution_ = Counter([p.output for p in self.test_population_])
         self.total_actions_ = len(self.testset_class_distribution_)
-        self.total_inputs_ = len(self.train_[0])-1
-        self.trainset_per_action_ = self._get_data_per_action(self.train_)
+        self.total_inputs_ = len(self.train_population_[0].inputs)
+        self.trainset_per_action_ = self._get_data_per_action(self.train_population_)
         self.sample_ = None
         RESTRICTIONS['total_actions'] = self.total_actions_
         RESTRICTIONS['total_inputs'] = self.total_inputs_
@@ -44,25 +59,13 @@ class ClassificationEnvironment(DefaultEnvironment):
             content = f.readlines()
             content = [x.strip('\n').strip() for x in content]
             content = [x.split(' ') for x in content]
-            X = self._get_X(content)
-            Y = self._get_Y(content)
+            X = [x[:-1] for x in content]
+            Y = [x[-1:] for x in content]
             self.action_mapping_ = self._create_action_mapping(Y)
             Y = self._apply_action_mapping(Y)
             content = numpy.append(X, Y, axis = 1)
             content = [[float(y) for y in x]for x in content]
         return content
-
-    def _get_X(self, data):
-        """
-        Get the inputs
-        """
-        return [x[:-1] for x in data]
-
-    def _get_Y(self, data):
-        """
-        Get the labels
-        """
-        return [x[-1:] for x in data]
 
     def _create_action_mapping(self, Y):
         action_mapping_ = {}
@@ -103,10 +106,19 @@ class ClassificationEnvironment(DefaultEnvironment):
             normalized_data.append(new_line)
         return normalized_data
 
-    def _get_data_per_action(self, data):
+    def _create_point_population(self, data):
+        """
+        Use dataset to create point population.
+        """
+        population = []
+        for index, item in enumerate(data):
+            population.append(ClassificationPoint(index, numpy.array(item[:-1]), item[-1]))
+        return population
+
+    def _get_data_per_action(self, point_population):
         subsets_per_class = []
         for class_index in range(self.total_actions_):
-            values = [line for line in data if line[-1] == class_index]
+            values = [point for point in point_population if point.output == class_index]
             subsets_per_class.append(values)
         return subsets_per_class
 
@@ -128,7 +140,7 @@ class ClassificationEnvironment(DefaultEnvironment):
             # get random samples per class
             samples_per_class = []
             for subset in self.trainset_per_action_:
-                samples_per_class.append(self._sample(subset, total_samples_per_class))
+                samples_per_class.append(self._sample_subset(subset, total_samples_per_class))
         else:
             current_subsets_per_class = self._get_data_per_action(self.sample_)
             total_samples_per_class_to_maintain = int(round(total_samples_per_class*(1.0-CONFIG['training_parameters']['replacement_rate']['points'])))
@@ -141,14 +153,14 @@ class ClassificationEnvironment(DefaultEnvironment):
 
             # add the new data points
             for i, subset in enumerate(maintained_subsets_per_class):
-                subset += self._sample(self.trainset_per_action_[i], total_samples_per_class_to_add)
+                subset += self._sample_subset(self.trainset_per_action_[i], total_samples_per_class_to_add)
             samples_per_class = maintained_subsets_per_class
 
         # ensure that the sampling is balanced for all classes, using oversampling for the unbalanced ones
         if CONFIG['classification_parameters']['use_oversampling']:
             for sample in samples_per_class:
                 while len(sample) < total_samples_per_class:
-                    sample += self._sample(sample, total_samples_per_class-len(sample))
+                    sample += self._sample_subset(sample, total_samples_per_class-len(sample))
 
         # join samples per class
         sample = flatten(samples_per_class)
@@ -156,7 +168,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         random.shuffle(sample)
         return sample
 
-    def _sample(self, subset, sample_size):
+    def _sample_subset(self, subset, sample_size):
         if len(subset) <= sample_size:
             sample = subset
         else:
@@ -168,11 +180,11 @@ class ClassificationEnvironment(DefaultEnvironment):
         Evaluate the team using the environment inputs.
         """
         if training:
-            dataset = self.sample_
+            population = self.sample_
         else:
-            dataset = self.test_
-        X = self._get_X(dataset)
-        Y = flatten(self._get_Y(dataset))
+            population = self.test_population_
+        X = [p.inputs for p in population]
+        Y = [p.output for p in population]
         outputs = []
         for x in X:
             outputs.append(team.execute(x))
@@ -197,8 +209,8 @@ class ClassificationEnvironment(DefaultEnvironment):
     def metrics(self):
         msg = ""
         msg += "\n### Dataset Info:"
-        msg += "\nclass distribution (train set, "+str(len(self.train_))+" samples): "+str(self.trainset_class_distribution_)
-        msg += "\nclass distribution (test set, "+str(len(self.test_))+" samples): "+str(self.testset_class_distribution_)
+        msg += "\nclass distribution (train set, "+str(len(self.train_population_))+" samples): "+str(self.trainset_class_distribution_)
+        msg += "\nclass distribution (test set, "+str(len(self.test_population_))+" samples): "+str(self.testset_class_distribution_)
         msg += "\ntotal inputs: "+str(self.total_inputs_)
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(self.action_mapping_)

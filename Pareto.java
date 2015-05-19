@@ -1,4 +1,3 @@
-- class para points (the point id should be the index of the point in this training dataset)
 - salvar os resultados obtidos para os points, para reaproveita-los se os mesmos points reaparecerem
 - implementar pareto front com fitness sharing para teams e points
 - conferir se esta compativel com os parametros do jSBB (Pgap 4, Mgap 4, pBidSwap 0.1)
