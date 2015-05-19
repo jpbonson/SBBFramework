@@ -24,6 +24,7 @@ class Team:
         self.score_testset_ = -1
         self.extra_metrics_ = {}
         self.active_programs_ = []
+        self.output_results = {}
 
     def _add_program(self, program):
         self.programs.append(program)
@@ -33,14 +34,18 @@ class Team:
         program.remove_team(self)
         self.programs.remove(program)
         
-    def execute(self, input_registers):
+    def execute(self, point):
         partial_outputs = []
-        for program in self.programs:
-            partial_outputs.append(program.execute(input_registers))
-        selected_program = self.programs[partial_outputs.index(max(partial_outputs))]
-        output_class = selected_program.action
-        if selected_program.program_id_ not in self.active_programs_:
-            self.active_programs_.append(selected_program.program_id_)
+        if point.point_id not in self.output_results:
+            for program in self.programs:
+                partial_outputs.append(program.execute(point.inputs))
+            selected_program = self.programs[partial_outputs.index(max(partial_outputs))]
+            output_class = selected_program.action
+            if selected_program.program_id_ not in self.active_programs_:
+                self.active_programs_.append(selected_program.program_id_)
+            self.output_results[point.point_id] = output_class
+        else:
+            output_class = self.output_results[point.point_id]
         return output_class
 
     def mutate(self, new_programs):

@@ -183,11 +183,10 @@ class ClassificationEnvironment(DefaultEnvironment):
             population = self.sample_
         else:
             population = self.test_population_
-        X = [p.inputs for p in population]
-        Y = [p.output for p in population]
         outputs = []
-        for x in X:
-            outputs.append(team.execute(x))
+        for point in population:
+            outputs.append(team.execute(point))
+        Y = [p.output for p in population]
         score, extra_metrics = self._calculate_team_metrics(outputs, Y, training)
         if training:
             team.fitness_ = score
