@@ -36,41 +36,6 @@ jSBB:
 - se children tiverem os mesmos learners que os parents, obriga a mutacionar
 - novos learners naquele time só são gerados mutacionnando outros learners daquele mesmo time (ao inves de globalmente)
 
-public double evaluate( Team team, Point point )
-    {
-        double rewardSum = 0;
-        long action;
-
-        // Get initial state defined by point
-        ArrayList<Double> state = point.getState();
-        
-        OpenBoolean end = new OpenBoolean(false);
-                
-        while( end.getValue() == false )
-        {
-            action = team.getAction( state );
-            rewardSum += act( point, action, state, end );
-        }
-
-        return rewardSum;
-    }
-    
-    // Act given the (starting) point, action, and (current) state. Return
-    // rewards and write whether or not end state has been reached.
-    public double act( Point point, long action, ArrayList<Double> state, OpenBoolean end )
-    {
-        end.setValue(true);
-        
-        if( point.getLabel() == getLabel(action) )
-          return 1.0;
-        else
-          return 0.0;
-    }
-
-package sbbj_fast;
-
-import java.util.*;
-
 // adicionar outputs para pointFrontSize e teamFrontSize
 // store only outcomes from the current point population! (to avoid too much memory usage)
 

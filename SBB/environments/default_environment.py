@@ -1,6 +1,6 @@
 import abc
 
-class Environment():
+class DefaultEnvironment():
     __metaclass__  = abc.ABCMeta
 
     @abc.abstractmethod
