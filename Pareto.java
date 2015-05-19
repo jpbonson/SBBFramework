@@ -1,4 +1,3 @@
-- fazer classes Environment (usar Enviroment e heranca para ter ClassificationEnvironment e ReinforcementEnvironment?)
 - class para points (the point id should be the index of the point in this training dataset)
 - salvar os resultados obtidos para os points, para reaproveita-los se os mesmos points reaparecerem
 - implementar pareto front com fitness sharing para teams e points

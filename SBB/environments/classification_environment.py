@@ -2,10 +2,11 @@ import random
 from collections import defaultdict, Counter
 import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
+from environment import Environment
 from ..utils.helpers import round_array_to_decimals, flatten
 from ..config import CONFIG, RESTRICTIONS
 
-class ClassificationEnvironment:
+class ClassificationEnvironment(Environment):
     """
     This environment encapsulates all methods to deal with a classification task.
     """
