@@ -194,7 +194,7 @@ class ClassificationEnvironment(DefaultEnvironment):
                     result = 1 # correct
                 else:
                     result = 0 # incorrect
-                team.results_per_points[point.point_id] = result
+                team.results_per_points_[point.point_id] = result
         Y = [p.output for p in population]
         score, extra_metrics = self._calculate_team_metrics(outputs, Y, is_training)
         if is_training:

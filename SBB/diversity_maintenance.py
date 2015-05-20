@@ -3,7 +3,8 @@ from config import CONFIG
 
 class DiversityMaintenance():
     """
-    This class contains all the diversity maintenance methods.
+    This class contains all the diversity maintenance methods. These methods should only 
+    modify the fitness_ attribute, nothing else.
     """
 
     @staticmethod
@@ -33,6 +34,23 @@ class DiversityMaintenance():
             diversity = numpy.mean(min_values)
             # calculate fitness
             p = CONFIG['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value']
-            raw_fitness = team.fitness_
-            team.fitness_ = (1.0-p)*(raw_fitness) + p*diversity
+            team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
+        return population
+
+    @staticmethod
+    def fitness_sharing(environment, population):   
+        # calculate denominators in each dimension
+        denominators = [1.0] * CONFIG['training_parameters']['populations']['points'] # initialized to 1 so we don't divide by zero
+        for index, point in enumerate(environment.point_population()):
+            for individual in population:
+                denominators[index] += float(individual.results_per_points_[point.point_id])
+
+        # calculate fitness
+        p = CONFIG['advanced_training_parameters']['diversity_configs']['fitness_sharing']['p_value']
+        for individual in population:
+            score = 0.0
+            for index, point in enumerate(environment.point_population()):
+                score += float(individual.results_per_points_[point.point_id]) / denominators[index]
+            diversity = score/float(len(environment.point_population()))
+            individual.fitness_ = (1.0-p)*(individual.fitness_) + p*diversity
         return population

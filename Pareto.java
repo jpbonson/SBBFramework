@@ -1,13 +1,11 @@
-- implementar pareto front com fitness sharing para teams
 - implementar pareto front com fitness sharing para points
-- conferir se esta compativel com os parametros do jSBB (Pgap 4, Mgap 4)
-- ensure pareto works even when the results arent just 0 and 1! (or find a way so they are always 0 and 1)
+- remover referencias aos points qd eles sao removidos da population?
+- conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 
-- conferir codigo c++
+- conferir codigo c++ (se necessario)
 - velocidade de rodar?
 - fazer testes unitarios
 - conferir se os resultados estao realmente ok e sem bugs
-- implementar if de troca de sinal?
 - conferir se requirement.txt funciona
 - identar ifs nas instructions?
 - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
@@ -93,38 +91,3 @@ DIMENSION RECEIVES THE SAME WEIGHTING). */
 
         return toDel
     }
-        
-    public void sharingScore( HashMap<Team, ArrayList<Double>> outMap, ArrayList<Team> forThese, ArrayList<Team> wrtThese )
-    {   
-        HashMap<Team, Double> score;
-
-        // Denominator in each dimension
-        ArrayList<Double> nd = new ArrayList<Double>();
-        
-        int outvecsize = outMap.get( outMap.keySet().iterator().next() ).size();
-        
-        // Initialize to 1 so we don't divide by zero
-        for( int s=0; s < outvecsize; s++ )
-            nd.add( 1.0 ); // ?
-        
-        // Calculate denominators in each dimension
-        for( Team team : wrtThese )
-        {
-            outvec = outMap.get(team);
-            for( int i=0; i < outvecsize; i++ )
-                nd.set(i, (double)(nd.get(i) + outvec.get(i)));         
-        }
-        
-        for( Team team : forThese )
-        {
-            outvec = outMap.get(team);
-            sc = 0.0;
-            
-            for( int i=0; i < outvecsize; i++ )
-                sc += ((double) outvec.get(i) / nd.get(i));
-            
-            score.put( team, sc ); // dividir sc pelo total? ou nem vale a pena por dar numeros muito pequenos?
-        }
-        return score
-    }
-}

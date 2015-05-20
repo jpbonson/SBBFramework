@@ -52,12 +52,16 @@ CONFIG = {
         'extra_registers': 1,
         'diversity': {
             'genotype_fitness_maintanance': True,
+            'fitness_sharing': True,
         },
-        'diversity_configs': {
+        'diversity_configs': { # p_value is how much strenght this diversity metric will be applied to the fitness
             'genotype_fitness_maintanance': {
                 'p_value': 0.1,
                 'k': 8,
-            },        
+            },
+            'fitness_sharing': {
+                'p_value': 0.8,
+            },       
         },
         'verbose': 1, # default = 1
                       # = 2 if you are new to SBB, is debugging or are going to run really long jobs (ie. want the maximum information)
@@ -98,14 +102,6 @@ def check_parameters():
         if op not in valid_operations:
             sys.stderr.write("Error: Invalid 'use_operations' in CONFIG! The valid values are "+str(valid_operations)+"\n")
             raise SystemExit
-
-    one_active_diversity = False
-    for _, value in CONFIG['advanced_training_parameters']['diversity'].iteritems():
-        if value and one_active_diversity:
-            sys.stderr.write("Error: Maximum of one active diversity metric allowed!\n")
-            raise SystemExit
-        if value and not one_active_diversity:
-            one_active_diversity = True
 
     if CONFIG['advanced_training_parameters']['verbose'] not in RESTRICTIONS['verbose_levels']:
         sys.stderr.write("Error: Invalid 'verbose' in CONFIG! The valid values are "+str(RESTRICTIONS['verbose_levels'])+"\n")

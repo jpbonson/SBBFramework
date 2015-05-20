@@ -24,8 +24,8 @@ class Team:
         self.score_testset_ = -1
         self.extra_metrics_ = {}
         self.active_programs_ = []
-        self.outputs_per_points = {}
-        self.results_per_points = {}
+        self.actions_per_points_ = {}
+        self.results_per_points_ = {}
 
     def _add_program(self, program):
         self.programs.append(program)
@@ -37,14 +37,14 @@ class Team:
         
     def execute(self, point, is_training):
         if is_training:
-            if point.point_id not in self.outputs_per_points:
+            if point.point_id not in self.actions_per_points_:
                 selected_program = self._select_program(point)
                 output_class = selected_program.action
-                self.outputs_per_points[point.point_id] = output_class
+                self.actions_per_points_[point.point_id] = output_class
                 if selected_program.program_id_ not in self.active_programs_:
                     self.active_programs_.append(selected_program.program_id_)
             else:
-                output_class = self.outputs_per_points[point.point_id]
+                output_class = self.actions_per_points_[point.point_id]
             return output_class
         else: # just runs the code without changing the attributes or using memmory
             selected_program = self._select_program(point)

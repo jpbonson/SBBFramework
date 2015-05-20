@@ -1,5 +1,5 @@
 import random
-from ..config import CONFIG, RESTRICTIONS
+from ..config import RESTRICTIONS
 
 def round_value_to_decimals(value, round_decimals_to = RESTRICTIONS['round_to_decimals']):
     number = float(10**round_decimals_to)
@@ -51,23 +51,6 @@ def weighted_choice(weights):
             return index
     raise IndexError("weighted_choice() wasn't able to return an index")
 
-def fitness_sharing(environment, population, results_map):
-    scores = []
-    denominators = [1.0] * CONFIG['training_parameters']['populations']['points'] # initialized to 1 so we don't divide by zero
-    
-    # calculate denominators in each dimension
-    for outcomes in results_map:
-        for index in range(len(outcomes)):
-            denominators[index] += float(outcomes[index])
-    
-    for individual, outcomes in zip(population, results_map):
-        score = 0.0
-        for index in range(len(outcomes)):
-            score += float(outcomes[index]) / denominators[index]
-        score = score/float(len(results_map)) # dividir score pelo total? ou nem vale a pena por dar numeros muito pequenos?
-        individual.fitness_ = score
-    return population
-
 def pareto_front(solutions, results_map): # unit test!
     """
     Finds the pareto front, i.e. the pareto dominant solutions.
@@ -76,7 +59,6 @@ def pareto_front(solutions, results_map): # unit test!
     objective where it is better.
     """
     front = []
-    front_outcomes = []
     dominateds = []
     i = 0
     for solution, outcomes1 in zip(solutions, results_map):
@@ -93,9 +75,8 @@ def pareto_front(solutions, results_map): # unit test!
             dominateds.append(solution)
         else:
             front.append(solution)
-            front_outcomes.append(outcomes1)
         i += 1
-    return front, front_outcomes, dominateds
+    return front, dominateds
 
 def check_if_is_dominated(results1, results2): # unit test!
     """
