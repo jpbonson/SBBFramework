@@ -16,11 +16,11 @@ CONFIG = {
         'generations_total': 30,
         'populations': {
             'programs': 60,
-            'teams': 30, # must be half the population_size (?)
+            'teams': 30,
             'points': 120,
         },
         'replacement_rate': {
-            'teams': 0.6,
+            'teams': 0.8,
             'points': 0.2,
         },
         'mutation': {
@@ -47,7 +47,7 @@ CONFIG = {
 
     'advanced_training_parameters': {
         'seed': None, # default = None
-        'use_pareto_for_team_population_selection': False, # if False, will use weighted choice
+        'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {

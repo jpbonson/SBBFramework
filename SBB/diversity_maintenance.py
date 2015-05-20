@@ -7,17 +7,17 @@ class DiversityMaintenance():
     """
 
     @staticmethod
-    def genotype_diversity(teams_population):
+    def genotype_diversity(population):
         """
         Diversity based on the genotype distance between teams, as described in:
             "Kelly, Stephen, and Malcolm I. Heywood. "Genotypic versus Behavioural Diversity for Teams 
             of Programs Under the 4-v-3 Keepaway Soccer Task." Twenty-Eighth AAAI Conference on 
             Artificial Intelligence. 2014."
         """
-        for team in teams_population:
+        for team in population:
             # create array of distances to other teams
             distances = []
-            for other_team in teams_population:
+            for other_team in population:
                 if team != other_team:
                     num_programs_intersection = len(set(team.active_programs_).intersection(other_team.active_programs_))
                     num_programs_union = len(set(team.active_programs_).union(other_team.active_programs_))
@@ -35,4 +35,4 @@ class DiversityMaintenance():
             p = CONFIG['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value']
             raw_fitness = team.fitness_
             team.fitness_ = (1.0-p)*(raw_fitness) + p*diversity
-        return teams_population
+        return population

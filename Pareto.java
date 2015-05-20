@@ -93,53 +93,6 @@ DIMENSION RECEIVES THE SAME WEIGHTING). */
 
         return toDel
     }
-
-    // Pareto dominance: Given a set of objectives, a solution is said to Pareto dominate another if the first is not inferior to the second in all objectives, and, additionally, there is at least one objective where it is better.
-
-    public void findParetoFront( HashMap<Team, ArrayList<Double>> vecMap)
-    {
-        // vecMap = a matrix of (teams) x (array of outcomes for each point)
-        
-        front = []
-        dominateds = []
-        i = 0
-        for team1, outcomes1 in vecMap:
-            is_dominated = false;
-            j = 0
-            for team2, outcomes2 in vecMap:
-                is_dominated, is_equal = is_dominated( outcomes1, outcomes2 );
-                if j < i and is_equal: // Also dominated if equal to a previous processed item, since this one would be irrelevant
-                    is_dominated = true
-                if is_dominated:
-                    break
-                j++
-            if is_dominated:
-                dominateds.append(team1)
-            else:
-                front.append(team1)
-            i++
-        return front, dominateds
-    }
-    
-    // Assume higher outcomes are better.
-    public boolean is_dominated( ArrayList<Double> team_outcomes1, ArrayList<Double> team_outcomes2) 
-    {       
-        epsilon = 0.1
-        equal = true      
-        for( int i=0; i < team_outcomes1.size(); i++ )
-        {
-            if( Math.abs(team_outcomes1.get(i) - team_outcomes2.get(i)) > epsilon ) { // if they are not basically equal in this dimension
-                equal = false
-                if( team_outcomes1.get(i) > team_outcomes2.get(i) ) // Not dominated since "team_outcomes1" is greater than "team_outcomes2" in this dimension
-                    return false, equal;
-            }
-        }
-
-        if equal:
-            return false, equal
-        else:
-            return true, equal
-    }
         
     public void sharingScore( HashMap<Team, ArrayList<Double>> outMap, ArrayList<Team> forThese, ArrayList<Team> wrtThese )
     {   

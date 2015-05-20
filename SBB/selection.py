@@ -3,7 +3,7 @@ import copy
 from program import Program
 from team import Team
 from diversity_maintenance import DiversityMaintenance
-from utils.helpers import weighted_choice, pareto_front
+from utils.helpers import weighted_choice, pareto_front, fitness_sharing
 from config import CONFIG
 
 class Selection:
@@ -16,28 +16,24 @@ class Selection:
         self.environment = environment
 
     def run(self, current_generation, teams_population, programs_population):
-        teams_population = self._evaluate_teams(teams_population) # to calculate fitness
+        teams_population = self._evaluate_teams(teams_population) # to calculate fitness and results_per_points
+        teams_to_remove = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
+        teams_to_keep = len(teams_population) - teams_to_remove
 
         if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-            teams_to_be_replaced = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
-            team_to_keep = len(teams_population) - teams_to_be_replaced
-            results_map = []
-            for team in teams_population:
-                results = []
-                for point in self.environment.point_population():
-                    results.append(team.results_per_points[point.point_id])
-                results_map.append(results)
-            front, dominateds = pareto_front(results_map) # TODO
-            # TODO: use diversity+fitness to add or remove from the pareto front
-            raise SystemExit
+            keep_teams, remove_teams = self._use_pareto_front_to_select_solutions(teams_population, teams_to_keep)
         else:
             teams_population = self._apply_diversity_maintenance(teams_population) # that modifies fitness to maintains diversity
-            teams_population = self._remove_worst_teams(teams_population)        
-            teams_to_clone = self._select_teams_to_clone(teams_population)
+            sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
+            keep_teams = sorted_solutions[0:teams_to_keep]
+            remove_teams = sorted_solutions[teams_to_keep:]
 
+        teams_population = self._remove_teams(teams_population, remove_teams)
+        teams_to_clone = self._select_teams_to_clone(keep_teams)
         programs_population = self._remove_programs_with_no_teams(programs_population)
         programs_population, new_programs = self._create_mutated_programs(current_generation, programs_population)
         teams_population = self._create_mutated_teams(current_generation, teams_population, teams_to_clone, new_programs)
+        print str(len(teams_population))+" "+str(len(programs_population))
         return teams_population, programs_population
 
     def _evaluate_teams(self, teams_population):
@@ -46,20 +42,45 @@ class Selection:
             self.environment.evaluate(t, is_training=True)
         return teams_population
 
+    def _use_pareto_front_to_select_solutions(self, teams_population, to_keep):
+        results_map = []
+        for team in teams_population:
+            results = []
+            for point in self.environment.point_population():
+                results.append(team.results_per_points[point.point_id])
+            results_map.append(results)
+        front, front_outcomes, dominateds = pareto_front(teams_population, results_map)
+
+        keep_solutions = front
+        remove_solutions = dominateds
+        if len(keep_solutions) < to_keep:  # must include some teams from dominateds
+            teams_population = fitness_sharing(self.environment, teams_population, results_map)
+            sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
+            for solution in sorted_solutions:
+                if solution not in keep_solutions:
+                    keep_solutions.append(solution)
+                    remove_solutions.remove(solution)
+                if len(keep_solutions) == to_keep:
+                    break
+        if len(keep_solutions) > to_keep: # must discard some teams from front
+            front = fitness_sharing(self.environment, front, front_outcomes)
+            sorted_solutions = sorted(front, key=lambda solution: solution.fitness_, reverse=False)
+            for solution in sorted_solutions:
+                keep_solutions.remove(solution)
+                remove_solutions.append(solution)
+                if len(keep_solutions) == to_keep:
+                    break
+        return keep_solutions, remove_solutions
+
     def _apply_diversity_maintenance(self, teams_population):
         if CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
             DiversityMaintenance.genotype_diversity(teams_population)
         return teams_population
 
-    def _remove_worst_teams(self, teams_population):
-        teams_to_be_replaced = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
-        team_to_keep = len(teams_population) - teams_to_be_replaced
-        while len(teams_population) > team_to_keep:
-            fitness = [t.fitness_ for t in teams_population]
-            worst_team_index = fitness.index(min(fitness))
-            worst_team = teams_population[worst_team_index]
-            worst_team.remove_references()
-            teams_population.remove(worst_team)
+    def _remove_teams(self, teams_population, remove_teams):
+        for team in remove_teams:
+            team.remove_references()
+        teams_population = [team for team in teams_population if team not in remove_teams]
         return teams_population
 
     def _select_teams_to_clone(self, teams_population):
