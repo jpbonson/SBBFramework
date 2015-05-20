@@ -1,5 +1,6 @@
-- implementar pareto front com fitness sharing para teams e points
-- conferir se esta compativel com os parametros do jSBB (Pgap 4, Mgap 4, pBidSwap 0.1)
+- implementar pareto front com fitness sharing para teams
+- implementar pareto front com fitness sharing para points
+- conferir se esta compativel com os parametros do jSBB (Pgap 4, Mgap 4)
 
 - conferir codigo c++
 - velocidade de rodar?
@@ -33,43 +34,10 @@ jSBB:
 - outras diferenças entre a implementação java: tratamento para overflow (usar valor anterior vs zerar), if (ser um if memso vs mudar o sinal do regsitrador)
 - se children tiverem os mesmos learners que os parents, obriga a mutacionar
 - novos learners naquele time só são gerados mutacionnando outros learners daquele mesmo time (ao inves de globalmente)
+- tem mutation de swap instructions
 
 // adicionar outputs para pointFrontSize e teamFrontSize
 // store only outcomes from the current point population! (to avoid too much memory usage)
-
-public class SCM
-{
-    public void go()
-    {
-        // initialize point population
-        // initialize team population
-        
-        // evaluate initial set of teams
-        for( Point point : P )
-            for( Team team : M )
-                evaluate( team, point );
-        
-        // Main Loop
-        for( t=0; t < this.t; t++ )
-        {
-            genPoints(t);
-            genTeams(t);
-            
-            for( Point point : P )
-                for( Team team : M )
-                    if( point.getGTime() == t || team.getGTime() == t )
-                        evaluate( team, point );
-            
-            // Select members into the next generation
-            toDel_points = selection(t, selecting_team=false);
-            toDel_teams = selection(t, selecting_team=true);
-
-            // Delete points from toDel_points from the population (along with its references in teams)
-            // Delete teams from toDel_teams from the population (along with its references in points)
-        }
-        
-        // test and print results
-    }
 
     public void selection( long t )
     {

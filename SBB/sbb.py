@@ -4,7 +4,6 @@
 
 import random
 import time
-import copy
 import numpy
 import os
 import sys
@@ -12,9 +11,9 @@ from collections import Counter
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
 from instruction import Instruction
-from diversity_maintenance import DiversityMaintenance
 from environments.classification_environment import ClassificationEnvironment
-from utils.helpers import round_value_to_decimals, weighted_choice
+from selection import Selection
+from utils.helpers import round_value_to_decimals
 from config import CONFIG, RESTRICTIONS
 
 class SBB:
@@ -33,8 +32,9 @@ class SBB:
         avg_score_per_generations_across_runs = [0.0] * (CONFIG['training_parameters']['generations_total']+1)
         recall_per_generation_per_run = [] # only for classification task
 
-        # initialize environment
+        # initialize environment and selection algorithm
         environment = self._initialize_environment()
+        selection = Selection(environment)
 
         msg = ""
         if CONFIG['advanced_training_parameters']['verbose'] > 0:
@@ -61,7 +61,7 @@ class SBB:
                 
                 # 2. Selection
                 environment.setup()
-                teams_population, programs_population = self._selection(environment, teams_population, programs_population)
+                teams_population, programs_population = selection.run(self.current_generation_, teams_population, programs_population)
 
                 # prepare and print metrics (per generation)
                 best_team = self._best_team(teams_population)
@@ -136,62 +136,6 @@ class SBB:
         if self.current_generation_ == CONFIG['training_parameters']['generations_total']:
             return True
         return False
-
-    def _selection(self, environment, teams_population, programs_population):
-        # 1. Execute teams to calculate fitnessteams_population
-        for t in teams_population:
-            environment.evaluate(t, training=True)
-
-        # 2. Apply diversity maintenance
-        if CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
-            teams_population = DiversityMaintenance.genotype_diversity(teams_population)
-
-        # 3. Remove worst teams
-        teams_to_be_replaced = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
-        new_teams_population_len = len(teams_population) - teams_to_be_replaced
-        while len(teams_population) > new_teams_population_len:
-            fitness = [t.fitness_ for t in teams_population]
-            worst_team_index = fitness.index(min(fitness))
-            worst_team = teams_population[worst_team_index]
-            worst_team.remove_references()
-            teams_population.remove(worst_team)
-
-        # 4. Remove programs are not in a team
-        to_remove = []
-        for p in programs_population:
-            if len(p.teams_) == 0:
-                to_remove.append(p)
-        for p in programs_population:
-            if p in to_remove:
-                programs_population.remove(p)
-
-        # 5. Create new mutated programs
-        new_programs_to_create = CONFIG['training_parameters']['populations']['programs'] - len(programs_population)
-        programs_to_clone = random.sample(programs_population, new_programs_to_create)
-        new_programs = []
-        for program in programs_to_clone:
-            clone = Program(self.current_generation_, copy.deepcopy(program.instructions), program.action)
-            clone.mutate()
-            new_programs.append(clone)
-
-        # 6. Add new teams, cloning the old ones and mutating (if adding a program, can only add a new created program)
-        new_teams_to_create = CONFIG['training_parameters']['populations']['teams'] - len(teams_population)
-        teams_to_clone = []
-        while len(teams_to_clone) < new_teams_to_create:
-            fitness = [team.fitness_ for team in teams_population]
-            index = weighted_choice(fitness)
-            teams_to_clone.append(teams_population[index])
-
-        for team in teams_to_clone:
-            clone = Team(self.current_generation_, team.programs)
-            clone.mutate(new_programs)
-            teams_population.append(clone)
-
-        # 7. Add new programs to population, so it has the same size as before
-        for p in new_programs:
-            programs_population.append(p)
-
-        return teams_population, programs_population
 
     def _best_team(self, teams_population):
         fitness = [p.fitness_ for p in teams_population]

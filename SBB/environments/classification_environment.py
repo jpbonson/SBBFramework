@@ -2,18 +2,17 @@ import random
 from collections import Counter
 import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
-from default_environment import DefaultEnvironment
+from default_environment import DefaultEnvironment, DefaultPoint
 from ..utils.helpers import round_array_to_decimals, flatten
 from ..config import CONFIG, RESTRICTIONS
 
-class ClassificationPoint():
+class ClassificationPoint(DefaultPoint):
     """
     Encapsulates a dataset value as a point.
     """
 
     def __init__(self, point_id, inputs, output):
-        self.point_id = point_id
-        self.inputs = inputs
+        super(ClassificationPoint, self).__init__(point_id, inputs)
         self.output = output
 
     def __repr__(self): 

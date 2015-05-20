@@ -1,6 +1,15 @@
 import abc
 
-class DefaultEnvironment():
+class DefaultPoint(object):
+    """
+    Encapsulates a value from the environment as a point.
+    """
+
+    def __init__(self, point_id, inputs):
+        self.point_id = point_id
+        self.inputs = inputs
+
+class DefaultEnvironment(object):
     """
     Abstract class for environments. All environments must implement these 
     methods to be able to work with SBB.
