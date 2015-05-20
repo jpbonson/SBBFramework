@@ -26,6 +26,12 @@ def weighted_choice(weights):
             return index
     raise IndexError("weighted_choice() wasn't able to return an index")
 
+def pareto_front(results_map):
+    front = []
+    dominateds = []
+    # TODO
+    return front, dominateds
+
 def remove_introns(instructions): # move code to C or Cython?
     """
     Remove introns (ie. instructions that don't affect the final output)

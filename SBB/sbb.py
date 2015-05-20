@@ -54,13 +54,12 @@ class SBB:
             programs_population = self._initialize_program_population()
             teams_population = self._initialize_team_population(programs_population)
             
-            environment.reset()
+            environment.reset_point_population()
             while not self._stop_criterion():
                 self.current_generation_ += 1
                 print("\n>>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_id))
                 
                 # 2. Selection
-                environment.setup()
                 teams_population, programs_population = selection.run(self.current_generation_, teams_population, programs_population)
 
                 # prepare and print metrics (per generation)

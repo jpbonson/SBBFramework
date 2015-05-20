@@ -121,10 +121,10 @@ class ClassificationEnvironment(DefaultEnvironment):
             subsets_per_class.append(values)
         return subsets_per_class
 
-    def reset(self):
+    def reset_point_population(self):
         self.sample_ = None
 
-    def setup(self):
+    def setup_point_population(self):
         self.sample_ = self._get_sample()
 
     def _get_sample(self):
@@ -174,31 +174,41 @@ class ClassificationEnvironment(DefaultEnvironment):
             sample = random.sample(subset, sample_size)
         return sample
 
-    def evaluate(self, team, training=False):
+    def point_population(self):
+        return self.sample_
+
+    def evaluate(self, team, is_training=False):
         """
         Evaluate the team using the environment inputs.
         """
-        if training:
+        if is_training:
             population = self.sample_
         else:
             population = self.test_population_
         outputs = []
         for point in population:
-            outputs.append(team.execute(point))
+            output = team.execute(point, is_training)
+            outputs.append(output)
+            if is_training:
+                if output == point.output:
+                    result = 1 # correct
+                else:
+                    result = 0 # incorrect
+                team.results_per_points[point.point_id] = result
         Y = [p.output for p in population]
-        score, extra_metrics = self._calculate_team_metrics(outputs, Y, training)
-        if training:
+        score, extra_metrics = self._calculate_team_metrics(outputs, Y, is_training)
+        if is_training:
             team.fitness_ = score
             team.score_trainingset_ = score
         else:
             team.score_testset_ = score
             team.extra_metrics_ = extra_metrics
 
-    def _calculate_team_metrics(self, predicted_outputs, desired_outputs, training=False):
+    def _calculate_team_metrics(self, predicted_outputs, desired_outputs, is_training=False):
         extra_metrics = {}
         recall = recall_score(desired_outputs, predicted_outputs, average=None)
         macro_recall = numpy.mean(recall)
-        if not training: # to avoid wasting time processing metrics when they are not necessary
+        if not is_training: # to avoid wasting time processing metrics when they are not necessary
             extra_metrics['recall_per_action'] = round_array_to_decimals(recall)
             extra_metrics['accuracy'] = accuracy_score(desired_outputs, predicted_outputs)
             extra_metrics['confusion_matrix'] = confusion_matrix(desired_outputs, predicted_outputs)

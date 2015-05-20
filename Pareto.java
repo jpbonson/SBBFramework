@@ -1,6 +1,7 @@
 - implementar pareto front com fitness sharing para teams
 - implementar pareto front com fitness sharing para points
 - conferir se esta compativel com os parametros do jSBB (Pgap 4, Mgap 4)
+- ensure pareto works even when the results arent just 0 and 1! (or find a way so they are always 0 and 1)
 
 - conferir codigo c++
 - velocidade de rodar?
@@ -39,6 +40,11 @@ jSBB:
 // adicionar outputs para pointFrontSize e teamFrontSize
 // store only outcomes from the current point population! (to avoid too much memory usage)
 
+/* CURRENTLY THE SHARING SCORE CALCULATION IS OK BECAUSE EACH
+DIMENSION IS EITHER 0 OR 1. IF THE DIMENSIONS CAN TAKE ON
+DIFFERENT RANGES, MAY NEED TO NORMALIZE (THIS ASSUMES THAT EACH
+DIMENSION RECEIVES THE SAME WEIGHTING). */
+
     public void selection( long t )
     {
         if selecting_team:
@@ -56,7 +62,7 @@ jSBB:
             int keep = Psize - Pgap;
              
         if selecting_team:  
-            HashMap<Team, ArrayList<Double>> outMap = // a matrix of (teams) x (array of outcomes for each point)
+            HashMap<Team, ArrayList<Double>> outMap = // a matrix of (teams) x (array of outcomes for each point, just for the current point population)
         else:
             // trying to get points that are selecting distinct teams
             // using Pareto for the point population isn't favouring points that are easy to guess?

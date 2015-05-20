@@ -23,24 +23,32 @@ class DefaultEnvironment(object):
         """
 
     @abc.abstractmethod
-    def reset(self):
+    def reset_point_population(self):
          """
          Method that is called at the beginning of each run by SBB, to reset the 
          variables that will be used by the generations.
          """
 
     @abc.abstractmethod
-    def setup(self):
+    def setup_point_population(self):
          """
          Method that is called at the beginning of each generation by SBB, to set the 
          variables that will be used by the generation.
          """
 
     @abc.abstractmethod
-    def evaluate(self, team, training=False):
+    def point_population(self):
+         """
+         Returns a list of Points
+         """
+
+    @abc.abstractmethod
+    def evaluate(self, team, is_training=False):
         """
         Evaluate the team using the environment inputs. May be executed in the training
         or the test mode.
+        This method must set the attribute results_per_points of the team, if you intend to 
+        use pareto.
         """
 
     @abc.abstractmethod

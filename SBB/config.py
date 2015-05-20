@@ -46,7 +46,8 @@ CONFIG = {
     },
 
     'advanced_training_parameters': {
-        'seed': 1, # default = None
+        'seed': None, # default = None
+        'use_pareto_for_team_population_selection': False, # if False, will use weighted choice
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {

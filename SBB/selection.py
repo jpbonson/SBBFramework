@@ -3,7 +3,7 @@ import copy
 from program import Program
 from team import Team
 from diversity_maintenance import DiversityMaintenance
-from utils.helpers import weighted_choice
+from utils.helpers import weighted_choice, pareto_front
 from config import CONFIG
 
 class Selection:
@@ -17,17 +17,33 @@ class Selection:
 
     def run(self, current_generation, teams_population, programs_population):
         teams_population = self._evaluate_teams(teams_population) # to calculate fitness
-        teams_population = self._apply_diversity_maintenance(teams_population) # that modifies fitness to maintains diversity
-        teams_population = self._remove_worst_teams(teams_population)        
-        teams_to_clone = self._select_teams_to_clone(teams_population)
+
+        if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
+            teams_to_be_replaced = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
+            team_to_keep = len(teams_population) - teams_to_be_replaced
+            results_map = []
+            for team in teams_population:
+                results = []
+                for point in self.environment.point_population():
+                    results.append(team.results_per_points[point.point_id])
+                results_map.append(results)
+            front, dominateds = pareto_front(results_map) # TODO
+            # TODO: use diversity+fitness to add or remove from the pareto front
+            raise SystemExit
+        else:
+            teams_population = self._apply_diversity_maintenance(teams_population) # that modifies fitness to maintains diversity
+            teams_population = self._remove_worst_teams(teams_population)        
+            teams_to_clone = self._select_teams_to_clone(teams_population)
+
         programs_population = self._remove_programs_with_no_teams(programs_population)
         programs_population, new_programs = self._create_mutated_programs(current_generation, programs_population)
         teams_population = self._create_mutated_teams(current_generation, teams_population, teams_to_clone, new_programs)
         return teams_population, programs_population
 
     def _evaluate_teams(self, teams_population):
+        self.environment.setup_point_population()
         for t in teams_population:
-            self.environment.evaluate(t, training=True)
+            self.environment.evaluate(t, is_training=True)
         return teams_population
 
     def _apply_diversity_maintenance(self, teams_population):
@@ -37,8 +53,8 @@ class Selection:
 
     def _remove_worst_teams(self, teams_population):
         teams_to_be_replaced = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
-        new_teams_population_len = len(teams_population) - teams_to_be_replaced
-        while len(teams_population) > new_teams_population_len:
+        team_to_keep = len(teams_population) - teams_to_be_replaced
+        while len(teams_population) > team_to_keep:
             fitness = [t.fitness_ for t in teams_population]
             worst_team_index = fitness.index(min(fitness))
             worst_team = teams_population[worst_team_index]
