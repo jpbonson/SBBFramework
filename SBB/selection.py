@@ -16,7 +16,7 @@ class Selection:
         self.environment = environment
 
     def run(self, current_generation, teams_population, programs_population):
-        teams_population = self._evaluate_teams(teams_population) # to calculate fitness and results_per_points
+        teams_population = self._evaluate_teams(teams_population) # to calculate fitness_ and results_per_points_
         teams_to_remove = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
         teams_to_keep = len(teams_population) - teams_to_remove
 
@@ -37,9 +37,10 @@ class Selection:
         return teams_population, programs_population
 
     def _evaluate_teams(self, teams_population):
-        self.environment.setup_point_population()
+        self.environment.setup_point_population(teams_population)
         for t in teams_population:
-            self.environment.evaluate(t, is_training=True)
+            self.environment.evaluate_team(t, is_training=True)
+        self.environment.evaluate_point_population(teams_population)
         return teams_population
 
     def _use_pareto_front_to_select_solutions(self, teams_population, to_keep):

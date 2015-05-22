@@ -38,6 +38,11 @@ def remove_introns(instructions): # move code to C or Cython?
             ignore_previous_if = True
     return instructions_without_introns
 
+def is_nearly_equal_to(value1, value2):
+    if abs(value1 - value2) < 0.1:
+        return True
+    return False
+
 def weighted_choice(weights):
     """
     Randomly return an index from an array of weights so that higher weights have a higher chance of 
@@ -84,7 +89,7 @@ def check_if_is_dominated(results1, results2): # unit test!
     """  
     equal = True
     for index in range(len(results1)):
-        if abs(results1[index] - results2[index]) > 0.1: # if they are not basically equal in this dimension
+        if not is_nearly_equal_to(results1[index], results2[index]):
             equal = False
             if(results1[index] > results2[index]): # Not dominated since "results1" is greater than "results2" in this dimension
                 return False, equal

@@ -3,7 +3,8 @@ from collections import Counter
 import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from default_environment import DefaultEnvironment, DefaultPoint
-from ..utils.helpers import round_array_to_decimals, flatten
+from ..diversity_maintenance import DiversityMaintenance
+from ..utils.helpers import round_array_to_decimals, flatten, pareto_front, is_nearly_equal_to
 from ..config import CONFIG, RESTRICTIONS
 
 class ClassificationPoint(DefaultPoint):
@@ -16,7 +17,10 @@ class ClassificationPoint(DefaultPoint):
         self.output = output
 
     def __repr__(self): 
-        return "("+str(self.point_id)+": "+str(self.inputs)+", "+str(self.output)+")"
+        return "("+str(self.point_id)+")"
+
+    def __str__(self): 
+        return "("+str(self.point_id)+")"
 
 class ClassificationEnvironment(DefaultEnvironment):
     """
@@ -25,17 +29,20 @@ class ClassificationEnvironment(DefaultEnvironment):
 
     def __init__(self):
         train, test = self._initialize_datasets()
-        self.train_population_ = self._create_point_population(train)
-        self.test_population_ = self._create_point_population(test)
+        self.train_population_ = self._dataset_to_points(train)
+        self.test_population_ = self._dataset_to_points(test)
         self.trainset_class_distribution_ = Counter([p.output for p in self.train_population_])
         self.testset_class_distribution_ = Counter([p.output for p in self.test_population_])
         self.total_actions_ = len(self.testset_class_distribution_)
         self.total_inputs_ = len(self.train_population_[0].inputs)
         self.trainset_per_action_ = self._get_data_per_action(self.train_population_)
-        self.sample_ = None
+        self.point_population_ = None
         RESTRICTIONS['total_actions'] = self.total_actions_
         RESTRICTIONS['total_inputs'] = self.total_inputs_
         RESTRICTIONS['action_mapping'] = self.action_mapping_
+        # ensures the population size is multiple of the total actions
+        total_samples_per_class = CONFIG['training_parameters']['populations']['points']/self.total_actions_
+        CONFIG['training_parameters']['populations']['points'] = total_samples_per_class*self.total_actions_
 
     def _initialize_datasets(self):
         """
@@ -105,7 +112,7 @@ class ClassificationEnvironment(DefaultEnvironment):
             normalized_data.append(new_line)
         return normalized_data
 
-    def _create_point_population(self, data):
+    def _dataset_to_points(self, data):
         """
         Use dataset to create point population.
         """
@@ -122,50 +129,41 @@ class ClassificationEnvironment(DefaultEnvironment):
         return subsets_per_class
 
     def reset_point_population(self):
-        self.sample_ = None
+        self.point_population_ = None
 
-    def setup_point_population(self):
-        self.sample_ = self._get_sample()
-
-    def _get_sample(self):
+    def setup_point_population(self, teams_population):
         """
-        Get a sample of the training dataset. If it is the first generation of the run, just
-        gets random samples for each action of the dataset. For the next generations, it 
+        Get a sample of the training dataset to create the point population. If it is the first generation 
+        of the run, just gets random samples for each action of the dataset. For the next generations, it 
         replaces some of the points in the sample for new points.
         """
         total_samples_per_class = CONFIG['training_parameters']['populations']['points']/self.total_actions_
 
-        if not self.sample_: # first sampling of the run
+        if not self.point_population_: # first sampling of the run
             # get random samples per class
             samples_per_class = []
             for subset in self.trainset_per_action_:
                 samples_per_class.append(self._sample_subset(subset, total_samples_per_class))
         else:
-            current_subsets_per_class = self._get_data_per_action(self.sample_)
-            total_samples_per_class_to_maintain = int(round(total_samples_per_class*(1.0-CONFIG['training_parameters']['replacement_rate']['points'])))
-            total_samples_per_class_to_add = total_samples_per_class - total_samples_per_class_to_maintain
+            samples_per_class = self.samples_per_class_to_keep
 
-            # obtain the data points that will be maintained
-            maintained_subsets_per_class = []
-            for subset in current_subsets_per_class:
-                maintained_subsets_per_class.append(random.sample(subset, total_samples_per_class_to_maintain))
+            # remove the removed points from the teams, in order to save memory. If you want to speed up and
+            # don't care about the memory, you may comment the next 5 lines
+            to_remove = flatten(self.samples_per_class_to_remove)
+            for team in teams_population:
+                for point in to_remove:
+                    if point.point_id in team.results_per_points_:
+                        team.results_per_points_.pop(point.point_id)
 
-            # add the new data points
-            for i, subset in enumerate(maintained_subsets_per_class):
-                subset += self._sample_subset(self.trainset_per_action_[i], total_samples_per_class_to_add)
-            samples_per_class = maintained_subsets_per_class
+        # ensure that the sampling is balanced for all classes, using oversampling for the ones with less than the minimum samples
+        for sample in samples_per_class:
+            while len(sample) < total_samples_per_class:
+                sample += self._sample_subset(sample, total_samples_per_class-len(sample))
 
-        # ensure that the sampling is balanced for all classes, using oversampling for the unbalanced ones
-        if CONFIG['classification_parameters']['use_oversampling']:
-            for sample in samples_per_class:
-                while len(sample) < total_samples_per_class:
-                    sample += self._sample_subset(sample, total_samples_per_class-len(sample))
-
-        # join samples per class
-        sample = flatten(samples_per_class)
-
+        sample = flatten(samples_per_class) # join samples per class
         random.shuffle(sample)
-        return sample
+        self.point_population_ = sample
+        self._check_for_bugs()
 
     def _sample_subset(self, subset, sample_size):
         if len(subset) <= sample_size:
@@ -174,15 +172,89 @@ class ClassificationEnvironment(DefaultEnvironment):
             sample = random.sample(subset, sample_size)
         return sample
 
-    def point_population(self):
-        return self.sample_
+    def _check_for_bugs(self):
+        if len(self.point_population_) != CONFIG['training_parameters']['populations']['points']:
+            raise ValueError("The size of the points population changed during selection! You got a bug! (it is: "+str(len(self.point_population_))+", should be: "+str(CONFIG['training_parameters']['populations']['points'])+")")
 
-    def evaluate(self, team, is_training=False):
+    def evaluate_point_population(self, teams_population):
+        total_samples_per_class = CONFIG['training_parameters']['populations']['points']/self.total_actions_
+        current_subsets_per_class = self._get_data_per_action(self.point_population_)
+        total_samples_per_class_to_keep = int(round(total_samples_per_class*(1.0-CONFIG['training_parameters']['replacement_rate']['points'])))
+        total_samples_per_class_to_add = total_samples_per_class - total_samples_per_class_to_keep
+
+        kept_subsets_per_class = []
+        removed_subsets_per_class = []
+        if CONFIG['advanced_training_parameters']['use_pareto_for_point_population_selection']:
+            # obtain the pareto front for each subset
+            for subset in current_subsets_per_class:
+                # create the results_map, so that the pareto front will contain points that are selecting distinct teams
+                results_map = self._generate_results_map_for_pareto(subset, teams_population)
+                front, dominateds = pareto_front(subset, results_map)
+
+                keep_solutions = front
+                remove_solutions = dominateds
+                if len(keep_solutions) < total_samples_per_class_to_keep:  # must include some teams from dominateds
+                    subset = DiversityMaintenance.fitness_sharing_for_points(subset, results_map)
+                    sorted_solutions = sorted(subset, key=lambda solution: solution.fitness_, reverse=True)
+                    for solution in sorted_solutions:
+                        if solution not in keep_solutions:
+                            keep_solutions.append(solution)
+                            remove_solutions.remove(solution)
+                        if len(keep_solutions) == total_samples_per_class_to_keep:
+                            break
+                if len(keep_solutions) > total_samples_per_class_to_keep: # must discard some teams from front
+                    front = DiversityMaintenance.fitness_sharing_for_points(front, results_map)
+                    sorted_solutions = sorted(front, key=lambda solution: solution.fitness_, reverse=False)
+                    for solution in sorted_solutions:
+                        keep_solutions.remove(solution)
+                        remove_solutions.append(solution)
+                        if len(keep_solutions) == total_samples_per_class_to_keep:
+                            break
+                kept_subsets_per_class.append(keep_solutions)
+                removed_subsets_per_class.append(remove_solutions)
+        else:
+            # obtain the data points that will be kept and that will be removed for each subset using uniform probability
+            for i, subset in enumerate(current_subsets_per_class):
+                kept_subsets = random.sample(subset, total_samples_per_class_to_keep) # get points that will be kept
+                kept_subsets += self._sample_subset(self.trainset_per_action_[i], total_samples_per_class_to_add) # add new points
+                kept_subsets_per_class.append(kept_subsets)
+                removed_subsets_per_class.append(list(set(subset) - set(kept_subsets))) # find the remvoed points
+
+        self.samples_per_class_to_keep = kept_subsets_per_class
+        self.samples_per_class_to_remove = removed_subsets_per_class
+
+    def _generate_results_map_for_pareto(self, subset, teams_population):
+        """
+        Create a a matrix of (points) x (array version of a matrix that compares all teams outcomes against 
+        each other for this point  (0: <=, 1: >)). This matrix is used by pareto to find a front of points 
+        that characterize distinct teams.
+        """
+        results_map = []
+        try:
+            for point in subset:      
+                distinction_vector = []
+                for team1 in teams_population:
+                    outcome1 = team1.results_per_points_[point.point_id]
+                    for team2 in teams_population:
+                        outcome2 = team2.results_per_points_[point.point_id]                 
+                        if outcome1 > outcome2 and not is_nearly_equal_to(outcome1, outcome2):
+                            distinction_vector.append(1)
+                        else:
+                            distinction_vector.append(0)
+                results_map.append(distinction_vector)
+        except KeyError as e:
+            raise KeyError("A team hasn't processed the point "+str(e)+" before! You got a bug!")
+        return results_map
+                        
+    def point_population(self):
+        return self.point_population_
+
+    def evaluate_team(self, team, is_training=False):
         """
         Evaluate the team using the environment inputs.
         """
         if is_training:
-            population = self.sample_
+            population = self.point_population_
         else:
             population = self.test_population_
         outputs = []

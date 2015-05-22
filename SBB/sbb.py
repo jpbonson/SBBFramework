@@ -64,7 +64,7 @@ class SBB:
 
                 # prepare and print metrics (per generation)
                 best_team = self._best_team(teams_population)
-                environment.evaluate(best_team)
+                environment.evaluate_team(best_team)
                 print("best team: "+best_team.metrics())
 
                 if CONFIG['advanced_training_parameters']['verbose'] > 0:

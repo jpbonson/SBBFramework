@@ -38,7 +38,12 @@ class DiversityMaintenance():
         return population
 
     @staticmethod
-    def fitness_sharing(environment, population):   
+    def fitness_sharing(environment, population):
+        """
+        Uses the fitness sharing algorithm, so that individuals obtains more fitness by being able to solve
+        points that other individuals can't. It assumes that all dimension have the same weight (if it is not
+        true, normalize the dimensions before applying fitness sharing).
+        """
         # calculate denominators in each dimension
         denominators = [1.0] * CONFIG['training_parameters']['populations']['points'] # initialized to 1 so we don't divide by zero
         for index, point in enumerate(environment.point_population()):
@@ -53,4 +58,23 @@ class DiversityMaintenance():
                 score += float(individual.results_per_points_[point.point_id]) / denominators[index]
             diversity = score/float(len(environment.point_population()))
             individual.fitness_ = (1.0-p)*(individual.fitness_) + p*diversity
+        return population
+
+    @staticmethod
+    def fitness_sharing_for_points(population, results_map):
+        """
+        Equal to fitness_sharing, but works specifically for points (ie. dont have previous fitness values and uses 'results_map').
+        """
+        # calculate denominators in each dimension
+        denominators = [1.0] * len(results_map[0]) # initialized to 1 so we don't divide by zero
+        for individual, results in zip(population, results_map):
+            for index, value in enumerate(results):
+                denominators[index] += float(value)
+
+        # calculate fitness
+        for individual, results in zip(population, results_map):
+            score = 0.0
+            for index, value in enumerate(results):
+                score += float(value) / denominators[index]
+            individual.fitness_ = score/float(len(results_map[0]))
         return population

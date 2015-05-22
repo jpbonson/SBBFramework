@@ -30,11 +30,19 @@ class DefaultEnvironment(object):
          """
 
     @abc.abstractmethod
-    def setup_point_population(self):
+    def setup_point_population(self, teams_population):
          """
          Method that is called at the beginning of each generation by SBB, to set the 
-         variables that will be used by the generation.
+         variables that will be used by the generationand remove the ones that are no 
+         longer being used.
          """
+
+    @abc.abstractmethod
+    def evaluate_point_population(self, teams_population):
+        """
+        Evaluate the fitness of the point population, to define which points will be removed 
+        or added in the next generation, when setup_point_population() is executed.
+        """
 
     @abc.abstractmethod
     def point_population(self):
@@ -43,7 +51,7 @@ class DefaultEnvironment(object):
          """
 
     @abc.abstractmethod
-    def evaluate(self, team, is_training=False):
+    def evaluate_team(self, team, is_training=False):
         """
         Evaluate the team using the environment inputs. May be executed in the training
         or the test mode.
