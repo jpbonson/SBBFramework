@@ -46,7 +46,7 @@ class Team:
             else:
                 output_class = self.actions_per_points_[point.point_id]
             return output_class
-        else: # just runs the code without changing the attributes or using memmory
+        else: # just run the code without changing the attributes or using memmory
             selected_program = self._select_program(point)
             return selected_program.action
 
@@ -92,12 +92,7 @@ class Team:
         if len(new_programs) == 0:
             print "Warning! No new programs to add from this generation! If this warning is occuring often you probably got a bug."
             return
-        test = False
-        while not test:
-            new_program = random.choice(new_programs)
-            if new_program not in self.programs:
-                self._add_program(new_program)
-                test = True
+        self._add_program(random.choice(new_programs))
 
     def remove_references(self):
         """

@@ -16,14 +16,14 @@ class Selection:
         self.environment = environment
 
     def run(self, current_generation, teams_population, programs_population):
-        teams_population = self._evaluate_teams(teams_population) # to calculate fitness_ and results_per_points_
+        teams_population = self._evaluate_teams(teams_population)
         teams_to_remove = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
         teams_to_keep = len(teams_population) - teams_to_remove
 
         if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
             keep_teams, remove_teams = self._use_pareto_front_to_select_solutions(teams_population, teams_to_keep)
         else:
-            teams_population = self._apply_diversity_maintenance(teams_population) # that modifies fitness to maintains diversity
+            teams_population = self._apply_diversity_maintenance(teams_population)
             sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
             keep_teams = sorted_solutions[0:teams_to_keep]
             remove_teams = sorted_solutions[teams_to_keep:]
@@ -37,6 +37,10 @@ class Selection:
         return teams_population, programs_population
 
     def _evaluate_teams(self, teams_population):
+        """
+        Create a point population in the environment, use it to evaluate the teams (calculate fitness_ and results_per_points_), 
+        and then use the teams results to evluate the point population.
+        """
         self.environment.setup_point_population(teams_population)
         for t in teams_population:
             self.environment.evaluate_team(t, is_training=True)
@@ -44,6 +48,9 @@ class Selection:
         return teams_population
 
     def _use_pareto_front_to_select_solutions(self, teams_population, to_keep):
+        """
+        Uses pareto to select teams, to obtain a front of the best teams for various combinations of points.
+        """
         results_map = []
         for team in teams_population:
             results = []

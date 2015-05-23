@@ -23,7 +23,7 @@ class Program:
         self.teams_ = []
         self.instructions_without_introns_ = None
 
-    def execute(self, input_registers): # move code to C or Cython?
+    def execute(self, input_registers): # unit test!
         """
         Execute code for each input
         """
@@ -31,45 +31,32 @@ class Program:
             self.instructions_without_introns_ = remove_introns(self.instructions)
         instructions = self.instructions_without_introns_
         
-        if_conditional = None
-        skip_next = False
         general_registers = [0] * RESTRICTIONS['genotype_options']['total_registers']
-
-        for i in instructions:
-            if if_conditional:
-                if if_conditional.op == 'if_lesser_than' and not (if_conditional.target < if_conditional.source):
-                    if_conditional = None
-                    if i.op in RESTRICTIONS['genotype_options']['if-instructions']:
-                        skip_next = True
-                    continue
-                if if_conditional.op == 'if_equal_or_higher_than' and not (if_conditional.target >= if_conditional.source):
-                    if_conditional = None
-                    if i.op in RESTRICTIONS['genotype_options']['if-instructions']:
-                        skip_next = True
-                    continue
-                if_conditional = None
-            if skip_next:
-                if i.op in RESTRICTIONS['genotype_options']['if-instructions']:
+        if_instruction = None
+        skip_next = False
+        for instruction in instructions:
+            if if_instruction and not Operation.execute_if(if_instruction.op, if_instruction.target, if_instruction.source):
+                if_instruction = None
+                if instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+                    skip_next = True
+            elif skip_next:
+                if instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
                     skip_next = True
                 else:
                     skip_next = False
-                continue
-            
-            if i.op in RESTRICTIONS['genotype_options']['if-instructions']:
-                if_conditional = i
-                continue
-            elif i.op in RESTRICTIONS['genotype_options']['one-operand-instructions']:
-                general_registers[i.target] = Operation.execute(i.op, general_registers[i.target])
+            elif instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+                if_instruction = instruction
+            elif instruction.op in RESTRICTIONS['genotype_options']['one-operand-instructions']:
+                general_registers[instruction.target] = Operation.execute(instruction.op, general_registers[instruction.target])
             else:
-                if i.mode == 'read-register':
-                    source =  general_registers[i.source]
+                if instruction.mode == 'read-register':
+                    source =  general_registers[instruction.source]
                 else:
-                    source =  input_registers[i.source]
-                general_registers[i.target] = Operation.execute(i.op, general_registers[i.target], source)
-        # get action output
-        output = general_registers[0]
-        # apply sigmoid function before getting the output action
-        membership_outputs = expit(output)
+                    source =  input_registers[instruction.source]
+                general_registers[instruction.target] = Operation.execute(instruction.op, general_registers[instruction.target], source)
+
+        output = general_registers[0] # get action output
+        membership_outputs = expit(output) # apply sigmoid function before getting the output action
         return membership_outputs
 
     def mutate(self):

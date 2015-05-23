@@ -26,13 +26,13 @@ class SBB:
     def run(self):
         print "\n### Starting pSBB"
 
-        # prepare metrics
+        # initialize metrics (per run)
         elapseds_per_run = []
         best_teams_per_run = []
         avg_score_per_generations_across_runs = [0.0] * (CONFIG['training_parameters']['generations_total']+1)
         recall_per_generation_per_run = [] # only for classification task
 
-        # initialize environment and selection algorithm
+        # 1. Initialize environment and thw selection algorithm
         environment = self._initialize_environment()
         selection = Selection(environment)
 
@@ -45,11 +45,12 @@ class SBB:
         for run_id in range(1, CONFIG['training_parameters']['runs_total']+1):
             print("\nStarting run: "+str(run_id))
 
+            # initialize metrics (per generation)
             start_time = time.time()
             best_teams_per_generation = []
-            recall_per_generation = [] # only for classification task
+            recall_per_generation = [] # only used for the classification task
 
-            # 1. Randomly initialize populations
+            # 2. Randomly initialize populations
             self.current_generation_ = 0
             programs_population = self._initialize_program_population()
             teams_population = self._initialize_team_population(programs_population)
@@ -59,23 +60,23 @@ class SBB:
                 self.current_generation_ += 1
                 print("\n>>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_id))
                 
-                # 2. Selection
+                # 3. Selection
                 teams_population, programs_population = selection.run(self.current_generation_, teams_population, programs_population)
 
-                # prepare and print metrics (per generation)
+                # test for best team
                 best_team = self._best_team(teams_population)
                 environment.evaluate_team(best_team)
-                print("best team: "+best_team.metrics())
 
-                if CONFIG['advanced_training_parameters']['verbose'] > 0:
-                    print "actions distribution: "+str(Counter([p.action for p in programs_population]))
-
+                # store and print metrics for the best team (per generation)
                 best_teams_per_generation.append(best_team)
                 avg_score_per_generations_across_runs[self.current_generation_] += best_team.score_testset_
                 if CONFIG['task'] == 'classification':
                     recall_per_generation.append(best_team.extra_metrics_['recall_per_action'])
+                print("best team: "+best_team.metrics())
+                if CONFIG['advanced_training_parameters']['verbose'] > 0:
+                    print "actions distribution: "+str(Counter([p.action for p in programs_population]))
 
-            # prepare and print metrics (per run)
+            # store and print metrics (per run)
             print("\n"+str(run_id)+" Run's best team: "+best_team.metrics())
             elapsed_time = time.time() - start_time
             elapseds_per_run.append(elapsed_time)
@@ -84,7 +85,7 @@ class SBB:
                 recall_per_generation_per_run.append(recall_per_generation)
             print("\nFinished run "+str(run_id)+", elapsed time: "+str(elapsed_time)+" secs")
 
-        # 3. Finalize execution (get final metrics, print to output, print to file)
+        # 4. Finalize execution (get final metrics, print to output, print to file)
         best_team_overall, best_run = self._best_team_overall(best_teams_per_run)
         msg += self._generate_output_messages_for_best_team_per_run(best_teams_per_run)
         msg += self._generate_output_messages_for_best_team_overall(best_run, best_team_overall, recall_per_generation_per_run[best_run], avg_score_per_generations_across_runs)
@@ -99,6 +100,9 @@ class SBB:
         raise ValueError("No environment exists for "+str(CONFIG['task']))
 
     def _initialize_program_population(self):
+        """
+        Initialize a population of programs with a random action and random instructions.
+        """
         reset_programs_ids()
         programs_population =[]
         for i in range(CONFIG['training_parameters']['populations']['programs']):
@@ -111,6 +115,9 @@ class SBB:
         return programs_population
 
     def _initialize_team_population(self, programs_population):
+        """
+        Initialize a population of teams randomly selection programs, one of each action.
+        """
         reset_teams_ids()
         teams_population = []
         for t in range(CONFIG['training_parameters']['populations']['teams']):
@@ -127,7 +134,8 @@ class SBB:
         for class_index in range(RESTRICTIONS['total_actions']):
             values = [p for p in programs if p.action == class_index]
             if len(values) == 0:
-                raise StandardError("_get_programs_per_action() wasn't able to get programs for the action "+str(class_index)+". You got a bug.")
+                raise StandardError("_get_programs_per_action() wasn't able to get programs for the action "+str(class_index)+". " \
+                    "You got a bug, or the program population size is too small.")
             programs_per_action.append(values)
         return programs_per_action
 

@@ -10,7 +10,13 @@ class DiversityMaintenance():
     @staticmethod
     def genotype_diversity(population):
         """
-        Diversity based on the genotype distance between teams, as described in:
+        Calculate the distance between pairs of teams, where the distance is the intersection of active 
+        programs divided by the union of active programs. Active programs are the ones who the output 
+        was selected at least once during the run. The kNN algorithm is then applied to the list of 
+        distances, to get the k most similar teams. The diversity is average distance of the k teams.
+        In the end, teams with more uncommon program sets will obtain higher diversity scores.
+
+        More details in: 
             "Kelly, Stephen, and Malcolm I. Heywood. "Genotypic versus Behavioural Diversity for Teams 
             of Programs Under the 4-v-3 Keepaway Soccer Task." Twenty-Eighth AAAI Conference on 
             Artificial Intelligence. 2014."

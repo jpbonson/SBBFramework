@@ -36,3 +36,17 @@ class Operation():
             if error or math.isnan(result) or math.isinf(result):
                 return target
             return result
+
+    @staticmethod
+    def execute_if(operator, target, source):
+        if operator == 'if_lesser_than':
+            if (target < source):
+                return True
+            else:
+                return False
+        if operator == 'if_equal_or_higher_than':
+            if (target >= source):
+                return True
+            else:
+                return False
+        raise ValueError(str(operator)+" is not a valid 'if' operator.")
