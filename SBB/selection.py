@@ -3,7 +3,7 @@ import copy
 from program import Program
 from team import Team
 from diversity_maintenance import DiversityMaintenance
-from utils.helpers import weighted_choice, pareto_front
+from utils.helpers import weighted_choice, pareto_front, balance_population_to_up, balance_population_to_down
 from config import CONFIG
 
 class Selection:
@@ -56,21 +56,10 @@ class Selection:
         remove_solutions = dominateds
         if len(keep_solutions) < to_keep:  # must include some teams from dominateds
             teams_population = self._apply_diversity_maintenance(teams_population)
-            sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
-            for solution in sorted_solutions:
-                if solution not in keep_solutions:
-                    keep_solutions.append(solution)
-                    remove_solutions.remove(solution)
-                if len(keep_solutions) == to_keep:
-                    break
+            keep_solutions, remove_solutions = balance_population_to_up(teams_population, keep_solutions, remove_solutions, to_keep)
         if len(keep_solutions) > to_keep: # must discard some teams from front
             front = self._apply_diversity_maintenance(front)
-            sorted_solutions = sorted(front, key=lambda solution: solution.fitness_, reverse=False)
-            for solution in sorted_solutions:
-                keep_solutions.remove(solution)
-                remove_solutions.append(solution)
-                if len(keep_solutions) == to_keep:
-                    break
+            keep_solutions, remove_solutions = balance_population_to_down(front, keep_solutions, remove_solutions, to_keep)
         return keep_solutions, remove_solutions
 
     def _apply_diversity_maintenance(self, teams_population):

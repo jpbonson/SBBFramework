@@ -4,7 +4,7 @@ import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from default_environment import DefaultEnvironment, DefaultPoint
 from ..diversity_maintenance import DiversityMaintenance
-from ..utils.helpers import round_array_to_decimals, flatten, pareto_front, is_nearly_equal_to
+from ..utils.helpers import round_array_to_decimals, flatten, pareto_front, is_nearly_equal_to, balance_population_to_up, balance_population_to_down
 from ..config import CONFIG, RESTRICTIONS
 
 class ClassificationPoint(DefaultPoint):
@@ -179,8 +179,7 @@ class ClassificationEnvironment(DefaultEnvironment):
     def evaluate_point_population(self, teams_population):
         total_samples_per_class = CONFIG['training_parameters']['populations']['points']/self.total_actions_
         current_subsets_per_class = self._get_data_per_action(self.point_population_)
-        total_samples_per_class_to_keep = int(round(total_samples_per_class*(1.0-CONFIG['training_parameters']['replacement_rate']['points'])))
-        total_samples_per_class_to_add = total_samples_per_class - total_samples_per_class_to_keep
+        samples_per_class_to_keep = int(round(total_samples_per_class*(1.0-CONFIG['training_parameters']['replacement_rate']['points'])))
 
         kept_subsets_per_class = []
         removed_subsets_per_class = []
@@ -193,29 +192,19 @@ class ClassificationEnvironment(DefaultEnvironment):
 
                 keep_solutions = front
                 remove_solutions = dominateds
-                if len(keep_solutions) < total_samples_per_class_to_keep:  # must include some teams from dominateds
+                if len(keep_solutions) < samples_per_class_to_keep:  # must include some teams from dominateds
                     subset = DiversityMaintenance.fitness_sharing_for_points(subset, results_map)
-                    sorted_solutions = sorted(subset, key=lambda solution: solution.fitness_, reverse=True)
-                    for solution in sorted_solutions:
-                        if solution not in keep_solutions:
-                            keep_solutions.append(solution)
-                            remove_solutions.remove(solution)
-                        if len(keep_solutions) == total_samples_per_class_to_keep:
-                            break
-                if len(keep_solutions) > total_samples_per_class_to_keep: # must discard some teams from front
+                    keep_solutions, remove_solutions = balance_population_to_up(subset, keep_solutions, remove_solutions, samples_per_class_to_keep)
+                if len(keep_solutions) > samples_per_class_to_keep: # must discard some teams from front
                     front = DiversityMaintenance.fitness_sharing_for_points(front, results_map)
-                    sorted_solutions = sorted(front, key=lambda solution: solution.fitness_, reverse=False)
-                    for solution in sorted_solutions:
-                        keep_solutions.remove(solution)
-                        remove_solutions.append(solution)
-                        if len(keep_solutions) == total_samples_per_class_to_keep:
-                            break
+                    keep_solutions, remove_solutions = balance_population_to_down(front, keep_solutions, remove_solutions, samples_per_class_to_keep)
                 kept_subsets_per_class.append(keep_solutions)
                 removed_subsets_per_class.append(remove_solutions)
         else:
             # obtain the data points that will be kept and that will be removed for each subset using uniform probability
+            total_samples_per_class_to_add = total_samples_per_class - samples_per_class_to_keep
             for i, subset in enumerate(current_subsets_per_class):
-                kept_subsets = random.sample(subset, total_samples_per_class_to_keep) # get points that will be kept
+                kept_subsets = random.sample(subset, samples_per_class_to_keep) # get points that will be kept
                 kept_subsets += self._sample_subset(self.trainset_per_action_[i], total_samples_per_class_to_add) # add new points
                 kept_subsets_per_class.append(kept_subsets)
                 removed_subsets_per_class.append(list(set(subset) - set(kept_subsets))) # find the remvoed points

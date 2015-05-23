@@ -91,9 +91,28 @@ def check_if_is_dominated(results1, results2): # unit test!
     for index in range(len(results1)):
         if not is_nearly_equal_to(results1[index], results2[index]):
             equal = False
-            if(results1[index] > results2[index]): # Not dominated since "results1" is greater than "results2" in this dimension
+            if(results1[index] > results2[index]): # not dominated since "results1" is greater than "results2" in this dimension
                 return False, equal
     if equal:
         return False, equal
     else:
         return True, equal
+
+def balance_population_to_up(population, keep_solutions, remove_solutions, to_keep):
+    sorted_solutions = sorted(population, key=lambda solution: solution.fitness_, reverse=True)
+    for solution in sorted_solutions:
+        if solution not in keep_solutions:
+            keep_solutions.append(solution)
+            remove_solutions.remove(solution)
+        if len(keep_solutions) == to_keep:
+            break
+    return keep_solutions, remove_solutions
+
+def balance_population_to_down(population, keep_solutions, remove_solutions, to_keep):
+    sorted_solutions = sorted(population, key=lambda solution: solution.fitness_, reverse=False)
+    for solution in sorted_solutions:
+        keep_solutions.remove(solution)
+        remove_solutions.append(solution)
+        if len(keep_solutions) == to_keep:
+            break
+    return keep_solutions, remove_solutions

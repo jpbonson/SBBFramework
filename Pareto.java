@@ -1,13 +1,12 @@
-- refatorar a parte repetida da selection
 - printar resumo com todos os selecionados, no pareto? (apenas o front?)
 - refatorar helpers
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - implementar reinforcement learning para tictactoe
 - refatorar environments
+- fazer testes unitarios
 
 - conferir codigo c++ (se necessario)
 - velocidade de rodar?
-- fazer testes unitarios
 - conferir se os resultados estao realmente ok e sem bugs
 - conferir se requirement.txt funciona
 - identar ifs nas instructions?
