@@ -1,20 +1,19 @@
 - printar resumo com todos os selecionados, no pareto? (apenas o front?)
-- refatorar helpers
-- conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
+- fazer testes unitarios (classe logger?)
+- identar ifs nas instructions?
+
 - implementar reinforcement learning para tictactoe
+- conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments
-- fazer testes unitarios
 
 - conferir codigo c++ (se necessario)
 - velocidade de rodar?
-- conferir se os resultados estao realmente ok e sem bugs
+- fazer mais testes unitarios (conferir se os resultados estao realmente ok e sem bugs)
 - conferir se requirement.txt funciona
-- identar ifs nas instructions?
 - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
 - implementar tradutor que le o objeto do time e computa resultados?
 - adicionar mais documentacao
 - remover comentarios em portugues
-- classe logger?
 
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions)
 

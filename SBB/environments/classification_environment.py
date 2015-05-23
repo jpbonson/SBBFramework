@@ -4,7 +4,8 @@ import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from default_environment import DefaultEnvironment, DefaultPoint
 from ..diversity_maintenance import DiversityMaintenance
-from ..utils.helpers import round_array_to_decimals, flatten, pareto_front, is_nearly_equal_to, balance_population_to_up, balance_population_to_down
+from ..pareto_dominance import ParetoDominance
+from ..utils.helpers import round_array_to_decimals, flatten, is_nearly_equal_to
 from ..config import CONFIG, RESTRICTIONS
 
 class ClassificationPoint(DefaultPoint):
@@ -188,16 +189,16 @@ class ClassificationEnvironment(DefaultEnvironment):
             for subset in current_subsets_per_class:
                 # create the results_map, so that the pareto front will contain points that are selecting distinct teams
                 results_map = self._generate_results_map_for_pareto(subset, teams_population)
-                front, dominateds = pareto_front(subset, results_map)
+                front, dominateds = ParetoDominance.pareto_front(subset, results_map)
 
                 keep_solutions = front
                 remove_solutions = dominateds
                 if len(keep_solutions) < samples_per_class_to_keep:  # must include some teams from dominateds
                     subset = DiversityMaintenance.fitness_sharing_for_points(subset, results_map)
-                    keep_solutions, remove_solutions = balance_population_to_up(subset, keep_solutions, remove_solutions, samples_per_class_to_keep)
+                    keep_solutions, remove_solutions = ParetoDominance.balance_pareto_front_to_up(subset, keep_solutions, remove_solutions, samples_per_class_to_keep)
                 if len(keep_solutions) > samples_per_class_to_keep: # must discard some teams from front
                     front = DiversityMaintenance.fitness_sharing_for_points(front, results_map)
-                    keep_solutions, remove_solutions = balance_population_to_down(front, keep_solutions, remove_solutions, samples_per_class_to_keep)
+                    keep_solutions, remove_solutions = ParetoDominance.balance_pareto_front_to_down(front, keep_solutions, remove_solutions, samples_per_class_to_keep)
                 kept_subsets_per_class.append(keep_solutions)
                 removed_subsets_per_class.append(remove_solutions)
         else:

@@ -1,7 +1,6 @@
 import random
 from scipy.special import expit
 from instruction import Instruction
-from utils.helpers import remove_introns
 from utils.operations import Operation
 from config import CONFIG, RESTRICTIONS
 
@@ -28,7 +27,7 @@ class Program:
         Execute code for each input
         """
         if not self.instructions_without_introns_:
-            self.instructions_without_introns_ = remove_introns(self.instructions)
+            self.instructions_without_introns_ = Program.remove_introns(self.instructions)
         instructions = self.instructions_without_introns_
         
         general_registers = [0] * RESTRICTIONS['genotype_options']['total_registers']
@@ -102,3 +101,28 @@ class Program:
         text += "\n".join([str(i) for i in self.instructions_without_introns_])
         text += "\n----------------"
         return text
+
+    @staticmethod
+    def remove_introns(instructions): # move code to C or Cython?
+        """
+        Remove introns (ie. instructions that don't affect the final output)
+        """
+        instructions_without_introns = []
+        relevant_registers = [0]
+        ignore_previous_if = False
+        # Run throught the instructions from the last to the first one
+        for instruction in reversed(instructions):
+            if instruction.target in relevant_registers or instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+                if ignore_previous_if and instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+                    continue
+                else:
+                    ignore_previous_if = False
+                    instructions_without_introns.insert(0, instruction)
+                    if instruction.mode == 'read-register' and instruction.source not in relevant_registers:
+                        relevant_registers.append(instruction.source)
+                    if instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+                        if instruction.target not in relevant_registers:
+                            relevant_registers.append(instruction.target)
+            else:
+                ignore_previous_if = True
+        return instructions_without_introns

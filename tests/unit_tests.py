@@ -1,6 +1,6 @@
 import unittest
 import sys
-from pSBB.SBB.utils.helpers import remove_introns
+from pSBB.SBB.program import Program
 from pSBB.SBB.instruction import Instruction
 
 class IntronRemovalTests(unittest.TestCase):
@@ -11,7 +11,7 @@ class IntronRemovalTests(unittest.TestCase):
         instructions.append(Instruction(mode = 'read-input', target = 0, op = '-', source = 0))
         instructions.append(Instruction(mode = 'read-input', target = 0, op = '/', source = 0))
         instructions.append(Instruction(mode = 'read-input', target = 0, op = 'cos', source = 0))
-        instructions_without_introns = remove_introns(instructions)
+        instructions_without_introns = Program.remove_introns(instructions)
         self.assertEqual(instructions, instructions_without_introns)
 
     def test_remove_introns_after_output_register(self):
@@ -21,7 +21,7 @@ class IntronRemovalTests(unittest.TestCase):
         instructions.append(Instruction(mode = 'read-register', target = 0, op = '-', source = 1))
         instructions.append(Instruction(mode = 'read-register', target = 1, op = '/', source = 0))
         instructions.append(Instruction(mode = 'read-register', target = 1, op = 'cos', source = 0))
-        instructions_without_introns = remove_introns(instructions)
+        instructions_without_introns = Program.remove_introns(instructions)
         instructions.pop(-1)
         instructions.pop(-1)
         self.assertEqual(instructions, instructions_without_introns)
@@ -32,7 +32,7 @@ class IntronRemovalTests(unittest.TestCase):
         instructions.append(Instruction(mode = 'read-register', target = 2, op = 'cos', source = 0))
         instructions.append(Instruction(mode = 'read-input', target = 1, op = '+', source = 0))
         instructions.append(Instruction(mode = 'read-register', target = 0, op = '-', source = 1))
-        instructions_without_introns = remove_introns(instructions)
+        instructions_without_introns = Program.remove_introns(instructions)
         instructions.pop(0)
         self.assertEqual(instructions, instructions_without_introns)
 
@@ -43,7 +43,7 @@ class IntronRemovalTests(unittest.TestCase):
         instructions.append(Instruction(mode = 'read-input', target = 1, op = 'if_lesser_than', source = 0))
         instructions.append(Instruction(mode = 'read-register', target = 1, op = '-', source = 1))
         instructions.append(Instruction(mode = 'read-register', target = 0, op = 'cos', source = 0))
-        instructions_without_introns = remove_introns(instructions)
+        instructions_without_introns = Program.remove_introns(instructions)
         instructions.pop(1)
         instructions.pop(1)
         self.assertEqual(instructions, instructions_without_introns)
@@ -55,7 +55,7 @@ class IntronRemovalTests(unittest.TestCase):
         instructions.append(Instruction(mode = 'read-input', target = 1, op = 'if_lesser_than', source = 0))
         instructions.append(Instruction(mode = 'read-register', target = 0, op = '-', source = 1))
         instructions.append(Instruction(mode = 'read-register', target = 0, op = 'cos', source = 0))
-        instructions_without_introns = remove_introns(instructions)
+        instructions_without_introns = Program.remove_introns(instructions)
         self.assertEqual(instructions, instructions_without_introns)
 
     def test_dont_remove_relevant_ifs2(self):
@@ -65,7 +65,7 @@ class IntronRemovalTests(unittest.TestCase):
         instructions.append(Instruction(mode = 'read-input', target = 0, op = 'if_lesser_than', source = 0))
         instructions.append(Instruction(mode = 'read-register', target = 0, op = '-', source = 1))
         instructions.append(Instruction(mode = 'read-register', target = 0, op = 'cos', source = 0))
-        instructions_without_introns = remove_introns(instructions)
+        instructions_without_introns = Program.remove_introns(instructions)
         self.assertEqual(instructions, instructions_without_introns)
 
     def test_dont_remove_relevant_ifs3(self):
@@ -88,7 +88,7 @@ class IntronRemovalTests(unittest.TestCase):
         instructions.append(Instruction(mode = 'read-input', target = 1, op = 'if_lesser_than', source = 19))
         instructions.append(Instruction(mode = 'read-input', target = 1, op = 'if_lesser_than', source = 14))
         instructions.append(Instruction(mode = 'read-register', target = 0, op = '/', source = 0))
-        instructions_without_introns = remove_introns(instructions)
+        instructions_without_introns = Program.remove_introns(instructions)
         self.assertEqual(instructions, instructions_without_introns)
 
 if __name__ == '__main__':
