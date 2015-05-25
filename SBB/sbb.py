@@ -164,8 +164,20 @@ class SBB:
         return best_team
 
     def _select_best_run(self, best_teams_per_run, fronts_per_run):
-        best_result_metric = [p.score_testset_ for p in best_teams_per_run]
-        best_run = best_result_metric.index(max(best_result_metric))
+        if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
+            # select the run with the best mean of score_testset_ for the teams in the front
+            best_run = -1
+            best_mean = -1
+            for run_id, front in enumerate(fronts_per_run):
+                scores = [t.score_testset_ for t in front]
+                mean = numpy.mean(scores)
+                if mean > best_mean:
+                    best_run = run_id
+                    best_mean = mean
+        else:
+            # select the run with the best score_testset_
+            scores = [t.score_testset_ for t in best_teams_per_run]
+            best_run = scores.index(max(scores))
         return best_run
 
     def _generate_output_messages_for_best_per_run(self, best_teams_per_run, fronts_per_run):
