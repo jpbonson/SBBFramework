@@ -41,6 +41,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         RESTRICTIONS['total_actions'] = self.total_actions_
         RESTRICTIONS['total_inputs'] = self.total_inputs_
         RESTRICTIONS['action_mapping'] = self.action_mapping_
+
         # ensures the population size is multiple of the total actions
         total_samples_per_class = CONFIG['training_parameters']['populations']['points']/self.total_actions_
         CONFIG['training_parameters']['populations']['points'] = total_samples_per_class*self.total_actions_
@@ -145,7 +146,7 @@ class ClassificationEnvironment(DefaultEnvironment):
             samples_per_class = []
             for subset in self.trainset_per_action_:
                 samples_per_class.append(self._sample_subset(subset, total_samples_per_class))
-        else:
+        else: # uses attributes defined in evaluate_point_population()
             samples_per_class = self.samples_per_class_to_keep
 
             # remove the removed points from the teams, in order to save memory. If you want to speed up and
@@ -247,6 +248,7 @@ class ClassificationEnvironment(DefaultEnvironment):
             population = self.point_population_
         else:
             population = self.test_population_
+
         outputs = []
         for point in population:
             output = team.execute(point, is_training)
@@ -257,8 +259,10 @@ class ClassificationEnvironment(DefaultEnvironment):
                 else:
                     result = 0 # incorrect
                 team.results_per_points_[point.point_id] = result
+
         Y = [p.output for p in population]
         score, extra_metrics = self._calculate_team_metrics(outputs, Y, is_training)
+        
         if is_training:
             team.fitness_ = score
             team.score_trainingset_ = score

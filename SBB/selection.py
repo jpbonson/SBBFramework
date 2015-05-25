@@ -22,7 +22,7 @@ class Selection:
         teams_to_keep = len(teams_population) - teams_to_remove
 
         if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-            keep_teams, remove_teams = self._use_pareto_front_to_select_solutions(teams_population, teams_to_keep)
+            keep_teams, remove_teams = self._use_pareto_front_to_select_solutions(current_generation, teams_population, teams_to_keep)
         else:
             teams_population = self._apply_diversity_maintenance(teams_population)
             sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
@@ -48,7 +48,7 @@ class Selection:
         self.environment.evaluate_point_population(teams_population)
         return teams_population
 
-    def _use_pareto_front_to_select_solutions(self, teams_population, to_keep):
+    def _use_pareto_front_to_select_solutions(self, current_generation, teams_population, to_keep):
         """
         Uses pareto to select teams, to obtain a front of the best teams for various combinations of points.
         """
@@ -59,6 +59,8 @@ class Selection:
                 results.append(team.results_per_points_[point.point_id])
             results_map.append(results)
         front, dominateds = ParetoDominance.pareto_front(teams_population, results_map)
+        for team in front:
+            team.participated_in_front_ = current_generation
 
         keep_solutions = front
         remove_solutions = dominateds

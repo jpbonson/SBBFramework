@@ -26,6 +26,7 @@ class Team:
         self.active_programs_ = []
         self.actions_per_points_ = {}
         self.results_per_points_ = {}
+        self.participated_in_front_ = -1 # generation number, is set by the selection algorithm if using pareto
 
     def _add_program(self, program):
         self.programs.append(program)
@@ -101,12 +102,14 @@ class Team:
         for p in self.programs:
             p.remove_team(self)
 
-    def metrics(self):
+    def metrics(self, short_print=False):
         r = round_value_to_decimals
         teams_members_ids = [p.__repr__() for p in self.programs]
         m = str(self.team_id_)+":"+str(self.generation)
-        if CONFIG['advanced_training_parameters']['verbose'] == 0:
+        if CONFIG['advanced_training_parameters']['verbose'] == 0 or short_print:
             m += ", f: "+str(r(self.fitness_))+", s: "+str(r(self.score_trainingset_))+", s(test): "+str(r(self.score_testset_))
+            if CONFIG['task'] == 'classification':
+                m += "\nr: "+str(self.extra_metrics_['recall_per_action'])
         else:
             m += "\nteam members ("+str(len(self.programs))+"): "+str(teams_members_ids)
             m += "\nfitness (train): "+str(r(self.fitness_))+", score (train): "+str(r(self.score_trainingset_))+", score (test): "+str(r(self.score_testset_))
@@ -115,10 +118,10 @@ class Team:
         return m
 
     def __repr__(self): 
-        return "("+str(self.team_id_)+":"+str(self.generation)+")"
+        return "("+str(self.team_id_)+";"+str(self.generation)+")"
 
     def __str__(self):
-        text = "\nTeam "+self.__repr__()+", team size: "+str(len(self.programs))
+        text = "Team "+self.__repr__()+", team size: "+str(len(self.programs))
         text += "\n################"
         for p in self.programs:
             text += "\n"+str(p)
