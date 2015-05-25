@@ -94,12 +94,25 @@ class Program:
         text += "\nParticipate in the teams ("+str(len(teams_ids))+"): "+str(teams_ids)
         text += "\nTotal instructions: "+str(len(self.instructions))
         text += "\n----------------\n"
-        text += "\n".join([str(i) for i in self.instructions])
+        text += "\n"+Program.print_indented_instructions(self.instructions)
         text += "\n++++++++++++++++"
         text += "\nTotal instructions (without introns): "+str(len(self.instructions_without_introns_))
         text += "\n----------------\n"
-        text += "\n".join([str(i) for i in self.instructions_without_introns_])
+        text += "\n"+Program.print_indented_instructions(self.instructions_without_introns_)
         text += "\n----------------"
+        return text
+
+    @staticmethod
+    def print_indented_instructions(instructions):
+        text = ""
+        indentation = 0
+        spaces = 4
+        for instruction in instructions:
+            text += (" ")*spaces*indentation+str(instruction)+"\n"
+            if instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+                indentation += 1
+            else:
+                indentation = 0
         return text
 
     @staticmethod
