@@ -3,6 +3,8 @@
 - refatorar environments
 
 - fazer testes unitarios (classe logger?)
+- melhorar README.md
+- fornecer examples de CONFIG
 - conferir codigo c++ (se necessario)
 - velocidade de rodar?
 - fazer mais testes unitarios (conferir se os resultados estao realmente ok e sem bugs)
