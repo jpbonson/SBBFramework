@@ -22,6 +22,7 @@ Lichodzijewski, P. (2011) A Symbiotic Bid-Based (SBB) framework for problem deco
 **Windows:**
 
 Install [Anaconda for Python 2.7](http://continuum.io/downloads)
+
 In the Windows console, type 'anaconda' before running the python commands.
 
 **Ubuntu:**
@@ -31,6 +32,7 @@ Execute:
 pip install -r requirement.txt
 ```
 Obs.: Some packages may need additional installations through apt-get install
+
 Obs.: You also have the option to use Anaconda for Ubuntu.
 
 ## 4. How to Run
