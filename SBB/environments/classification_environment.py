@@ -14,14 +14,9 @@ class ClassificationPoint(DefaultPoint):
     """
 
     def __init__(self, point_id, inputs, output):
-        super(ClassificationPoint, self).__init__(point_id, inputs)
+        super(ClassificationPoint, self).__init__(point_id)
+        self.inputs = inputs
         self.output = output
-
-    def __repr__(self): 
-        return "("+str(self.point_id)+")"
-
-    def __str__(self): 
-        return "("+str(self.point_id)+")"
 
 class ClassificationEnvironment(DefaultEnvironment):
     """
@@ -41,6 +36,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         RESTRICTIONS['total_actions'] = self.total_actions_
         RESTRICTIONS['total_inputs'] = self.total_inputs_
         RESTRICTIONS['action_mapping'] = self.action_mapping_
+        RESTRICTIONS['use_memmory'] = True # since for the same input, the output is always the same
 
         # ensures the population size is multiple of the total actions
         total_samples_per_class = CONFIG['training_parameters']['populations']['points']/self.total_actions_
@@ -251,7 +247,7 @@ class ClassificationEnvironment(DefaultEnvironment):
 
         outputs = []
         for point in population:
-            output = team.execute(point, is_training)
+            output = team.execute(self, point.point_id, point.inputs, is_training)
             outputs.append(output)
             if is_training:
                 if output == point.output:
@@ -271,14 +267,17 @@ class ClassificationEnvironment(DefaultEnvironment):
             team.extra_metrics_ = extra_metrics
 
     def _calculate_team_metrics(self, predicted_outputs, desired_outputs, is_training=False):
-        extra_metrics = {}
         recall = recall_score(desired_outputs, predicted_outputs, average=None)
         macro_recall = numpy.mean(recall)
+        extra_metrics = {}
         if not is_training: # to avoid wasting time processing metrics when they are not necessary
             extra_metrics['recall_per_action'] = round_array_to_decimals(recall)
             extra_metrics['accuracy'] = accuracy_score(desired_outputs, predicted_outputs)
             extra_metrics['confusion_matrix'] = confusion_matrix(desired_outputs, predicted_outputs)
         return macro_recall, extra_metrics
+
+    def is_valid_action(self, inputs, action):
+        return True
 
     def metrics(self):
         msg = ""

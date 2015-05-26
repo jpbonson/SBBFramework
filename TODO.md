@@ -1,6 +1,6 @@
 - implementar reinforcement learning para tictactoe
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
-- refatorar environments
+- refatorar environments (criar environment de reinforcement?)
 
 - fazer testes unitarios (classe logger?)
 - melhorar README.md

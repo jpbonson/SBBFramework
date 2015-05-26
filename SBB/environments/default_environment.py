@@ -5,9 +5,14 @@ class DefaultPoint(object):
     Encapsulates a value from the environment as a point.
     """
 
-    def __init__(self, point_id, inputs):
+    def __init__(self, point_id):
         self.point_id = point_id
-        self.inputs = inputs
+
+    def __repr__(self): 
+        return "("+str(self.point_id)+")"
+
+    def __str__(self): 
+        return "("+str(self.point_id)+")"
 
 class DefaultEnvironment(object):
     """
@@ -57,6 +62,14 @@ class DefaultEnvironment(object):
         or the test mode.
         This method must set the attribute results_per_points of the team, if you intend to 
         use pareto.
+        """
+
+    @abc.abstractmethod
+    def is_valid_action(self, inputs, action):
+        """
+        The team will use this method to check if the action is valid before submitting it to 
+        the environment. If it is not valid, then the second best action will be tried, and 
+        so on until a valid action is obtained.
         """
 
     @abc.abstractmethod

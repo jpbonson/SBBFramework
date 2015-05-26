@@ -50,7 +50,7 @@ class ParetoDominance():
 
     @staticmethod
     def balance_pareto_front_to_up(population, keep_solutions, remove_solutions, to_keep):
-        sorted_solutions = sorted(population, key=lambda solution: solution.fitness_, reverse=True)
+        sorted_solutions = sorted(population, key=lambda solution: solution.fitness_, reverse=True) # better ones first
         for solution in sorted_solutions:
             if solution not in keep_solutions:
                 keep_solutions.append(solution)
@@ -61,7 +61,7 @@ class ParetoDominance():
 
     @staticmethod
     def balance_pareto_front_to_down(population, keep_solutions, remove_solutions, to_keep):
-        sorted_solutions = sorted(population, key=lambda solution: solution.fitness_, reverse=False)
+        sorted_solutions = sorted(population, key=lambda solution: solution.fitness_, reverse=False) # worse ones first
         for solution in sorted_solutions:
             keep_solutions.remove(solution)
             remove_solutions.append(solution)

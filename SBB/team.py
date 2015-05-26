@@ -1,7 +1,7 @@
 import random
 from collections import Counter
 from utils.helpers import round_value_to_decimals, round_array_to_decimals
-from config import CONFIG
+from config import CONFIG, RESTRICTIONS
 
 def reset_teams_ids():
     global next_team_id
@@ -36,27 +36,32 @@ class Team:
         program.remove_team(self)
         self.programs.remove(program)
         
-    def execute(self, point, is_training):
+    def execute(self, environment, point_id, inputs, is_training):
         if is_training:
-            if point.point_id not in self.actions_per_points_:
-                selected_program = self._select_program(point)
+            if RESTRICTIONS['use_memmory'] and point_id in self.actions_per_points_:
+                return self.actions_per_points_[point_id]
+            else:
+                selected_program = self._select_program(environment, inputs)
                 output_class = selected_program.action
-                self.actions_per_points_[point.point_id] = output_class
+                if RESTRICTIONS['use_memmory']:
+                    self.actions_per_points_[point_id] = output_class
                 if selected_program.program_id_ not in self.active_programs_:
                     self.active_programs_.append(selected_program.program_id_)
-            else:
-                output_class = self.actions_per_points_[point.point_id]
-            return output_class
+                return output_class
         else: # just run the code without changing the attributes or using memmory
-            selected_program = self._select_program(point)
+            selected_program = self._select_program(environment, inputs)
             return selected_program.action
 
-    def _select_program(self, point):
+    def _select_program(self, environment, inputs):
         partial_outputs = []
         for program in self.programs:
-            partial_outputs.append(program.execute(point.inputs))
-        selected_program = self.programs[partial_outputs.index(max(partial_outputs))]
-        return selected_program
+            partial_outputs.append(program.execute(inputs))
+        sorted_programs_indeces = sorted(range(len(partial_outputs)), key=lambda k: partial_outputs[k], reverse=True)
+        for index in sorted_programs_indeces:
+            selected_program = self.programs[index]
+            if environment.is_valid_action(inputs, selected_program.action):
+                return selected_program
+        raise ValueError("Team "+self.__repr__()+" wasn't able to output any valid action. You got a bug!")
 
     def mutate(self, new_programs):
         """
