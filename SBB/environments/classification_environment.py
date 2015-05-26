@@ -247,7 +247,7 @@ class ClassificationEnvironment(DefaultEnvironment):
 
         outputs = []
         for point in population:
-            output = team.execute(self, point.point_id, point.inputs, is_training)
+            output = team.execute(point.point_id, point.inputs, lambda action: True, is_training)
             outputs.append(output)
             if is_training:
                 if output == point.output:
@@ -275,9 +275,6 @@ class ClassificationEnvironment(DefaultEnvironment):
             extra_metrics['accuracy'] = accuracy_score(desired_outputs, predicted_outputs)
             extra_metrics['confusion_matrix'] = confusion_matrix(desired_outputs, predicted_outputs)
         return macro_recall, extra_metrics
-
-    def is_valid_action(self, inputs, action):
-        return True
 
     def metrics(self):
         msg = ""

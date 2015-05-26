@@ -111,6 +111,8 @@ class SBB:
     def _initialize_environment(self):
         if CONFIG['task'] == 'classification':
             return ClassificationEnvironment()
+        if CONFIG['task'] == 'reinforcement':
+            pass # TODO
         raise ValueError("No environment exists for "+str(CONFIG['task']))
 
     def _initialize_program_population(self):

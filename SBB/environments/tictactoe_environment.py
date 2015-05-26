@@ -8,6 +8,49 @@ from ..pareto_dominance import ParetoDominance
 from ..utils.helpers import round_array_to_decimals, flatten, is_nearly_equal_to
 from ..config import CONFIG, RESTRICTIONS
 
+class TictactoeMatch():
+    """
+
+    """
+
+    def __init__(self):
+        self.inputs_ = []
+        self.result_ = -1
+        pass
+
+    def perform_action(self, current_player, action):
+        """
+        Perform the action for the current_player in the board, modifying 
+        the attribute inputs_.
+        """
+        pass
+
+
+    def is_valid_action(self, action):
+        """
+        If the chosen space (represented by the action) is empty, the 
+        action is valid. If not, it is invalid.
+        """
+        # TODO
+        return False
+
+    def is_over(self):
+        """
+        Check if all spaces were used. If yes, sets the attribute result_ with the 
+        number of the winner or 0 if a draw occured.
+        """
+        # TODO
+        return False
+
+    def result_for_player(self, current_player):
+        if self.result_ == current_player:
+            return 1 # win
+        if self.result_ == 0:
+            return 0.5 # draw
+        else:
+            return 0 # lose
+
+
 class TictactoePoint(DefaultPoint):
     """
     Encapsulates a tictactoe game configuration as a point.
@@ -52,18 +95,23 @@ class TictactoeEnvironment(DefaultEnvironment):
         return self.point_population_
 
     def evaluate_team(self, team, is_training=False):
-        outputs = []
+        """
+        Each team plays 2 matches against each point in the point population.
+        One match as the player 1, another as player 2. The final score is 
+        the mean of the scores in the matches (1: win, 0.5: draw, 0: lose)
+        """
+        results = []
         for point in population:
-            output = team.execute(self, point.point_id, point.inputs, is_training)
-            outputs.append(output)
+            outputs = []
+            outputs.append(self._play_match(1, team, point, is_training))
+            outputs.append(self._play_match(2, team, point, is_training))
+
+            result = numpy.mean(outputs)
+            results.append(result)
             if is_training:
-                if output == point.output:
-                    result = 1 # correct
-                else:
-                    result = 0 # incorrect
                 team.results_per_points_[point.point_id] = result
 
-        score = -1 # TODO
+        score = numpy.mean(results)
         extra_metrics = {}
         
         if is_training:
@@ -73,9 +121,24 @@ class TictactoeEnvironment(DefaultEnvironment):
             team.score_testset_ = score
             team.extra_metrics_ = extra_metrics
 
-    def is_valid_action(self, inputs, action):
-        # TODO
-        pass
+    def _play_match(self, player_number, team, point, is_training):
+        current_player = player_number
+        if player_number == 1:
+            current_opponent = 2
+        else:
+            current_opponent = 1
+
+        match = TictactoeMatch()
+        while not match.is_over():
+            action = team.execute(point.point_id, match.inputs_, match.is_valid_action, is_training)
+            match.perform_action(current_player, action)
+            if match.is_over():
+                return match.result_for_player(current_player)
+            action = point.execute(match.inputs_, match.is_valid_action)
+            match.perform_action(current_opponent, action)
+            if match.is_over():
+                return match.result_for_player(current_player)
+        raise ValueError("The match finished executing without being over. You got a bug!")
 
     def metrics(self):
         msg = ""

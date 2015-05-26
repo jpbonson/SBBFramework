@@ -36,12 +36,12 @@ class Team:
         program.remove_team(self)
         self.programs.remove(program)
         
-    def execute(self, environment, point_id, inputs, is_training):
+    def execute(self, point_id, inputs, is_valid_action, is_training):
         if is_training:
             if RESTRICTIONS['use_memmory'] and point_id in self.actions_per_points_:
                 return self.actions_per_points_[point_id]
             else:
-                selected_program = self._select_program(environment, inputs)
+                selected_program = self._select_program(inputs, is_valid_action)
                 output_class = selected_program.action
                 if RESTRICTIONS['use_memmory']:
                     self.actions_per_points_[point_id] = output_class
@@ -49,17 +49,22 @@ class Team:
                     self.active_programs_.append(selected_program.program_id_)
                 return output_class
         else: # just run the code without changing the attributes or using memmory
-            selected_program = self._select_program(environment, inputs)
+            selected_program = self._select_program(inputs, is_valid_action)
             return selected_program.action
 
-    def _select_program(self, environment, inputs):
+    def _select_program(self, inputs, is_valid_action):
+        """
+        Generates the outputs for all programs and order them. The team checks if the first 
+        action is valid before submitting it to the environment. If it is not valid, then 
+        the second best action will be tried, and so on until a valid action is obtained.
+        """
         partial_outputs = []
         for program in self.programs:
             partial_outputs.append(program.execute(inputs))
         sorted_programs_indeces = sorted(range(len(partial_outputs)), key=lambda k: partial_outputs[k], reverse=True)
         for index in sorted_programs_indeces:
             selected_program = self.programs[index]
-            if environment.is_valid_action(inputs, selected_program.action):
+            if is_valid_action(selected_program.action):
                 return selected_program
         raise ValueError("Team "+self.__repr__()+" wasn't able to output any valid action. You got a bug!")
 

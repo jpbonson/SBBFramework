@@ -65,14 +65,6 @@ class DefaultEnvironment(object):
         """
 
     @abc.abstractmethod
-    def is_valid_action(self, inputs, action):
-        """
-        The team will use this method to check if the action is valid before submitting it to 
-        the environment. If it is not valid, then the second best action will be tried, and 
-        so on until a valid action is obtained.
-        """
-
-    @abc.abstractmethod
     def metrics(self):
         """
         Generate a string with the metrics for the environment. It is printed at the 

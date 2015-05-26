@@ -7,7 +7,7 @@ CONFIG = {
         'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
     }, 
     'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
-        'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder
+        'environment': 'TictactoeEnvironment', # must have a python implementation in the pSBB/environments folder
     },
 
     'training_parameters': {

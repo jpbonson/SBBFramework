@@ -1,4 +1,5 @@
 - implementar reinforcement learning para tictactoe
+- implementar mais static opponents, um oponente com IA, e self-play
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments (criar environment de reinforcement?)
 
@@ -15,6 +16,7 @@
 - remover comentarios em portugues
 
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions)
+- quais opponents suar para treinar? quais para validar? usar os mesmos para ambas as coisas?
 
 Observacoes:
 - cada dimensao da point population eh uma das dimensoes q vai ser maximizada no pareto, gerando as poker behaviors
