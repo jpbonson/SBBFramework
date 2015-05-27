@@ -2,25 +2,26 @@ import sys
 
 # user configurable options
 CONFIG = {
-    'task': 'classification',
+    'task': 'reinforcement',
     'classification_parameters': { # only used if 'task' is 'classification'
         'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
     }, 
     'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
-        'environment': 'TictactoeEnvironment', # must have a python implementation in the pSBB/environments folder
+        'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder, edit _initialize_environment() in SBB to add new environments
+        'total_matches': 50,
     },
 
     'training_parameters': {
         'runs_total': 2,
-        'generations_total': 30,
+        'generations_total': 100,
         'populations': {
-            'programs': 60,
-            'teams': 30,
-            'points': 120,
+            'programs': 120,
+            'teams': 60,
+            'points': 120, # may not be used by some environments (eg.: tictactoe)
         },
         'replacement_rate': {
             'teams': 0.8,
-            'points': 0.2,
+            'points': 0.2,  # may not be used by some environments (eg.: tictactoe)
         },
         'mutation': {
             'team': {
@@ -35,24 +36,24 @@ CONFIG = {
             },
         },
         'team_size': { # the min size is the total number of actions
-            'max': 5,
+            'max': 12,
         },
         'program_size': {
-            'initial': 3,
+            'initial': 10,
             'min': 2,
-            'max': 5,
+            'max': 20,
         },
     },
 
     'advanced_training_parameters': {
         'seed': None, # default = None
-        'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
-        'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
+        'use_pareto_for_team_population_selection': False, # if False, will select solutions by best fitness
+        'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
-            'genotype_fitness_maintanance': True,
-            'fitness_sharing': True,
+            'genotype_fitness_maintanance': False,
+            'fitness_sharing': False,
         },
         'diversity_configs': { # p_value is with how much strenght this diversity metric will be applied to the fitness
             'genotype_fitness_maintanance': {

@@ -1,5 +1,6 @@
-- implementar reinforcement learning para tictactoe
-- implementar mais static opponents, um oponente com IA, e self-play
+- alterar validate_action para get_valid_actions, para acelerar o run
+- conferir se a amtch de tic tac toe esta funcionando corretamente
+- implementar oponente com IA (https://inventwithpython.com/chapter10.html), e self-play (no self-play, cuidado para 1 == si mesmo e 2 == oponente)
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments (criar environment de reinforcement?)
 
@@ -16,7 +17,8 @@
 - remover comentarios em portugues
 
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions)
-- quais opponents suar para treinar? quais para validar? usar os mesmos para ambas as coisas?
+- quais opponents suar para treinar? quais para validar? usar os mesmos para ambas as coisas? isn't the best opponent useful for both?
+- um point contem um oponente e uma configuracao de mao? (confirir lista de inputs!)
 
 Observacoes:
 - cada dimensao da point population eh uma das dimensoes q vai ser maximizada no pareto, gerando as poker behaviors

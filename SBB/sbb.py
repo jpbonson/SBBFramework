@@ -12,6 +12,7 @@ from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
 from instruction import Instruction
 from environments.classification_environment import ClassificationEnvironment
+from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
 from selection import Selection
 from utils.helpers import round_value_to_decimals
 from config import CONFIG, RESTRICTIONS
@@ -112,7 +113,8 @@ class SBB:
         if CONFIG['task'] == 'classification':
             return ClassificationEnvironment()
         if CONFIG['task'] == 'reinforcement':
-            pass # TODO
+            if CONFIG['reinforcement_parameters']['environment'] == 'tictactoe':
+                return TictactoeEnvironment()
         raise ValueError("No environment exists for "+str(CONFIG['task']))
 
     def _initialize_program_population(self):
@@ -200,12 +202,12 @@ class SBB:
 
     def _generate_output_messages_for_best_overall(self, best_run, best_teams_per_run, recall_per_generation_per_run, avg_score_per_generations_across_runs, fronts_per_run):
         best_team_overall = best_teams_per_run[best_run]
-        recall_per_generation = recall_per_generation_per_run[best_run]
         
         msg = "\n\n#################### OVERALL BEST TEAM ####################"
         msg += "\n"+str(best_run)+" Run best team: "+best_team_overall.metrics()
 
         if CONFIG['advanced_training_parameters']['verbose'] == 2 and CONFIG['task'] == 'classification':
+            recall_per_generation = recall_per_generation_per_run[best_run]
             msg += "\n\nrecall_per_action_per_generation: "+str(recall_per_generation)
             msg += "\n\naccuracy: "+str(best_team_overall.extra_metrics_['accuracy'])
             msg += "\n\nconfusion matrix:\n"+str(best_team_overall.extra_metrics_['confusion_matrix'])
