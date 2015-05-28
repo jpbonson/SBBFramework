@@ -26,7 +26,6 @@ class Team:
         self.active_programs_ = []
         self.actions_per_points_ = {}
         self.results_per_points_ = {}
-        self.participated_in_front_ = -1 # generation number, is set by the selection algorithm if using pareto
 
     def _add_program(self, program):
         self.programs.append(program)
@@ -112,11 +111,11 @@ class Team:
         for p in self.programs:
             p.remove_team(self)
 
-    def metrics(self, short_print=False):
+    def metrics(self):
         r = round_value_to_decimals
         teams_members_ids = [p.__repr__() for p in self.programs]
         m = str(self.team_id_)+":"+str(self.generation)
-        if CONFIG['advanced_training_parameters']['verbose'] == 0 or short_print:
+        if CONFIG['advanced_training_parameters']['verbose'] == 0:
             m += ", f: "+str(r(self.fitness_))+", s: "+str(r(self.score_trainingset_))+", s(test): "+str(r(self.score_testset_))
             if CONFIG['task'] == 'classification':
                 m += "\nr: "+str(self.extra_metrics_['recall_per_action'])

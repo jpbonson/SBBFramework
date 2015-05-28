@@ -59,8 +59,6 @@ class Selection:
                 results.append(team.results_per_points_[point.point_id])
             results_map.append(results)
         front, dominateds = ParetoDominance.pareto_front(teams_population, results_map)
-        for team in front:
-            team.participated_in_front_ = current_generation
 
         keep_solutions = front
         remove_solutions = dominateds

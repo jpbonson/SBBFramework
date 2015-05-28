@@ -59,14 +59,14 @@ Notes from meeting with Malcolm:
 - Metrics:
     - diversity (calculate the average distance between all pairs (focusing in a point. or in the whole population))
     - option to validate and print metrics only after a few generations
-    - nao printar mais teams que estao no pareto front?
-    - good metric: how the generations evolved over time (over the validation set, only after a few generations)
+    - nao printar mais teams que estao no pareto front? [DONE]
+    - good metric: how the generations evolved over time for all runs combined (over the validation set, only after a few generations)
 
 - Reinforcement learning:
     - during training, execute few matches (10?)
-    - after some generations (and at the first one), validate (generation 250?) by doing all the teams play matches (100?) against all the 
-    training point population, obtaining a champion. Then this champion playes more matches (1000?) to obtain the final 
-    results.
+    - after some generations (and at the first one), validate (generation 250?) by doing all the teams (or just the pareto 
+    front? or just the parents?) play matches (100?) against all the training point population, obtaining a champion. Then this 
+    champion playes more matches (1000?) to obtain the final results.
     - sempre usar todos os opponents no training e na validation, nao apenas os fortes (senao pode ocorrer do SBB aprender a vencer 
     apenas de oponentes fortes, e perder quando enfrentar os fracos)
     - mostrar taxas de vitoria contra cada oponente

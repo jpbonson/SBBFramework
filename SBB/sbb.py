@@ -30,7 +30,6 @@ class SBB:
         # initialize metrics (per run)
         elapseds_per_run = []
         best_teams_per_run = []
-        fronts_per_run = [] # only used with using pareto
         avg_score_per_generations_across_runs = [0.0] * (CONFIG['training_parameters']['generations_total']+1)
         recall_per_generation_per_run = [] # only for classification task
 
@@ -65,16 +64,6 @@ class SBB:
                 # 3. Selection
                 teams_population, programs_population = selection.run(self.current_generation_, teams_population, programs_population)
 
-                # print metrics for each team in the pareto front
-                if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-                    print "pareto front:"
-                    front = [t for t in teams_population if t.participated_in_front_ == self.current_generation_]
-                    for team in front:
-                        if team.score_testset_ == -1:
-                            environment.evaluate_team(team)
-                        print(team.metrics(short_print=True))
-                    print "\n"
-
                 # test for best team
                 best_team = self._best_team(teams_population)
                 environment.evaluate_team(best_team)
@@ -93,21 +82,18 @@ class SBB:
             elapsed_time = time.time() - start_time
             elapseds_per_run.append(elapsed_time)
             best_teams_per_run.append(best_team)
-            if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-                fronts_per_run.append(front)
             if CONFIG['task'] == 'classification':
                 recall_per_generation_per_run.append(recall_per_generation)
-            print("\nFinished run "+str(run_id)+", elapsed time: "+str(elapsed_time)+" secs")
+            print("\n\nFinished run "+str(run_id)+", elapsed time: "+str(elapsed_time)+" secs")
 
         # 4. Finalize execution (get final metrics, print to output, print to file)
-        best_run = self._select_best_run(best_teams_per_run, fronts_per_run)
-        msg += self._generate_output_messages_for_best_per_run(best_teams_per_run, fronts_per_run)
-        msg += self._generate_output_messages_for_best_overall(best_run, best_teams_per_run, recall_per_generation_per_run, 
-            avg_score_per_generations_across_runs, fronts_per_run)
+        best_run = self._select_best_run(best_teams_per_run)
+        msg += self._generate_output_messages_for_best_per_run(best_teams_per_run)
+        msg += self._generate_output_messages_for_best_overall(best_run, best_teams_per_run, recall_per_generation_per_run, avg_score_per_generations_across_runs)
         msg += "\nFinished execution, total elapsed time: "+str(round_value_to_decimals(sum(elapseds_per_run)))+" secs "
         msg += "(mean: "+str(round_value_to_decimals(numpy.mean(elapseds_per_run)))+", std: "+str(round_value_to_decimals(numpy.std(elapseds_per_run)))+")"
         print msg
-        self._write_output_files(best_run, best_teams_per_run, fronts_per_run, msg)
+        self._write_output_files(best_run, best_teams_per_run, msg)
 
     def _initialize_environment(self):
         if CONFIG['task'] == 'classification':
@@ -167,40 +153,24 @@ class SBB:
         best_team = teams_population[fitness.index(max(fitness))]
         return best_team
 
-    def _select_best_run(self, best_teams_per_run, fronts_per_run):
-        if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-            # select the run with the best mean of score_testset_ for the teams in the front
-            best_run = -1
-            best_mean = -1
-            for run_id, front in enumerate(fronts_per_run):
-                scores = [t.score_testset_ for t in front]
-                mean = numpy.mean(scores)
-                if mean > best_mean:
-                    best_run = run_id
-                    best_mean = mean
-        else:
-            # select the run with the best score_testset_
-            scores = [t.score_testset_ for t in best_teams_per_run]
-            best_run = scores.index(max(scores))
+    def _select_best_run(self, best_teams_per_run):
+        # select the run with the best score_testset_
+        scores = [t.score_testset_ for t in best_teams_per_run]
+        best_run = scores.index(max(scores))
         return best_run
 
-    def _generate_output_messages_for_best_per_run(self, best_teams_per_run, fronts_per_run):
+    def _generate_output_messages_for_best_per_run(self, best_teams_per_run):
         msg = "\n\n################# RESULT PER RUN ####################"
         score_per_run = []
         for run_id in range(CONFIG['training_parameters']['runs_total']):
             best_team = best_teams_per_run[run_id]
             score_per_run.append(round_value_to_decimals(best_team.score_testset_))
             msg += "\n##### "+str(run_id)+" Run best team: "+best_team.metrics()+"\n"
-            if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-                msg +=  "\npareto front:"
-                for team in fronts_per_run[run_id]:
-                    msg += team.metrics()+"\n"
-                msg += "\n"
         msg += "\n\nTest score per run: "+str(score_per_run)
         msg += "\nTest score, mean: "+str(numpy.mean(score_per_run))+", std: "+str(numpy.std(score_per_run))
         return msg
 
-    def _generate_output_messages_for_best_overall(self, best_run, best_teams_per_run, recall_per_generation_per_run, avg_score_per_generations_across_runs, fronts_per_run):
+    def _generate_output_messages_for_best_overall(self, best_run, best_teams_per_run, recall_per_generation_per_run, avg_score_per_generations_across_runs):
         best_team_overall = best_teams_per_run[best_run]
         
         msg = "\n\n#################### OVERALL BEST TEAM ####################"
@@ -215,15 +185,9 @@ class SBB:
         if CONFIG['advanced_training_parameters']['verbose'] == 2:
             temp = [round_value_to_decimals(x/float(CONFIG['training_parameters']['runs_total'])) for x in avg_score_per_generations_across_runs]
             msg += "\n\navg_avg_score_per_generations_across_runs: "+str(temp)
-
-        if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-            msg += "\n\n#################### OVERALL BEST FRONT ####################"
-            for team in fronts_per_run[best_run]:
-                msg += team.metrics()+"\n\n"
-            msg += "\n"
         return msg
 
-    def _write_output_files(self, best_run, best_teams_per_run, fronts_per_run, msg):
+    def _write_output_files(self, best_run, best_teams_per_run, msg):
         best_team_overall = best_teams_per_run[best_run]
         if not os.path.exists(RESTRICTIONS['working_path']+"outputs/"):
             os.makedirs(RESTRICTIONS['working_path']+"outputs/")
@@ -235,7 +199,3 @@ class SBB:
             text_file.write(msg)
         with open(filepath+"/best_team_"+best_team_overall.__repr__()+".txt", "w") as text_file:
             text_file.write(str(best_team_overall))
-        if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-            for team in fronts_per_run[best_run]:
-                with open(filepath+"/best_front_"+team.__repr__()+".txt", "w") as text_file:
-                    text_file.write(str(team))
