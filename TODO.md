@@ -1,3 +1,4 @@
+- fix general SBB with meeting notes
 - alterar validate_action para get_valid_actions, para acelerar o run
 - conferir se a match de tic tac toe esta funcionando corretamente
 - implementar oponente com IA (https://inventwithpython.com/chapter10.html)
@@ -47,9 +48,9 @@ jSBB:
 
 Notes from meeting with Malcolm:
 
-- Final output of SBB runs:
-    - best solution for every run (find them using the whole validation set in the last generation)
-    - distribution os the results for the best solution across runs
+- apenas printar a cada X generations (e na primeira, e na ultima)
+- fazer Avg. Score per Generation across Runs para cada run, e entao juntar os resultados
+- criar metodo validate no environment
 
 - Tictactoe:
     - point population: opponent, position and seed
@@ -59,8 +60,8 @@ Notes from meeting with Malcolm:
 - Metrics:
     - diversity (calculate the average distance between all pairs (focusing in a point. or in the whole population))
     - option to validate and print metrics only after a few generations
-    - nao printar mais teams que estao no pareto front? [DONE]
     - good metric: how the generations evolved over time for all runs combined (over the validation set, only after a few generations)
+    - mostrar as distributions necessarios para fazer o grafico de violao
 
 - Reinforcement learning:
     - during training, execute few matches (10?)
@@ -70,6 +71,12 @@ Notes from meeting with Malcolm:
     - sempre usar todos os opponents no training e na validation, nao apenas os fortes (senao pode ocorrer do SBB aprender a vencer 
     apenas de oponentes fortes, e perder quando enfrentar os fracos)
     - mostrar taxas de vitoria contra cada oponente
+
+
+
+- Final output of SBB runs:
+    - best solution for every run (find them using the whole validation set in the last generation)
+    - distribution of the results for the best solutions of each run
 
 - Como obter various poker playing behaviors? (all options using the validation set)
     - get the best ones per run, focusing in which opponents they are able to beat

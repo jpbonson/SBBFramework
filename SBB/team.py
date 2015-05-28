@@ -1,6 +1,6 @@
 import random
 from collections import Counter
-from utils.helpers import round_value_to_decimals, round_array_to_decimals
+from utils.helpers import round_value, round_array_to_decimals
 from config import CONFIG, RESTRICTIONS
 
 def reset_teams_ids():
@@ -111,23 +111,21 @@ class Team:
         for p in self.programs:
             p.remove_team(self)
 
-    def metrics(self):
-        r = round_value_to_decimals
+    def metrics(self, full_version = False):
         teams_members_ids = [p.__repr__() for p in self.programs]
-        m = str(self.team_id_)+":"+str(self.generation)
-        if CONFIG['advanced_training_parameters']['verbose'] == 0:
-            m += ", f: "+str(r(self.fitness_))+", s: "+str(r(self.score_trainingset_))+", s(test): "+str(r(self.score_testset_))
+        msg = str(self.team_id_)+":"+str(self.generation)
+        msg += "\nteam members ("+str(len(self.programs))+"): "+str(teams_members_ids)
+        msg += "\nfitness (train): "+str(round_value(self.fitness_))+", score (train): "+str(round_value(self.score_trainingset_))+", score (test): "+str(round_value(self.score_testset_))
+        if CONFIG['task'] == 'classification':
+            msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
+        if full_version:
             if CONFIG['task'] == 'classification':
-                m += "\nr: "+str(self.extra_metrics_['recall_per_action'])
-        else:
-            m += "\nteam members ("+str(len(self.programs))+"): "+str(teams_members_ids)
-            m += "\nfitness (train): "+str(r(self.fitness_))+", score (train): "+str(r(self.score_trainingset_))+", score (test): "+str(r(self.score_testset_))
-            if CONFIG['task'] == 'classification':
-                m += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
-        return m
+                msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
+                msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])
+        return msg
 
     def __repr__(self): 
-        return "("+str(self.team_id_)+";"+str(self.generation)+")"
+        return "("+str(self.team_id_)+":"+str(self.generation)+")"
 
     def __str__(self):
         text = "Team "+self.__repr__()+", team size: "+str(len(self.programs))

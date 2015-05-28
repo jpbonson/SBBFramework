@@ -2,21 +2,22 @@ import sys
 
 # user configurable options
 CONFIG = {
-    'task': 'classification',
+    'task': 'reinforcement',
     'classification_parameters': { # only used if 'task' is 'classification'
         'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
     }, 
     'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
         'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder, edit _initialize_environment() in SBB to add new environments
-        'total_matches': 50,
+        'total_matches': 10,
     },
 
     'training_parameters': {
         'runs_total': 2,
         'generations_total': 30,
+        'validate_after_each_generation': 3,
         'populations': {
-            'programs': 80,
-            'teams': 40,
+            'programs': 60,
+            'teams': 30,
             'points': 120, # may not be used by some environments (eg.: tictactoe)
         },
         'replacement_rate': {
@@ -64,9 +65,6 @@ CONFIG = {
                 'p_value': 0.1,
             },       
         },
-        'verbose': 1, # default = 1
-                      # = 2 if you are new to SBB, is debugging or are going to run really long jobs (ie. want the maximum information)
-                      # = 0 for just the necessary minimum information
     },
 }
 
@@ -89,7 +87,6 @@ RESTRICTIONS = {
     'total_inputs': -1, # initialized by the environment
     'action_mapping': {}, # initialized by the environment
     'use_memmory': False, # initialized by the environment
-    'verbose_levels': [0, 1, 2],
 }
 
 
@@ -105,8 +102,8 @@ def check_parameters():
             sys.stderr.write("Error: Invalid 'use_operations' in CONFIG! The valid values are "+str(valid_operations)+"\n")
             raise SystemExit
 
-    if CONFIG['advanced_training_parameters']['verbose'] not in RESTRICTIONS['verbose_levels']:
-        sys.stderr.write("Error: Invalid 'verbose' in CONFIG! The valid values are "+str(RESTRICTIONS['verbose_levels'])+"\n")
+    if CONFIG['training_parameters']['generations_total'] % CONFIG['training_parameters']['validate_after_each_generation'] != 0:
+        sys.stderr.write("Error: 'validate_after_each_generation' should be a multiple for 'generations_total', in order to ensure valdiation of the last generation.\n")
         raise SystemExit
 
 check_parameters()
