@@ -7,7 +7,7 @@ class Config():
 
     # user configurable options
     USER = {
-        'task': 'reinforcement',
+        'task': 'classification',
         'classification_parameters': { # only used if 'task' is 'classification'
             'dataset': 'iris', # must have a .train and a .test file in the pSBB/datasets folder
         }, 
@@ -92,6 +92,7 @@ class Config():
         'total_inputs': -1, # initialized by the environment
         'action_mapping': {}, # initialized by the environment
         'use_memmory': False, # initialized by the environment
+        'write_output_files': True, # used by the test cases
     }
 
     @staticmethod

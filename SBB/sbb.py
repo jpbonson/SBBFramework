@@ -85,7 +85,8 @@ class SBB:
         msg += "\n\nFinished execution, total elapsed time: "+str(round_value(sum(elapseds_per_run)))+" secs "
         msg += "(mean: "+str(round_value(numpy.mean(elapseds_per_run)))+", std: "+str(round_value(numpy.std(elapseds_per_run)))+")"
         print msg
-        self._write_output_files(best_teams_per_run, msg)
+        if Config.RESTRICTIONS['write_output_files']:
+            self._write_output_files(best_teams_per_run, msg)
 
     def _validate(self, environment, teams_population, score_per_generation, recall_per_generation):
         best_team = environment.validate(teams_population)
@@ -192,7 +193,11 @@ class SBB:
             os.makedirs(Config.RESTRICTIONS['working_path']+"outputs/")
         localtime = time.localtime()
         pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+str(localtime.tm_hour)+str(localtime.tm_min)+str(localtime.tm_sec)
-        filepath = Config.RESTRICTIONS['working_path']+"outputs/"+str(Config.USER['classification_parameters']['dataset'])+"_output-"+pretty_localtime
+        if Config.USER['task'] == 'classification':
+            filename = Config.USER['classification_parameters']['dataset']
+        else:
+            filename = Config.USER['reinforcement_parameters']['environment']
+        filepath = Config.RESTRICTIONS['working_path']+"outputs/"+str(filename)+"_"+pretty_localtime
         os.makedirs(filepath)
         with open(filepath+"/metrics.txt", "w") as text_file:
             text_file.write(msg)

@@ -65,6 +65,9 @@ TEST_CONFIG = {
 }
 
 class ClassificationTests(unittest.TestCase):
+    def setUp(self):
+        Config.RESTRICTIONS['write_output_files'] = False
+
     def test_classification_for_iris_without_pareto_and_without_diversity_maintenance(self):
         """ Checking if everything for classification is still working and producing the same result. """
         TEST_CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
