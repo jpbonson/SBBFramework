@@ -15,15 +15,15 @@ from environments.classification_environment import ClassificationEnvironment
 from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
 from selection import Selection
 from utils.helpers import round_value, round_array
-from config import CONFIG, RESTRICTIONS
+from config import Config
 
 class SBB:
     def __init__(self):
         self.current_generation_ = 0
         self.best_scores_per_runs_ = [] # used by tests
-        if not CONFIG['advanced_training_parameters']['seed']:
-            CONFIG['advanced_training_parameters']['seed'] = random.randint(0, sys.maxint) # based on the system time
-        random.seed(CONFIG['advanced_training_parameters']['seed'])
+        if not Config.USER['advanced_training_parameters']['seed']:
+            Config.USER['advanced_training_parameters']['seed'] = random.randint(0, sys.maxint) # based on the system time
+        random.seed(Config.USER['advanced_training_parameters']['seed'])
 
     def run(self):
         print "\n### Starting pSBB"
@@ -39,11 +39,11 @@ class SBB:
         selection = Selection(environment)
 
         msg = ""
-        msg += "\n### CONFIG: "+str(CONFIG)+"\n"
+        msg += "\n### CONFIG: "+str(Config.USER)+"\n"
         msg += environment.metrics()
         print msg
 
-        for run_id in range(1, CONFIG['training_parameters']['runs_total']+1):
+        for run_id in range(1, Config.USER['training_parameters']['runs_total']+1):
             print("\nStarting run: "+str(run_id)+"\n")
 
             # initialize metrics (per generation)
@@ -65,7 +65,7 @@ class SBB:
                 teams_population, programs_population = selection.run(self.current_generation_, teams_population, programs_population)
 
                 # Validate and print metrics
-                if self.current_generation_ == 1 or self.current_generation_ % CONFIG['training_parameters']['validate_after_each_generation'] == 0:
+                if self.current_generation_ == 1 or self.current_generation_ % Config.USER['training_parameters']['validate_after_each_generation'] == 0:
                     best_team = self._validate(environment, teams_population, score_per_generation, recall_per_generation)
                     print "actions distribution: "+str(Counter([p.action for p in programs_population]))+"\n"
 
@@ -75,7 +75,7 @@ class SBB:
             elapseds_per_run.append(elapsed_time)
             best_teams_per_run.append(best_team)
             score_per_generations_per_runs.append(score_per_generation)
-            if CONFIG['task'] == 'classification':
+            if Config.USER['task'] == 'classification':
                 recall_per_generation_per_run.append(recall_per_generation)
             print("\nFinished run "+str(run_id)+", elapsed time: "+str(elapsed_time)+" secs")
 
@@ -90,18 +90,18 @@ class SBB:
     def _validate(self, environment, teams_population, score_per_generation, recall_per_generation):
         best_team = environment.validate(teams_population)
         score_per_generation.append(best_team.score_testset_)
-        if CONFIG['task'] == 'classification':
+        if Config.USER['task'] == 'classification':
             recall_per_generation.append(best_team.extra_metrics_['recall_per_action'])
         print("\nbest team: "+best_team.metrics())
         return best_team
 
     def _initialize_environment(self):
-        if CONFIG['task'] == 'classification':
+        if Config.USER['task'] == 'classification':
             return ClassificationEnvironment()
-        if CONFIG['task'] == 'reinforcement':
-            if CONFIG['reinforcement_parameters']['environment'] == 'tictactoe':
+        if Config.USER['task'] == 'reinforcement':
+            if Config.USER['reinforcement_parameters']['environment'] == 'tictactoe':
                 return TictactoeEnvironment()
-        raise ValueError("No environment exists for "+str(CONFIG['task']))
+        raise ValueError("No environment exists for "+str(Config.USER['task']))
 
     def _initialize_program_population(self):
         """
@@ -109,11 +109,11 @@ class SBB:
         """
         reset_programs_ids()
         programs_population =[]
-        for i in range(CONFIG['training_parameters']['populations']['programs']):
-            action = random.randrange(RESTRICTIONS['total_actions'])
+        for i in range(Config.USER['training_parameters']['populations']['programs']):
+            action = random.randrange(Config.RESTRICTIONS['total_actions'])
             instructions = []
-            for i in range(CONFIG['training_parameters']['program_size']['initial']):
-                instructions.append(Instruction(RESTRICTIONS['total_inputs']))
+            for i in range(Config.USER['training_parameters']['program_size']['initial']):
+                instructions.append(Instruction(Config.RESTRICTIONS['total_inputs']))
             program = Program(self.current_generation_, instructions, action)
             programs_population.append(program)
         return programs_population
@@ -124,7 +124,7 @@ class SBB:
         """
         reset_teams_ids()
         teams_population = []
-        for t in range(CONFIG['training_parameters']['populations']['teams']):
+        for t in range(Config.USER['training_parameters']['populations']['teams']):
             selected_programs = []
             programs_per_action = self._get_programs_per_action(programs_population)
             for programs in programs_per_action:
@@ -135,7 +135,7 @@ class SBB:
 
     def _get_programs_per_action(self, programs):
         programs_per_action = []
-        for class_index in range(RESTRICTIONS['total_actions']):
+        for class_index in range(Config.RESTRICTIONS['total_actions']):
             values = [p for p in programs if p.action == class_index]
             if len(values) == 0:
                 raise StandardError("_get_programs_per_action() wasn't able to get programs for the action "+str(class_index)+". " \
@@ -144,14 +144,14 @@ class SBB:
         return programs_per_action
 
     def _stop_criterion(self):
-        if self.current_generation_ == CONFIG['training_parameters']['generations_total']:
+        if self.current_generation_ == Config.USER['training_parameters']['generations_total']:
             return True
         return False
 
     def _generate_output_messages_for_runs(self, best_teams_per_run, score_per_generations_per_runs, recall_per_generation_per_run):
         msg = "\n\n\n################# RESULT PER RUN ####################"
-        for run_id in range(CONFIG['training_parameters']['runs_total']):
-            if CONFIG['task'] == 'classification':
+        for run_id in range(Config.USER['training_parameters']['runs_total']):
+            if Config.USER['task'] == 'classification':
                 recall_per_generation = recall_per_generation_per_run[run_id]
             else:
                 recall_per_generation = None
@@ -165,14 +165,14 @@ class SBB:
     def _print_run(self, run_id, team, score_per_generation, recall_per_generation):
         msg = "\n\n\n##### "+str(run_id+1)+" Run best team: "+team.metrics(full_version = True)
         msg += "\n\nScore per Generation: "+str(round_array(score_per_generation))
-        if CONFIG['task'] == 'classification':
+        if Config.USER['task'] == 'classification':
             msg += "\n\nRecall per Action per Generation: "+str(recall_per_generation)
         return msg
 
     def _generate_output_messages_overall(self, best_teams_per_run, score_per_generations_per_runs):
         msg = "\n\n\n#################### OVERALL RESULTS ####################"
         score_per_run = []
-        for run_id in range(CONFIG['training_parameters']['runs_total']):
+        for run_id in range(Config.USER['training_parameters']['runs_total']):
             score_per_run.append(round_value(best_teams_per_run[run_id].score_testset_))
         self.best_scores_per_runs_ = score_per_run
         msg += "\n\nTest Score per Run: "+str(score_per_run)
@@ -188,14 +188,14 @@ class SBB:
         return msg
 
     def _write_output_files(self, best_teams_per_run, msg):
-        if not os.path.exists(RESTRICTIONS['working_path']+"outputs/"):
-            os.makedirs(RESTRICTIONS['working_path']+"outputs/")
+        if not os.path.exists(Config.RESTRICTIONS['working_path']+"outputs/"):
+            os.makedirs(Config.RESTRICTIONS['working_path']+"outputs/")
         localtime = time.localtime()
         pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+str(localtime.tm_hour)+str(localtime.tm_min)+str(localtime.tm_sec)
-        filepath = RESTRICTIONS['working_path']+"outputs/"+str(CONFIG['classification_parameters']['dataset'])+"_output-"+pretty_localtime
+        filepath = Config.RESTRICTIONS['working_path']+"outputs/"+str(Config.USER['classification_parameters']['dataset'])+"_output-"+pretty_localtime
         os.makedirs(filepath)
         with open(filepath+"/metrics.txt", "w") as text_file:
             text_file.write(msg)
-        for run_id in range(CONFIG['training_parameters']['runs_total']):
+        for run_id in range(Config.USER['training_parameters']['runs_total']):
             with open(filepath+"/best_team_run_"+str(run_id+1)+".txt", "w") as text_file:
                 text_file.write(str(best_teams_per_run[run_id]))

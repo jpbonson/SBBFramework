@@ -1,6 +1,6 @@
 import numpy
 from ..default_environment import DefaultEnvironment, DefaultPoint
-from ...config import CONFIG, RESTRICTIONS
+from ...config import Config
 from tictactoe_match import TictactoeMatch
 from tictactoe_opponents import TictactoeRandomOpponent
 
@@ -33,10 +33,10 @@ class TictactoeEnvironment(DefaultEnvironment):
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
             '[2,0]': 6, '[2,1]': 7, '[2,2]': 8,
         }
-        RESTRICTIONS['total_actions'] = self.total_actions_
-        RESTRICTIONS['total_inputs'] = self.total_inputs_
-        RESTRICTIONS['action_mapping'] = self.action_mapping_
-        RESTRICTIONS['use_memmory'] = False # since the point population output is not predictable
+        Config.RESTRICTIONS['total_actions'] = self.total_actions_
+        Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
+        Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
+        Config.RESTRICTIONS['use_memmory'] = False # since the point population output is not predictable
 
     def reset_point_population(self):
         pass
@@ -59,7 +59,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         results = []
         for point in self.point_population_:
             outputs = []
-            for match_id in range(CONFIG['reinforcement_parameters']['total_matches']):
+            for match_id in range(Config.USER['reinforcement_parameters']['total_matches']):
                 outputs.append(self._play_match(point, team, is_training))
             result = numpy.mean(outputs)
             results.append(result)

@@ -1,5 +1,5 @@
 import numpy
-from config import CONFIG
+from config import Config
 
 class DiversityMaintenance():
     """
@@ -35,11 +35,11 @@ class DiversityMaintenance():
                     distances.append(distance)
             # get mean of the k nearest neighbours
             sorted_list = sorted(distances)
-            k = CONFIG['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['k']
+            k = Config.USER['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['k']
             min_values = sorted_list[:k]
             diversity = numpy.mean(min_values)
             # calculate fitness
-            p = CONFIG['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value']
+            p = Config.USER['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value']
             team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
         return population
 
@@ -51,13 +51,13 @@ class DiversityMaintenance():
         true, normalize the dimensions before applying fitness sharing).
         """
         # calculate denominators in each dimension
-        denominators = [1.0] * CONFIG['training_parameters']['populations']['points'] # initialized to 1 so we don't divide by zero
+        denominators = [1.0] * Config.USER['training_parameters']['populations']['points'] # initialized to 1 so we don't divide by zero
         for index, point in enumerate(environment.point_population()):
             for individual in population:
                 denominators[index] += float(individual.results_per_points_[point.point_id])
 
         # calculate fitness
-        p = CONFIG['advanced_training_parameters']['diversity_configs']['fitness_sharing']['p_value']
+        p = Config.USER['advanced_training_parameters']['diversity_configs']['fitness_sharing']['p_value']
         for individual in population:
             score = 0.0
             for index, point in enumerate(environment.point_population()):

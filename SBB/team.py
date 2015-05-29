@@ -1,7 +1,7 @@
 import random
 from collections import Counter
 from utils.helpers import round_value, round_array
-from config import CONFIG, RESTRICTIONS
+from config import Config
 
 def reset_teams_ids():
     global next_team_id
@@ -37,12 +37,12 @@ class Team:
         
     def execute(self, point_id, inputs, is_valid_action, is_training):
         if is_training:
-            if RESTRICTIONS['use_memmory'] and point_id in self.actions_per_points_:
+            if Config.RESTRICTIONS['use_memmory'] and point_id in self.actions_per_points_:
                 return self.actions_per_points_[point_id]
             else:
                 selected_program = self._select_program(inputs, is_valid_action)
                 output_class = selected_program.action
-                if RESTRICTIONS['use_memmory']:
+                if Config.RESTRICTIONS['use_memmory']:
                     self.actions_per_points_[point_id] = output_class
                 if selected_program.program_id_ not in self.active_programs_:
                     self.active_programs_.append(selected_program.program_id_)
@@ -72,11 +72,11 @@ class Team:
         Generates mutation chances and mutate the team if it is a valid mutation
         """
         mutation_chance = random.random()
-        if mutation_chance <= CONFIG['training_parameters']['mutation']['team']['remove_program']:
+        if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['remove_program']:
             self._randomly_remove_program()
-        if len(self.programs) < CONFIG['training_parameters']['team_size']['max']:
+        if len(self.programs) < Config.USER['training_parameters']['team_size']['max']:
             mutation_chance = random.random()
-            if mutation_chance <= CONFIG['training_parameters']['mutation']['team']['add_program']:
+            if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['add_program']:
                 self._randomly_add_program(new_programs)          
 
     def _randomly_remove_program(self):
@@ -116,10 +116,10 @@ class Team:
         msg = str(self.team_id_)+":"+str(self.generation)
         msg += "\nteam members ("+str(len(self.programs))+"): "+str(teams_members_ids)
         msg += "\nfitness (train): "+str(round_value(self.fitness_))+", score (train): "+str(round_value(self.score_trainingset_))+", score (test): "+str(round_value(self.score_testset_))
-        if CONFIG['task'] == 'classification':
+        if Config.USER['task'] == 'classification':
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
         if full_version:
-            if CONFIG['task'] == 'classification':
+            if Config.USER['task'] == 'classification':
                 msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
                 msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])
         return msg

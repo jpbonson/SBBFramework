@@ -2,7 +2,7 @@ import random
 from scipy.special import expit
 from instruction import Instruction
 from utils.operations import Operation
-from config import CONFIG, RESTRICTIONS
+from config import Config
 
 def reset_programs_ids():
     global next_program_id
@@ -30,22 +30,22 @@ class Program:
             self.instructions_without_introns_ = Program.remove_introns(self.instructions)
         instructions = self.instructions_without_introns_
         
-        general_registers = [0] * RESTRICTIONS['genotype_options']['total_registers']
+        general_registers = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
         if_instruction = None
         skip_next = False
         for instruction in instructions:
             if if_instruction and not Operation.execute_if(if_instruction.op, if_instruction.target, if_instruction.source):
                 if_instruction = None
-                if instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+                if instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                     skip_next = True
             elif skip_next:
-                if instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+                if instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                     skip_next = True
                 else:
                     skip_next = False
-            elif instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+            elif instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                 if_instruction = instruction
-            elif instruction.op in RESTRICTIONS['genotype_options']['one-operand-instructions']:
+            elif instruction.op in Config.RESTRICTIONS['genotype_options']['one-operand-instructions']:
                 general_registers[instruction.target] = Operation.execute(instruction.op, general_registers[instruction.target])
             else:
                 if instruction.mode == 'read-register':
@@ -60,24 +60,24 @@ class Program:
 
     def mutate(self):
         mutation_chance = random.random()
-        if (mutation_chance <= CONFIG['training_parameters']['mutation']['program']['remove_instruction'] and 
-                len(self.instructions) > CONFIG['training_parameters']['program_size']['min']):
+        if (mutation_chance <= Config.USER['training_parameters']['mutation']['program']['remove_instruction'] and 
+                len(self.instructions) > Config.USER['training_parameters']['program_size']['min']):
             self.instructions.remove(random.choice(self.instructions))
 
         mutation_chance = random.random()
-        if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_instruction']:
+        if mutation_chance <= Config.USER['training_parameters']['mutation']['program']['change_instruction']:
             instruction = random.choice(self.instructions)
             instruction.mutate()
  
         mutation_chance = random.random()
-        if (mutation_chance <= CONFIG['training_parameters']['mutation']['program']['add_instruction'] and 
-                len(self.instructions) < CONFIG['training_parameters']['program_size']['max']):
+        if (mutation_chance <= Config.USER['training_parameters']['mutation']['program']['add_instruction'] and 
+                len(self.instructions) < Config.USER['training_parameters']['program_size']['max']):
             index = random.randrange(len(self.instructions))
             self.instructions.insert(index, Instruction())
         
         mutation_chance = random.random()
-        if mutation_chance <= CONFIG['training_parameters']['mutation']['program']['change_action']:
-            self.action = random.randrange(RESTRICTIONS['total_actions'])
+        if mutation_chance <= Config.USER['training_parameters']['mutation']['program']['change_action']:
+            self.action = random.randrange(Config.RESTRICTIONS['total_actions'])
 
     def add_team(self, team):
         self.teams_.append(team)
@@ -109,7 +109,7 @@ class Program:
         spaces = 4
         for instruction in instructions:
             text += (" ")*spaces*indentation+str(instruction)+"\n"
-            if instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+            if instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                 indentation += 1
             else:
                 indentation = 0
@@ -125,15 +125,15 @@ class Program:
         ignore_previous_if = False
         # Run throught the instructions from the last to the first one
         for instruction in reversed(instructions):
-            if instruction.target in relevant_registers or instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
-                if ignore_previous_if and instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+            if instruction.target in relevant_registers or instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
+                if ignore_previous_if and instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                     continue
                 else:
                     ignore_previous_if = False
                     instructions_without_introns.insert(0, instruction)
                     if instruction.mode == 'read-register' and instruction.source not in relevant_registers:
                         relevant_registers.append(instruction.source)
-                    if instruction.op in RESTRICTIONS['genotype_options']['if-instructions']:
+                    if instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                         if instruction.target not in relevant_registers:
                             relevant_registers.append(instruction.target)
             else:

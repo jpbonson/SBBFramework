@@ -1,7 +1,3 @@
-- fazer CONFIG poder ser editavel nos tests
-- implementar CONFIGs default de exemplo (e test cases), apenas para classification?
-- usar import logging para nao floodar a tela com prints qd um test falhar
-
 - Metrics:
     - diversity (calculate the average distance between all pairs (focusing in a point. or in the whole population))
     - mostrar as distributions necessarios para fazer o grafico de violao
@@ -10,6 +6,7 @@
     - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
     - use point population and replacement of points
     - team size: 20
+    - corrigir validate() para tictactoe
 
 - Reinforcement learning:
     - during training, execute few matches (10?)
@@ -30,6 +27,7 @@
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments (criar environment de reinforcement?)
 
+- usar import logging para nao floodar a tela com prints qd um test falhar
 - fazer testes unitarios
 - melhorar README.md
 - fornecer examples de CONFIG

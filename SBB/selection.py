@@ -5,7 +5,7 @@ from team import Team
 from diversity_maintenance import DiversityMaintenance
 from pareto_dominance import ParetoDominance
 from utils.helpers import weighted_choice
-from config import CONFIG
+from config import Config
 
 class Selection:
     """
@@ -18,10 +18,10 @@ class Selection:
 
     def run(self, current_generation, teams_population, programs_population):
         teams_population = self._evaluate_teams(teams_population)
-        teams_to_remove = int(CONFIG['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
+        teams_to_remove = int(Config.USER['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
         teams_to_keep = len(teams_population) - teams_to_remove
 
-        if CONFIG['advanced_training_parameters']['use_pareto_for_team_population_selection']:
+        if Config.USER['advanced_training_parameters']['use_pareto_for_team_population_selection']:
             keep_teams, remove_teams = self._use_pareto_front_to_select_solutions(current_generation, teams_population, teams_to_keep)
         else:
             teams_population = self._apply_diversity_maintenance(teams_population)
@@ -71,9 +71,9 @@ class Selection:
         return keep_solutions, remove_solutions
 
     def _apply_diversity_maintenance(self, teams_population):
-        if CONFIG['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
+        if Config.USER['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
             teams_population = DiversityMaintenance.genotype_diversity(teams_population)
-        if CONFIG['advanced_training_parameters']['diversity']['fitness_sharing']:
+        if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']:
             teams_population = DiversityMaintenance.fitness_sharing(self.environment, teams_population)
         return teams_population
 
@@ -84,7 +84,7 @@ class Selection:
         return teams_population
 
     def _select_teams_to_clone(self, teams_population):
-        new_teams_to_create = CONFIG['training_parameters']['populations']['teams'] - len(teams_population)
+        new_teams_to_create = Config.USER['training_parameters']['populations']['teams'] - len(teams_population)
         teams_to_clone = []
         while len(teams_to_clone) < new_teams_to_create:
             fitness = [team.fitness_ for team in teams_population]
@@ -106,7 +106,7 @@ class Selection:
         """
         Add new mutated programs to population, so it has the same size as before.
         """
-        new_programs_to_create = CONFIG['training_parameters']['populations']['programs'] - len(programs_population)
+        new_programs_to_create = Config.USER['training_parameters']['populations']['programs'] - len(programs_population)
         programs_to_clone = random.sample(programs_population, new_programs_to_create)
         new_programs = []
         for program in programs_to_clone:
@@ -127,7 +127,7 @@ class Selection:
         return teams_population
 
     def _check_for_bugs(self, teams_population, programs_population):
-        if len(teams_population) != CONFIG['training_parameters']['populations']['teams']:
+        if len(teams_population) != Config.USER['training_parameters']['populations']['teams']:
             raise ValueError("The size of the teams population changed during selection! You got a bug!")
-        if len(programs_population) != CONFIG['training_parameters']['populations']['programs']:
+        if len(programs_population) != Config.USER['training_parameters']['populations']['programs']:
             raise ValueError("The size of the programs population changed during selection! You got a bug!")

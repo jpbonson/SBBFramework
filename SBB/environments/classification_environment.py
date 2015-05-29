@@ -6,7 +6,7 @@ from default_environment import DefaultEnvironment, DefaultPoint
 from ..diversity_maintenance import DiversityMaintenance
 from ..pareto_dominance import ParetoDominance
 from ..utils.helpers import round_array, flatten, is_nearly_equal_to
-from ..config import CONFIG, RESTRICTIONS
+from ..config import Config
 
 class ClassificationPoint(DefaultPoint):
     """
@@ -33,23 +33,23 @@ class ClassificationEnvironment(DefaultEnvironment):
         self.total_inputs_ = len(self.train_population_[0].inputs)
         self.trainset_per_action_ = self._get_data_per_action(self.train_population_)
         self.point_population_ = None
-        RESTRICTIONS['total_actions'] = self.total_actions_
-        RESTRICTIONS['total_inputs'] = self.total_inputs_
-        RESTRICTIONS['action_mapping'] = self.action_mapping_
-        RESTRICTIONS['use_memmory'] = True # since for the same input, the output is always the same
+        Config.RESTRICTIONS['total_actions'] = self.total_actions_
+        Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
+        Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
+        Config.RESTRICTIONS['use_memmory'] = True # since for the same input, the output is always the same
 
         # ensures the population size is multiple of the total actions
-        total_samples_per_class = CONFIG['training_parameters']['populations']['points']/self.total_actions_
-        CONFIG['training_parameters']['populations']['points'] = total_samples_per_class*self.total_actions_
+        total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_actions_
+        Config.USER['training_parameters']['populations']['points'] = total_samples_per_class*self.total_actions_
 
     def _initialize_datasets(self):
         """
         Read from file and normalize the train and tests sets.
         """
-        dataset_filename = CONFIG['classification_parameters']['dataset']
+        dataset_filename = Config.USER['classification_parameters']['dataset']
         print("\nReading inputs from data: "+dataset_filename)
-        train = self._read_space_separated_file(RESTRICTIONS['working_path']+"datasets/"+dataset_filename+".train")
-        test = self._read_space_separated_file(RESTRICTIONS['working_path']+"datasets/"+dataset_filename+".test")
+        train = self._read_space_separated_file(Config.RESTRICTIONS['working_path']+"datasets/"+dataset_filename+".train")
+        test = self._read_space_separated_file(Config.RESTRICTIONS['working_path']+"datasets/"+dataset_filename+".test")
         normalization_params = self._get_normalization_params(train, test)
         train = self._normalize(normalization_params, train)
         test = self._normalize(normalization_params, test)
@@ -135,7 +135,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         of the run, just gets random samples for each action of the dataset. For the next generations, it 
         replaces some of the points in the sample for new points.
         """
-        total_samples_per_class = CONFIG['training_parameters']['populations']['points']/self.total_actions_
+        total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_actions_
 
         if not self.point_population_: # first sampling of the run
             # get random samples per class
@@ -171,17 +171,17 @@ class ClassificationEnvironment(DefaultEnvironment):
         return sample
 
     def _check_for_bugs(self):
-        if len(self.point_population_) != CONFIG['training_parameters']['populations']['points']:
-            raise ValueError("The size of the points population changed during selection! You got a bug! (it is: "+str(len(self.point_population_))+", should be: "+str(CONFIG['training_parameters']['populations']['points'])+")")
+        if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
+            raise ValueError("The size of the points population changed during selection! You got a bug! (it is: "+str(len(self.point_population_))+", should be: "+str(Config.USER['training_parameters']['populations']['points'])+")")
 
     def evaluate_point_population(self, teams_population):
-        total_samples_per_class = CONFIG['training_parameters']['populations']['points']/self.total_actions_
+        total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_actions_
         current_subsets_per_class = self._get_data_per_action(self.point_population_)
-        samples_per_class_to_keep = int(round(total_samples_per_class*(1.0-CONFIG['training_parameters']['replacement_rate']['points'])))
+        samples_per_class_to_keep = int(round(total_samples_per_class*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
 
         kept_subsets_per_class = []
         removed_subsets_per_class = []
-        if CONFIG['advanced_training_parameters']['use_pareto_for_point_population_selection']:
+        if Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection']:
             # obtain the pareto front for each subset
             for subset in current_subsets_per_class:
                 # create the results_map, so that the pareto front will contain points that are selecting distinct teams
