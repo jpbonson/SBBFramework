@@ -65,6 +65,13 @@ class DefaultEnvironment(object):
         """
 
     @abc.abstractmethod
+    def validate(self, teams_population):
+        """
+        Return the best team for the teams_population using the validation set. It must 
+        also set the team.score_testset_ and, if necessary, team.extra_metrics_
+        """
+
+    @abc.abstractmethod
     def metrics(self):
         """
         Generate a string with the metrics for the environment. It is printed at the 

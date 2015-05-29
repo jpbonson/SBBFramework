@@ -100,6 +100,12 @@ class TictactoeEnvironment(DefaultEnvironment):
                 return match.result_for_player(point.player_position)
         raise ValueError("The match finished executing without being over. You got a bug!")
 
+    def validate(self, teams_population):
+        fitness = [p.fitness_ for p in teams_population]
+        best_team = teams_population[fitness.index(max(fitness))]
+        self.evaluate_team(best_team)
+        return best_team
+
     def metrics(self):
         msg = ""
         msg += "\n### Environment Info:"

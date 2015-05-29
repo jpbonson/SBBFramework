@@ -54,11 +54,6 @@ class SBB:
             self.current_generation_ = 0
             programs_population = self._initialize_program_population()
             teams_population = self._initialize_team_population(programs_population)
-
-            # Validate and print metrics
-            print(">>>>> Validation, run: "+str(run_id))
-            self._validate(environment, teams_population, avg_score_per_generations_across_runs, recall_per_generation)
-            print "actions distribution: "+str(Counter([p.action for p in programs_population]))+"\n"
             
             environment.reset_point_population()
             while not self._stop_criterion():
@@ -69,7 +64,7 @@ class SBB:
                 teams_population, programs_population = selection.run(self.current_generation_, teams_population, programs_population)
 
                 # Validate and print metrics
-                if self.current_generation_ % CONFIG['training_parameters']['validate_after_each_generation'] == 0:
+                if self.current_generation_ == 1 or self.current_generation_ % CONFIG['training_parameters']['validate_after_each_generation'] == 0:
                     best_team = self._validate(environment, teams_population, avg_score_per_generations_across_runs, recall_per_generation)
                     print "actions distribution: "+str(Counter([p.action for p in programs_population]))+"\n"
 
@@ -91,10 +86,7 @@ class SBB:
         self._write_output_files(best_teams_per_run, msg)
 
     def _validate(self, environment, teams_population, avg_score_per_generations_across_runs, recall_per_generation):
-        fitness = [p.fitness_ for p in teams_population]
-        best_team = teams_population[fitness.index(max(fitness))]
-        environment.evaluate_team(best_team)
-
+        best_team = environment.validate(teams_population)
         avg_score_per_generations_across_runs[self.current_generation_] += best_team.score_testset_
         if CONFIG['task'] == 'classification':
             recall_per_generation.append(best_team.extra_metrics_['recall_per_action'])

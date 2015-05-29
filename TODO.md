@@ -3,7 +3,6 @@
 - conferir se a match de tic tac toe esta funcionando corretamente
 - implementar oponente com IA (https://inventwithpython.com/chapter10.html)
 - conferir anotacoes da reuniao com o Malcolm
-- implementar CONFIGs default de exemplo (e test cases)
 - implementar self-play (no self-play, cuidado para 1 == si mesmo e 2 == oponente)
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments (criar environment de reinforcement?)
@@ -48,12 +47,12 @@ jSBB:
 
 Notes from meeting with Malcolm:
 
-- apenas printar a cada X generations (e na primeira, e na ultima)
 - fazer Avg. Score per Generation across Runs para cada run, e entao juntar os resultados
 - criar metodo validate no environment
+- implementar CONFIGs default de exemplo (e test cases)
 
 - Tictactoe:
-    - point population: opponent, position and seed
+    - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
     - use point population and replacement of points
     - team size: 20
 

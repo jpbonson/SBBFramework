@@ -276,6 +276,12 @@ class ClassificationEnvironment(DefaultEnvironment):
             extra_metrics['confusion_matrix'] = confusion_matrix(desired_outputs, predicted_outputs)
         return macro_recall, extra_metrics
 
+    def validate(self, teams_population):
+        fitness = [p.fitness_ for p in teams_population]
+        best_team = teams_population[fitness.index(max(fitness))]
+        self.evaluate_team(best_team)
+        return best_team
+
     def metrics(self):
         msg = ""
         msg += "\n### Dataset Info:"

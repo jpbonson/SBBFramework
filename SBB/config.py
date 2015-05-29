@@ -2,7 +2,7 @@ import sys
 
 # user configurable options
 CONFIG = {
-    'task': 'reinforcement',
+    'task': 'classification',
     'classification_parameters': { # only used if 'task' is 'classification'
         'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
     }, 
