@@ -1,4 +1,26 @@
-- fix general SBB with meeting notes
+
+- implementar CONFIGs default de exemplo (e test cases), apenas para classification?
+
+- Metrics:
+    - diversity (calculate the average distance between all pairs (focusing in a point. or in the whole population))
+    - mostrar as distributions necessarios para fazer o grafico de violao
+
+- Tictactoe:
+    - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
+    - use point population and replacement of points
+    - team size: 20
+
+- Reinforcement learning:
+    - during training, execute few matches (10?)
+    - after some generations (and at the first one), validate (generation 250?) by doing all the teams (or just the pareto 
+    front? or just the parents?) play matches (100?) against all the training point population, obtaining a champion. Then this 
+    champion playes more matches (1000?) to obtain the final results.
+    - sempre usar todos os opponents no training e na validation, nao apenas os fortes (senao pode ocorrer do SBB aprender a vencer 
+    apenas de oponentes fortes, e perder quando enfrentar os fracos)
+    - mostrar taxas de vitoria contra cada oponente
+
+
+---
 - alterar validate_action para get_valid_actions, para acelerar o run
 - conferir se a match de tic tac toe esta funcionando corretamente
 - implementar oponente com IA (https://inventwithpython.com/chapter10.html)
@@ -10,7 +32,6 @@
 - fazer testes unitarios (classe logger?)
 - melhorar README.md
 - fornecer examples de CONFIG
-- conferir codigo c++ (se necessario)
 - velocidade de rodar?
 - fazer mais testes unitarios (conferir se os resultados estao realmente ok e sem bugs)
 - conferir se requirement.txt funciona
@@ -45,33 +66,8 @@ jSBB:
 - tem mutation de swap instructions
 
 
+
 Notes from meeting with Malcolm:
-
-- fazer Avg. Score per Generation across Runs para cada run, e entao juntar os resultados
-- criar metodo validate no environment
-- implementar CONFIGs default de exemplo (e test cases)
-
-- Tictactoe:
-    - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
-    - use point population and replacement of points
-    - team size: 20
-
-- Metrics:
-    - diversity (calculate the average distance between all pairs (focusing in a point. or in the whole population))
-    - option to validate and print metrics only after a few generations
-    - good metric: how the generations evolved over time for all runs combined (over the validation set, only after a few generations)
-    - mostrar as distributions necessarios para fazer o grafico de violao
-
-- Reinforcement learning:
-    - during training, execute few matches (10?)
-    - after some generations (and at the first one), validate (generation 250?) by doing all the teams (or just the pareto 
-    front? or just the parents?) play matches (100?) against all the training point population, obtaining a champion. Then this 
-    champion playes more matches (1000?) to obtain the final results.
-    - sempre usar todos os opponents no training e na validation, nao apenas os fortes (senao pode ocorrer do SBB aprender a vencer 
-    apenas de oponentes fortes, e perder quando enfrentar os fracos)
-    - mostrar taxas de vitoria contra cada oponente
-
-
 
 - Final output of SBB runs:
     - best solution for every run (find them using the whole validation set in the last generation)

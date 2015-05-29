@@ -103,7 +103,7 @@ def check_parameters():
             raise SystemExit
 
     if CONFIG['training_parameters']['generations_total'] % CONFIG['training_parameters']['validate_after_each_generation'] != 0:
-        sys.stderr.write("Error: 'validate_after_each_generation' should be a multiple for 'generations_total', in order to ensure valdiation of the last generation.\n")
+        sys.stderr.write("Error: 'validate_after_each_generation' should be a multiple for 'generations_total', in order to ensure validation of the last generation.\n")
         raise SystemExit
 
 check_parameters()

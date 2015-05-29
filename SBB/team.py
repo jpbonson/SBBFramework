@@ -1,6 +1,6 @@
 import random
 from collections import Counter
-from utils.helpers import round_value, round_array_to_decimals
+from utils.helpers import round_value, round_array
 from config import CONFIG, RESTRICTIONS
 
 def reset_teams_ids():

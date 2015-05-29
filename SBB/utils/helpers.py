@@ -9,7 +9,7 @@ def round_value(value, round_decimals_to = RESTRICTIONS['round_to_decimals']):
     number = float(10**round_decimals_to)
     return int(value * number) / number
 
-def round_array_to_decimals(array, round_decimals_to = RESTRICTIONS['round_to_decimals']):
+def round_array(array, round_decimals_to = RESTRICTIONS['round_to_decimals']):
     new_array = []
     for value in array:
         new_array.append(round_value(value))

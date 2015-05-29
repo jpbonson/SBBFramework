@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from default_environment import DefaultEnvironment, DefaultPoint
 from ..diversity_maintenance import DiversityMaintenance
 from ..pareto_dominance import ParetoDominance
-from ..utils.helpers import round_array_to_decimals, flatten, is_nearly_equal_to
+from ..utils.helpers import round_array, flatten, is_nearly_equal_to
 from ..config import CONFIG, RESTRICTIONS
 
 class ClassificationPoint(DefaultPoint):
@@ -271,7 +271,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         macro_recall = numpy.mean(recall)
         extra_metrics = {}
         if not is_training: # to avoid wasting time processing metrics when they are not necessary
-            extra_metrics['recall_per_action'] = round_array_to_decimals(recall)
+            extra_metrics['recall_per_action'] = round_array(recall)
             extra_metrics['accuracy'] = accuracy_score(desired_outputs, predicted_outputs)
             extra_metrics['confusion_matrix'] = confusion_matrix(desired_outputs, predicted_outputs)
         return macro_recall, extra_metrics
