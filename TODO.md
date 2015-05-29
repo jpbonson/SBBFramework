@@ -1,5 +1,6 @@
-
+- fazer CONFIG poder ser editavel nos tests
 - implementar CONFIGs default de exemplo (e test cases), apenas para classification?
+- usar import logging para nao floodar a tela com prints qd um test falhar
 
 - Metrics:
     - diversity (calculate the average distance between all pairs (focusing in a point. or in the whole population))
@@ -29,7 +30,7 @@
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments (criar environment de reinforcement?)
 
-- fazer testes unitarios (classe logger?)
+- fazer testes unitarios
 - melhorar README.md
 - fornecer examples de CONFIG
 - velocidade de rodar?

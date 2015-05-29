@@ -1,5 +1,4 @@
 import unittest
-import sys
 from pSBB.SBB.program import Program
 from pSBB.SBB.instruction import Instruction
 

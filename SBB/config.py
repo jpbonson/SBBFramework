@@ -4,7 +4,7 @@ import sys
 CONFIG = {
     'task': 'classification',
     'classification_parameters': { # only used if 'task' is 'classification'
-        'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
+        'dataset': 'iris', # must have a .train and a .test file in the pSBB/datasets folder
     }, 
     'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
         'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder, edit _initialize_environment() in SBB to add new environments
@@ -13,7 +13,7 @@ CONFIG = {
 
     'training_parameters': {
         'runs_total': 2,
-        'generations_total': 30,
+        'generations_total': 9,
         'validate_after_each_generation': 3,
         'populations': {
             'programs': 60,
@@ -89,6 +89,12 @@ RESTRICTIONS = {
     'use_memmory': False, # initialized by the environment
 }
 
+
+""" Used by the tests """
+def set_config(new_config):
+    global CONFIG
+    CONFIG = new_config
+    # check_parameters()
 
 """ Check if the parameters in CONFIG are valid using RESTRICTIONS """
 def check_parameters():

@@ -20,6 +20,7 @@ from config import CONFIG, RESTRICTIONS
 class SBB:
     def __init__(self):
         self.current_generation_ = 0
+        self.best_scores_per_runs_ = [] # used by tests
         if not CONFIG['advanced_training_parameters']['seed']:
             CONFIG['advanced_training_parameters']['seed'] = random.randint(0, sys.maxint) # based on the system time
         random.seed(CONFIG['advanced_training_parameters']['seed'])
@@ -150,11 +151,15 @@ class SBB:
     def _generate_output_messages_for_runs(self, best_teams_per_run, score_per_generations_per_runs, recall_per_generation_per_run):
         msg = "\n\n\n################# RESULT PER RUN ####################"
         for run_id in range(CONFIG['training_parameters']['runs_total']):
-            msg += self._print_run(run_id, best_teams_per_run[run_id], score_per_generations_per_runs[run_id], recall_per_generation_per_run[run_id])
+            if CONFIG['task'] == 'classification':
+                recall_per_generation = recall_per_generation_per_run[run_id]
+            else:
+                recall_per_generation = None
+            msg += self._print_run(run_id, best_teams_per_run[run_id], score_per_generations_per_runs[run_id], recall_per_generation)
         msg += "\n\n#################### BEST RUN ####################"
         scores = [t.score_testset_ for t in best_teams_per_run]
         best_run = scores.index(max(scores))
-        msg += self._print_run(best_run, best_teams_per_run[best_run], score_per_generations_per_runs[run_id], recall_per_generation_per_run[run_id])
+        msg += self._print_run(best_run, best_teams_per_run[best_run], score_per_generations_per_runs[run_id], recall_per_generation)
         return msg
 
     def _print_run(self, run_id, team, score_per_generation, recall_per_generation):
@@ -169,6 +174,7 @@ class SBB:
         score_per_run = []
         for run_id in range(CONFIG['training_parameters']['runs_total']):
             score_per_run.append(round_value(best_teams_per_run[run_id].score_testset_))
+        self.best_scores_per_runs_ = score_per_run
         msg += "\n\nTest Score per Run: "+str(score_per_run)
         msg += "\nmean: "+str(numpy.mean(score_per_run))+", std: "+str(numpy.std(score_per_run))
         score_means = []
