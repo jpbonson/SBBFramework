@@ -32,6 +32,7 @@ class SBB:
         elapseds_per_run = []
         best_teams_per_run = []
         score_per_generations_per_runs = []
+        diversity_per_generations_per_runs = []
         recall_per_generation_per_run = [] # only for classification task
 
         # 1. Initialize environment and thw selection algorithm
@@ -50,6 +51,7 @@ class SBB:
             start_time = time.time()
             recall_per_generation = [] # only used for the classification task
             score_per_generation = []
+            diversity_per_generation = []
 
             # 2. Randomly initialize populations
             self.current_generation_ = 0
@@ -62,12 +64,15 @@ class SBB:
                 print(">>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_id))
                 
                 # 3. Selection
-                teams_population, programs_population = selection.run(self.current_generation_, teams_population, programs_population)
+                teams_population, programs_population, diversity_means = selection.run(self.current_generation_, teams_population, programs_population)
 
                 # Validate and print metrics
                 if self.current_generation_ == 1 or self.current_generation_ % Config.USER['training_parameters']['validate_after_each_generation'] == 0:
                     best_team = self._validate(environment, teams_population, score_per_generation, recall_per_generation)
+                    for key in best_team.diversity_:
+                        print str(key)+": "+str(best_team.diversity_[key])+" (global mean: "+str(diversity_means[key])+")"
                     print "actions distribution: "+str(Counter([p.action for p in programs_population]))+"\n"
+                    diversity_per_generation.append(diversity_means)
 
             # store and print metrics (per run)
             print("\n########## "+str(run_id)+" Run's best team: "+best_team.metrics())
@@ -75,18 +80,20 @@ class SBB:
             elapseds_per_run.append(elapsed_time)
             best_teams_per_run.append(best_team)
             score_per_generations_per_runs.append(score_per_generation)
+            diversity_per_generations_per_runs.append(diversity_per_generation)
             if Config.USER['task'] == 'classification':
                 recall_per_generation_per_run.append(recall_per_generation)
             print("\nFinished run "+str(run_id)+", elapsed time: "+str(elapsed_time)+" secs")
 
         # 4. Finalize execution (get final metrics, print to output, print to file)
-        msg += self._generate_output_messages_for_runs(best_teams_per_run, score_per_generations_per_runs, recall_per_generation_per_run)
-        msg += self._generate_output_messages_overall(best_teams_per_run, score_per_generations_per_runs)
+        output_messages_for_runs = self._generate_output_messages_for_runs(best_teams_per_run, score_per_generations_per_runs, diversity_per_generations_per_runs, recall_per_generation_per_run)
+        print output_messages_for_runs
+        msg += self._generate_output_messages_overall(best_teams_per_run, score_per_generations_per_runs, diversity_per_generations_per_runs)
         msg += "\n\nFinished execution, total elapsed time: "+str(round_value(sum(elapseds_per_run)))+" secs "
         msg += "(mean: "+str(round_value(numpy.mean(elapseds_per_run)))+", std: "+str(round_value(numpy.std(elapseds_per_run)))+")"
         print msg
         if Config.RESTRICTIONS['write_output_files']:
-            self._write_output_files(best_teams_per_run, msg)
+            self._write_output_files(best_teams_per_run, msg, output_messages_for_runs)
 
     def _validate(self, environment, teams_population, score_per_generation, recall_per_generation):
         best_team = environment.validate(teams_population)
@@ -149,28 +156,41 @@ class SBB:
             return True
         return False
 
-    def _generate_output_messages_for_runs(self, best_teams_per_run, score_per_generations_per_runs, recall_per_generation_per_run):
-        msg = "\n\n\n################# RESULT PER RUN ####################"
+    def _generate_output_messages_for_runs(self, best_teams_per_run, score_per_generations_per_runs, diversity_per_generations_per_runs, 
+            recall_per_generation_per_run):
+        msg = "\n\n#################### BEST RUN ####################"
+        scores = [t.score_testset_ for t in best_teams_per_run]
+        best_run = scores.index(max(scores))
+        if Config.USER['task'] == 'classification':
+            recall_per_generation = recall_per_generation_per_run[best_run]
+        else:
+            recall_per_generation = None
+        msg += self._print_run(best_run, best_teams_per_run[best_run], score_per_generations_per_runs[best_run], 
+            diversity_per_generations_per_runs[best_run], recall_per_generation)
+        msg += "\n\n\n\n################# RESULT PER RUN ####################"
         for run_id in range(Config.USER['training_parameters']['runs_total']):
             if Config.USER['task'] == 'classification':
                 recall_per_generation = recall_per_generation_per_run[run_id]
             else:
                 recall_per_generation = None
-            msg += self._print_run(run_id, best_teams_per_run[run_id], score_per_generations_per_runs[run_id], recall_per_generation)
-        msg += "\n\n#################### BEST RUN ####################"
-        scores = [t.score_testset_ for t in best_teams_per_run]
-        best_run = scores.index(max(scores))
-        msg += self._print_run(best_run, best_teams_per_run[best_run], score_per_generations_per_runs[run_id], recall_per_generation)
+            msg += self._print_run(run_id, best_teams_per_run[run_id], score_per_generations_per_runs[run_id], 
+                diversity_per_generations_per_runs[run_id], recall_per_generation)
         return msg
 
-    def _print_run(self, run_id, team, score_per_generation, recall_per_generation):
-        msg = "\n\n\n##### "+str(run_id+1)+" Run best team: "+team.metrics(full_version = True)
+    def _print_run(self, run_id, team, score_per_generation, diversity_per_generation, recall_per_generation):
+        msg = "\n\n\n############### "+str(run_id+1)+" Run Best Team: "+team.metrics(full_version = True)
+        for key, value in team.diversity_.iteritems():
+            msg +=  "\n\n"+str(key)+": "+str(value)
+        msg += "\n\n##### Metrics per Generation"
         msg += "\n\nScore per Generation: "+str(round_array(score_per_generation))
+        for key in diversity_per_generation[0]:
+            array = [item[key] for item in diversity_per_generation]
+            msg += "\n\nDiversity per Generation ("+str(key)+"): "+str(array)
         if Config.USER['task'] == 'classification':
             msg += "\n\nRecall per Action per Generation: "+str(recall_per_generation)
         return msg
 
-    def _generate_output_messages_overall(self, best_teams_per_run, score_per_generations_per_runs):
+    def _generate_output_messages_overall(self, best_teams_per_run, score_per_generations_per_runs, diversity_per_generations_per_runs):
         msg = "\n\n\n#################### OVERALL RESULTS ####################"
         score_per_run = []
         for run_id in range(Config.USER['training_parameters']['runs_total']):
@@ -178,6 +198,7 @@ class SBB:
         self.best_scores_per_runs_ = score_per_run
         msg += "\n\nTest Score per Run: "+str(score_per_run)
         msg += "\nmean: "+str(numpy.mean(score_per_run))+", std: "+str(numpy.std(score_per_run))
+
         score_means = []
         score_stds = []
         for index in range(len(score_per_generations_per_runs[0])):
@@ -185,10 +206,21 @@ class SBB:
             score_means.append(round_value(numpy.mean(column)))
             score_stds.append(round_value(numpy.std(column)))
         msg += "\n\nMean Score per Generation across Runs: "+str(score_means)
-        msg += "\n\nStd. Deviation Score per Generation across Runs: "+str(score_stds)
+        msg += "\nStd. Deviation Score per Generation across Runs: "+str(score_stds)
+
+        for key in diversity_per_generations_per_runs[0][0]:
+            score_means = []
+            score_stds = []
+            for index in range(len(diversity_per_generations_per_runs[0])):
+                column = [row[index] for row in diversity_per_generations_per_runs]
+                column = [item[key] for item in column]
+                score_means.append(round_value(numpy.mean(column)))
+                score_stds.append(round_value(numpy.std(column)))
+            msg += "\n\nMean Diversity per Generation across Runs ("+str(key)+"): "+str(score_means)
+            msg += "\nStd. Deviation Diversity per Generation across Runs ("+str(key)+"): "+str(score_stds)
         return msg
 
-    def _write_output_files(self, best_teams_per_run, msg):
+    def _write_output_files(self, best_teams_per_run, msg, output_messages_for_runs):
         if not os.path.exists(Config.RESTRICTIONS['working_path']+"outputs/"):
             os.makedirs(Config.RESTRICTIONS['working_path']+"outputs/")
         localtime = time.localtime()
@@ -199,8 +231,10 @@ class SBB:
             filename = Config.USER['reinforcement_parameters']['environment']
         filepath = Config.RESTRICTIONS['working_path']+"outputs/"+str(filename)+"_"+pretty_localtime
         os.makedirs(filepath)
-        with open(filepath+"/metrics.txt", "w") as text_file:
+        with open(filepath+"/metrics_overall.txt", "w") as text_file:
             text_file.write(msg)
+        with open(filepath+"/metrics_per_run.txt", "w") as text_file:
+            text_file.write(output_messages_for_runs)
         for run_id in range(Config.USER['training_parameters']['runs_total']):
             with open(filepath+"/best_team_run_"+str(run_id+1)+".txt", "w") as text_file:
                 text_file.write(str(best_teams_per_run[run_id]))

@@ -1,4 +1,5 @@
 import numpy
+from utils.helpers import round_value
 from config import Config
 
 class DiversityMaintenance():
@@ -41,6 +42,7 @@ class DiversityMaintenance():
             # calculate fitness
             p = Config.USER['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value']
             team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
+            team.diversity_['genotype_diversity'] = round_value(diversity)
         return population
 
     @staticmethod
@@ -53,17 +55,18 @@ class DiversityMaintenance():
         # calculate denominators in each dimension
         denominators = [1.0] * Config.USER['training_parameters']['populations']['points'] # initialized to 1 so we don't divide by zero
         for index, point in enumerate(environment.point_population()):
-            for individual in population:
-                denominators[index] += float(individual.results_per_points_[point.point_id])
+            for team in population:
+                denominators[index] += float(team.results_per_points_[point.point_id])
 
         # calculate fitness
         p = Config.USER['advanced_training_parameters']['diversity_configs']['fitness_sharing']['p_value']
-        for individual in population:
+        for team in population:
             score = 0.0
             for index, point in enumerate(environment.point_population()):
-                score += float(individual.results_per_points_[point.point_id]) / denominators[index]
+                score += float(team.results_per_points_[point.point_id]) / denominators[index]
             diversity = score/float(len(environment.point_population()))
-            individual.fitness_ = (1.0-p)*(individual.fitness_) + p*diversity
+            team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
+            team.diversity_['fitness_sharing_diversity'] = round_value(diversity)
         return population
 
     @staticmethod

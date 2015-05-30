@@ -26,6 +26,7 @@ class Team:
         self.active_programs_ = []
         self.actions_per_points_ = {}
         self.results_per_points_ = {}
+        self.diversity_ = {}
 
     def _add_program(self, program):
         self.programs.append(program)

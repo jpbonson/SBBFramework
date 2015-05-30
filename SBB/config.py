@@ -9,7 +9,7 @@ class Config():
     USER = {
         'task': 'classification',
         'classification_parameters': { # only used if 'task' is 'classification'
-            'dataset': 'iris', # must have a .train and a .test file in the pSBB/datasets folder
+            'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
         }, 
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder, edit _initialize_environment() in SBB to add new environments
@@ -18,7 +18,7 @@ class Config():
 
         'training_parameters': {
             'runs_total': 2,
-            'generations_total': 9,
+            'generations_total': 30,
             'validate_after_each_generation': 3,
             'populations': {
                 'programs': 60,

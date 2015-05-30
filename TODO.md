@@ -1,5 +1,4 @@
 - Metrics:
-    - diversity (calculate the average distance between all pairs (focusing in a point. or in the whole population))
     - mostrar as distributions necessarios para fazer o grafico de violao
 
 - Tictactoe:
@@ -24,6 +23,7 @@
 - implementar oponente com IA (https://inventwithpython.com/chapter10.html)
 - conferir anotacoes da reuniao com o Malcolm
 - implementar self-play (no self-play, cuidado para 1 == si mesmo e 2 == oponente)
+- implementar hall of fame
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments (criar environment de reinforcement?)
 
@@ -70,7 +70,7 @@ Notes from meeting with Malcolm:
 
 - Final output of SBB runs:
     - best solution for every run (find them using the whole validation set in the last generation)
-    - distribution of the results for the best solutions of each run
+    - distribution of the results for the best solutions of each run (for scores, also for diversities?)
 
 - Como obter various poker playing behaviors? (all options using the validation set)
     - get the best ones per run, focusing in which opponents they are able to beat
