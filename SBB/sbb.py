@@ -61,18 +61,20 @@ class SBB:
             environment.reset_point_population()
             while not self._stop_criterion():
                 self.current_generation_ += 1
-                print(">>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_id))
                 
                 # 3. Selection
                 teams_population, programs_population, diversity_means = selection.run(self.current_generation_, teams_population, programs_population)
 
                 # Validate and print metrics
                 if self.current_generation_ == 1 or self.current_generation_ % Config.USER['training_parameters']['validate_after_each_generation'] == 0:
+                    print "\n\n>>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_id)
                     best_team = self._validate(environment, teams_population, score_per_generation, recall_per_generation)
                     for key in best_team.diversity_:
                         print str(key)+": "+str(best_team.diversity_[key])+" (global mean: "+str(diversity_means[key])+")"
                     print "actions distribution: "+str(Counter([p.action for p in programs_population]))+"\n"
                     diversity_per_generation.append(diversity_means)
+                else:
+                    print str(self.current_generation_),
 
             # store and print metrics (per run)
             print("\n########## "+str(run_id)+" Run's best team: "+best_team.metrics())

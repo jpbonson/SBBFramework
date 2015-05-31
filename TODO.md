@@ -1,10 +1,8 @@
-- Metrics:
-    - mostrar as distributions necessarios para fazer o grafico de violao
-
 - Tictactoe:
     - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
     - use point population and replacement of points
     - team size: 20
+    - alterar validate_action para get_valid_actions, para acelerar o run
     - corrigir validate() para tictactoe
 
 - Reinforcement learning:
@@ -18,19 +16,18 @@
 
 
 ---
-- alterar validate_action para get_valid_actions, para acelerar o run
 - conferir se a match de tic tac toe esta funcionando corretamente
 - implementar oponente com IA (https://inventwithpython.com/chapter10.html)
-- conferir anotacoes da reuniao com o Malcolm
 - implementar self-play (no self-play, cuidado para 1 == si mesmo e 2 == oponente)
 - implementar hall of fame
+
+- fazer system test para tictactoe
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments (criar environment de reinforcement?)
 
+- experimentar violin plot na R language
 - usar import logging para nao floodar a tela com prints qd um test falhar
-- fazer testes unitarios
 - melhorar README.md
-- fornecer examples de CONFIG
 - velocidade de rodar?
 - fazer mais testes unitarios (conferir se os resultados estao realmente ok e sem bugs)
 - conferir se requirement.txt funciona
@@ -40,8 +37,10 @@
 - remover comentarios em portugues
 
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions)
-- quais opponents suar para treinar? quais para validar? usar os mesmos para ambas as coisas? isn't the best opponent useful for both?
-- um point contem um oponente e uma configuracao de mao? (confirir lista de inputs!)
+---
+
+
+
 
 Observacoes:
 - cada dimensao da point population eh uma das dimensoes q vai ser maximizada no pareto, gerando as poker behaviors
@@ -68,9 +67,11 @@ jSBB:
 
 Notes from meeting with Malcolm:
 
+- sempre treinar e validar com todos os oponentes, tanto os faceis como os dificeis
+
 - Final output of SBB runs:
     - best solution for every run (find them using the whole validation set in the last generation)
-    - distribution of the results for the best solutions of each run (for scores, also for diversities?)
+    - distribution of the results for the best solutions of each run (for scores, also for diversities?), using violin chart (R language)
 
 - Como obter various poker playing behaviors? (all options using the validation set)
     - get the best ones per run, focusing in which opponents they are able to beat
