@@ -1,7 +1,6 @@
 - Tictactoe:
     - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
     - use point population and replacement of points
-    - team size: 20
     - alterar validate_action para get_valid_actions, para acelerar o run
     - corrigir validate() para tictactoe
 
@@ -16,11 +15,12 @@
 
 
 ---
-- conferir se a match de tic tac toe esta funcionando corretamente
 - implementar oponente com IA (https://inventwithpython.com/chapter10.html)
 - implementar self-play (no self-play, cuidado para 1 == si mesmo e 2 == oponente)
 - implementar hall of fame
 
+- fazer example para iris dataset
+- fazer example para tictactoe
 - fazer system test para tictactoe
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments (criar environment de reinforcement?)

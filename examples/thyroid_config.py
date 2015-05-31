@@ -74,4 +74,6 @@ THYROID_WITH_PARETO['advanced_training_parameters']['use_pareto_for_point_popula
 #################### OVERALL RESULTS ####################
 
 
+##### Result using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
+
 """

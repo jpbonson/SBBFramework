@@ -59,7 +59,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         results = []
         for point in self.point_population_:
             outputs = []
-            for match_id in range(Config.USER['reinforcement_parameters']['total_matches']):
+            for match_id in range(Config.USER['reinforcement_parameters']['training_matches']):
                 outputs.append(self._play_match(point, team, is_training))
             result = numpy.mean(outputs)
             results.append(result)
@@ -77,6 +77,7 @@ class TictactoeEnvironment(DefaultEnvironment):
             team.extra_metrics_ = extra_metrics
 
     def _play_match(self, point, team, is_training):
+        # the SBB player is always player 1, even when it is the second one to play
         if point.player_position == 1:
             first_player = team
             first_player_id = 1
@@ -89,7 +90,7 @@ class TictactoeEnvironment(DefaultEnvironment):
             second_player_id = 1
 
         match = TictactoeMatch()
-        while not match.is_over():
+        while True:
             action = first_player.execute(point.point_id, match.inputs_, match.is_valid_action, is_training)
             match.perform_action(first_player_id, action)
             if match.is_over():
@@ -98,7 +99,6 @@ class TictactoeEnvironment(DefaultEnvironment):
             match.perform_action(second_player_id, action)
             if match.is_over():
                 return match.result_for_player(point.player_position)
-        raise ValueError("The match finished executing without being over. You got a bug!")
 
     def validate(self, teams_population):
         fitness = [p.fitness_ for p in teams_population]

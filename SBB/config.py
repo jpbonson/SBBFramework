@@ -15,20 +15,21 @@ class Config():
         }, 
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder, edit _initialize_environment() in SBB to add new environments
-            'total_matches': 10,
+            'training_matches': 10,
+            'print_match': False, # use this option to debug
         },
 
         'training_parameters': {
             'runs_total': 2,
-            'generations_total': 30,
-            'validate_after_each_generation': 3,
+            'generations_total': 50,
+            'validate_after_each_generation': 5,
             'populations': {
                 'programs': 60,
                 'teams': 30,
                 'points': 120, # may not be used by some environments (eg.: tictactoe)
             },
             'replacement_rate': {
-                'teams': 0.8,
+                'teams': 0.7,
                 'points': 0.2,  # may not be used by some environments (eg.: tictactoe)
             },
             'mutation': {
@@ -44,7 +45,7 @@ class Config():
                 },
             },
             'team_size': { # the min size is the total number of actions
-                'max': 12,
+                'max': 18,
             },
             'program_size': {
                 'initial': 10,
