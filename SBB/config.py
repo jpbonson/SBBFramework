@@ -21,7 +21,7 @@ class Config():
 
         'training_parameters': {
             'runs_total': 2,
-            'generations_total': 50,
+            'generations_total': 20,
             'validate_after_each_generation': 5,
             'populations': {
                 'programs': 60,
