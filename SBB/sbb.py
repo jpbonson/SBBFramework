@@ -207,21 +207,25 @@ class SBB:
             score_per_run.append(round_value(best_teams_per_run[run_id].score_testset_))
         self.best_scores_per_runs_ = score_per_run
         msg += "\n\nTest Score per Run: "+str(score_per_run)
-        msg += "\nmean: "+str(numpy.mean(score_per_run))+", std: "+str(numpy.std(score_per_run))
+        msg += "\nmean: "+str(numpy.mean(score_per_run))
+        msg += "\nstd. deviation: "+str(numpy.std(score_per_run))
 
         score_means, score_stds = self._process_scores(train_score_per_generations_per_runs)
-        msg += "\n\nMean Train Score per Generation across Runs: "+str(score_means)
-        msg += "\nStd. Deviation Train Score per Generation across Runs: "+str(score_stds)
+        msg += "\n\nTrain Score per Generation across Runs:"
+        msg += "\nmean: "+str(score_means)
+        msg += "\nstd. deviation: "+str(score_stds)
 
         score_means, score_stds = self._process_scores(test_score_per_generations_per_runs)
-        msg += "\n\nMean Test Score per Generation across Runs: "+str(score_means)
-        msg += "\nStd. Deviation Test Score per Generation across Runs: "+str(score_stds)
+        msg += "\n\nTest Score per Generation across Runs:"
+        msg += "\nmean: "+str(score_means)
+        msg += "\nstd. deviation: "+str(score_stds)
 
         for key in diversity_per_generations_per_runs[0][0]:
             array = [[generation[key] for generation in run] for run in diversity_per_generations_per_runs]
             score_means, score_stds = self._process_scores(array)
-            msg += "\n\nMean Diversity per Generation across Runs ("+str(key)+"): "+str(score_means)
-            msg += "\nStd. Deviation Diversity per Generation across Runs ("+str(key)+"): "+str(score_stds)
+            msg += "\n\nMean Diversity per Generation across Runs ("+str(key)+"):"
+            msg += "\nmean: "+str(score_means)
+            msg += "\nstd. deviation: "+str(score_stds)
         return msg
 
     def _process_scores(self, score_per_generation_per_run):

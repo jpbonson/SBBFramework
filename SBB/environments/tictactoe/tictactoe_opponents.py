@@ -16,8 +16,5 @@ class TictactoeRandomOpponent(TictactoeOpponent):
         super(TictactoeRandomOpponent, self).__init__("random")
 
     @abc.abstractmethod
-    def execute(self, point_id, inputs, is_valid_action, is_training):
-        while True:
-            action = random.randint(0, len(inputs)-1)
-            if is_valid_action(action):
-                return action
+    def execute(self, point_id, inputs, valid_actions, is_training):
+        return random.choice(valid_actions)

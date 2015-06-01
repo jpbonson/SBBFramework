@@ -91,11 +91,11 @@ class TictactoeEnvironment(DefaultEnvironment):
 
         match = TictactoeMatch()
         while True:
-            action = first_player.execute(point.point_id, match.inputs_, match.is_valid_action, is_training)
+            action = first_player.execute(point.point_id, match.inputs_, match.valid_actions(), is_training)
             match.perform_action(first_player_id, action)
             if match.is_over():
                 return match.result_for_player(point.player_position)
-            action = second_player.execute(point.point_id, match.inputs_, match.is_valid_action, is_training)
+            action = second_player.execute(point.point_id, match.inputs_, match.valid_actions(), is_training)
             match.perform_action(second_player_id, action)
             if match.is_over():
                 return match.result_for_player(point.player_position)

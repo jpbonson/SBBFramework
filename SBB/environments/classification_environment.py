@@ -247,7 +247,7 @@ class ClassificationEnvironment(DefaultEnvironment):
 
         outputs = []
         for point in population:
-            output = team.execute(point.point_id, point.inputs, lambda action: True, is_training)
+            output = team.execute(point.point_id, point.inputs, range(Config.RESTRICTIONS['total_actions']), is_training)
             outputs.append(output)
             if is_training:
                 if output == point.output:

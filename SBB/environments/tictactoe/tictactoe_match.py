@@ -5,12 +5,13 @@ class TictactoeMatch():
     Implements a TicTacToe match
     """
 
+    EMPTY = 0
     DRAW = 0
 
     def __init__(self):
-        self.inputs_ = [0, 0, 0,
-                        0, 0, 0,
-                        0, 0, 0]
+        self.inputs_ = [TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY,
+                        TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY,
+                        TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY]
         self.result_ = -1
         self.print_game = Config.USER['reinforcement_parameters']['print_match']
 
@@ -26,14 +27,15 @@ class TictactoeMatch():
             print str(self.inputs_[3:6])
             print str(self.inputs_[6:9])
 
-    def is_valid_action(self, action):
+    def valid_actions(self):
         """
-        If the chosen space (represented by the action) is empty, the 
-        action is valid. If not, it is invalid.
+        The valid actions are the empty spaces.
         """
-        if self.inputs_[action] == 0:
-            return True
-        return False
+        valids = []
+        for index, space in enumerate(self.inputs_):
+            if space == TictactoeMatch.EMPTY:
+                valids.append(index)
+        return valids
 
     def is_over(self):
         """
@@ -47,7 +49,7 @@ class TictactoeMatch():
                 print "It is over! Player "+str(self.result_)+" wins!"
             return True
         for value in self.inputs_:
-            if value == 0:
+            if value == TictactoeMatch.EMPTY:
                 if self.print_game:
                     print "Go!"
                 return False

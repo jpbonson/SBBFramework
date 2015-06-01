@@ -1,7 +1,6 @@
 - Tictactoe:
     - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
     - use point population and replacement of points
-    - alterar validate_action para get_valid_actions, para acelerar o run
     - corrigir validate() para tictactoe
 
 - Reinforcement learning:
