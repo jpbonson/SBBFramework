@@ -70,7 +70,7 @@ class SBB:
                 # Validate
                 if self.current_generation_ == 1 or self.current_generation_ % Config.USER['training_parameters']['validate_after_each_generation'] == 0:
                     print "\n\n>>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_id)
-                    best_team = environment.validate(teams_population)
+                    best_team = environment.validate(self.current_generation_, teams_population)
 
                     # store metrics
                     train_score_per_generation.append(best_team.score_trainingset_)

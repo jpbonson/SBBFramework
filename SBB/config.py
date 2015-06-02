@@ -16,13 +16,15 @@ class Config():
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder, edit _initialize_environment() in SBB to add new environments
             'training_matches': 10,
-            'print_match': False, # use this option to debug
+            'test_matches': 100,
+            'champion_matches': 1000,
+            'print_matches': False, # use this option to debug
         },
 
         'training_parameters': {
             'runs_total': 2,
-            'generations_total': 20,
-            'validate_after_each_generation': 5,
+            'generations_total': 50,
+            'validate_after_each_generation': 10,
             'populations': {
                 'programs': 60,
                 'teams': 30,

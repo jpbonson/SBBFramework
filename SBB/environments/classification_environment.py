@@ -266,8 +266,8 @@ class ClassificationEnvironment(DefaultEnvironment):
             team.score_testset_ = score
             team.extra_metrics_ = extra_metrics
 
-    def _calculate_team_metrics(self, predicted_outputs, desired_outputs, is_training=False):
-        recall = recall_score(desired_outputs, predicted_outputs, average=None)
+    def _calculate_team_metrics(self, predicted_outputs, desired_outputs, is_training = False):
+        recall = recall_score(desired_outputs, predicted_outputs, average = None)
         macro_recall = numpy.mean(recall)
         extra_metrics = {}
         if not is_training: # to avoid wasting time processing metrics when they are not necessary
@@ -276,10 +276,10 @@ class ClassificationEnvironment(DefaultEnvironment):
             extra_metrics['confusion_matrix'] = confusion_matrix(desired_outputs, predicted_outputs)
         return macro_recall, extra_metrics
 
-    def validate(self, teams_population):
+    def validate(self, current_generation, teams_population):
         fitness = [p.fitness_ for p in teams_population]
         best_team = teams_population[fitness.index(max(fitness))]
-        self.evaluate_team(best_team)
+        self.evaluate_team(best_team, is_training = False)
         return best_team
 
     def metrics(self):

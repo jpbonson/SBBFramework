@@ -1,17 +1,8 @@
 - Tictactoe:
     - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
     - use point population and replacement of points
-    - corrigir validate() para tictactoe
-
-- Reinforcement learning:
-    - during training, execute few matches (10?)
-    - after some generations (and at the first one), validate (generation 250?) by doing all the teams (or just the pareto 
-    front? or just the parents?) play matches (100?) against all the training point population, obtaining a champion. Then this 
-    champion playes more matches (1000?) to obtain the final results.
-    - sempre usar todos os opponents no training e na validation, nao apenas os fortes (senao pode ocorrer do SBB aprender a vencer 
-    apenas de oponentes fortes, e perder quando enfrentar os fracos)
     - mostrar taxas de vitoria contra cada oponente
-
+    - should validate against all the training point population 
 
 ---
 - implementar oponente com IA (https://inventwithpython.com/chapter10.html)
@@ -24,7 +15,7 @@
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments (criar environment de reinforcement?)
 
-- experimentar violin plot na R language
+- experimentar violin plot na R language (our usar http://matplotlib.org/examples/statistics/violinplot_demo.html e integrar no pSBB)
 - usar import logging para nao floodar a tela com prints qd um test falhar
 - melhorar README.md
 - velocidade de rodar?
@@ -66,7 +57,8 @@ jSBB:
 
 Notes from meeting with Malcolm:
 
-- sempre treinar e validar com todos os oponentes, tanto os faceis como os dificeis
+- sempre usar todos os opponents no training e na validation, nao apenas os fortes (senao pode ocorrer do SBB aprender a vencer 
+apenas de oponentes fortes, e perder quando enfrentar os fracos)
 
 - Final output of SBB runs:
     - best solution for every run (find them using the whole validation set in the last generation)

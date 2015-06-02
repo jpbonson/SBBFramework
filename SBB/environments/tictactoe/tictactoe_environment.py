@@ -50,7 +50,7 @@ class TictactoeEnvironment(DefaultEnvironment):
     def point_population(self):
         return self.point_population_
 
-    def evaluate_team(self, team, is_training=False):
+    def evaluate_team(self, team, is_training = False, total_matches = Config.USER['reinforcement_parameters']['training_matches']):
         """
         Each team plays 2 matches against each point in the point population.
         One match as the player 1, another as player 2. The final score is 
@@ -59,7 +59,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         results = []
         for point in self.point_population_:
             outputs = []
-            for match_id in range(Config.USER['reinforcement_parameters']['training_matches']):
+            for match_id in range(total_matches):
                 outputs.append(self._play_match(point, team, is_training))
             result = numpy.mean(outputs)
             results.append(result)
@@ -100,10 +100,14 @@ class TictactoeEnvironment(DefaultEnvironment):
             if match.is_over():
                 return match.result_for_player(point.player_position)
 
-    def validate(self, teams_population):
-        fitness = [p.fitness_ for p in teams_population]
-        best_team = teams_population[fitness.index(max(fitness))]
-        self.evaluate_team(best_team)
+    def validate(self, current_generation, teams_population):
+        for team in teams_population:
+            if team.generation != current_generation: # dont evaluate tems that have just being created (to improve performance and to get training metrics)
+                self.evaluate_team(team, is_training = False, total_matches = Config.USER['reinforcement_parameters']['test_matches'])
+        score = [p.score_testset_ for p in teams_population]
+        best_team = teams_population[score.index(max(score))]
+        print("\nChampion team test score in the initial matches: "+str(best_team.score_testset_))
+        self.evaluate_team(best_team, is_training = False, total_matches = Config.USER['reinforcement_parameters']['champion_matches'])
         return best_team
 
     def metrics(self):
