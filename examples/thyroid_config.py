@@ -1,3 +1,5 @@
+import copy
+
 THYROID_DEFAULT = {
     'task': 'classification',
     'classification_parameters': { # only used if 'task' is 'classification'
@@ -61,25 +63,30 @@ THYROID_DEFAULT = {
     },
 }
 """
-#################### OVERALL RESULTS ####################
 
 
 """
 
 
-THYROID_WITH_PARETO = dict(THYROID_DEFAULT)
+THYROID_WITH_PARETO = copy.deepcopy(THYROID_DEFAULT)
 THYROID_WITH_PARETO['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
 THYROID_WITH_PARETO['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
 """
 #################### OVERALL RESULTS ####################
 
 Test Score per Run: [0.9359, 0.92688, 0.80415, 0.93901, 0.89512, 0.90193, 0.97541, 0.9493, 0.88491, 0.89903, 0.91519, 0.8951, 0.848, 0.95963, 0.92072, 0.97645, 0.95148, 0.9625, 0.91999, 0.86205, 0.94975, 0.89287, 0.88386, 0.86669, 0.79967]
-mean: 0.9086236, std: 0.0466395722004
+mean: 0.9086236
+std. deviation: 0.0466395722004
 
-Mean Score per Generation across Runs: [0.5468, 0.81044, 0.85383, 0.87804, 0.89105, 0.91254, 0.90862]
-Std. Deviation Score per Generation across Runs: [0.09441, 0.09349, 0.07772, 0.05945, 0.05571, 0.03456, 0.04663]
+Train Score per Generation across Runs:
+mean: [0.56233, 0.83033, 0.89899, 0.92466, 0.94566, 0.96133, 0.966]
+std. deviation: [0.0836, 0.09332, 0.05978, 0.05107, 0.03993, 0.03017, 0.02885]
 
-Finished execution, total elapsed time: 20266.50399 secs (mean: 810.66015, std: 70.06622)
+Test Score per Generation across Runs:
+mean: [0.5468, 0.81044, 0.85383, 0.87804, 0.89105, 0.91254, 0.90862]
+std. deviation: [0.09441, 0.09349, 0.07772, 0.05945, 0.05571, 0.03456, 0.04663]
+
+Finished execution, total elapsed time: 20276.60299 secs (mean: 811.06411, std: 67.81258)
 
 ##### Result using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
