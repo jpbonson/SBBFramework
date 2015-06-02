@@ -80,10 +80,10 @@ class SBB:
                         recall_per_generation.append(best_team.extra_metrics_['recall_per_action'])
 
                     # print metrics
-                    print("\nbest team: "+best_team.metrics())
+                    print("\nbest team: "+best_team.metrics()+"\n")
                     for key in best_team.diversity_:
                         print str(key)+": "+str(best_team.diversity_[key])+" (global mean: "+str(diversity_means[key])+")"
-                    print "actions distribution: "+str(Counter([p.action for p in programs_population]))+"\n"
+                    print "\nactions distribution: "+str(Counter([p.action for p in programs_population]))+"\n"
                 else:
                     print str(self.current_generation_),
 
@@ -188,7 +188,7 @@ class SBB:
     def _print_run(self, run_id, team, train_score_per_generation, test_score_per_generation, diversity_per_generation, recall_per_generation):
         msg = "\n\n\n############### "+str(run_id+1)+" Run Best Team: "+team.metrics(full_version = True)
         for key, value in team.diversity_.iteritems():
-            msg +=  "\n\n"+str(key)+": "+str(value)
+            msg +=  "\n"+str(key)+": "+str(value)
         msg += "\n\n##### Metrics per Generation"
         msg += "\n\nTrain Score per Generation: "+str(round_array(train_score_per_generation))
         msg += "\n\nTest Score per Generation: "+str(round_array(test_score_per_generation))

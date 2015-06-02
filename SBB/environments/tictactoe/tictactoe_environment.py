@@ -1,8 +1,10 @@
 import numpy
-from ..default_environment import DefaultEnvironment, DefaultPoint
-from ...config import Config
+from collections import defaultdict
 from tictactoe_match import TictactoeMatch
 from tictactoe_opponents import TictactoeRandomOpponent
+from ..default_environment import DefaultEnvironment, DefaultPoint
+from ...utils.helpers import round_value
+from ...config import Config
 
 class TictactoePoint(DefaultPoint):
     """
@@ -57,6 +59,9 @@ class TictactoeEnvironment(DefaultEnvironment):
         the mean of the scores in the matches (1: win, 0.5: draw, 0: lose)
         """
         results = []
+        extra_metrics = {}
+        extra_metrics['opponents'] = defaultdict(list)
+
         for point in self.point_population_:
             outputs = []
             for match_id in range(total_matches):
@@ -65,14 +70,17 @@ class TictactoeEnvironment(DefaultEnvironment):
             results.append(result)
             if is_training:
                 team.results_per_points_[point.point_id] = result
+            else:
+                extra_metrics['opponents'][point.opponent.opponent_id].append(result)
 
         score = numpy.mean(results)
-        extra_metrics = {}
         
         if is_training:
             team.fitness_ = score
             team.score_trainingset_ = score
         else:
+            for key in extra_metrics['opponents']:
+                extra_metrics['opponents'][key] = round_value(numpy.mean(extra_metrics['opponents'][key]))
             team.score_testset_ = score
             team.extra_metrics_ = extra_metrics
 

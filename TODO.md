@@ -1,8 +1,7 @@
 - Tictactoe:
     - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
     - use point population and replacement of points
-    - mostrar taxas de vitoria contra cada oponente
-    - should validate against all the training point population 
+    - should validate against all the training point population    
 
 ---
 - implementar oponente com IA (https://inventwithpython.com/chapter10.html)

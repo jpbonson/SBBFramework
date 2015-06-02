@@ -118,6 +118,10 @@ class Team:
         msg += "\nfitness (train): "+str(round_value(self.fitness_))+", score (train): "+str(round_value(self.score_trainingset_))+", score (test): "+str(round_value(self.score_testset_))
         if Config.USER['task'] == 'classification':
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
+        if Config.USER['task'] == 'reinforcement':
+            msg += "\n"
+            for key in self.extra_metrics_['opponents']:
+                msg += "\nscore against opponent ("+key+"): "+str(self.extra_metrics_['opponents'][key])
         if full_version:
             if Config.USER['task'] == 'classification':
                 msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
