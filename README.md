@@ -4,10 +4,11 @@ Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem dec
 # Index
 1. Introduction
 2. References
-2. How to Install
-3. How to Run
-4. How to Test
-5. SBB Examples
+3. How to Install
+4. How to Run
+5. How to Test
+6. Implementation Details
+7. SBB Examples
 
 ## 1. Introduction
 ...
@@ -55,5 +56,9 @@ You can also execute individual tests files using the file name, for example:
 python tests/unit_tests/unit_tests.py
 ```
 
-## 6. SBB Examples
+## 6. Implementation Details
+
+- This implementation uses the default Python random library to control the seed for the runs, and uses the numpy.random.RandomState object to control the seed for the opponents in the reinforcement learning setting.
+
+## 7. SBB Examples
 ...

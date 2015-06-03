@@ -2,7 +2,11 @@
     - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
     - use point population and replacement of points
     - should validate against all the training point population    
+    - usar seeds totalmente diferentes no train e no test?
+    - position ser parte da amtch, nao do point
+    - mais population
 
+- alterar config no main
 ---
 - implementar oponente com IA (https://inventwithpython.com/chapter10.html)
 - implementar self-play (no self-play, cuidado para 1 == si mesmo e 2 == oponente)
@@ -25,7 +29,7 @@
 - adicionar mais documentacao
 - remover comentarios em portugues
 
-- implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions)
+- implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?
 ---
 
 

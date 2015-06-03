@@ -11,9 +11,8 @@ class TictactoePoint(DefaultPoint):
     Encapsulates a tictactoe board configuration as a point.
     """
 
-    def __init__(self, point_id, player_position, opponent):
+    def __init__(self, point_id, opponent):
         super(TictactoePoint, self).__init__(point_id)
-        self.player_position = player_position
         self.opponent = opponent
 
 class TictactoeEnvironment(DefaultEnvironment):
@@ -27,9 +26,10 @@ class TictactoeEnvironment(DefaultEnvironment):
     """
 
     def __init__(self):
-        self.total_actions_ = 9 # positions in the board
-        self.total_inputs_ = 9 # positions in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
-        self.point_population_ = [TictactoePoint("random0", 0, TictactoeRandomOpponent()), TictactoePoint("random1", 1, TictactoeRandomOpponent())]
+        self.total_actions_ = 9 # spaces in the board
+        self.total_inputs_ = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
+        self.total_positions_ = 2
+        self.point_population_ = [TictactoePoint("random0", TictactoeRandomOpponent()), TictactoePoint("random1", TictactoeRandomOpponent())]
         self.action_mapping_ = {
             '[0,0]': 0, '[0,1]': 1, '[0,2]': 2,
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
@@ -65,7 +65,8 @@ class TictactoeEnvironment(DefaultEnvironment):
         for point in self.point_population_:
             outputs = []
             for match_id in range(total_matches):
-                outputs.append(self._play_match(point, team, is_training))
+                for position in range(1, self.total_positions_+1):
+                    outputs.append(self._play_match(position, point, team, is_training))
             result = numpy.mean(outputs)
             results.append(result)
             if is_training:
@@ -84,9 +85,9 @@ class TictactoeEnvironment(DefaultEnvironment):
             team.score_testset_ = score
             team.extra_metrics_ = extra_metrics
 
-    def _play_match(self, point, team, is_training):
-        # the SBB player is always player 1, even when it is the second one to play
-        if point.player_position == 1:
+    def _play_match(self, position, point, team, is_training):
+        # the SBB player is always player 1, even when it is the second one to play # fix it! make it be the point of view of the team only!
+        if position == 1:
             first_player = team
             first_player_id = 1
             second_player = point.opponent
@@ -98,15 +99,16 @@ class TictactoeEnvironment(DefaultEnvironment):
             second_player_id = 1
 
         match = TictactoeMatch()
+        point.opponent.initialize()
         while True:
             action = first_player.execute(point.point_id, match.inputs_, match.valid_actions(), is_training)
             match.perform_action(first_player_id, action)
             if match.is_over():
-                return match.result_for_player(point.player_position)
+                return match.result_for_player(position)
             action = second_player.execute(point.point_id, match.inputs_, match.valid_actions(), is_training)
             match.perform_action(second_player_id, action)
             if match.is_over():
-                return match.result_for_player(point.player_position)
+                return match.result_for_player(position)
 
     def validate(self, current_generation, teams_population):
         for team in teams_population:

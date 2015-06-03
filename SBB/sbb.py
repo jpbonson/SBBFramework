@@ -22,7 +22,7 @@ class SBB:
         self.current_generation_ = 0
         self.best_scores_per_runs_ = [] # used by tests
         if not Config.USER['advanced_training_parameters']['seed']:
-            Config.USER['advanced_training_parameters']['seed'] = random.randint(0, sys.maxint) # based on the system time
+            Config.USER['advanced_training_parameters']['seed'] = random.randint(0, sys.maxint)
         random.seed(Config.USER['advanced_training_parameters']['seed'])
 
     def run(self):
@@ -85,7 +85,7 @@ class SBB:
                         print str(key)+": "+str(best_team.diversity_[key])+" (global mean: "+str(diversity_means[key])+")"
                     print "\nactions distribution: "+str(Counter([p.action for p in programs_population]))+"\n"
                 else:
-                    print str(self.current_generation_),
+                    print ".",
 
             # store and print metrics (per run)
             print("\n########## "+str(run_id)+" Run's best team: "+best_team.metrics())
