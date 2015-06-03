@@ -23,8 +23,8 @@ class Config():
 
         'training_parameters': {
             'runs_total': 2,
-            'generations_total': 100,
-            'validate_after_each_generation': 20,
+            'generations_total': 60,
+            'validate_after_each_generation': 15,
             'populations': {
                 'programs': 60,
                 'teams': 30,

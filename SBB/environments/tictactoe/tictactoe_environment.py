@@ -86,29 +86,30 @@ class TictactoeEnvironment(DefaultEnvironment):
             team.extra_metrics_ = extra_metrics
 
     def _play_match(self, position, point, team, is_training):
-        # the SBB player is always player 1, even when it is the second one to play # fix it! make it be the point of view of the team only!
         if position == 1:
-            first_player = team
-            first_player_id = 1
-            second_player = point.opponent
-            second_player_id = 2
-        else:
             first_player = point.opponent
-            first_player_id = 2
             second_player = team
-            second_player_id = 1
+            sbb_player = 2
+        else:
+            first_player = team
+            second_player = point.opponent
+            sbb_player = 1
 
         match = TictactoeMatch()
         point.opponent.initialize()
         while True:
-            action = first_player.execute(point.point_id, match.inputs_, match.valid_actions(), is_training)
-            match.perform_action(first_player_id, action)
+            player = 1
+            inputs = match.inputs_from_the_point_of_view_of(player)
+            action = first_player.execute(point.point_id, inputs, match.valid_actions(), is_training)
+            match.perform_action(player, action)
             if match.is_over():
-                return match.result_for_player(position)
-            action = second_player.execute(point.point_id, match.inputs_, match.valid_actions(), is_training)
-            match.perform_action(second_player_id, action)
+                return match.result_for_player(sbb_player)
+            player = 2
+            inputs = match.inputs_from_the_point_of_view_of(player)
+            action = second_player.execute(point.point_id, inputs, match.valid_actions(), is_training)
+            match.perform_action(player, action)
             if match.is_over():
-                return match.result_for_player(position)
+                return match.result_for_player(sbb_player)
 
     def validate(self, current_generation, teams_population):
         for team in teams_population:

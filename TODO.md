@@ -1,9 +1,6 @@
 - Tictactoe:
-    - point population: opponent, position and seed (como setar a seed para apenas uma match? resetar para a seed original apos a match?)
     - use point population and replacement of points
-    - should validate against all the training point population    
-    - usar seeds totalmente diferentes no train e no test?
-    - position ser parte da amtch, nao do point
+    - usar seeds totalmente diferentes no train e no test (no test, garantir que todos os oponentes estao disponiveis)
     - mais population
 
 - alterar config no main

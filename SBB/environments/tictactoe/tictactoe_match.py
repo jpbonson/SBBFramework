@@ -37,6 +37,18 @@ class TictactoeMatch():
                 valids.append(index)
         return valids
 
+    def inputs_from_the_point_of_view_of(self, position):
+        """
+        Modify the inputs so that the player in 'position' always see the board with 
+        spaces with '1' as their spaces, and '2' as the opponent's spaces.
+        """
+        if position == 1:
+            return self.inputs_
+        else:
+            mapping = [0, 2, 1]
+            inputs = [mapping[x] for x in self.inputs_]
+            return inputs
+
     def is_over(self):
         """
         Check if all spaces were used. If yes, sets the attribute result_ with the 
