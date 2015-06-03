@@ -39,11 +39,11 @@ class TictactoeMatch():
 
     def inputs_from_the_point_of_view_of(self, position):
         """
-        Modify the inputs so that the player in 'position' always see the board with 
+        Get a copy of the inputs so that the player in 'position' always see the board with 
         spaces with '1' as their spaces, and '2' as the opponent's spaces.
         """
         if position == 1:
-            return self.inputs_
+            return list(self.inputs_)
         else:
             mapping = [0, 2, 1]
             inputs = [mapping[x] for x in self.inputs_]
@@ -54,7 +54,7 @@ class TictactoeMatch():
         Check if all spaces were used. If yes, sets the attribute result_ with the 
         number of the winner or 0 if a draw occured.
         """
-        winner = self._get_winner()
+        winner = TictactoeMatch.get_winner(self.inputs_)
         if winner:
             self.result_ = winner
             if self.print_game:
@@ -70,15 +70,6 @@ class TictactoeMatch():
             print "It is over! Draw!"
         return True
 
-    def _get_winner(self):
-        winning_configs = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6),
-                       (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
-        for config in winning_configs:
-            if self.inputs_[config[0]] == self.inputs_[config[1]] and self.inputs_[config[1]] == self.inputs_[config[2]]:
-                winner = self.inputs_[config[0]]
-                return winner
-        return None # no winner
-
     def result_for_player(self, current_player):
         if self.result_ == current_player:
             return 1 # win
@@ -86,3 +77,12 @@ class TictactoeMatch():
             return 0.5 # draw
         else:
             return 0 # lose
+
+    @staticmethod
+    def get_winner(inputs):
+        winning_configs = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6),
+                       (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
+        for config in winning_configs:
+            if inputs[config[0]] == inputs[config[1]] and inputs[config[1]] == inputs[config[2]]:
+                return inputs[config[0]]
+        return None # no winner

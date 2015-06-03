@@ -1,7 +1,7 @@
 import numpy
 from collections import defaultdict
 from tictactoe_match import TictactoeMatch
-from tictactoe_opponents import TictactoeRandomOpponent
+from tictactoe_opponents import TictactoeRandomOpponent, TictactoeSmartOpponent
 from ..default_environment import DefaultEnvironment, DefaultPoint
 from ...utils.helpers import round_value
 from ...config import Config
@@ -29,7 +29,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         self.total_actions_ = 9 # spaces in the board
         self.total_inputs_ = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
         self.total_positions_ = 2
-        self.opponents_ = [TictactoeRandomOpponent]
+        self.opponents_ = [TictactoeRandomOpponent, TictactoeSmartOpponent]
         self.point_population_ = None
         self.test_population_ = self._initialize_random_balanced_population()
         self.action_mapping_ = {
@@ -145,4 +145,5 @@ class TictactoeEnvironment(DefaultEnvironment):
         msg += "\ntotal inputs: "+str(self.total_inputs_)
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(self.action_mapping_)
+        msg += "\nsamples per opponents: "+str(Config.USER['training_parameters']['populations']['points']/len(self.opponents_))
         return msg

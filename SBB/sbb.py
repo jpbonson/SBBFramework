@@ -125,7 +125,13 @@ class SBB:
         """
         reset_programs_ids()
         programs_population =[]
-        for i in range(Config.USER['training_parameters']['populations']['programs']):
+        for action in range(Config.RESTRICTIONS['total_actions']): # initialize at least one per action
+            instructions = []
+            for i in range(Config.USER['training_parameters']['program_size']['initial']):
+                instructions.append(Instruction(Config.RESTRICTIONS['total_inputs']))
+            program = Program(self.current_generation_, instructions, action)
+            programs_population.append(program)
+        for i in range(Config.USER['training_parameters']['populations']['programs']-Config.RESTRICTIONS['total_actions']):
             action = random.randrange(Config.RESTRICTIONS['total_actions'])
             instructions = []
             for i in range(Config.USER['training_parameters']['program_size']['initial']):
@@ -154,8 +160,7 @@ class SBB:
         for class_index in range(Config.RESTRICTIONS['total_actions']):
             values = [p for p in programs if p.action == class_index]
             if len(values) == 0:
-                raise StandardError("_get_programs_per_action() wasn't able to get programs for the action "+str(class_index)+". " \
-                    "You got a bug, or the program population size is too small.")
+                raise StandardError("_get_programs_per_action() wasn't able to get programs for the action "+str(class_index)+". You got a bug!")
             programs_per_action.append(values)
         return programs_per_action
 

@@ -1,12 +1,13 @@
 - Tictactoe:
-    - implementar oponente com IA (https://inventwithpython.com/chapter10.html)
-    - use point population and replacement of points
+    - use point population and replacement of points (always have a balanced set of opponents in the point population?), criar com nova seed!
 
 - alterar config no main
-- similarly with labels in a classification task, would be interesting to always have a balanced set of opponents in the point population?
----
 - unit tests nao estao compativeis entre windows e ubuntu! (conferir! se stiver ocorrendo mesmo, tentar usar numpy?)
-- implementar self-play (no self-play, cuidado para 1 == si mesmo e 2 == oponente)
+    >>> sys.maxint: 9223372036854775807 (ubuntu)
+- rodar mais thyroid e comparar
+---
+- ler paper sobre tictactoe
+- implementar self-play
 - implementar hall of fame
 
 - fazer example para iris dataset
