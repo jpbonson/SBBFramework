@@ -26,13 +26,13 @@ class Config():
             'generations_total': 60,
             'validate_after_each_generation': 15,
             'populations': {
-                'programs': 60,
-                'teams': 30,
-                'points': 120, # may not be used by some environments (eg.: tictactoe)
+                'programs': 40,
+                'teams': 20,
+                'points': 10,
             },
             'replacement_rate': {
                 'teams': 0.7,
-                'points': 0.2,  # may not be used by some environments (eg.: tictactoe)
+                'points': 0.2,
             },
             'mutation': {
                 'team': {

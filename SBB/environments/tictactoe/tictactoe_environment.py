@@ -29,7 +29,9 @@ class TictactoeEnvironment(DefaultEnvironment):
         self.total_actions_ = 9 # spaces in the board
         self.total_inputs_ = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
         self.total_positions_ = 2
-        self.point_population_ = [TictactoePoint("random0", TictactoeRandomOpponent()), TictactoePoint("random1", TictactoeRandomOpponent())]
+        self.opponents_ = [TictactoeRandomOpponent]
+        self.point_population_ = None
+        self.test_population_ = self._initialize_random_balanced_population()
         self.action_mapping_ = {
             '[0,0]': 0, '[0,1]': 1, '[0,2]': 2,
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
@@ -40,8 +42,19 @@ class TictactoeEnvironment(DefaultEnvironment):
         Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
         Config.RESTRICTIONS['use_memmory'] = False # since the point population output is not predictable
 
+        # ensures the population size is multiple of the total opponents
+        total_samples_per_opponents = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
+        Config.USER['training_parameters']['populations']['points'] = total_samples_per_opponents*len(self.opponents_)
+
+    def _initialize_random_balanced_population(self):
+        population = []
+        for opponent in self.opponents_:
+            for index in range(Config.USER['training_parameters']['populations']['points']/len(self.opponents_)):
+                population.append(TictactoePoint(str(opponent), opponent()))
+        return population
+
     def reset_point_population(self):
-        pass
+        self.point_population_ = self._initialize_random_balanced_population()
 
     def setup_point_population(self, teams_population):
         pass
@@ -58,11 +71,16 @@ class TictactoeEnvironment(DefaultEnvironment):
         One match as the player 1, another as player 2. The final score is 
         the mean of the scores in the matches (1: win, 0.5: draw, 0: lose)
         """
+        if is_training:
+            population = self.point_population_
+        else:
+            population = self.test_population_
+
         results = []
         extra_metrics = {}
         extra_metrics['opponents'] = defaultdict(list)
 
-        for point in self.point_population_:
+        for point in population:
             outputs = []
             for match_id in range(total_matches):
                 for position in range(1, self.total_positions_+1):

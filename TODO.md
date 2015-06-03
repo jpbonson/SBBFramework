@@ -1,11 +1,11 @@
 - Tictactoe:
+    - implementar oponente com IA (https://inventwithpython.com/chapter10.html)
     - use point population and replacement of points
-    - usar seeds totalmente diferentes no train e no test (no test, garantir que todos os oponentes estao disponiveis)
-    - mais population
 
 - alterar config no main
+- similarly with labels in a classification task, would be interesting to always have a balanced set of opponents in the point population?
 ---
-- implementar oponente com IA (https://inventwithpython.com/chapter10.html)
+- unit tests nao estao compativeis entre windows e ubuntu! (conferir! se stiver ocorrendo mesmo, tentar usar numpy?)
 - implementar self-play (no self-play, cuidado para 1 == si mesmo e 2 == oponente)
 - implementar hall of fame
 

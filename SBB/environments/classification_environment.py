@@ -236,7 +236,7 @@ class ClassificationEnvironment(DefaultEnvironment):
     def point_population(self):
         return self.point_population_
 
-    def evaluate_team(self, team, is_training=False):
+    def evaluate_team(self, team, is_training = False):
         """
         Evaluate the team using the environment inputs.
         """
