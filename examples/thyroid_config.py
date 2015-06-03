@@ -63,10 +63,22 @@ THYROID_DEFAULT = {
     },
 }
 """
+#################### OVERALL RESULTS ####################
 
+Test Score per Run: [0.87252, 0.9633, 0.83347, 0.91207, 0.98101, 0.90525, 0.86102, 0.64607, 0.98029, 0.85677, 0.53083, 0.90345, 0.93229, 0.87578, 0.91561, 0.78817, 0.91021, 0.94862, 0.8671, 0.96874, 0.89328, 0.66416, 0.84102, 0.81411, 0.92112]
+mean: 0.8634504
+std. deviation: 0.106350925054
 
+Train Score per Generation across Runs:
+mean: [0.53299, 0.75166, 0.79966, 0.83299, 0.84766, 0.85366, 0.86066]
+std. deviation: [0.08421, 0.14212, 0.11868, 0.10794, 0.10103, 0.11217, 0.10462]
+
+Test Score per Generation across Runs:
+mean: [0.52268, 0.75596, 0.79362, 0.82899, 0.83987, 0.85555, 0.86345]
+std. deviation: [0.08663, 0.12197, 0.11884, 0.10717, 0.10676, 0.10278, 0.10634]
+
+Finished execution, total elapsed time: 16664.12 secs (mean: 666.5648, std: 122.92846)
 """
-
 
 THYROID_WITH_PARETO = copy.deepcopy(THYROID_DEFAULT)
 THYROID_WITH_PARETO['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
@@ -88,6 +100,6 @@ std. deviation: [0.09441, 0.09349, 0.07772, 0.05945, 0.05571, 0.03456, 0.04663]
 
 Finished execution, total elapsed time: 20276.60299 secs (mean: 811.06411, std: 67.81258)
 
-##### Result using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
+##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
 """
