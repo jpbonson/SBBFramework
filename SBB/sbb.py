@@ -121,17 +121,20 @@ class SBB:
 
     def _initialize_program_population(self):
         """
-        Initialize a population of programs with a random action and random instructions.
+        Initialize a balanced population of programs with a random action and random instructions.
         """
         reset_programs_ids()
         programs_population =[]
-        for action in range(Config.RESTRICTIONS['total_actions']): # initialize at least one per action
-            instructions = []
-            for i in range(Config.USER['training_parameters']['program_size']['initial']):
-                instructions.append(Instruction(Config.RESTRICTIONS['total_inputs']))
-            program = Program(self.current_generation_, instructions, action)
-            programs_population.append(program)
-        for i in range(Config.USER['training_parameters']['populations']['programs']-Config.RESTRICTIONS['total_actions']):
+        for action in range(Config.RESTRICTIONS['total_actions']):
+            for i in range(Config.USER['training_parameters']['populations']['programs']/Config.RESTRICTIONS['total_actions']):
+                instructions = []
+                for i in range(Config.USER['training_parameters']['program_size']['initial']):
+                    instructions.append(Instruction(Config.RESTRICTIONS['total_inputs']))
+                program = Program(self.current_generation_, instructions, action)
+                programs_population.append(program)
+        
+        extra_random_programs_to_add = Config.USER['training_parameters']['populations']['programs'] - len(programs_population)
+        for extra in range(extra_random_programs_to_add):
             action = random.randrange(Config.RESTRICTIONS['total_actions'])
             instructions = []
             for i in range(Config.USER['training_parameters']['program_size']['initial']):

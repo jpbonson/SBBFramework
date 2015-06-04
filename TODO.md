@@ -3,8 +3,8 @@
 
 - alterar config no main
 - unit tests nao estao compativeis entre windows e ubuntu! (conferir! se stiver ocorrendo mesmo, tentar usar numpy?)
-    >>> sys.maxint: 9223372036854775807 (ubuntu)
-- rodar mais thyroid e comparar
+    >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
+- rerodar thyroid, rodar mais thyroid e comparar
 ---
 - ler paper sobre tictactoe
 - implementar self-play

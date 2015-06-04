@@ -78,7 +78,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [1.0, 1.0, 0.66666]
+        expected = [0.73333, 0.93333, 0.9]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_without_pareto_and_with_diversity_maintenance(self):
@@ -91,7 +91,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.96666, 0.83333, 0.66666]
+        expected = [0.86666, 0.93333, 0.93333]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_pareto_and_without_diversity_maintenance(self):
@@ -104,7 +104,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.7, 0.96666, 0.83333]
+        expected = [0.86666, 0.93333, 0.83333]
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':
