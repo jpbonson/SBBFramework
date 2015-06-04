@@ -6,7 +6,6 @@ import random
 import time
 import numpy
 import os
-import sys
 from collections import Counter
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
@@ -22,7 +21,7 @@ class SBB:
         self.current_generation_ = 0
         self.best_scores_per_runs_ = [] # used by tests
         if not Config.USER['advanced_training_parameters']['seed']:
-            Config.USER['advanced_training_parameters']['seed'] = random.randint(0, sys.maxint)
+            Config.USER['advanced_training_parameters']['seed'] = random.randint(0, numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min))
         random.seed(Config.USER['advanced_training_parameters']['seed'])
 
     def run(self):
@@ -132,7 +131,7 @@ class SBB:
                     instructions.append(Instruction(Config.RESTRICTIONS['total_inputs']))
                 program = Program(self.current_generation_, instructions, action)
                 programs_population.append(program)
-        
+
         extra_random_programs_to_add = Config.USER['training_parameters']['populations']['programs'] - len(programs_population)
         for extra in range(extra_random_programs_to_add):
             action = random.randrange(Config.RESTRICTIONS['total_actions'])

@@ -1,5 +1,4 @@
 import abc
-import sys
 import random
 import numpy
 from tictactoe_match import TictactoeMatch
@@ -7,7 +6,7 @@ from tictactoe_match import TictactoeMatch
 class TictactoeOpponent(object):
     def __init__(self, opponent_id):
         self.opponent_id = opponent_id
-        self.seed = random.randint(0, 4294967295) # 4294967295 is the maximum seed number allowed by numpy
+        self.seed = random.randint(0, numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min))
         self.random_generator = None
 
     @abc.abstractmethod
