@@ -1,7 +1,6 @@
 - Tictactoe:
     - use point population and replacement of points (always have a balanced set of opponents in the point population?), criar com nova seed!
 
-- alterar config no main
 - conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647
     >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
 - rerodar thyroid, rodar mais thyroid e comparar

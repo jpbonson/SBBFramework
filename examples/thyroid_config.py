@@ -4,7 +4,14 @@ THYROID_DEFAULT = {
     'task': 'classification',
     'classification_parameters': { # only used if 'task' is 'classification'
         'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
-    }, 
+    },
+    'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
+        'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder, edit _initialize_environment() in SBB to add new environments
+        'training_matches': 10,
+        'test_matches': 100,
+        'champion_matches': 1000,
+        'print_matches': False, # use this option to debug
+    },
 
     'training_parameters': {
         'runs_total': 25,
@@ -13,11 +20,11 @@ THYROID_DEFAULT = {
         'populations': {
             'programs': 120,
             'teams': 60,
-            'points': 120, # may not be used by some environments (eg.: tictactoe)
+            'points': 120,
         },
         'replacement_rate': {
             'teams': 0.7,
-            'points': 0.2,  # may not be used by some environments (eg.: tictactoe)
+            'points': 0.2,
         },
         'mutation': {
             'team': {

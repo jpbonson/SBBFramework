@@ -1,4 +1,5 @@
 import sys
+from examples import thyroid_config
 
 class Config():
     """
@@ -118,3 +119,7 @@ class Config():
         if Config.USER['training_parameters']['generations_total'] % Config.USER['training_parameters']['validate_after_each_generation'] != 0:
             sys.stderr.write("Error: 'validate_after_each_generation' should be a multiple for 'generations_total', in order to ensure validation of the last generation.\n")
             raise SystemExit
+
+
+# To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
+# Config.USER = thyroid_config.THYROID_DEFAULT
