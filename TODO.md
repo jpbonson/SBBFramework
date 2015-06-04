@@ -1,14 +1,15 @@
-- Tictactoe:
-    - use point population and replacement of points (always have a balanced set of opponents in the point population?), criar com nova seed!
+- refatorar setup e evaluate_points entre os environments
 
 - conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647
     >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
+
 - rerodar thyroid, rodar mais thyroid e comparar
 
 - implementar self-play
 - implementar hall of fame
 
 ---
+- mover config para fora da pasta SBB?
 - ler paper sobre tictactoe
 - fazer example para iris dataset
 - fazer example para tictactoe

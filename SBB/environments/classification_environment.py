@@ -152,6 +152,7 @@ class ClassificationEnvironment(DefaultEnvironment):
                 for point in to_remove:
                     if point.point_id in team.results_per_points_:
                         team.results_per_points_.pop(point.point_id)
+                        team.actions_per_points_.pop(point.point_id)
 
         # ensure that the sampling is balanced for all classes, using oversampling for the ones with less than the minimum samples
         for sample in samples_per_class:
@@ -196,8 +197,13 @@ class ClassificationEnvironment(DefaultEnvironment):
                 if len(keep_solutions) > samples_per_class_to_keep: # must discard some teams from front
                     front = DiversityMaintenance.fitness_sharing_for_points(front, results_map)
                     keep_solutions, remove_solutions = ParetoDominance.balance_pareto_front_to_down(front, keep_solutions, remove_solutions, samples_per_class_to_keep)
+
                 kept_subsets_per_class.append(keep_solutions)
                 removed_subsets_per_class.append(remove_solutions)
+            
+            # add new points
+            for subset, trainset in zip(kept_subsets_per_class, self.trainset_per_action_):
+                subset += self._sample_subset(trainset, total_samples_per_class - len(subset))
         else:
             # obtain the data points that will be kept and that will be removed for each subset using uniform probability
             total_samples_per_class_to_add = total_samples_per_class - samples_per_class_to_keep

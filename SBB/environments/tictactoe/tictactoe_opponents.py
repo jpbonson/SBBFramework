@@ -21,6 +21,12 @@ class TictactoeOpponent(object):
         Returns an action for the given inputs.
         """
 
+    def __str__(self):
+        return self.opponent_id+":"+str(self.seed)
+
+    def __repr__(self):
+        return self.opponent_id+":"+str(self.seed)
+
 class TictactoeRandomOpponent(TictactoeOpponent):
     def __init__(self):
         super(TictactoeRandomOpponent, self).__init__("random")

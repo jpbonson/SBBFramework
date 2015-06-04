@@ -1,9 +1,12 @@
+import random
 import numpy
 from collections import defaultdict
 from tictactoe_match import TictactoeMatch
 from tictactoe_opponents import TictactoeRandomOpponent, TictactoeSmartOpponent
 from ..default_environment import DefaultEnvironment, DefaultPoint
-from ...utils.helpers import round_value
+from ...diversity_maintenance import DiversityMaintenance
+from ...pareto_dominance import ParetoDominance
+from ...utils.helpers import round_value, flatten, is_nearly_equal_to
 from ...config import Config
 
 class TictactoePoint(DefaultPoint):
@@ -31,7 +34,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         self.total_positions_ = 2
         self.opponents_ = [TictactoeRandomOpponent, TictactoeSmartOpponent]
         self.point_population_ = None
-        self.test_population_ = self._initialize_random_balanced_population()
+        self.test_population_ = self._initialize_random_balanced_population(Config.USER['reinforcement_parameters']['validation_population'])
         self.action_mapping_ = {
             '[0,0]': 0, '[0,1]': 1, '[0,2]': 2,
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
@@ -46,21 +49,116 @@ class TictactoeEnvironment(DefaultEnvironment):
         total_samples_per_opponents = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
         Config.USER['training_parameters']['populations']['points'] = total_samples_per_opponents*len(self.opponents_)
 
-    def _initialize_random_balanced_population(self):
+    def _initialize_random_balanced_population(self, population_size):
         population = []
-        for opponent in self.opponents_:
-            for index in range(Config.USER['training_parameters']['populations']['points']/len(self.opponents_)):
-                population.append(TictactoePoint(str(opponent), opponent()))
+        for opponent_class in self.opponents_:
+            for index in range(population_size/len(self.opponents_)):
+                instance = opponent_class()
+                population.append(TictactoePoint(str(instance), instance))
+        random.shuffle(population)
         return population
 
     def reset_point_population(self):
-        self.point_population_ = self._initialize_random_balanced_population()
+        self.point_population_ = None
 
     def setup_point_population(self, teams_population):
-        pass
+        """
+        Get a sample of the training dataset to create the point population. If it is the first generation 
+        of the run, just gets random samples for each action of the dataset. For the next generations, it 
+        replaces some of the points in the sample for new points.
+        """
+        if not self.point_population_: # first sampling of the run
+            self.point_population_ = self._initialize_random_balanced_population(Config.USER['training_parameters']['populations']['points'])
+        else: # uses attributes defined in evaluate_point_population()
+            # remove the removed points from the teams, in order to save memory. If you want to speed up and
+            # don't care about the memory, you may comment the next 5 lines
+            to_remove = flatten(self.samples_per_opponent_to_remove)
+            for team in teams_population:
+                for point in to_remove:
+                    if point.point_id in team.results_per_points_:
+                        team.results_per_points_.pop(point.point_id)
+
+            sample = flatten(self.samples_per_opponent_to_keep) # join samples per opponent
+            random.shuffle(sample)
+            self.point_population_ = sample
+        self._check_for_bugs()
+
+    def _check_for_bugs(self):
+        if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
+            raise ValueError("The size of the points population changed during selection! You got a bug! (it is: "+str(len(self.point_population_))+", should be: "+str(Config.USER['training_parameters']['populations']['points'])+")")
 
     def evaluate_point_population(self, teams_population):
-        pass
+        total_samples_per_opponent = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
+        current_subsets_per_opponent = self._get_data_per_opponent(self.point_population_)
+        samples_per_opponent_to_keep = int(round(total_samples_per_opponent*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
+
+        kept_subsets_per_opponent = []
+        removed_subsets_per_opponent = []
+        if Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection']:
+            # obtain the pareto front for each subset
+            for subset in current_subsets_per_opponent:
+                # create the results_map, so that the pareto front will contain points that are selecting distinct teams
+                results_map = self._generate_results_map_for_pareto(subset, teams_population)
+                front, dominateds = ParetoDominance.pareto_front(subset, results_map)
+
+                keep_solutions = front
+                remove_solutions = dominateds
+                if len(keep_solutions) < samples_per_opponent_to_keep:  # must include some teams from dominateds
+                    subset = DiversityMaintenance.fitness_sharing_for_points(subset, results_map)
+                    keep_solutions, remove_solutions = ParetoDominance.balance_pareto_front_to_up(subset, keep_solutions, remove_solutions, samples_per_opponent_to_keep)
+                if len(keep_solutions) > samples_per_opponent_to_keep: # must discard some teams from front
+                    front = DiversityMaintenance.fitness_sharing_for_points(front, results_map)
+                    keep_solutions, remove_solutions = ParetoDominance.balance_pareto_front_to_down(front, keep_solutions, remove_solutions, samples_per_opponent_to_keep)
+                kept_subsets_per_opponent.append(keep_solutions)
+                removed_subsets_per_opponent.append(remove_solutions)
+
+            # add new points
+            for subset, opponent_class in zip(kept_subsets_per_opponent, self.opponents_):
+                instance = opponent_class()
+                subset.append(TictactoePoint(str(instance), instance))
+        else:
+            # obtain the data points that will be kept and that will be removed for each subset using uniform probability
+            total_samples_per_opponent_to_add = total_samples_per_opponent - samples_per_opponent_to_keep
+            for index, subset in enumerate(current_subsets_per_opponent):
+                kept_subsets = random.sample(subset, samples_per_opponent_to_keep) # get points that will be kept
+                for x in range(total_samples_per_opponent_to_add):
+                    instance = self.opponents_[index]()
+                    kept_subsets.append(TictactoePoint(str(instance), instance)) # add new points
+                kept_subsets_per_opponent.append(kept_subsets)
+                removed_subsets_per_opponent.append(list(set(subset) - set(kept_subsets))) # find the remvoed points
+
+        self.samples_per_opponent_to_keep = kept_subsets_per_opponent
+        self.samples_per_opponent_to_remove = removed_subsets_per_opponent
+
+    def _get_data_per_opponent(self, point_population):
+        subsets_per_opponent = []
+        for opponent_class in self.opponents_:
+            values = [point for point in point_population if type(point.opponent) is opponent_class]
+            subsets_per_opponent.append(values)
+        return subsets_per_opponent
+
+    def _generate_results_map_for_pareto(self, subset, teams_population):
+        """
+        Create a a matrix of (points) x (array version of a matrix that compares all teams outcomes against 
+        each other for this point  (0: <=, 1: >)). This matrix is used by pareto to find a front of points 
+        that characterize distinct teams.
+        """
+        results_map = []
+        try:
+            for point in subset:      
+                distinction_vector = []
+                for team1 in teams_population:
+                    outcome1 = team1.results_per_points_[point.point_id]
+                    for team2 in teams_population:
+                        outcome2 = team2.results_per_points_[point.point_id]                 
+                        if outcome1 > outcome2 and not is_nearly_equal_to(outcome1, outcome2):
+                            distinction_vector.append(1)
+                        else:
+                            distinction_vector.append(0)
+                results_map.append(distinction_vector)
+        except KeyError as e:
+            raise KeyError("A team hasn't processed the point "+str(e)+" before! You got a bug!")
+        return results_map
                         
     def point_population(self):
         return self.point_population_

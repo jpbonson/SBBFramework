@@ -13,12 +13,13 @@ class Config():
         'task': 'reinforcement',
         'classification_parameters': { # only used if 'task' is 'classification'
             'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
-        }, 
+        },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder, edit _initialize_environment() in SBB to add new environments
             'training_matches': 10,
             'test_matches': 100,
             'champion_matches': 1000,
+            'validation_population': 20,
             'print_matches': False, # use this option to debug
         },
 
@@ -60,7 +61,7 @@ class Config():
         'advanced_training_parameters': {
             'seed': None, # default = None
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
-            'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
+            'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {
