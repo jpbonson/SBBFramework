@@ -22,18 +22,14 @@ class TictactoeEnvironment(DefaultEnvironment):
     """
     This environment encapsulates all methods to deal with a reinforcement learning task for TicTacToe.
     This is a dummy environment, where the only point in the population is a random player.
-
-    Observations:
-    - Uses the same point population for training and testing.
-    - The point population is fixed.
     """
 
     def __init__(self):
+        self.point_population_ = None
         self.total_actions_ = 9 # spaces in the board
         self.total_inputs_ = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
         self.total_positions_ = 2
         self.opponents_ = [TictactoeRandomOpponent, TictactoeSmartOpponent]
-        self.point_population_ = None
         self.test_population_ = self._initialize_random_balanced_population(Config.USER['reinforcement_parameters']['validation_population'])
         self.action_mapping_ = {
             '[0,0]': 0, '[0,1]': 1, '[0,2]': 2,
@@ -43,7 +39,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
-        Config.RESTRICTIONS['use_memmory'] = False # since the point population output is not predictable
+        Config.RESTRICTIONS['use_memmory'] = False # since the task is reinforcement learning, there is a lot of actions per point, isntead of just one
 
         # ensures the population size is multiple of the total opponents
         total_samples_per_opponents = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
@@ -81,11 +77,7 @@ class TictactoeEnvironment(DefaultEnvironment):
             sample = flatten(self.samples_per_opponent_to_keep) # join samples per opponent
             random.shuffle(sample)
             self.point_population_ = sample
-        self._check_for_bugs()
-
-    def _check_for_bugs(self):
-        if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
-            raise ValueError("The size of the points population changed during selection! You got a bug! (it is: "+str(len(self.point_population_))+", should be: "+str(Config.USER['training_parameters']['populations']['points'])+")")
+        super(TictactoeEnvironment, self)._check_for_bugs()
 
     def evaluate_point_population(self, teams_population):
         total_samples_per_opponent = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
@@ -125,9 +117,6 @@ class TictactoeEnvironment(DefaultEnvironment):
             values = [point for point in point_population if type(point.opponent) is opponent_class]
             subsets_per_opponent.append(values)
         return subsets_per_opponent
-                        
-    def point_population(self):
-        return self.point_population_
 
     def evaluate_team(self, team, is_training = False, total_matches = Config.USER['reinforcement_parameters']['training_matches']):
         """

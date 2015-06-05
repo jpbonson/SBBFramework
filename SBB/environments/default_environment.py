@@ -1,4 +1,5 @@
 import abc
+from ..config import Config
 
 class DefaultPoint(object):
     """
@@ -26,6 +27,7 @@ class DefaultEnvironment(object):
         """
         Initialize the environment variables.
         """
+        self.point_population_ = None
 
     @abc.abstractmethod
     def reset_point_population(self):
@@ -50,12 +52,6 @@ class DefaultEnvironment(object):
         """
 
     @abc.abstractmethod
-    def point_population(self):
-         """
-         Returns a list of Points
-         """
-
-    @abc.abstractmethod
     def evaluate_team(self, team, is_training=False):
         """
         Evaluate the team using the environment inputs. May be executed in the training
@@ -77,3 +73,7 @@ class DefaultEnvironment(object):
         Generate a string with the metrics for the environment. It is printed at the 
         start and at the end of the execution, and it is also saved in the output file.
         """
+
+    def _check_for_bugs(self):
+        if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
+            raise ValueError("The size of the points population changed during selection! You got a bug! (it is: "+str(len(self.point_population_))+", should be: "+str(Config.USER['training_parameters']['populations']['points'])+")")

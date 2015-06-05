@@ -23,7 +23,7 @@ class Selection:
         teams_to_clone = self._select_teams_to_clone(keep_teams)
 
         if validation:
-            diversity_means = self._calculate_global_diversity_means(teams_population, self.environment.point_population())
+            diversity_means = self._calculate_global_diversity_means(teams_population, self.environment.point_population_)
         else:
             diversity_means = None
 
@@ -50,9 +50,9 @@ class Selection:
         teams_to_keep = len(teams_population) - teams_to_remove
 
         if Config.USER['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-            keep_teams, remove_teams = ParetoDominance.pareto_front_for_teams(teams_population, self.environment.point_population(), teams_to_keep)
+            keep_teams, remove_teams = ParetoDominance.pareto_front_for_teams(teams_population, self.environment.point_population_, teams_to_keep)
         else:
-            DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, self.environment.point_population())
+            DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, self.environment.point_population_)
             sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
             keep_teams = sorted_solutions[0:teams_to_keep]
             remove_teams = sorted_solutions[teams_to_keep:]

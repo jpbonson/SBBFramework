@@ -123,4 +123,4 @@ class Config():
 
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
-# Config.USER = thyroid_config.THYROID_DEFAULT
+# Config.USER = thyroid_config.THYROID_WITH_PARETO

@@ -24,6 +24,7 @@ class ClassificationEnvironment(DefaultEnvironment):
     """
 
     def __init__(self):
+        self.point_population_ = None
         train, test = self._initialize_datasets()
         self.train_population_ = self._dataset_to_points(train)
         self.test_population_ = self._dataset_to_points(test)
@@ -32,7 +33,6 @@ class ClassificationEnvironment(DefaultEnvironment):
         self.total_actions_ = len(self.testset_class_distribution_)
         self.total_inputs_ = len(self.train_population_[0].inputs)
         self.trainset_per_action_ = self._get_data_per_action(self.train_population_)
-        self.point_population_ = None
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
@@ -162,7 +162,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         sample = flatten(samples_per_class) # join samples per class
         random.shuffle(sample)
         self.point_population_ = sample
-        self._check_for_bugs()
+        super(ClassificationEnvironment, self)._check_for_bugs()
 
     def _sample_subset(self, subset, sample_size):
         if len(subset) <= sample_size:
@@ -170,10 +170,6 @@ class ClassificationEnvironment(DefaultEnvironment):
         else:
             sample = random.sample(subset, sample_size)
         return sample
-
-    def _check_for_bugs(self):
-        if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
-            raise ValueError("The size of the points population changed during selection! You got a bug! (it is: "+str(len(self.point_population_))+", should be: "+str(Config.USER['training_parameters']['populations']['points'])+")")
 
     def evaluate_point_population(self, teams_population):
         total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_actions_
@@ -203,9 +199,6 @@ class ClassificationEnvironment(DefaultEnvironment):
 
         self.samples_per_class_to_keep = kept_subsets_per_class
         self.samples_per_class_to_remove = removed_subsets_per_class
-                        
-    def point_population(self):
-        return self.point_population_
 
     def evaluate_team(self, team, is_training = False):
         """

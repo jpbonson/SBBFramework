@@ -1,3 +1,13 @@
+# ensures the population size is multiple of the total opponents
+        total_samples_per_opponents = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
+        Config.USER['training_parameters']['populations']['points'] = total_samples_per_opponents*len(self.opponents_)
+
+conferir use_memmory
+
+confeirr matches (como agora usa seeds, eh irrelevante fazer varias matches contra o mesmo point, match == point?)
+
+
+
 - refatorar mais os environments, rmeover duplicatas de codigo
 
 - conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647
