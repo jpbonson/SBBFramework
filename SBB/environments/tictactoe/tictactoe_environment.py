@@ -121,19 +121,21 @@ class TictactoeEnvironment(DefaultEnvironment):
             subsets_per_opponent.append(values)
         return subsets_per_opponent
 
-    def evaluate_team(self, team, is_training = False, is_champion = False):
+    def evaluate_team(self, team, mode):
         """
         Each team plays 2 matches against each point in the point population.
         One match as the player 1, another as player 2. The final score is 
         the mean of the scores in the matches (1: win, 0.5: draw, 0: lose)
         """
-        if is_training:
+        if mode == DefaultEnvironment.MODE['training']:
             population = self.point_population_
+            is_training = True
         else:
-            if is_champion:
-                population = self.champion_population_
-            else:
+            is_training = False
+            if mode == DefaultEnvironment.MODE['validation']:
                 population = self.test_population_
+            elif mode == DefaultEnvironment.MODE['champion']:
+                population = self.champion_population_
 
         results = []
         extra_metrics = {}
@@ -190,11 +192,11 @@ class TictactoeEnvironment(DefaultEnvironment):
     def validate(self, current_generation, teams_population):
         for team in teams_population:
             if team.generation != current_generation: # dont evaluate tems that have just being created (to improve performance and to get training metrics)
-                self.evaluate_team(team, is_training = False)
+                self.evaluate_team(team, DefaultEnvironment.MODE['validation'])
         score = [p.score_testset_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]
         print("\nChampion team test score in the initial matches: "+str(best_team.score_testset_))
-        self.evaluate_team(best_team, is_training = False, is_champion = True)
+        self.evaluate_team(best_team, DefaultEnvironment.MODE['champion'])
         return best_team
 
     def metrics(self):

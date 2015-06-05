@@ -5,6 +5,7 @@ from program import Program
 from team import Team
 from diversity_maintenance import DiversityMaintenance
 from pareto_dominance import ParetoDominance
+from environments.default_environment import DefaultEnvironment
 from utils.helpers import round_value, weighted_choice
 from config import Config
 
@@ -41,7 +42,7 @@ class Selection:
         """
         self.environment.setup_point_population(teams_population)
         for t in teams_population:
-            self.environment.evaluate_team(t, is_training=True)
+            self.environment.evaluate_team(t, DefaultEnvironment.MODE['training'])
         self.environment.evaluate_point_population(teams_population)
         return teams_population
 

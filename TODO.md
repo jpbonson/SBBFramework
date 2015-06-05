@@ -4,10 +4,6 @@
 
 conferir use_memmory
 
-confeirr matches (como agora usa seeds, eh irrelevante fazer varias matches contra o mesmo point, match == point?)
-
-evaluate_team(self, team, is_training = False, is_champion = False):
-
 - refatorar mais os environments, rmeover duplicatas de codigo
 
 - conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647

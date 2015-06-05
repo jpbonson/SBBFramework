@@ -22,6 +22,12 @@ class DefaultEnvironment(object):
     """
     __metaclass__  = abc.ABCMeta
 
+    MODE = {
+        'training': 0,
+        'validation': 1,
+        'champion': 2,
+    }
+
     @abc.abstractmethod
     def __init__(self):
         """
@@ -52,7 +58,7 @@ class DefaultEnvironment(object):
         """
 
     @abc.abstractmethod
-    def evaluate_team(self, team, is_training=False):
+    def evaluate_team(self, team, mode):
         """
         Evaluate the team using the environment inputs. May be executed in the training
         or the test mode.

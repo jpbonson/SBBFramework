@@ -200,14 +200,16 @@ class ClassificationEnvironment(DefaultEnvironment):
         self.samples_per_class_to_keep = kept_subsets_per_class
         self.samples_per_class_to_remove = removed_subsets_per_class
 
-    def evaluate_team(self, team, is_training = False):
+    def evaluate_team(self, team, mode):
         """
         Evaluate the team using the environment inputs.
         """
-        if is_training:
+        if mode == DefaultEnvironment.MODE['training']:
             population = self.point_population_
+            is_training = True
         else:
             population = self.test_population_
+            is_training = False
 
         outputs = []
         for point in population:
@@ -243,7 +245,7 @@ class ClassificationEnvironment(DefaultEnvironment):
     def validate(self, current_generation, teams_population):
         fitness = [p.fitness_ for p in teams_population]
         best_team = teams_population[fitness.index(max(fitness))]
-        self.evaluate_team(best_team, is_training = False)
+        self.evaluate_team(best_team, DefaultEnvironment.MODE['validation'])
         return best_team
 
     def metrics(self):
