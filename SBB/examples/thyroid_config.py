@@ -70,42 +70,29 @@ THYROID_DEFAULT = {
     },
 }
 """
-#################### OVERALL RESULTS #################### (OLD, no balance)
+#################### OVERALL RESULTS ####################
 
-Test Score per Run: [0.87252, 0.9633, 0.83347, 0.91207, 0.98101, 0.90525, 0.86102, 0.64607, 0.98029, 0.85677, 0.53083, 0.90345, 0.93229, 0.87578, 0.91561, 0.78817, 0.91021, 0.94862, 0.8671, 0.96874, 0.89328, 0.66416, 0.84102, 0.81411, 0.92112]
-mean: 0.8634504
-std. deviation: 0.106350925054
+Test Score per Run: [0.8496, 0.64652, 0.61856, 0.88388, 0.86671, 0.88676, 0.8875, 0.64663, 0.95081, 0.88335, 0.81659, 0.86227, 0.92473, 0.71969, 0.88585, 0.92872, 0.89273, 0.87107, 0.76012, 0.90365, 0.88931, 0.65017, 0.72053, 0.88773, 0.85161]
+mean: 0.8274036
+std. deviation: 0.0986365550445
 
 Train Score per Generation across Runs:
-mean: [0.53299, 0.75166, 0.79966, 0.83299, 0.84766, 0.85366, 0.86066]
-std. deviation: [0.08421, 0.14212, 0.11868, 0.10794, 0.10103, 0.11217, 0.10462]
+mean: [0.53733, 0.75566, 0.79299, 0.80166, 0.80133, 0.82933, 0.834]
+std. deviation: [0.08618, 0.11214, 0.11744, 0.13102, 0.11675, 0.1122, 0.09515]
 
 Test Score per Generation across Runs:
-mean: [0.52268, 0.75596, 0.79362, 0.82899, 0.83987, 0.85555, 0.86345]
-std. deviation: [0.08663, 0.12197, 0.11884, 0.10717, 0.10676, 0.10278, 0.10634]
+mean: [0.54309, 0.74477, 0.78557, 0.79533, 0.7988, 0.81862, 0.8274]
+std. deviation: [0.08596, 0.1125, 0.11035, 0.11198, 0.11392, 0.10399, 0.09863]
 
-Finished execution, total elapsed time: 16664.12 secs (mean: 666.5648, std: 122.92846)
+Finished execution, total elapsed time: 14989.70999 secs (mean: 599.58839, std: 116.31353)
+
 """
 
 THYROID_WITH_PARETO = copy.deepcopy(THYROID_DEFAULT)
 THYROID_WITH_PARETO['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
 THYROID_WITH_PARETO['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
 """
-#################### OVERALL RESULTS #################### (OLD, no balance)
 
-Test Score per Run: [0.9359, 0.92688, 0.80415, 0.93901, 0.89512, 0.90193, 0.97541, 0.9493, 0.88491, 0.89903, 0.91519, 0.8951, 0.848, 0.95963, 0.92072, 0.97645, 0.95148, 0.9625, 0.91999, 0.86205, 0.94975, 0.89287, 0.88386, 0.86669, 0.79967]
-mean: 0.9086236
-std. deviation: 0.0466395722004
-
-Train Score per Generation across Runs:
-mean: [0.56233, 0.83033, 0.89899, 0.92466, 0.94566, 0.96133, 0.966]
-std. deviation: [0.0836, 0.09332, 0.05978, 0.05107, 0.03993, 0.03017, 0.02885]
-
-Test Score per Generation across Runs:
-mean: [0.5468, 0.81044, 0.85383, 0.87804, 0.89105, 0.91254, 0.90862]
-std. deviation: [0.09441, 0.09349, 0.07772, 0.05945, 0.05571, 0.03456, 0.04663]
-
-Finished execution, total elapsed time: 20276.60299 secs (mean: 811.06411, std: 67.81258)
 
 ##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
