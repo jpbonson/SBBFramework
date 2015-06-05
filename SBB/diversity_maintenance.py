@@ -9,7 +9,14 @@ class DiversityMaintenance():
     """
 
     @staticmethod
-    def genotype_diversity(population):
+    def apply_diversity_maintenance_to_teams(teams_population, point_population):
+        if Config.USER['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
+            DiversityMaintenance._genotype_diversity(teams_population)
+        if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']:
+            DiversityMaintenance._fitness_sharing(teams_population, point_population)
+
+    @staticmethod
+    def _genotype_diversity(population):
         """
         Calculate the distance between pairs of teams, where the distance is the intersection of active 
         programs divided by the union of active programs. Active programs are the ones who the output 
@@ -43,10 +50,9 @@ class DiversityMaintenance():
             p = Config.USER['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value']
             team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
             team.diversity_['genotype_diversity'] = round_value(diversity)
-        return population
 
     @staticmethod
-    def fitness_sharing(environment, population):
+    def _fitness_sharing(population, point_population):
         """
         Uses the fitness sharing algorithm, so that individuals obtains more fitness by being able to solve
         points that other individuals can't. It assumes that all dimension have the same weight (if it is not
@@ -54,7 +60,7 @@ class DiversityMaintenance():
         """
         # calculate denominators in each dimension
         denominators = [1.0] * Config.USER['training_parameters']['populations']['points'] # initialized to 1 so we don't divide by zero
-        for index, point in enumerate(environment.point_population()):
+        for index, point in enumerate(point_population):
             for team in population:
                 denominators[index] += float(team.results_per_points_[point.point_id])
 
@@ -62,12 +68,11 @@ class DiversityMaintenance():
         p = Config.USER['advanced_training_parameters']['diversity_configs']['fitness_sharing']['p_value']
         for team in population:
             score = 0.0
-            for index, point in enumerate(environment.point_population()):
+            for index, point in enumerate(point_population):
                 score += float(team.results_per_points_[point.point_id]) / denominators[index]
-            diversity = score/float(len(environment.point_population()))
+            diversity = score/float(len(point_population))
             team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
             team.diversity_['fitness_sharing_diversity'] = round_value(diversity)
-        return population
 
     @staticmethod
     def fitness_sharing_for_points(population, results_map):
@@ -86,4 +91,3 @@ class DiversityMaintenance():
             for index, value in enumerate(results):
                 score += float(value) / denominators[index]
             individual.fitness_ = score/float(len(results_map[0]))
-        return population

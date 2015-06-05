@@ -61,7 +61,7 @@ class Config():
         'advanced_training_parameters': {
             'seed': None, # default = None
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
-            'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
+            'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {

@@ -12,6 +12,7 @@ from team import Team, reset_teams_ids
 from instruction import Instruction
 from environments.classification_environment import ClassificationEnvironment
 from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
+from diversity_maintenance import DiversityMaintenance
 from selection import Selection
 from utils.helpers import round_value, round_array
 from config import Config
@@ -63,11 +64,16 @@ class SBB:
             while not self._stop_criterion():
                 self.current_generation_ += 1
                 
+                if self.current_generation_ == 1 or self.current_generation_ % Config.USER['training_parameters']['validate_after_each_generation'] == 0:
+                    validation = True
+                else:
+                    validation = False
+
                 # 3. Selection
-                teams_population, programs_population, diversity_means = selection.run(self.current_generation_, teams_population, programs_population)
+                teams_population, programs_population, diversity_means = selection.run(self.current_generation_, teams_population, programs_population, validation)
 
                 # Validate
-                if self.current_generation_ == 1 or self.current_generation_ % Config.USER['training_parameters']['validate_after_each_generation'] == 0:
+                if validation:
                     print "\n\n>>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_id)
                     best_team = environment.validate(self.current_generation_, teams_population)
 

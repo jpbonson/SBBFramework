@@ -97,18 +97,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         if Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection']:
             # obtain the pareto front for each subset
             for subset in current_subsets_per_opponent:
-                # create the results_map, so that the pareto front will contain points that are selecting distinct teams
-                results_map = self._generate_results_map_for_pareto(subset, teams_population)
-                front, dominateds = ParetoDominance.pareto_front(subset, results_map)
-
-                keep_solutions = front
-                remove_solutions = dominateds
-                if len(keep_solutions) < samples_per_opponent_to_keep:  # must include some teams from dominateds
-                    subset = DiversityMaintenance.fitness_sharing_for_points(subset, results_map)
-                    keep_solutions, remove_solutions = ParetoDominance.balance_pareto_front_to_up(subset, keep_solutions, remove_solutions, samples_per_opponent_to_keep)
-                if len(keep_solutions) > samples_per_opponent_to_keep: # must discard some teams from front
-                    front = DiversityMaintenance.fitness_sharing_for_points(front, results_map)
-                    keep_solutions, remove_solutions = ParetoDominance.balance_pareto_front_to_down(front, keep_solutions, remove_solutions, samples_per_opponent_to_keep)
+                keep_solutions, remove_solutions = ParetoDominance.pareto_front_for_points(subset, teams_population, samples_per_opponent_to_keep)
                 kept_subsets_per_opponent.append(keep_solutions)
                 removed_subsets_per_opponent.append(remove_solutions)
 
@@ -136,29 +125,6 @@ class TictactoeEnvironment(DefaultEnvironment):
             values = [point for point in point_population if type(point.opponent) is opponent_class]
             subsets_per_opponent.append(values)
         return subsets_per_opponent
-
-    def _generate_results_map_for_pareto(self, subset, teams_population):
-        """
-        Create a a matrix of (points) x (array version of a matrix that compares all teams outcomes against 
-        each other for this point  (0: <=, 1: >)). This matrix is used by pareto to find a front of points 
-        that characterize distinct teams.
-        """
-        results_map = []
-        try:
-            for point in subset:      
-                distinction_vector = []
-                for team1 in teams_population:
-                    outcome1 = team1.results_per_points_[point.point_id]
-                    for team2 in teams_population:
-                        outcome2 = team2.results_per_points_[point.point_id]                 
-                        if outcome1 > outcome2 and not is_nearly_equal_to(outcome1, outcome2):
-                            distinction_vector.append(1)
-                        else:
-                            distinction_vector.append(0)
-                results_map.append(distinction_vector)
-        except KeyError as e:
-            raise KeyError("A team hasn't processed the point "+str(e)+" before! You got a bug!")
-        return results_map
                         
     def point_population(self):
         return self.point_population_
