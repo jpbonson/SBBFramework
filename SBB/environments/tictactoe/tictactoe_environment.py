@@ -96,8 +96,10 @@ class TictactoeEnvironment(DefaultEnvironment):
 
             # add new points
             for subset, opponent_class in zip(kept_subsets_per_opponent, self.opponents_):
-                instance = opponent_class()
-                subset.append(TictactoePoint(str(instance), instance))
+                samples_per_opponent_to_add = total_samples_per_opponent - len(subset)
+                for x in range(samples_per_opponent_to_add):
+                    instance = opponent_class()
+                    subset.append(TictactoePoint(str(instance), instance))
         else:
             # obtain the data points that will be kept and that will be removed for each subset using uniform probability
             total_samples_per_opponent_to_add = total_samples_per_opponent - samples_per_opponent_to_keep

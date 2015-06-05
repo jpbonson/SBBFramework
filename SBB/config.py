@@ -28,7 +28,7 @@ class Config():
             'populations': {
                 'programs': 40,
                 'teams': 20,
-                'points': 10, # test it with 20
+                'points': 20,
             },
             'replacement_rate': {
                 'teams': 0.7,
@@ -57,7 +57,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 1, # default = None
+            'seed': None, # default = None
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
