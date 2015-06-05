@@ -5,13 +5,6 @@ THYROID_DEFAULT = {
     'classification_parameters': { # only used if 'task' is 'classification'
         'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
     },
-    'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
-        'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder, edit _initialize_environment() in SBB to add new environments
-        'training_matches': 10,
-        'test_matches': 100,
-        'champion_matches': 1000,
-        'print_matches': False, # use this option to debug
-    },
 
     'training_parameters': {
         'runs_total': 25,

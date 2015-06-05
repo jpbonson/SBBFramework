@@ -31,6 +31,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         self.total_positions_ = 2
         self.opponents_ = [TictactoeRandomOpponent, TictactoeSmartOpponent]
         self.test_population_ = self._initialize_random_balanced_population(Config.USER['reinforcement_parameters']['validation_population'])
+        self.champion_population_ = self._initialize_random_balanced_population(Config.USER['reinforcement_parameters']['champion_population'])
         self.action_mapping_ = {
             '[0,0]': 0, '[0,1]': 1, '[0,2]': 2,
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
@@ -118,7 +119,7 @@ class TictactoeEnvironment(DefaultEnvironment):
             subsets_per_opponent.append(values)
         return subsets_per_opponent
 
-    def evaluate_team(self, team, is_training = False, total_matches = Config.USER['reinforcement_parameters']['training_matches']):
+    def evaluate_team(self, team, is_training = False, is_champion = False):
         """
         Each team plays 2 matches against each point in the point population.
         One match as the player 1, another as player 2. The final score is 
@@ -127,7 +128,10 @@ class TictactoeEnvironment(DefaultEnvironment):
         if is_training:
             population = self.point_population_
         else:
-            population = self.test_population_
+            if is_champion:
+                population = self.champion_population_
+            else:
+                population = self.test_population_
 
         results = []
         extra_metrics = {}
@@ -135,9 +139,8 @@ class TictactoeEnvironment(DefaultEnvironment):
 
         for point in population:
             outputs = []
-            for match_id in range(total_matches):
-                for position in range(1, self.total_positions_+1):
-                    outputs.append(self._play_match(position, point, team, is_training))
+            for position in range(1, self.total_positions_+1):
+                outputs.append(self._play_match(position, point, team, is_training))
             result = numpy.mean(outputs)
             results.append(result)
             if is_training:
@@ -185,11 +188,11 @@ class TictactoeEnvironment(DefaultEnvironment):
     def validate(self, current_generation, teams_population):
         for team in teams_population:
             if team.generation != current_generation: # dont evaluate tems that have just being created (to improve performance and to get training metrics)
-                self.evaluate_team(team, is_training = False, total_matches = Config.USER['reinforcement_parameters']['test_matches'])
+                self.evaluate_team(team, is_training = False)
         score = [p.score_testset_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]
         print("\nChampion team test score in the initial matches: "+str(best_team.score_testset_))
-        self.evaluate_team(best_team, is_training = False, total_matches = Config.USER['reinforcement_parameters']['champion_matches'])
+        self.evaluate_team(best_team, is_training = False, is_champion = True)
         return best_team
 
     def metrics(self):
@@ -198,5 +201,6 @@ class TictactoeEnvironment(DefaultEnvironment):
         msg += "\ntotal inputs: "+str(self.total_inputs_)
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(self.action_mapping_)
-        msg += "\nsamples per opponents: "+str(Config.USER['training_parameters']['populations']['points']/len(self.opponents_))
+        msg += "\npositions: "+str(self.total_positions_)
+        msg += "\nmatches per opponents (for each position): "+str(Config.USER['training_parameters']['populations']['points']/len(self.opponents_))
         return msg

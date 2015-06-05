@@ -16,21 +16,19 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'tictactoe', # must have a python implementation in the pSBB/environments folder, edit _initialize_environment() in SBB to add new environments
-            'training_matches': 10,
-            'test_matches': 100,
-            'champion_matches': 1000,
-            'validation_population': 20,
+            'validation_population': 100, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'print_matches': False, # use this option to debug
         },
 
         'training_parameters': {
             'runs_total': 2,
-            'generations_total': 60,
-            'validate_after_each_generation': 15,
+            'generations_total': 100,
+            'validate_after_each_generation': 20,
             'populations': {
                 'programs': 40,
                 'teams': 20,
-                'points': 10,
+                'points': 10, # test it with 20
             },
             'replacement_rate': {
                 'teams': 0.7,
@@ -59,7 +57,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': None, # default = None
+            'seed': 1, # default = None
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],

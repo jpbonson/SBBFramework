@@ -6,7 +6,9 @@ conferir use_memmory
 
 confeirr matches (como agora usa seeds, eh irrelevante fazer varias matches contra o mesmo point, match == point?)
 
+'points': 10, # test it with 20
 
+evaluate_team(self, team, is_training = False, is_champion = False):
 
 - refatorar mais os environments, rmeover duplicatas de codigo
 
