@@ -1,7 +1,6 @@
 - conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647
     >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
 
-- melhorar: 'environment': 'tictactoe',
 - mover config para fora da pasta SBB?
 
 - rerodar thyroid, rodar mais thyroid e comparar
@@ -15,7 +14,9 @@
 - fazer example para tictactoe
 - fazer system test para tictactoe
 - fazer system test para thyroid (apenas um?)
+
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
+- implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?
 - refatorar environments (criar environment de reinforcement?)
 
 - experimentar violin plot na R language (our usar http://matplotlib.org/examples/statistics/violinplot_demo.html e integrar no pSBB)
@@ -29,11 +30,7 @@
 - adicionar mais documentacao
 - remover comentarios em portugues
 
-- implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?
 ---
-
-
-
 
 Observacoes:
 - cada dimensao da point population eh uma das dimensoes q vai ser maximizada no pareto, gerando as poker behaviors
