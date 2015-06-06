@@ -3,6 +3,11 @@ import copy
 """
 ##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
+THYROID_DEFAULT < THYROID_WITH_PARETO:
+The U-value is 168. The distribution is approximately normal. Therefore, the Z-value above can be used.
+The Z-Score is -2.794. The p-value is 0.00528. The result is significant at p≤ 0.05.
+
+
 
 """
 
@@ -91,5 +96,19 @@ THYROID_WITH_PARETO = copy.deepcopy(THYROID_DEFAULT)
 THYROID_WITH_PARETO['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
 THYROID_WITH_PARETO['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
 """
+#################### OVERALL RESULTS ####################
 
+Test Score per Run: [0.64459, 0.6969, 0.96019, 0.7823, 0.77515, 0.94043, 0.97135, 0.85577, 0.93783, 0.93661, 0.8784, 0.94235, 0.90138, 0.97607, 0.87257, 0.97954, 0.90812, 0.93232, 0.93648, 0.96286, 0.87725, 0.72491, 0.95513, 0.90305, 0.96395]
+mean: 0.88862
+std. deviation: 0.0911253303094
+
+Train Score per Generation across Runs:
+mean: [0.55799, 0.76033, 0.795, 0.83066, 0.83266, 0.84566, 0.85233]
+std. deviation: [0.06512, 0.08118, 0.06227, 0.06154, 0.06441, 0.07257, 0.07492]
+
+Test Score per Generation across Runs:
+mean: [0.56046, 0.76837, 0.83837, 0.86429, 0.87533, 0.869, 0.88862]
+std. deviation: [0.06466, 0.11167, 0.10988, 0.09894, 0.09192, 0.09477, 0.09112]
+
+Finished execution, total elapsed time: 14872.799 secs (mean: 594.91196, std: 2113.68824)
 """
