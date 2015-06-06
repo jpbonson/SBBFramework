@@ -82,7 +82,7 @@ class Config():
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
         'working_path': "SBB/",
-        'round_to_decimals': 5,
+        'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'genotype_options': {
             'modes': ['read-register', 'read-input'],
             'simple_operations': ['+', '-', '*', '/'],

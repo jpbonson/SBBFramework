@@ -1,11 +1,8 @@
-# ensures the population size is multiple of the total opponents
-        total_samples_per_opponents = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
-        Config.USER['training_parameters']['populations']['points'] = total_samples_per_opponents*len(self.opponents_)
-
-- refatorar mais os environments, rmeover duplicatas de codigo
-
 - conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647
     >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
+
+- melhorar: 'environment': 'tictactoe',
+- mover config para fora da pasta SBB?
 
 - rerodar thyroid, rodar mais thyroid e comparar
 
@@ -13,11 +10,11 @@
 - implementar hall of fame
 
 ---
-- mover config para fora da pasta SBB?
 - ler paper sobre tictactoe
 - fazer example para iris dataset
 - fazer example para tictactoe
 - fazer system test para tictactoe
+- fazer system test para thyroid (apenas um?)
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - refatorar environments (criar environment de reinforcement?)
 

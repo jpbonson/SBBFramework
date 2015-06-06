@@ -42,10 +42,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
         Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
         Config.RESTRICTIONS['use_memmory_for_results'] = True # since the opponents are seeded, the same point will always produce the same final result
-
-        # ensures the population size is multiple of the total opponents
-        total_samples_per_opponents = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
-        Config.USER['training_parameters']['populations']['points'] = total_samples_per_opponents*len(self.opponents_)
+        super(TictactoeEnvironment, self)._round_point_population_based_on(len(self.opponents_))
 
     def _initialize_random_balanced_population(self, population_size):
         population = []
@@ -68,14 +65,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         if not self.point_population_: # first sampling of the run
             self.point_population_ = self._initialize_random_balanced_population(Config.USER['training_parameters']['populations']['points'])
         else: # uses attributes defined in evaluate_point_population()
-            # remove the removed points from the teams, in order to save memory. If you want to speed up and
-            # don't care about the memory, you may comment the next 5 lines
-            to_remove = flatten(self.samples_per_opponent_to_remove)
-            for team in teams_population:
-                for point in to_remove:
-                    if point.point_id in team.results_per_points_:
-                        team.results_per_points_.pop(point.point_id)
-
+            super(TictactoeEnvironment, self)._remove_points(flatten(self.samples_per_opponent_to_remove), teams_population)
             sample = flatten(self.samples_per_opponent_to_keep) # join samples per opponent
             random.shuffle(sample)
             self.point_population_ = sample
@@ -129,8 +119,8 @@ class TictactoeEnvironment(DefaultEnvironment):
         the mean of the scores in the matches (1: win, 0.5: draw, 0: lose)
         """
         if mode == DefaultEnvironment.MODE['training']:
-            population = self.point_population_
             is_training = True
+            population = self.point_population_
         else:
             is_training = False
             if mode == DefaultEnvironment.MODE['validation']:

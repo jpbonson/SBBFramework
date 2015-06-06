@@ -38,10 +38,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
         Config.RESTRICTIONS['use_memmory_for_actions'] = True # since for the same input, the output label is always the same
         Config.RESTRICTIONS['use_memmory_for_results'] = False # since it is necessary to know exactly what labels were correct or incorrect, not just the overall results
-
-        # ensures the population size is multiple of the total actions
-        total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_actions_
-        Config.USER['training_parameters']['populations']['points'] = total_samples_per_class*self.total_actions_
+        super(ClassificationEnvironment, self)._round_point_population_based_on(self.total_actions_)
 
     def _initialize_datasets(self):
         """
@@ -144,17 +141,9 @@ class ClassificationEnvironment(DefaultEnvironment):
             for subset in self.trainset_per_action_:
                 samples_per_class.append(self._sample_subset(subset, total_samples_per_class))
         else: # uses attributes defined in evaluate_point_population()
+            super(ClassificationEnvironment, self)._remove_points(flatten(self.samples_per_class_to_remove), teams_population)
             samples_per_class = self.samples_per_class_to_keep
-
-            # remove the removed points from the teams, in order to save memory. If you want to speed up and
-            # don't care about the memory, you may comment the next 5 lines
-            to_remove = flatten(self.samples_per_class_to_remove)
-            for team in teams_population:
-                for point in to_remove:
-                    if point.point_id in team.results_per_points_:
-                        team.results_per_points_.pop(point.point_id)
-                        team.actions_per_points_.pop(point.point_id)
-
+        
         # ensure that the sampling is balanced for all classes, using oversampling for the ones with less than the minimum samples
         for sample in samples_per_class:
             while len(sample) < total_samples_per_class:
@@ -252,9 +241,9 @@ class ClassificationEnvironment(DefaultEnvironment):
     def metrics(self):
         msg = ""
         msg += "\n### Dataset Info:"
-        msg += "\nclass distribution (train set, "+str(len(self.train_population_))+" samples): "+str(self.trainset_class_distribution_)
-        msg += "\nclass distribution (test set, "+str(len(self.test_population_))+" samples): "+str(self.testset_class_distribution_)
         msg += "\ntotal inputs: "+str(self.total_inputs_)
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(self.action_mapping_)
+        msg += "\nclass distribution (train set, "+str(len(self.train_population_))+" samples): "+str(self.trainset_class_distribution_)
+        msg += "\nclass distribution (test set, "+str(len(self.test_population_))+" samples): "+str(self.testset_class_distribution_)
         return msg
