@@ -1,11 +1,13 @@
 - conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647
     >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
 
-- implementar self-play
-- implementar hall of fame
+- implementar self-play ['only_sbb', 'only_coded_opponents', 'hybrid']
+    - encapsular teams em points
+    - alterar metodos que modificam point_population_ de acordo
+    - selecionar teams com uniform probability? com weighted? usar apenas os parents?
+- implementar hall of fame [true, false]
 - ler paper sobre tictactoe
-- fazer system test para thyroid (apenas um?)
-- fazer system test para tictactoe
+- fazer system test para tictactoe (self-play e hall of fame)
 
 ---
 - fazer example para thyroid dataset

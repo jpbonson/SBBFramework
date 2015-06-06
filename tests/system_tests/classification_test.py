@@ -110,9 +110,27 @@ class ClassificationTests(unittest.TestCase):
         expected = [0.9, 0.96666, 0.93333]
         self.assertEqual(expected, result)
 
+    def test_classification_for_iris_with_pareto_for_teams_without_pareto_for_points(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = sbb.best_scores_per_runs_
+        expected = [0.83333, 0.8, 0.93333]
+        self.assertEqual(expected, result)
+
     def test_classification_for_thyroid(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
         config['classification_parameters']['dataset'] = 'thyroid'
         config['training_parameters']['runs_total'] = 2
         Config.USER = config

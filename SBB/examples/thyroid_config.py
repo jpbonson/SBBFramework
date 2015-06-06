@@ -1,5 +1,11 @@
 import copy
 
+"""
+##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
+
+
+"""
+
 THYROID_DEFAULT = {
     'task': 'classification',
     'classification_parameters': { # only used if 'task' is 'classification'
@@ -85,8 +91,5 @@ THYROID_WITH_PARETO = copy.deepcopy(THYROID_DEFAULT)
 THYROID_WITH_PARETO['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
 THYROID_WITH_PARETO['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
 """
-
-
-##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
 """
