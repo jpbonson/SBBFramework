@@ -40,7 +40,8 @@ class TictactoeEnvironment(DefaultEnvironment):
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
-        Config.RESTRICTIONS['use_memmory'] = False # since the task is reinforcement learning, there is a lot of actions per point, isntead of just one
+        Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
+        Config.RESTRICTIONS['use_memmory_for_results'] = True # since the opponents are seeded, the same point will always produce the same final result
 
         # ensures the population size is multiple of the total opponents
         total_samples_per_opponents = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
@@ -142,15 +143,18 @@ class TictactoeEnvironment(DefaultEnvironment):
         extra_metrics['opponents'] = defaultdict(list)
 
         for point in population:
-            outputs = []
-            for position in range(1, self.total_positions_+1):
-                outputs.append(self._play_match(position, point, team, is_training))
-            result = numpy.mean(outputs)
-            results.append(result)
-            if is_training:
-                team.results_per_points_[point.point_id] = result
+            if is_training and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id in team.results_per_points_:
+                results.append(team.results_per_points_[point.point_id])
             else:
-                extra_metrics['opponents'][point.opponent.opponent_id].append(result)
+                outputs = []
+                for position in range(1, self.total_positions_+1):
+                    outputs.append(self._play_match(position, point, team, is_training))
+                result = numpy.mean(outputs)
+                if is_training:
+                    team.results_per_points_[point.point_id] = result
+                else:
+                    extra_metrics['opponents'][point.opponent.opponent_id].append(result)
+                results.append(result)
 
         score = numpy.mean(results)
         
@@ -191,7 +195,7 @@ class TictactoeEnvironment(DefaultEnvironment):
 
     def validate(self, current_generation, teams_population):
         for team in teams_population:
-            if team.generation != current_generation: # dont evaluate tems that have just being created (to improve performance and to get training metrics)
+            if team.generation != current_generation: # dont evaluate teams that have just being created (to improve performance and to get training metrics)
                 self.evaluate_team(team, DefaultEnvironment.MODE['validation'])
         score = [p.score_testset_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]

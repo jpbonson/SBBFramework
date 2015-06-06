@@ -38,12 +38,12 @@ class Team:
         
     def execute(self, point_id, inputs, valid_actions, is_training):
         if is_training:
-            if Config.RESTRICTIONS['use_memmory'] and point_id in self.actions_per_points_:
+            if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id in self.actions_per_points_:
                 return self.actions_per_points_[point_id]
             else:
                 selected_program = self._select_program(inputs, valid_actions)
                 output_class = selected_program.action
-                if Config.RESTRICTIONS['use_memmory']:
+                if Config.RESTRICTIONS['use_memmory_for_actions']:
                     self.actions_per_points_[point_id] = output_class
                 if selected_program.program_id_ not in self.active_programs_:
                     self.active_programs_.append(selected_program.program_id_)

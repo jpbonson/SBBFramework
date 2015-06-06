@@ -96,7 +96,8 @@ class Config():
         'total_actions': -1, # initialized by the environment
         'total_inputs': -1, # initialized by the environment
         'action_mapping': {}, # initialized by the environment
-        'use_memmory': False, # initialized by the environment
+        'use_memmory_for_actions': False, # initialized by the environment
+        'use_memmory_for_results': False, # initialized by the environment
         'write_output_files': True, # used by the test cases
     }
 

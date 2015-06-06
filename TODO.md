@@ -2,8 +2,6 @@
         total_samples_per_opponents = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
         Config.USER['training_parameters']['populations']['points'] = total_samples_per_opponents*len(self.opponents_)
 
-conferir use_memmory
-
 - refatorar mais os environments, rmeover duplicatas de codigo
 
 - conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647
