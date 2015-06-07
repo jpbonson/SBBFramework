@@ -35,6 +35,15 @@ class Team:
     def _remove_program(self, program):
         program.remove_team(self)
         self.programs.remove(program)
+
+    def initialize(self):
+        """
+        This method is called by the reinforcement learning environments to set 
+        the opponent configurations before a match. This class implements this 
+        mehtod only in order to be transparent if the opponent is a team or 
+        a coded opponent.
+        """
+        pass
         
     def execute(self, point_id, inputs, valid_actions, is_training):
         if is_training:

@@ -18,6 +18,7 @@ class Config():
             'environment': 'tictactoe', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
             'validation_population': 100, # at a validated generation, all the teams with be tested against this population, the best one is the champion
             'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'opponents_pool': 'hybrid',
             'print_matches': False, # use this option to debug
         },
 
@@ -57,7 +58,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': None, # default = None
+            'seed': 1, # default = None
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
@@ -82,6 +83,7 @@ class Config():
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
         'environment_types': ['tictactoe'],
+        'opponents_pool_options': ['only_sbb', 'only_coded_opponents', 'hybrid'],
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'genotype_options': {
@@ -113,6 +115,10 @@ class Config():
 
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] not in Config.RESTRICTIONS['environment_types']:
             sys.stderr.write("Error: Invalid 'environment' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['environment_types'])+"\n")
+            raise SystemExit
+
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['opponents_pool'] not in Config.RESTRICTIONS['opponents_pool_options']:
+            sys.stderr.write("Error: Invalid 'opponents_pool' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['opponents_pool_options'])+"\n")
             raise SystemExit
 
         valid_operations = Config.RESTRICTIONS['genotype_options']['simple_operations'] + Config.RESTRICTIONS['genotype_options']['complex_operations']

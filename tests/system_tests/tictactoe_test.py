@@ -8,6 +8,7 @@ TEST_CONFIG = {
         'environment': 'tictactoe', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
         'validation_population': 24, # at a validated generation, all the teams with be tested against this population, the best one is the champion
         'champion_population': 48, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+        'opponents_pool': 'only_coded_opponents',
         'print_matches': False, # use this option to debug
     },
     'training_parameters': {

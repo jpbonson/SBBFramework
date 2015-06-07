@@ -2,17 +2,20 @@
     >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
 
 - implementar self-play ['only_sbb', 'only_coded_opponents', 'hybrid']
-    - encapsular teams em points
+    - encapsular teams em points (mas nao avaliar esses points em evaluate, novos points devem ser obtidos a cada generation da population atual)
     - alterar metodos que modificam point_population_ de acordo
-    - selecionar teams com uniform probability? com weighted? usar apenas os parents?
+    - selecionar teams com uniform probability? com weighted? (usar numpy.random.choice)
+    - validation and champion population never use sbb_opponents (so they are always the same across runs)
 - implementar hall of fame [true, false]
 - ler paper sobre tictactoe
 - fazer system test para tictactoe (self-play e hall of fame)
 
 ---
 - fazer example para thyroid dataset
-- fazer example para iris dataset
 - fazer example para tictactoe
+
+- teams e opponents devem implementar a mesma classe Opponent
+- improves self-play so the opponent sbb also improves its metrics (just set is_training to True?) (is it worth to fix it? for the sbb opponent, it will seem as if the point population is much larger)
 
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?

@@ -87,7 +87,7 @@ class Selection:
         while len(teams_to_clone) < new_teams_to_create:
             fitness = [team.fitness_ for team in teams_population]
             index = weighted_choice(fitness)
-            teams_to_clone.append(teams_population[index])
+            teams_to_clone.append(teams_population[index]) # BUG! the same team can be added more than one time!
         return teams_to_clone
 
     def _remove_programs_with_no_teams(self, programs_population):

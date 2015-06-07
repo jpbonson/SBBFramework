@@ -162,8 +162,8 @@ class ClassificationEnvironment(DefaultEnvironment):
         return sample
 
     def evaluate_point_population(self, teams_population):
-        total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_actions_
         current_subsets_per_class = self._get_data_per_action(self.point_population_)
+        total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_actions_
         samples_per_class_to_keep = int(round(total_samples_per_class*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
 
         kept_subsets_per_class = []

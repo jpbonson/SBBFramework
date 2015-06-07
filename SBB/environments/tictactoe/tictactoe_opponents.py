@@ -16,7 +16,7 @@ class TictactoeOpponent(object):
         """
 
     @abc.abstractmethod
-    def execute(self, inputs):
+    def execute(self, point_id, inputs, valid_actions, is_training):
         """
         Returns an action for the given inputs.
         """
