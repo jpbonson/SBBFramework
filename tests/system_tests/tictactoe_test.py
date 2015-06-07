@@ -72,18 +72,49 @@ class ClassificationTests(unittest.TestCase):
     def setUp(self):
         Config.RESTRICTIONS['write_output_files'] = False
 
-    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance(self):
+    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
         Config.USER = config
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.45833, 0.52604]
+        expected = [0.5677, 0.52083]
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_hybrid_opponents(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = sbb.best_scores_per_runs_
+        expected = [0.35416, 0.51562]
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_sbb_opponents(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['reinforcement_parameters']['opponents_pool'] = 'only_sbb'
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = sbb.best_scores_per_runs_
+        expected = [0.35937, 0.5]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_diversity_maintenance(self):
@@ -93,11 +124,12 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = True
+        config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
         Config.USER = config
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.5677, 0.55729]
+        expected = [0.40625, 0.34895]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_with_pareto_and_without_diversity_maintenance(self):
@@ -107,11 +139,12 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
         Config.USER = config
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.51041, 0.47916]
+        expected = [0.61979, 0.58854]
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':

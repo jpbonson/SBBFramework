@@ -79,7 +79,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.73333, 0.93333, 0.9]
+        expected = [0.8, 0.9, 0.86666]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_without_pareto_and_with_diversity_maintenance(self):
@@ -93,7 +93,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.86666, 0.93333, 0.93333]
+        expected = [0.86666, 0.93333, 0.86666]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_pareto_and_without_diversity_maintenance(self):
@@ -107,7 +107,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.9, 0.96666, 0.93333]
+        expected = [0.9, 0.96666, 0.96666]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_pareto_for_teams_without_pareto_for_points(self):
@@ -121,7 +121,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.83333, 0.8, 0.93333]
+        expected = [0.76666, 0.86666, 0.8]
         self.assertEqual(expected, result)
 
     def test_classification_for_thyroid(self):
@@ -137,7 +137,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.62295, 0.66499]
+        expected = [0.55001, 0.84713]
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':

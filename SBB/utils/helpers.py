@@ -22,16 +22,3 @@ def is_nearly_equal_to(value1, value2):
     if abs(value1 - value2) < 0.1:
         return True
     return False
-
-def weighted_choice(weights):
-    """
-    Randomly return an index from an array of weights so that higher weights have a higher chance of 
-    being selected.
-    """
-    pick = random.uniform(0, sum(weights))
-    current = 0
-    for index, f in enumerate(weights):
-        current += f
-        if current > pick:
-            return index
-    raise IndexError("weighted_choice() wasn't able to return an index")

@@ -6,7 +6,7 @@ from team import Team
 from diversity_maintenance import DiversityMaintenance
 from pareto_dominance import ParetoDominance
 from environments.default_environment import DefaultEnvironment
-from utils.helpers import round_value, weighted_choice
+from utils.helpers import round_value
 from config import Config
 
 class Selection:
@@ -83,12 +83,10 @@ class Selection:
 
     def _select_teams_to_clone(self, teams_population):
         new_teams_to_create = Config.USER['training_parameters']['populations']['teams'] - len(teams_population)
-        teams_to_clone = []
-        while len(teams_to_clone) < new_teams_to_create:
-            fitness = [team.fitness_ for team in teams_population]
-            index = weighted_choice(fitness)
-            teams_to_clone.append(teams_population[index]) # BUG! the same team can be added more than one time!
-        return teams_to_clone
+        fitness = [team.fitness_ for team in teams_population]
+        total_fitness = sum(fitness)
+        probabilities = [f/total_fitness for f in fitness]
+        return numpy.random.choice(teams_population, size = new_teams_to_create, replace = True, p = probabilities)
 
     def _remove_programs_with_no_teams(self, programs_population):
         to_remove = []

@@ -58,7 +58,7 @@ python tests/unit_tests/unit_tests.py
 
 ## 6. Implementation Details
 
-- This implementation uses the default Python random library to control the seed for the runs, and uses the numpy.random.RandomState object to control the seed for the opponents in the reinforcement learning setting.
+...
 
 ## 7. SBB Examples
 ...

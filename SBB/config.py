@@ -24,7 +24,7 @@ class Config():
 
         'training_parameters': {
             'runs_total': 2,
-            'generations_total': 20,
+            'generations_total': 40,
             'validate_after_each_generation': 20,
             'populations': {
                 'programs': 40,
@@ -83,7 +83,7 @@ class Config():
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
         'environment_types': ['tictactoe'],
-        'opponents_pool_options': ['only_sbb', 'only_coded_opponents', 'hybrid'],
+        'opponents_pool_options': ['only_sbb', 'only_coded', 'hybrid'],
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'genotype_options': {

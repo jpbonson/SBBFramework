@@ -24,6 +24,7 @@ class SBB:
         if not Config.USER['advanced_training_parameters']['seed']:
             Config.USER['advanced_training_parameters']['seed'] = random.randint(0, numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min))
         random.seed(Config.USER['advanced_training_parameters']['seed'])
+        numpy.random.seed(Config.USER['advanced_training_parameters']['seed'])
 
     def run(self):
         print "\n### Starting pSBB"

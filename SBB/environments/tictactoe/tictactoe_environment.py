@@ -48,7 +48,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_sbb':
             if Config.USER['training_parameters']['populations']['points'] > Config.USER['training_parameters']['populations']['teams']:
                 Config.USER['training_parameters']['populations']['points'] = Config.USER['training_parameters']['populations']['teams']
-        elif Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded_opponents':
+        elif Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded':
             super(TictactoeEnvironment, self)._round_point_population_based_on(len(self.opponents_))
         elif Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
             total_opponents = len(self.opponents_)+1
@@ -81,7 +81,7 @@ class TictactoeEnvironment(DefaultEnvironment):
                 super(TictactoeEnvironment, self)._remove_points(self.point_population_, teams_population)
             self.point_population_ = self._initialize_point_population_of_sbb_opponents(teams_population, population_size)
         elif not self.point_population_: # first sampling of the run
-            if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded_opponents':
+            if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded':
                 self.point_population_ = self._initialize_random_balanced_population_of_coded_opponents(population_size)
             elif Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
                 self.point_population_ = []
@@ -97,7 +97,20 @@ class TictactoeEnvironment(DefaultEnvironment):
         super(TictactoeEnvironment, self)._check_for_bugs()
 
     def _initialize_point_population_of_sbb_opponents(self, teams_population, size):
-        sbb_opponents = random.sample(teams_population, size)
+        fitness = [team.fitness_ for team in teams_population]
+        total_fitness = sum(fitness)
+        if total_fitness == 0:
+            sbb_opponents = random.sample(teams_population, size)
+        else:
+            probabilities = [f/total_fitness for f in fitness]
+            non_zeros = [p for p in probabilities if p != 0]
+            if len(non_zeros) >= size:
+                sbb_opponents = numpy.random.choice(teams_population, size = size, replace = False, p = probabilities)
+            else:
+                sbb_opponents = [team for team in teams_population if team.fitness_ != 0]
+                new_opponents = [team for team in teams_population if team.fitness_ == 0]
+                opponnets_to_add = size - len(sbb_opponents)
+                sbb_opponents += random.sample(new_opponents, opponnets_to_add)
         population = []
         for opponent in sbb_opponents:
             population.append(TictactoePoint(opponent.__repr__(), opponent))
@@ -108,7 +121,7 @@ class TictactoeEnvironment(DefaultEnvironment):
             return
 
         current_subsets_per_opponent = self._get_data_per_opponent(self.point_population_)
-        if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded_opponents':
+        if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded':
             total_samples_per_opponent = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
             removed_subsets_per_opponent = []
         elif Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':

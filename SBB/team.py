@@ -19,9 +19,9 @@ class Team:
         for program in programs:
             self._add_program(program)
         self.team_id_ = get_team_id()
-        self.fitness_ = -1
-        self.score_trainingset_ = -1
-        self.score_testset_ = -1
+        self.fitness_ = 0
+        self.score_trainingset_ = 0
+        self.score_testset_ = 0
         self.extra_metrics_ = {}
         self.active_programs_ = []
         self.actions_per_points_ = {}
