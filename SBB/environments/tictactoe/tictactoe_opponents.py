@@ -2,34 +2,13 @@ import abc
 import random
 import numpy
 from tictactoe_match import TictactoeMatch
+from ..default_opponent import DefaultOpponent
+from ...config import Config
 
-class TictactoeOpponent(object):
-    def __init__(self, opponent_id):
-        self.opponent_id = opponent_id
-        self.seed = random.randint(0, numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min))
-        self.random_generator = None
-
-    @abc.abstractmethod
-    def initialize(self):
-        """
-        Initialize attributes of the opponent before a match.
-        """
-
-    @abc.abstractmethod
-    def execute(self, point_id, inputs, valid_actions, is_training):
-        """
-        Returns an action for the given inputs.
-        """
-
-    def __str__(self):
-        return self.opponent_id+":"+str(self.seed)
-
-    def __repr__(self):
-        return self.opponent_id+":"+str(self.seed)
-
-class TictactoeRandomOpponent(TictactoeOpponent):
+class TictactoeRandomOpponent(DefaultOpponent):
     def __init__(self):
         super(TictactoeRandomOpponent, self).__init__("random")
+        self.seed = random.randint(0, Config.RESTRICTIONS['max_seed'])
 
     def initialize(self):
         self.random_generator = numpy.random.RandomState(seed=self.seed)
@@ -37,9 +16,16 @@ class TictactoeRandomOpponent(TictactoeOpponent):
     def execute(self, point_id, inputs, valid_actions, is_training):
         return self.random_generator.choice(valid_actions)
 
-class TictactoeSmartOpponent(TictactoeOpponent):
+    def __str__(self):
+        return self.opponent_id +":"+str(self.seed)
+
+    def __repr__(self):
+        return self.opponent_id +":"+str(self.seed)
+
+class TictactoeSmartOpponent(DefaultOpponent):
     def __init__(self):
         super(TictactoeSmartOpponent, self).__init__("smart")
+        self.seed = random.randint(0, Config.RESTRICTIONS['max_seed'])
 
     def initialize(self):
         self.random_generator = numpy.random.RandomState(seed=self.seed)
@@ -76,3 +62,9 @@ class TictactoeSmartOpponent(TictactoeOpponent):
 
         # get anything that is valid
         return self.random_generator.choice(valid_actions)
+
+    def __str__(self):
+        return self.opponent_id +":"+str(self.seed)
+
+    def __repr__(self):
+        return self.opponent_id +":"+str(self.seed)

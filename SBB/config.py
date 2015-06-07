@@ -1,4 +1,5 @@
 import sys
+import numpy
 from examples import thyroid_config, tictactoe_config
 
 class Config():
@@ -58,7 +59,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': None, # default = None
+            'seed': 1, # default = None
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
@@ -86,6 +87,8 @@ class Config():
         'opponents_pool_options': ['only_sbb', 'only_coded', 'hybrid'],
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
+        'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min),
+        'is_nearly_equal_threshold': 0.1,
         'genotype_options': {
             'modes': ['read-register', 'read-input'],
             'simple_operations': ['+', '-', '*', '/'],

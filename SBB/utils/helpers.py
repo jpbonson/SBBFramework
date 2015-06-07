@@ -19,6 +19,6 @@ def flatten(list_of_lists):
     return sum(list_of_lists, [])
 
 def is_nearly_equal_to(value1, value2):
-    if abs(value1 - value2) < 0.1:
+    if abs(value1 - value2) < Config.RESTRICTIONS['is_nearly_equal_threshold']:
         return True
     return False

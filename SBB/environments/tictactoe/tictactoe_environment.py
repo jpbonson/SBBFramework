@@ -120,16 +120,18 @@ class TictactoeEnvironment(DefaultEnvironment):
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_sbb':
             return
 
-        current_subsets_per_opponent = self._get_data_per_opponent(self.point_population_)
-        if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded':
-            total_samples_per_opponent = Config.USER['training_parameters']['populations']['points']/len(self.opponents_)
-            removed_subsets_per_opponent = []
-        elif Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
-            total_samples_per_opponent = Config.USER['training_parameters']['populations']['points']/(len(self.opponents_)+1)
-            removed_subsets_per_opponent = [point for point in self.point_population_ if type(point.opponent) is Team]
         kept_subsets_per_opponent = []
-        samples_per_opponent_to_keep = int(round(total_samples_per_opponent*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
+        removed_subsets_per_opponent = []
 
+        if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded':
+            total_opponents = len(self.opponents_)
+        elif Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
+            total_opponents = len(self.opponents_)+1
+            removed_subsets_per_opponent.append([point for point in self.point_population_ if type(point.opponent) is Team])
+        
+        total_samples_per_opponent = Config.USER['training_parameters']['populations']['points']/total_opponents
+        samples_per_opponent_to_keep = int(round(total_samples_per_opponent*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
+        current_subsets_per_opponent = self._get_data_per_opponent(self.point_population_)
         if Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection']:
             # obtain the pareto front for each subset
             for subset in current_subsets_per_opponent:

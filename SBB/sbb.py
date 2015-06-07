@@ -22,7 +22,7 @@ class SBB:
         self.current_generation_ = 0
         self.best_scores_per_runs_ = [] # used by tests
         if not Config.USER['advanced_training_parameters']['seed']:
-            Config.USER['advanced_training_parameters']['seed'] = random.randint(0, numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min))
+            Config.USER['advanced_training_parameters']['seed'] = random.randint(0, Config.RESTRICTIONS['max_seed'])
         random.seed(Config.USER['advanced_training_parameters']['seed'])
         numpy.random.seed(Config.USER['advanced_training_parameters']['seed'])
 

@@ -6,13 +6,12 @@
 - ler paper sobre tictactoe
 - conferir se thyroid continua estatisticamente igual
 - fazer example para tictactoe
-- teams e opponents devem implementar a mesma classe Opponent
 
 ---
 - fazer example para thyroid dataset
 - fazer example para tictactoe
 
-- improves self-play so the opponent sbb also improves its metrics (just set is_training to True?) (is it worth to fix it? for the sbb opponent, it will seem as if the point population is much larger)
+- improves self-play so the opponent sbb also improves its metrics? (just set is_training to True?) (is it worth to fix it? for the sbb opponent, it will seem as if the point population is much larger)
 
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?

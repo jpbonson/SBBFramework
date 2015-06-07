@@ -1,5 +1,6 @@
 import random
 from collections import Counter
+from environments.default_opponent import DefaultOpponent
 from utils.helpers import round_value, round_array
 from config import Config
 
@@ -12,8 +13,9 @@ def get_team_id():
     next_team_id += 1
     return next_team_id
 
-class Team:
+class Team(DefaultOpponent):
     def __init__(self, generation, programs):
+        super(Team, self).__init__("sbb")
         self.generation = generation
         self.programs = []
         for program in programs:
@@ -40,7 +42,7 @@ class Team:
         """
         This method is called by the reinforcement learning environments to set 
         the opponent configurations before a match. This class implements this 
-        mehtod only in order to be transparent if the opponent is a team or 
+        method only in order to be transparent if the opponent is a sbb or 
         a coded opponent.
         """
         pass
