@@ -1,5 +1,5 @@
 import sys
-from examples import thyroid_config
+from examples import thyroid_config, tictactoe_config
 
 class Config():
     """
@@ -58,7 +58,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 1, # default = None
+            'seed': None, # default = None
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
@@ -133,4 +133,5 @@ class Config():
 
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
-# Config.USER = thyroid_config.THYROID_WITH_PARETO_FOR_POINTS_ONLY
+# Config.USER = thyroid_config.THYROID_DEFAULT
+# Config.USER = tictactoe_config.TICTACTOE_DEFAULT
