@@ -220,8 +220,8 @@ class SBB:
             score_per_run.append(round_value(best_teams_per_run[run_id].score_testset_))
         self.best_scores_per_runs_ = score_per_run
         msg += "\n\nTest Score per Run: "+str(score_per_run)
-        msg += "\nmean: "+str(numpy.mean(score_per_run))
-        msg += "\nstd. deviation: "+str(numpy.std(score_per_run))
+        msg += "\nmean: "+str(round_value(numpy.mean(score_per_run)))
+        msg += "\nstd. deviation: "+str(round_value(numpy.std(score_per_run)))
 
         score_means, score_stds = self._process_scores(train_score_per_generations_per_runs)
         msg += "\n\nTrain Score per Generation across Runs:"
