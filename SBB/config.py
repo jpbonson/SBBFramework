@@ -48,7 +48,7 @@ class Config():
                     'change_action': 0.1,
                 },
             },
-            'team_size': { # the min size is the total number of actions
+            'team_size': { # the min and initial size are the total number of actions
                 'max': 18,
             },
             'program_size': {
@@ -59,7 +59,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 1, # default = None
+            'seed': None, # default = None
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
@@ -137,4 +137,4 @@ class Config():
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
 # Config.USER = thyroid_config.THYROID_WITH_PARETO_FOR_POINTS_ONLY
-Config.USER = tictactoe_config.TICTACTOE_DEFAULT
+# Config.USER = tictactoe_config.TICTACTOE_DEFAULT

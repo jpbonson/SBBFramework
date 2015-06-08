@@ -5,6 +5,7 @@
 - fazer system test para tictactoe (hall of fame)
 - ler paper sobre tictactoe
 - fazer example para tictactoe
+- conferir se com validation e champion mudando por run, o resultado para ttt ainda eh estatisticamente igual
 
 ---
 - fazer example para thyroid

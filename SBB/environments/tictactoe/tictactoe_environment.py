@@ -31,8 +31,6 @@ class TictactoeEnvironment(DefaultEnvironment):
         self.total_inputs_ = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
         self.total_positions_ = 2
         self.opponents_ = [TictactoeRandomOpponent, TictactoeSmartOpponent]
-        self.test_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['validation_population'])
-        self.champion_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['champion_population'])
         self.action_mapping_ = {
             '[0,0]': 0, '[0,1]': 1, '[0,2]': 2,
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
@@ -67,6 +65,8 @@ class TictactoeEnvironment(DefaultEnvironment):
 
     def reset_point_population(self):
         self.point_population_ = None
+        self.test_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['validation_population'])
+        self.champion_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['champion_population'])
 
     def setup_point_population(self, teams_population):
         """
