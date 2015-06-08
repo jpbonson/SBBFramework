@@ -209,17 +209,26 @@ class TictactoeEnvironment(DefaultEnvironment):
         """
         if mode == DefaultEnvironment.MODE['training']:
             is_training = True
-            population = self.point_population_
+            point_population = self.point_population_
         else:
             is_training = False
             if mode == DefaultEnvironment.MODE['validation']:
-                population = self.test_population_
+                point_population = self.test_population_
             elif mode == DefaultEnvironment.MODE['champion']:
-                population = self.champion_population_
+                point_population = self.champion_population_
 
         results = []
         extra_metrics = {}
         extra_metrics['opponents'] = defaultdict(list)
+
+        dont_use_results_for_hall_of_fame = False
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and (is_training or mode == DefaultEnvironment.MODE['champion']):
+            # use hall of fame as a criteria during training, not used for validation, and only used as a metric for validation of the champion
+            population = point_population + self.hall_of_fame
+            if mode == DefaultEnvironment.MODE['champion']:
+                dont_use_results_for_hall_of_fame = True
+        else:
+            population = point_population
 
         for point in population:
             if is_training and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id in team.results_per_points_:
@@ -233,25 +242,8 @@ class TictactoeEnvironment(DefaultEnvironment):
                     team.results_per_points_[point.point_id] = result
                 else:
                     extra_metrics['opponents'][point.opponent.opponent_id].append(result)
-                results.append(result)
-
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']: # TODO: REFACTOR
-            if is_training or DefaultEnvironment.MODE['champion']:
-                # use hall of fame as a criteria during training, not used for validation, and only a metric for validation of the champion
-                for point in self.hall_of_fame:
-                    if is_training and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id in team.results_per_points_:
-                        results.append(team.results_per_points_[point.point_id])
-                    else:
-                        outputs = []
-                        for position in range(1, self.total_positions_+1):
-                            outputs.append(self._play_match(position, point, team, is_training))
-                        result = numpy.mean(outputs)
-                        if is_training:
-                            team.results_per_points_[point.point_id] = result
-                        else:
-                            extra_metrics['opponents'][point.opponent.opponent_id].append(result)
-                        if is_training:
-                            results.append(result)
+                if not (point.opponent.opponent_id == "hall_of_fame" and dont_use_results_for_hall_of_fame):
+                    results.append(result)
 
         score = numpy.mean(results)
         

@@ -1,7 +1,6 @@
 - conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647
     >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
 
-- refatorar hall of fame
 - ler paper sobre tictactoe
 
 ---
