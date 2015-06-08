@@ -1,4 +1,5 @@
 import random
+import copy
 import numpy
 from collections import defaultdict
 from tictactoe_match import TictactoeMatch
@@ -102,12 +103,17 @@ class TictactoeEnvironment(DefaultEnvironment):
             sample = flatten(self.samples_per_opponent_to_keep) # join samples per opponent
             random.shuffle(sample)
             self.point_population_ = sample
+
         if self.team_to_add_to_hall_of_fame and self.team_to_add_to_hall_of_fame not in self.hall_of_fame:
-            self.hall_of_fame.append(self.team_to_add_to_hall_of_fame)
+            self.hall_of_fame.append(copy.deepcopy(self.team_to_add_to_hall_of_fame))
             if len(self.hall_of_fame) > Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
+                if Config.USER['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity']:
+                    teams = [p.opponent for p in self.hall_of_fame]
+                    DiversityMaintenance.genotype_diversity(teams, p = 0.8, k = Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
                 score = [p.opponent.fitness_ for p in self.hall_of_fame]
                 worst_team = self.hall_of_fame[score.index(min(score))]
                 self.hall_of_fame.remove(worst_team)
+
         super(TictactoeEnvironment, self)._check_for_bugs()
 
     def _initialize_point_population_of_sbb_opponents(self, teams_population, size):
@@ -192,6 +198,7 @@ class TictactoeEnvironment(DefaultEnvironment):
             for team in sorted_teams:
                 if team.team_id_ not in team_ids:
                     self.team_to_add_to_hall_of_fame = TictactoePoint(team.__repr__(), team)
+                    self.team_to_add_to_hall_of_fame.opponent.opponent_id = "hall_of_fame"
                     break
 
     def evaluate_team(self, team, mode):
@@ -242,7 +249,7 @@ class TictactoeEnvironment(DefaultEnvironment):
                         if is_training:
                             team.results_per_points_[point.point_id] = result
                         else:
-                            extra_metrics['opponents']['hall_of_fame'].append(result)
+                            extra_metrics['opponents'][point.opponent.opponent_id].append(result)
                         if is_training:
                             results.append(result)
 

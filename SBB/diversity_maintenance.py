@@ -11,12 +11,13 @@ class DiversityMaintenance():
     @staticmethod
     def apply_diversity_maintenance_to_teams(teams_population, point_population):
         if Config.USER['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
-            DiversityMaintenance._genotype_diversity(teams_population)
+            DiversityMaintenance.genotype_diversity(teams_population)
         if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']:
             DiversityMaintenance._fitness_sharing(teams_population, point_population)
 
     @staticmethod
-    def _genotype_diversity(population):
+    def genotype_diversity(population, p = Config.USER['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'],
+            k = Config.USER['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['k']):
         """
         Calculate the distance between pairs of teams, where the distance is the intersection of active 
         programs divided by the union of active programs. Active programs are the ones who the output 
@@ -43,11 +44,9 @@ class DiversityMaintenance():
                     distances.append(distance)
             # get mean of the k nearest neighbours
             sorted_list = sorted(distances)
-            k = Config.USER['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['k']
             min_values = sorted_list[:k]
             diversity = numpy.mean(min_values)
             # calculate fitness
-            p = Config.USER['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value']
             team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
             team.diversity_['genotype_diversity'] = round_value(diversity)
 

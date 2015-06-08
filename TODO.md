@@ -2,11 +2,11 @@
     >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
 
 - refatorar hall of fame
-- add opcao para usar genotype diversity
 - ler paper sobre tictactoe
 
 ---
 - adicionar _ nos atributos intenros das classes e atributos novos
+- baixar tests de tictactoe de 60 para 30 generations?
 - fazer example para tictactoe
 - fazer example para thyroid
 
