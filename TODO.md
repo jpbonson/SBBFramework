@@ -26,7 +26,7 @@ TODO:
 - before the release/implementing poker:
     - adicionar _ nos atributos internos das classes e atributos novos
     - baixar tests de tictactoe de 60 para 30 generations?
-    - ler paper do SBB e conferir se tem algo errado ou faltando
+    - ler paper do SBB e conferir se tem algo errado ou faltando (Symbiosis, Complexification and Simplicity under GP)
 
 - ir testando enquanto implementa:
     - fazer example para tictactoe (fazer sets de 10 runs separadas?)
