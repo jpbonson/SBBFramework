@@ -4,14 +4,10 @@
 - implementar hall of fame [true, false]
 - fazer system test para tictactoe (hall of fame)
 - ler paper sobre tictactoe
-- conferir se thyroid continua estatisticamente igual
 - fazer example para tictactoe
 
 ---
-- fazer example para thyroid dataset
-- fazer example para tictactoe
-
-- improves self-play so the opponent sbb also improves its metrics? (just set is_training to True?) (is it worth to fix it? for the sbb opponent, it will seem as if the point population is much larger)
+- fazer example para thyroid
 
 - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?
@@ -51,13 +47,39 @@ jSBB:
 - novos learners naquele time só são gerados mutacionando outros learners daquele mesmo time (ao inves de globalmente)
 - tem mutation de swap instructions
 
+========
+NOTES:
+
+solutions: local, global, historical, end goal: global
+
+- across runs, use the same validation and champion set, or generate new random sets for each run? (?)
+    - by now, generate new ones for each run, in order to cover more settings of points
+
+anotacoes sobre hall of fame:
+    - different from the one in Countering Evolutionary Forgetting in No-Limit Texas Hold’em Poker Agents
+        - the hall of fame was better than coevolution
+        - but the intention here is for it to be complementar
+    - usar o champion a cada validation?  usar best teams of each generation, usar fitness (em relacao aos teams daquela generation) ou diversity (em relacao aos teams no hall of fame, apenas a genotype diversity)? (se usar champion, fica mais complicado escolher quais teams manter no hall of fame)
+    - hall of fame independente da point population
+    - priorizar manter older teams? manter os com melhor fitness?
+    - usar hall of fame na validation (apenas como metric, ou como criterio? por enquanto, usar apenas como metric)
+    - comecar testando usar fitness, depois testar usando diversity?
+    - tamanho do hall of fame configuravel? hall of fame deve ter o mesmo peso ou mais peso que um tipo de oponente regular? (por enquanto, vai ser um valor fixo configuravel, e entao pode ter mais peso que tipos de oponentes especificos)
+    - utilidade: impedir comportamento circular (nao necessariamente obter melhores teams globalmente)
+    - por enquanto:
+        - hall of fame usado como criterio apenas no training, mas usado como metric na validation
+        - o hall of fame tem um tamanho fixo configuravel definido em CONFIG
+        - o melhor time de cada generation eh colocado no hall of fame
+        - se o hall of fame lotar, descartar o time com pior fitness
 
 - implementar self-play ['only_sbb', 'only_coded_opponents', 'hybrid']
     - encapsular teams em points (mas nao avaliar esses points em evaluate, novos points devem ser obtidos a cada generation da population atual)
     - alterar metodos que modificam point_population_ de acordo
-    - selecionar teams com uniform probability? com weighted?
+    - selecionar teams com uniform probability? com weighted? (usando: weighted)
     - validation and champion population never use sbb_opponents (so they are always the same across runs)
 
+- improves self-play so the opponent sbb also improves its metrics? (just set is_training to True?) (is it worth to fix it? for the sbb opponent, it will seem as if the point population is much larger)
+    - daria para habilitar que ambos os teams no modo self_play only atualizassem suas metrics com as matches se nem pareto e nem fitness sharing forem utilizados
 
 Notes from meeting with Malcolm:
 

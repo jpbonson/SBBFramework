@@ -3,11 +3,11 @@ import copy
 """
 ##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
-THYROID_DEFAULT < THYROID_WITH_PARETOS:
+THYROID_DEFAULT < THYROID_WITH_PARETOS: (old)
 The U-value is 168. The distribution is approximately normal. Therefore, the Z-value above can be used.
 The Z-Score is -2.794. The p-value is 0.00528. The result is significant at p <= 0.05.
 
-THYROID_WITH_PARETOS < THYROID_WITH_PARETO_FOR_TEAMS_ONLY:
+THYROID_WITH_PARETOS < THYROID_WITH_PARETO_FOR_TEAMS_ONLY: (old)
 The U-value is 197. The distribution is approximately normal. Therefore, the Z-value above can be used.
 The Z-Score is -2.2313. The p-value is 0.02574. The result is significant at p <= 0.05.
 
@@ -78,19 +78,19 @@ THYROID_DEFAULT = {
 """
 #################### OVERALL RESULTS ####################
 
-Test Score per Run: [0.8496, 0.64652, 0.61856, 0.88388, 0.86671, 0.88676, 0.8875, 0.64663, 0.95081, 0.88335, 0.81659, 0.86227, 0.92473, 0.71969, 0.88585, 0.92872, 0.89273, 0.87107, 0.76012, 0.90365, 0.88931, 0.65017, 0.72053, 0.88773, 0.85161]
-mean: 0.82740
-std. deviation: 0.09863
+Test Score per Run: [0.73487, 0.64663, 0.81808, 0.64663, 0.97086, 0.88397, 0.59611, 0.87215, 0.88763, 0.88425, 0.93716, 0.93864, 0.85918, 0.87286, 0.90614, 0.64663, 0.77507, 0.64663, 0.92979, 0.93025, 0.95475, 0.93108, 0.95831, 0.67403, 0.96206]
+mean: 0.83455
+std. deviation: 0.12124
 
 Train Score per Generation across Runs:
-mean: [0.53733, 0.75566, 0.79299, 0.80166, 0.80133, 0.82933, 0.834]
-std. deviation: [0.08618, 0.11214, 0.11744, 0.13102, 0.11675, 0.1122, 0.09515]
+mean: [0.525, 0.70866, 0.73999, 0.78133, 0.79633, 0.81866, 0.83166]
+std. deviation: [0.07582, 0.1051, 0.09507, 0.1212, 0.11125, 0.10972, 0.11303]
 
 Test Score per Generation across Runs:
-mean: [0.54309, 0.74477, 0.78557, 0.79533, 0.7988, 0.81862, 0.8274]
-std. deviation: [0.08596, 0.1125, 0.11035, 0.11198, 0.11392, 0.10399, 0.09863]
+mean: [0.52352, 0.70024, 0.74573, 0.77426, 0.78983, 0.80986, 0.83455]
+std. deviation: [0.08604, 0.09477, 0.09776, 0.1187, 0.11562, 0.10995, 0.12124]
 
-Finished execution, total elapsed time: 14989.70999 secs (mean: 599.58839, std: 116.31353)
+Finished execution, total elapsed time: 16250.383 secs (mean: 650.01532, std: 179.87195)
 
 """
 
@@ -98,7 +98,7 @@ THYROID_WITH_PARETOS = copy.deepcopy(THYROID_DEFAULT)
 THYROID_WITH_PARETOS['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
 THYROID_WITH_PARETOS['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
 """
-#################### OVERALL RESULTS ####################
+#################### OVERALL RESULTS #################### (old)
 
 Test Score per Run: [0.64459, 0.6969, 0.96019, 0.7823, 0.77515, 0.94043, 0.97135, 0.85577, 0.93783, 0.93661, 0.8784, 0.94235, 0.90138, 0.97607, 0.87257, 0.97954, 0.90812, 0.93232, 0.93648, 0.96286, 0.87725, 0.72491, 0.95513, 0.90305, 0.96395]
 mean: 0.88862
@@ -118,7 +118,7 @@ Finished execution, total elapsed time: 14872.799 secs (mean: 594.91196, std: 21
 THYROID_WITH_PARETO_FOR_TEAMS_ONLY = copy.deepcopy(THYROID_DEFAULT)
 THYROID_WITH_PARETO_FOR_TEAMS_ONLY['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
 """
-#################### OVERALL RESULTS ####################
+#################### OVERALL RESULTS #################### (old)
 
 Test Score per Run: [0.82456, 0.97561, 0.95241, 0.9617, 0.95283, 0.90201, 0.97351, 0.98405, 0.9754, 0.90388, 0.9351, 0.9754, 0.98137, 0.97534, 0.93341, 0.95244, 0.94634, 0.95919, 0.88091, 0.97351, 0.92812, 0.9754, 0.92768, 0.93859, 0.84532]
 mean: 0.94136
