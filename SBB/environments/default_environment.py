@@ -33,7 +33,20 @@ class DefaultEnvironment(object):
         """
         Initialize the environment variables.
         """
-        self.point_population_ = None
+
+    @abc.abstractmethod
+    def point_population(self):
+         """
+         Return the point_population. If the Hall of Fame is being used, it will return 
+         the point_population plus the hall_of_fame, since both were used during training.
+         """
+
+    @abc.abstractmethod
+    def reset_point_population(self):
+         """
+         Method that is called at the beginning of each run by SBB, to reset the 
+         variables that will be used by the generations.
+         """
 
     @abc.abstractmethod
     def reset_point_population(self):
@@ -55,6 +68,13 @@ class DefaultEnvironment(object):
         """
         Evaluate the fitness of the point population, to define which points will be removed 
         or added in the next generation, when setup_point_population() is executed.
+        """
+
+    @abc.abstractmethod
+    def evaluate_teams_population(self, teams_population):
+        """
+        Evaluate all the teams using the evaluate_team() method, and sets metrics. Used only 
+        for training.
         """
 
     @abc.abstractmethod

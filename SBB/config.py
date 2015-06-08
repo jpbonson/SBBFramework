@@ -20,6 +20,10 @@ class Config():
             'validation_population': 100, # at a validated generation, all the teams with be tested against this population, the best one is the champion
             'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'opponents_pool': 'hybrid',
+            'hall_of_fame': {
+                'enabled': True,
+                'size': 5,
+            },
             'print_matches': False, # use this option to debug
         },
 

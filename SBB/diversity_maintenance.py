@@ -59,7 +59,7 @@ class DiversityMaintenance():
         true, normalize the dimensions before applying fitness sharing).
         """
         # calculate denominators in each dimension
-        denominators = [1.0] * Config.USER['training_parameters']['populations']['points'] # initialized to 1 so we don't divide by zero
+        denominators = [1.0] * len(point_population) # initialized to 1 so we don't divide by zero
         for index, point in enumerate(point_population):
             for team in population:
                 denominators[index] += float(team.results_per_points_[point.point_id])

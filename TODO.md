@@ -1,16 +1,16 @@
 - conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647
     >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
 
-- implementar hall of fame [true, false]
-- fazer system test para tictactoe (hall of fame)
+- refatorar hall of fame
+- add opcao para usar genotype diversity
 - ler paper sobre tictactoe
-- fazer example para tictactoe
-- conferir se com validation e champion mudando por run, o resultado para ttt ainda eh estatisticamente igual
 
 ---
+- adicionar _ nos atributos intenros das classes e atributos novos
+- fazer example para tictactoe
 - fazer example para thyroid
 
-- conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados?)
+- conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados? dividir pelo resultado maximo obtido?)
 - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?
 - refatorar environments (criar environment de reinforcement?)
 

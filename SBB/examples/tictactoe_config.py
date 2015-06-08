@@ -23,7 +23,7 @@ TICTACTOE_DEFAULT = {
         'populations': {
             'programs': 120,
             'teams': 60,
-            'points': 30,
+            'points': 60,
         },
         'replacement_rate': {
             'teams': 0.7,
@@ -73,7 +73,7 @@ TICTACTOE_DEFAULT = {
     },
 }
 """
-#################### OVERALL RESULTS #################### point_population = 90
+#################### OVERALL RESULTS #################### point_population = 90 (old)
 
 Test Score per Run: [0.68175, 0.6755, 0.71575, 0.6755, 0.69725]
 mean: 0.68915
@@ -88,4 +88,20 @@ mean: [0.4969, 0.66485, 0.67045, 0.68739, 0.68915]
 std. deviation: [0.04828, 0.01884, 0.0151, 0.01643, 0.01549]
 
 Finished execution, total elapsed time: 16958.914 secs (mean: 3391.7828, std: 214.35365)
+
+#################### OVERALL RESULTS #################### point_population = 30
+
+Test Score per Run: [0.6745, 0.672, 0.64249, 0.68725, 0.6745]
+mean: 0.67014
+std. deviation: 0.01482
+
+Train Score per Generation across Runs:
+mean: [0.48166, 0.66833, 0.64333, 0.67833, 0.66166]
+std. deviation: [0.05807, 0.05436, 0.04755, 0.01943, 0.07257]
+
+Test Score per Generation across Runs:
+mean: [0.48605, 0.63205, 0.63849, 0.67005, 0.67015]
+std. deviation: [0.04427, 0.02169, 0.02574, 0.0117, 0.01482]
+
+Finished execution, total elapsed time: 6237.51399 secs (mean: 1247.50279, std: 154.82678)
 """

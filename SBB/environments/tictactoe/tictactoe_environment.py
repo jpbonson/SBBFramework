@@ -27,6 +27,8 @@ class TictactoeEnvironment(DefaultEnvironment):
 
     def __init__(self):
         self.point_population_ = None
+        self.hall_of_fame = []
+        self.team_to_add_to_hall_of_fame = None
         self.total_actions_ = 9 # spaces in the board
         self.total_inputs_ = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
         self.total_positions_ = 2
@@ -63,10 +65,16 @@ class TictactoeEnvironment(DefaultEnvironment):
         random.shuffle(population)
         return population
 
+    def point_population(self):
+        training_population = self.point_population_ + self.hall_of_fame
+        return training_population
+
     def reset_point_population(self):
         self.point_population_ = None
         self.test_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['champion_population'])
+        self.hall_of_fame = []
+        self.team_to_add_to_hall_of_fame = None
 
     def setup_point_population(self, teams_population):
         """
@@ -94,6 +102,12 @@ class TictactoeEnvironment(DefaultEnvironment):
             sample = flatten(self.samples_per_opponent_to_keep) # join samples per opponent
             random.shuffle(sample)
             self.point_population_ = sample
+        if self.team_to_add_to_hall_of_fame and self.team_to_add_to_hall_of_fame not in self.hall_of_fame:
+            self.hall_of_fame.append(self.team_to_add_to_hall_of_fame)
+            if len(self.hall_of_fame) > Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
+                score = [p.opponent.fitness_ for p in self.hall_of_fame]
+                worst_team = self.hall_of_fame[score.index(min(score))]
+                self.hall_of_fame.remove(worst_team)
         super(TictactoeEnvironment, self)._check_for_bugs()
 
     def _initialize_point_population_of_sbb_opponents(self, teams_population, size):
@@ -169,6 +183,17 @@ class TictactoeEnvironment(DefaultEnvironment):
             subsets_per_opponent.append(values)
         return subsets_per_opponent
 
+    def evaluate_teams_population(self, teams_population):
+        for team in teams_population:
+            self.evaluate_team(team, DefaultEnvironment.MODE['training'])
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            sorted_teams = sorted(teams_population, key=lambda team: team.fitness_, reverse = True) # better ones first
+            team_ids = [p.opponent.team_id_ for p in self.hall_of_fame]
+            for team in sorted_teams:
+                if team.team_id_ not in team_ids:
+                    self.team_to_add_to_hall_of_fame = TictactoePoint(team.__repr__(), team)
+                    break
+
     def evaluate_team(self, team, mode):
         """
         Each team plays 2 matches against each point in the point population.
@@ -202,6 +227,24 @@ class TictactoeEnvironment(DefaultEnvironment):
                 else:
                     extra_metrics['opponents'][point.opponent.opponent_id].append(result)
                 results.append(result)
+
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']: # TODO: REFACTOR
+            if is_training or DefaultEnvironment.MODE['champion']:
+                # use hall of fame as a criteria during training, not used for validation, and only a metric for validation of the champion
+                for point in self.hall_of_fame:
+                    if is_training and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id in team.results_per_points_:
+                        results.append(team.results_per_points_[point.point_id])
+                    else:
+                        outputs = []
+                        for position in range(1, self.total_positions_+1):
+                            outputs.append(self._play_match(position, point, team, is_training))
+                        result = numpy.mean(outputs)
+                        if is_training:
+                            team.results_per_points_[point.point_id] = result
+                        else:
+                            extra_metrics['opponents']['hall_of_fame'].append(result)
+                        if is_training:
+                            results.append(result)
 
         score = numpy.mean(results)
         
@@ -250,7 +293,7 @@ class TictactoeEnvironment(DefaultEnvironment):
                 self.evaluate_team(team, DefaultEnvironment.MODE['validation'])
         score = [p.score_testset_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]
-        print("\nChampion team test score in the initial matches: "+str(best_team.score_testset_))
+        print "\nChampion team test score in the initial matches: "+str(round_value(best_team.score_testset_))
         self.evaluate_team(best_team, DefaultEnvironment.MODE['champion'])
         return best_team
 

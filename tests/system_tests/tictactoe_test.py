@@ -9,6 +9,10 @@ TEST_CONFIG = {
         'validation_population': 24, # at a validated generation, all the teams with be tested against this population, the best one is the champion
         'champion_population': 48, # at a validated generation, these are the points the champion team will play against to obtain the metrics
         'opponents_pool': 'only_coded_opponents',
+        'hall_of_fame': {
+            'enabled': False,
+            'size': 3,
+        },
         'print_matches': False, # use this option to debug
     },
     'training_parameters': {
@@ -80,6 +84,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -95,6 +100,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -110,6 +116,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'only_sbb'
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -125,6 +132,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = True
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -140,11 +148,28 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         Config.USER = config
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
         expected = [0.59895, 0.58333]
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = True
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = sbb.best_scores_per_runs_
+        expected = [0.375, 0.48958]
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':

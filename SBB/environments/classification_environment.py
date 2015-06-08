@@ -124,6 +124,9 @@ class ClassificationEnvironment(DefaultEnvironment):
             subsets_per_class.append(values)
         return subsets_per_class
 
+    def point_population(self):
+        return self.point_population_
+
     def reset_point_population(self):
         self.point_population_ = None
 
@@ -189,6 +192,10 @@ class ClassificationEnvironment(DefaultEnvironment):
 
         self.samples_per_class_to_keep = kept_subsets_per_class
         self.samples_per_class_to_remove = removed_subsets_per_class
+
+    def evaluate_teams_population(self, teams_population):
+        for team in teams_population:
+            self.evaluate_team(team, DefaultEnvironment.MODE['training'])
 
     def evaluate_team(self, team, mode):
         """
