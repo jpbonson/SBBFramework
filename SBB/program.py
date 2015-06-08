@@ -22,7 +22,7 @@ class Program:
         self.teams_ = []
         self.instructions_without_introns_ = None
 
-    def execute(self, input_registers): # unit test!
+    def execute(self, input_registers):
         """
         Execute code for each input
         """

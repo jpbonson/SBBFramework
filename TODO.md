@@ -1,35 +1,62 @@
-- conferir se np.iinfo(np.int32).max no Ubuntu == 2147483647
-    >>> sys.maxint: 9223372036854775807 (ubuntu) e 2147483647 (windows e np.iinfo(np.int32).max)
+===
+TODO:
 
-- ler paper sobre tictactoe
+- meeting notes:
+    - initialize teams with 2 different actions (instead of 1 action per available action. In order to start simple and complexify over time, allowing SBB time to understand and mix the simpler teams and programs. It is necessary to use a higher number of generations.)
+    - during mutation, only enforce that a team must have at least 2 different actions (not one action per possible action)
+    - the initial teams must have unique sets of programs (in order to start with the maximum diversity)
 
----
-- adicionar _ nos atributos intenros das classes e atributos novos
-- baixar tests de tictactoe de 60 para 30 generations?
-- fazer example para tictactoe
-- fazer example para thyroid
+    - limit the program size to 1000, just to avoid wasting computational resources
+    - but dont enforce a fixed number of programs per generation, this number should change depending on the mutation operators (check the SBB paper)
 
-- conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados? dividir pelo resultado maximo obtido?)
-- implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?
-- refatorar environments (criar environment de reinforcement?)
+    - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
+        - example of type of opponents:
+            - tictactoe: random, smart, self-play, hall of fame
+            - poker: always fold, always raise, always call, agressive, defensive, smart
 
-- experimentar violin plot na R language (our usar http://matplotlib.org/examples/statistics/violinplot_demo.html e integrar no pSBB)
-- usar import logging para nao floodar a tela com prints qd um test falhar
-- melhorar README.md
-- velocidade de rodar?
-- fazer mais testes unitarios (conferir se os resultados estao realmente ok e sem bugs)
-- conferir se requirement.txt funciona
-- poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
-- implementar tradutor que le o objeto do time e computa resultados?
-- adicionar mais documentacao
-- remover comentarios em portugues
+    - save more things when writing the outputs (both the metrics and the programs (and the .sbb file, if ti is implemented already)):
+        - the pareto front of the last generation
+        - the hall of fame of the last generation
+        - all the teams of the last generation
 
----
+    - the size of the hall of fame is the size of the point population (to replace: use fitness? diversity? pareto?)
 
+    - update system tests
+
+- before the release/implementing poker:
+    - adicionar _ nos atributos internos das classes e atributos novos
+    - baixar tests de tictactoe de 60 para 30 generations?
+    - ler paper do SBB e conferir se tem algo errado ou faltando
+
+- ir testando enquanto implementa:
+    - fazer example para tictactoe (fazer sets de 10 runs separadas?)
+    - fazer example para thyroid (mas nao focar muito nisso)
+
+- extra:
+    - ver como fazer para executar runs de tictactoe no server do NIMS? (ver se tem como executar de casa atraves da maquina no lab)
+    - add a way to reuse teams:
+        - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
+        - implementar tradutor que le o objeto do time e computa resultados?
+
+- starting poker implementation:
+    - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados? dividir pelo resultado maximo obtido?)
+    - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?
+    - refatorar environments (criar environment de reinforcement?)
+
+- quando der tempo:
+    - experimentar violin plot na R language (our usar http://matplotlib.org/examples/statistics/violinplot_demo.html e integrar no pSBB?)
+    - usar import logging para nao floodar a tela com prints qd um test falhar
+    - melhorar README.md (sudo apt-get install build-essential python-dev ? usar virtualenv?)
+    - conferir se requirement.txt funciona
+    - velocidade de rodar? (pypy, cpython, or c)
+    - fazer mais testes unitarios (pareto, diversity, selection, matches, operations, program execution)
+    - adicionar mais documentacao
+    - remover comentarios em portugues
+
+===
 Observacoes:
 - cada dimensao da point population eh uma das dimensoes q vai ser maximizada no pareto, gerando as poker behaviors
-- cycling. disingagement, overspecialization, forgetting
-- hall of fame
+- tomar cuidado com: cycling. disingagement, overspecialization, forgetting
 - Reward for point population:
     - Distinctions: reward tests for every pair of solutions they distinguish
     - Informativeness: reward tests for unique partitioning of S
@@ -40,9 +67,10 @@ Guidelines:
 
 jSBB:
 - teams always start with 2 learners
-- programsize = aleatorio entre 1 e 48
+- programsize = fixo
 - mutation de programas: add, remove, swap e change_instruction
-- outras diferenças entre a implementação java: tratamento para overflow (usar valor anterior vs zerar), if (ser um if memso vs mudar o sinal do regsitrador)
+- tratamento para overflow (usar valor anterior vs zerar)
+- if (ser um if mesmo vs mudar o sinal do regsitrador)
 - se children tiverem os mesmos learners que os parents, obriga a mutacionar
 - novos learners naquele time só são gerados mutacionando outros learners daquele mesmo time (ao inves de globalmente)
 - tem mutation de swap instructions
@@ -50,10 +78,10 @@ jSBB:
 ========
 NOTES:
 
-solutions: local, global, historical, end goal: global
+solutions can be optimally: local (self-play), global (opponents), historical (hall of fame), end goal: global
 
-- across runs, use the same validation and champion set, or generate new random sets for each run? (?)
-    - by now, generate new ones for each run, in order to cover more settings of points
+poker table:
+    - each point is a table, and contains a set of opponents (that dont need to be balanced, ie. a table full of opponents that always fold is ok)
 
 anotacoes sobre hall of fame:
     - different from the one in Countering Evolutionary Forgetting in No-Limit Texas Hold’em Poker Agents
@@ -72,19 +100,20 @@ anotacoes sobre hall of fame:
         - o melhor time de cada generation eh colocado no hall of fame
         - se o hall of fame lotar, descartar o time com pior fitness
 
-- implementar self-play ['only_sbb', 'only_coded_opponents', 'hybrid']
+anotacoes sobre self-play ['only_sbb', 'only_coded_opponents', 'hybrid']
     - encapsular teams em points (mas nao avaliar esses points em evaluate, novos points devem ser obtidos a cada generation da population atual)
     - alterar metodos que modificam point_population_ de acordo
     - selecionar teams com uniform probability? com weighted? (usando: weighted)
     - validation and champion population never use sbb_opponents (so they are always the same across runs)
 
-- improves self-play so the opponent sbb also improves its metrics? (just set is_training to True?) (is it worth to fix it? for the sbb opponent, it will seem as if the point population is much larger)
-    - daria para habilitar que ambos os teams no modo self_play only atualizassem suas metrics com as matches se nem pareto e nem fitness sharing forem utilizados
+    - improves self-play so the opponent sbb also improves its metrics? (just set is_training to True?) (is it worth to fix it? for the sbb opponent, it will seem as if the point population is much larger)
+        - daria para habilitar que ambos os teams no modo self_play only atualizassem suas metrics com as matches se nem pareto e nem fitness sharing forem utilizados
 
 Notes from meeting with Malcolm:
 
 - sempre usar todos os opponents no training e na validation, nao apenas os fortes (senao pode ocorrer do SBB aprender a vencer 
 apenas de oponentes fortes, e perder quando enfrentar os fracos)
+- na validation usar apenas os oponentes fixos (nao os de self-play ou hall of fame)
 
 - Final output of SBB runs:
     - best solution for every run (find them using the whole validation set in the last generation)

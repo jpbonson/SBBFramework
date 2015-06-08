@@ -92,7 +92,7 @@ class Config():
         'opponents_pool_options': ['only_sbb', 'only_coded', 'hybrid'],
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
-        'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min),
+        'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
         'is_nearly_equal_threshold': 0.1,
         'genotype_options': {
             'modes': ['read-register', 'read-input'],

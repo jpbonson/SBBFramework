@@ -10,7 +10,7 @@ class Operation():
     """
 
     @staticmethod
-    def execute(operator, target, source=float('NaN')):  # unit test!
+    def execute(operator, target, source=float('NaN')):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore") # all errors are handled by this method, so there is no need for warnings here
             error = False

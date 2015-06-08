@@ -85,7 +85,7 @@ class ParetoDominance():
         return results_map
 
     @staticmethod
-    def _pareto_front(solutions, results_map): # unit test!
+    def _pareto_front(solutions, results_map):
         """
         Finds the pareto front, i.e. the pareto dominant solutions.
         """
@@ -110,7 +110,7 @@ class ParetoDominance():
         return front, dominateds
 
     @staticmethod
-    def _check_if_is_dominated(results1, results2): # unit test!
+    def _check_if_is_dominated(results1, results2):
         """
         Check if a solution is domninated or equal to another, assuming that higher results are better than lower ones.
         """  
