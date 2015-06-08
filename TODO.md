@@ -25,7 +25,6 @@ TODO:
 
 - before the release/implementing poker:
     - adicionar _ nos atributos internos das classes e atributos novos
-    - baixar tests de tictactoe de 60 para 30 generations?
     - ler paper do SBB e conferir se tem algo errado ou faltando (Symbiosis, Complexification and Simplicity under GP)
     - fazer release no github
 
@@ -35,6 +34,10 @@ TODO:
 
 - extra:
     - testar se o random do python gera os mesmos numeros aqui e no lab. Se nao gerar, tentar usar o random do numpy
+        - values for Windows and Ubuntu at home:
+        - random.seed(1), random.choice([0,1,2,3]): 0 3 3 1 1 1 2
+        - np.random.seed(1), np.random.choice([0,1,2,3]): 1 3 0 0 3 1 3
+        - np.random.RandomState(seed=1), a.choice([0,1,2,3]): 1 3 0 0 3 1 3
     - ver como fazer para executar runs de tictactoe no server do NIMS? (ver se tem como executar de casa atraves da maquina no lab)
     - add a way to reuse teams:
         - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
