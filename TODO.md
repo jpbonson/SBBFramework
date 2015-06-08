@@ -19,7 +19,7 @@ TODO:
         - the hall of fame of the last generation
         - all the teams of the last generation
 
-    - the size of the hall of fame is the size of the point population (to replace: use fitness? diversity? pareto?)
+    - the size of the hall of fame is the size of the point population, and it should be swaped as the other point populations (to replace: use fitness? diversity? pareto?)
 
     - update system tests
 
@@ -27,12 +27,14 @@ TODO:
     - adicionar _ nos atributos internos das classes e atributos novos
     - baixar tests de tictactoe de 60 para 30 generations?
     - ler paper do SBB e conferir se tem algo errado ou faltando (Symbiosis, Complexification and Simplicity under GP)
+    - fazer release no github
 
 - ir testando enquanto implementa:
     - fazer example para tictactoe (fazer sets de 10 runs separadas?)
     - fazer example para thyroid (mas nao focar muito nisso)
 
 - extra:
+    - testar se o random do python gera os mesmos numeros aqui e no lab. Se nao gerar, tentar usar o random do numpy
     - ver como fazer para executar runs de tictactoe no server do NIMS? (ver se tem como executar de casa atraves da maquina no lab)
     - add a way to reuse teams:
         - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
@@ -79,6 +81,9 @@ jSBB:
 NOTES:
 
 solutions can be optimally: local (self-play), global (opponents), historical (hall of fame), end goal: global
+
+pareto:
+    - helps keeping populations coupled?
 
 poker table:
     - each point is a table, and contains a set of opponents (that dont need to be balanced, ie. a table full of opponents that always fold is ok)

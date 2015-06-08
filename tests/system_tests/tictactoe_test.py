@@ -6,8 +6,8 @@ TEST_CONFIG = {
     'task': 'reinforcement',
     'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
         'environment': 'tictactoe', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-        'validation_population': 24, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-        'champion_population': 48, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+        'validation_population': 20, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+        'champion_population': 30, # at a validated generation, these are the points the champion team will play against to obtain the metrics
         'opponents_pool': 'only_coded_opponents',
         'hall_of_fame': {
             'enabled': False,
@@ -18,11 +18,11 @@ TEST_CONFIG = {
     },
     'training_parameters': {
         'runs_total': 2,
-        'generations_total': 60,
-        'validate_after_each_generation': 60,
+        'generations_total': 30,
+        'validate_after_each_generation': 30,
         'populations': {
-            'programs': 40,
-            'teams': 20,
+            'programs': 24,
+            'teams': 12,
             'points': 12,
         },
         'replacement_rate': {
@@ -42,7 +42,7 @@ TEST_CONFIG = {
             },
         },
         'team_size': { # the min size is the total number of actions
-            'max': 18,
+            'max': 12,
         },
         'program_size': {
             'initial': 10,
@@ -91,7 +91,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.38541, 0.625]
+        expected = [0.375, 0.425]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_hybrid_opponents(self):
@@ -108,7 +108,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.1875, 0.54166]
+        expected = [0.33333, 0.44166]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_sbb_opponents(self):
@@ -125,7 +125,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.24479, 0.40625]
+        expected = [0.35833, 0.31666]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_diversity_maintenance(self):
@@ -142,7 +142,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.29687, 0.35416]
+        expected = [0.40833, 0.23333]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_with_pareto_and_without_diversity_maintenance(self):
@@ -159,7 +159,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.59895, 0.58333]
+        expected = [0.25, 0.43333]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame(self):
@@ -176,7 +176,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.5, 0.52604]
+        expected = [0.475, 0.375]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame_with_diversity(self):
@@ -193,7 +193,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.5625, 0.51562]
+        expected = [0.48333, 0.69166]
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':
