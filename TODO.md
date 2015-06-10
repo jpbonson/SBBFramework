@@ -2,16 +2,16 @@
 TODO:
 
 - meeting notes:
-    - but dont enforce a fixed number of programs per generation, this number should change depending on the mutation operators (modify Selection)
-
-    - random range of instructions
     
+    - random range of instructions
+
     - modify the teams in the initialization (randomly define the size of team, and then add already created programs to them)
 
     - permitir remover e adicionar ate dois programs por vez p^(i-1), i range: [1, quantity of programs in the team]
         - a adicao eh feita em relacao a programs_population
     - na criacao de programs, ao inves de preencher a populacao: adicionar chance de um program ser mutacionado (pmm) quando o time eh clonado
         - esse operador precisa ficar sendo aplicado em todos os programs ate que pelo menos um program seja modificado
+    - dont enforce a fixed number of programs per generation, this number should change depending on the mutation operators (modify Selection)
     - se apos adicionar programs o team ficar cheio, testar se algum dos programs nunca foi um active_program e remove-lo (nesse teste, ignorar os programas recem adicionados)
 
     - extra mutation: instruction swap
@@ -47,6 +47,18 @@ TODO:
         - random.seed(1), random.choice([0,1,2,3]): 0 3 3 1 1 1 2
         - np.random.seed(1), np.random.choice([0,1,2,3]): 1 3 0 0 3 1 3
         - np.random.RandomState(seed=1), a.choice([0,1,2,3]): 1 3 0 0 3 1 3
+        - this warning occurs when running nosetests in lab:
+            /usr/local/lib/python2.7/dist-packages/numpy/core/fromnumeric.py:2507: VisibleDeprecationWarning: `rank` is deprecated; use the `ndim` attribute or function instead. To find the rank of a matrix see `numpy.linalg.matrix_rank`.
+        no lab, seed = 1:
+            import random
+            import numpy as np
+            random.seed(1)
+            np.random.seed(1)
+            - random.randint(0, 4294967295): 577090034, 3639700185, 3280387010
+            - random.random(): 0.13436424411240122, 0.8474337369372327, 0.763774618976614
+            - random.sample([0,1,2,3,4,5,6,7], 3): [1, 5, 4], [2, 3, 7], [5, 7, 0]
+            - a = [0,1,2,3], random.shuffle(a): [3, 1, 2, 0], [2, 3, 0, 1], [3, 2, 1, 0]
+            - np.random.choice([0,1,2,3], size = 2, replace = True, p = [0.3, 0.2, 0.2, 0.3]): [1, 3], [0, 1], [0, 0]
     - ver como fazer para executar runs de tictactoe no server do NIMS? (ver se tem como executar de casa atraves da maquina no lab)
     - usar threads ou processes para executar runs em paralelo?
     - add a way to reuse teams:

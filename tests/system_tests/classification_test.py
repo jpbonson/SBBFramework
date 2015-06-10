@@ -80,7 +80,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.66666, 0.86666, 0.86666]
+        expected = [0.66666, 0.86666, 0.86666] # ubuntu:  [0.66666, 0.73333, 0.73333]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_without_pareto_and_with_diversity_maintenance(self):

@@ -1,7 +1,4 @@
 import abc
-import random
-import numpy
-from ..config import Config
 
 class DefaultOpponent(object):
     def __init__(self, opponent_id):
