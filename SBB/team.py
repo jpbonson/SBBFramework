@@ -37,6 +37,8 @@ class Team(DefaultOpponent):
     def _remove_program(self, program):
         program.remove_team(self)
         self.programs.remove(program)
+        if program in self.active_programs_:
+            self.active_programs_.remove(program)
 
     def initialize(self):
         """
@@ -48,6 +50,14 @@ class Team(DefaultOpponent):
         pass
         
     def execute(self, point_id, inputs, valid_actions, is_training):
+        # test if there are at least one program in the team that is able to provide a valid action
+        # if there is no such program, return None, so that the environment will use a default action
+        actions = [p.action for p in self.programs]
+        possible_action = set(actions).intersection(valid_actions)
+        if len(possible_action) == 0:
+            return None
+
+        # if there is a least one program that can produce a valid action, execute the programs
         if is_training:
             if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id in self.actions_per_points_:
                 return self.actions_per_points_[point_id]
@@ -83,8 +93,9 @@ class Team(DefaultOpponent):
         Generates mutation chances and mutate the team if it is a valid mutation
         """
         mutation_chance = random.random()
-        if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['remove_program']:
-            self._randomly_remove_program()
+        if len(self.programs) > Config.USER['training_parameters']['team_size']['min']:
+            if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['remove_program']:
+                self._randomly_remove_program()
         if len(self.programs) < Config.USER['training_parameters']['team_size']['max']:
             mutation_chance = random.random()
             if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['add_program']:
@@ -92,22 +103,15 @@ class Team(DefaultOpponent):
 
     def _randomly_remove_program(self):
         """
-        Remove a program from the team. A program is removible only if there is at least two programs for its action
+        Remove a program from the team. A program can be removed only if removing it will maintain ['team_size']['min'] distinct actions in the team.
         """
-        # Get list of actions with more than one program
-        actions = [p.action for p in self.programs]
-        actions_count = Counter(actions)
-        valid_actions_to_remove = []
-        for key, value in actions_count.iteritems():
-            if value > 1:
-                valid_actions_to_remove.append(key)
-        if len(valid_actions_to_remove) == 0:
-            return
-        # Get list of programs for the removible actions
-        valid_programs_to_remove = [p for p in self.programs if p.action in valid_actions_to_remove]
-        # Randomly select a program to remove from the list
-        removed_program = random.choice(valid_programs_to_remove)
-        self._remove_program(removed_program)
+        while True:
+            actions = [p.action for p in self.programs]
+            candidate_to_remove = random.choice(self.programs)
+            actions.remove(candidate_to_remove.action)
+            if len(set(actions)) >= Config.USER['training_parameters']['team_size']['min']:
+                self._remove_program(candidate_to_remove)
+                return
 
     def _randomly_add_program(self, new_programs):
         if len(new_programs) == 0:

@@ -42,6 +42,7 @@ TEST_CONFIG = {
             },
         },
         'team_size': { # the min size is the total number of actions
+            'min': 2,
             'max': 12,
         },
         'program_size': {

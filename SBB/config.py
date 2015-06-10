@@ -11,7 +11,7 @@ class Config():
 
     # user configurable options
     USER = {
-        'task': 'reinforcement',
+        'task': 'classification',
         'classification_parameters': { # only used if 'task' is 'classification'
             'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
         },
@@ -30,12 +30,12 @@ class Config():
 
         'training_parameters': {
             'runs_total': 2,
-            'generations_total': 40,
+            'generations_total': 100,
             'validate_after_each_generation': 20,
             'populations': {
-                'programs': 40,
-                'teams': 20,
-                'points': 20,
+                'programs': 80,
+                'teams': 40,
+                'points': 100,
             },
             'replacement_rate': {
                 'teams': 0.7,
@@ -54,6 +54,7 @@ class Config():
                 },
             },
             'team_size': { # the min and initial size are the total number of actions
+                'min': 2,
                 'max': 18,
             },
             'program_size': {
@@ -141,5 +142,5 @@ class Config():
 
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
-# Config.USER = thyroid_config.THYROID_WITH_PARETO_FOR_POINTS_ONLY
+# Config.USER = thyroid_config.THYROID_DEFAULT
 # Config.USER = tictactoe_config.TICTACTOE_DEFAULT

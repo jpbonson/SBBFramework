@@ -2,26 +2,35 @@
 TODO:
 
 - meeting notes:
-    - initialize teams with 2 different actions (instead of 1 action per available action. In order to start simple and complexify over time, allowing SBB time to understand and mix the simpler teams and programs. It is necessary to use a higher number of generations.)
-    - during mutation, only enforce that a team must have at least 2 different actions (not one action per possible action)
-    - the initial teams must have unique sets of programs (in order to start with the maximum diversity)
+    - but dont enforce a fixed number of programs per generation, this number should change depending on the mutation operators (modify Selection)
 
-    - limit the program size to 1000, just to avoid wasting computational resources
-    - but dont enforce a fixed number of programs per generation, this number should change depending on the mutation operators (check the SBB paper)
+    - random range of instructions
+    
+    - modify the teams in the initialization (randomly define the size of team, and then add already created programs to them)
+
+    - permitir remover e adicionar ate dois programs por vez p^(i-1), i range: [1, quantity of programs in the team]
+        - a adicao eh feita em relacao a programs_population
+    - na criacao de programs, ao inves de preencher a populacao: adicionar chance de um program ser mutacionado (pmm) quando o time eh clonado
+        - esse operador precisa ficar sendo aplicado em todos os programs ate que pelo menos um program seja modificado
+    - se apos adicionar programs o team ficar cheio, testar se algum dos programs nunca foi um active_program e remove-lo (nesse teste, ignorar os programas recem adicionados)
+
+    - extra mutation: instruction swap
+
+    - ?: se no final da generation houver programs que nunca foram ativos em nenhum team, remove-los (ignroar os que foram recem criados)
 
     - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
         - example of type of opponents:
             - tictactoe: random, smart, self-play, hall of fame
             - poker: always fold, always raise, always call, agressive, defensive, smart
 
-    - save more things when writing the outputs (both the metrics and the programs (and the .sbb file, if ti is implemented already)):
+    - save more things when writing the outputs (both the metrics and the programs (and the .sbb file, if it is implemented already)):
         - the pareto front of the last generation
         - the hall of fame of the last generation
         - all the teams of the last generation
 
     - the size of the hall of fame is the size of the point population, and it should be swaped as the other point populations (to replace: use fitness? diversity? pareto?)
 
-    - update system tests
+    - update system tests (classification and tictactoe)
 
 - before the release/implementing poker:
     - adicionar _ nos atributos internos das classes e atributos novos
@@ -39,6 +48,7 @@ TODO:
         - np.random.seed(1), np.random.choice([0,1,2,3]): 1 3 0 0 3 1 3
         - np.random.RandomState(seed=1), a.choice([0,1,2,3]): 1 3 0 0 3 1 3
     - ver como fazer para executar runs de tictactoe no server do NIMS? (ver se tem como executar de casa atraves da maquina no lab)
+    - usar threads ou processes para executar runs em paralelo?
     - add a way to reuse teams:
         - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
         - implementar tradutor que le o objeto do time e computa resultados?
@@ -81,7 +91,29 @@ jSBB:
 - tem mutation de swap instructions
 
 ========
+Parametros no paper:
+
+generations: 1000
+point population: 120
+team population: 120
+point replacement rate: 0.17
+team replacement rate: 0.5
+team max size: 10
+pmdelete: 0.7
+pmadd: 0.7
+pmm: 0.2 (chance de programa ser mutacionado)
+pmn: 0.1 (chance de programa mudar action)
+
+num_registers: 8
+pdelete, padd = 0.5
+pmutate, pswap = 1.0
+max program size = 48
+
+========
 NOTES:
+
+- initialize teams with 2 different actions (instead of 1 action per available action. In order to start simple and complexify over time, allowing SBB time to understand and mix the simpler teams and programs. It is necessary to use a higher number of generations.)
+- the initial teams must have unique sets of programs (in order to start with the maximum diversity)
 
 solutions can be optimally: local (self-play), global (opponents), historical (hall of fame), end goal: global
 

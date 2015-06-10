@@ -58,8 +58,7 @@ class SBB:
 
             # 2. Randomly initialize populations
             self.current_generation_ = 0
-            programs_population = self._initialize_program_population()
-            teams_population = self._initialize_team_population(programs_population)
+            teams_population, programs_population = self._initialize_populations()
             
             environment.reset_point_population()
             while not self._stop_criterion():
@@ -125,53 +124,35 @@ class SBB:
                 return TictactoeEnvironment()
         raise ValueError("No environment exists for "+str(Config.USER['task']))
 
-    def _initialize_program_population(self):
+    def _initialize_populations(self):
         """
-        Initialize a balanced population of programs with a random action and random instructions.
+        Initialize a population of teams with ['team_size']['min'] unique random programs with distinct actions.
         """
-        reset_programs_ids()
-        programs_population =[]
-        for action in range(Config.RESTRICTIONS['total_actions']):
-            for i in range(Config.USER['training_parameters']['populations']['programs']/Config.RESTRICTIONS['total_actions']):
-                instructions = []
-                for i in range(Config.USER['training_parameters']['program_size']['initial']):
-                    instructions.append(Instruction(Config.RESTRICTIONS['total_inputs']))
-                program = Program(self.current_generation_, instructions, action)
-                programs_population.append(program)
-
-        extra_random_programs_to_add = Config.USER['training_parameters']['populations']['programs'] - len(programs_population)
-        for extra in range(extra_random_programs_to_add):
-            action = random.randrange(Config.RESTRICTIONS['total_actions'])
-            instructions = []
-            for i in range(Config.USER['training_parameters']['program_size']['initial']):
-                instructions.append(Instruction(Config.RESTRICTIONS['total_inputs']))
-            program = Program(self.current_generation_, instructions, action)
-            programs_population.append(program)
-        return programs_population
-
-    def _initialize_team_population(self, programs_population):
-        """
-        Initialize a population of teams randomly selection programs, one of each action.
-        """
+        if Config.USER['training_parameters']['team_size']['min'] > Config.RESTRICTIONS['total_actions']:
+            raise ValueError("The team minimum size is lower than the total number of actions, it is not possible to initialize a distinct set of actions per team!")
         reset_teams_ids()
+        reset_programs_ids()
         teams_population = []
+        programs_population = []
         for t in range(Config.USER['training_parameters']['populations']['teams']):
-            selected_programs = []
-            programs_per_action = self._get_programs_per_action(programs_population)
-            for programs in programs_per_action:
-                selected_programs.append(random.choice(programs))
-            team = Team(self.current_generation_, selected_programs)
+            available_actions = range(Config.RESTRICTIONS['total_actions'])
+            programs = []
+            for index in range(Config.USER['training_parameters']['team_size']['min']):
+                program = self._initialize_random_program(available_actions)
+                available_actions.remove(program.action)
+                programs.append(program)
+            team = Team(self.current_generation_, programs)
             teams_population.append(team)
-        return teams_population
+            programs_population += programs
+        return teams_population, programs_population
 
-    def _get_programs_per_action(self, programs):
-        programs_per_action = []
-        for class_index in range(Config.RESTRICTIONS['total_actions']):
-            values = [p for p in programs if p.action == class_index]
-            if len(values) == 0:
-                raise StandardError("_get_programs_per_action() wasn't able to get programs for the action "+str(class_index)+". You got a bug!")
-            programs_per_action.append(values)
-        return programs_per_action
+    def _initialize_random_program(self, available_actions):
+        instructions = []
+        for i in range(Config.USER['training_parameters']['program_size']['initial']):
+            instructions.append(Instruction(Config.RESTRICTIONS['total_inputs']))
+        action = random.choice(available_actions)
+        program = Program(self.current_generation_, instructions, action)
+        return program
 
     def _stop_criterion(self):
         if self.current_generation_ == Config.USER['training_parameters']['generations_total']:
