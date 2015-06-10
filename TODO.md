@@ -54,11 +54,15 @@ TODO:
             import numpy as np
             random.seed(1)
             np.random.seed(1)
-            - random.randint(0, 4294967295): 577090034, 3639700185, 3280387010
+            - random.randint(0, 4294967295): 577090034, 3639700185 (L), 3280387010 (L)
             - random.random(): 0.13436424411240122, 0.8474337369372327, 0.763774618976614
             - random.sample([0,1,2,3,4,5,6,7], 3): [1, 5, 4], [2, 3, 7], [5, 7, 0]
             - a = [0,1,2,3], random.shuffle(a): [3, 1, 2, 0], [2, 3, 0, 1], [3, 2, 1, 0]
             - np.random.choice([0,1,2,3], size = 2, replace = True, p = [0.3, 0.2, 0.2, 0.3]): [1, 3], [0, 1], [0, 0]
+
+            em casa: 
+            random.seed(1)
+            - random.randint(0, 2147483647): 288545017, 1819850092, 1640193505
     - ver como fazer para executar runs de tictactoe no server do NIMS? (ver se tem como executar de casa atraves da maquina no lab)
     - usar threads ou processes para executar runs em paralelo?
     - add a way to reuse teams:
