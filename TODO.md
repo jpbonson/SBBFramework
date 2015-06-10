@@ -2,8 +2,6 @@
 TODO:
 
 - meeting notes:
-    
-    - random range of instructions
 
     - modify the teams in the initialization (randomly define the size of team, and then add already created programs to them)
 

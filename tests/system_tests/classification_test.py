@@ -37,7 +37,6 @@ TEST_CONFIG = {
             'max': 5,
         },
         'program_size': {
-            'initial': 10,
             'min': 2,
             'max': 20,
         },
@@ -80,7 +79,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.66666, 0.86666, 0.86666] # ubuntu:  [0.66666, 0.73333, 0.73333]
+        expected = [0.66666, 0.66666, 0.6]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_without_pareto_and_with_diversity_maintenance(self):
@@ -94,7 +93,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.83333, 0.66666, 0.73333]
+        expected = [0.66666, 0.86666, 0.83333]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_pareto_and_without_diversity_maintenance(self):
@@ -108,7 +107,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.63333, 0.86666, 0.63333]
+        expected = [0.56666, 0.73333, 0.9]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_pareto_for_teams_without_pareto_for_points(self):
@@ -122,7 +121,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.8, 0.7, 0.9]
+        expected = [0.9, 0.73333, 0.66666]
         self.assertEqual(expected, result)
 
     def test_classification_for_thyroid(self):
@@ -138,7 +137,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.33333, 0.63461]
+        expected = [0.53376, 0.62116]
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':
