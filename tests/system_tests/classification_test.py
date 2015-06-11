@@ -17,7 +17,7 @@ TEST_CONFIG = {
             'points': 40,
         },
         'replacement_rate': {
-            'teams': 0.8,
+            'teams': 0.5,
             'points': 0.2,
         },
         'mutation': {
@@ -76,11 +76,13 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['classification_parameters']['dataset'] = 'iris'
+        config['training_parameters']['runs_total'] = 3
         Config.USER = config
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.7, 0.83333, 0.63333]
+        expected = [0.73333, 0.53333, 0.93333]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_without_pareto_and_with_diversity_maintenance(self):
@@ -90,11 +92,13 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = True
+        config['classification_parameters']['dataset'] = 'iris'
+        config['training_parameters']['runs_total'] = 3
         Config.USER = config
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.7, 0.93333, 0.86666]
+        expected = [0.66666, 0.9, 0.66666]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_pareto_and_without_diversity_maintenance(self):
@@ -104,11 +108,13 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['classification_parameters']['dataset'] = 'iris'
+        config['training_parameters']['runs_total'] = 3
         Config.USER = config
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.9, 1.0, 0.66666]
+        expected = [0.73333, 0.63333, 0.6]
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_pareto_for_teams_without_pareto_for_points(self):
@@ -118,11 +124,13 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
         config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['classification_parameters']['dataset'] = 'iris'
+        config['training_parameters']['runs_total'] = 3
         Config.USER = config
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.66666, 0.96666, 0.86666]
+        expected = [0.73333, 0.66666, 0.66666]
         self.assertEqual(expected, result)
 
     def test_classification_for_thyroid(self):
@@ -138,7 +146,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.64715, 0.60857]
+        expected = [0.32987, 0.43693]
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':

@@ -127,9 +127,12 @@ class SBB:
     def _initialize_populations(self):
         """
         Initialize a population of teams with ['team_size']['min'] unique random programs with distinct actions.
+        Then randomly add already created programs to the teams.
         """
         if Config.USER['training_parameters']['team_size']['min'] > Config.RESTRICTIONS['total_actions']:
             raise ValueError("The team minimum size is lower than the total number of actions, it is not possible to initialize a distinct set of actions per team!")
+        
+        # randomly initialize teams with the minimum size
         reset_teams_ids()
         reset_programs_ids()
         teams_population = []
@@ -144,6 +147,16 @@ class SBB:
             team = Team(self.current_generation_, programs)
             teams_population.append(team)
             programs_population += programs
+
+        # randomly add more already created programs to the teams
+        programs_range = Config.USER['training_parameters']['program_size']['max'] - Config.USER['training_parameters']['program_size']['min']
+        for team in teams_population:
+            programs_to_add = random.randrange(0, programs_range+1)
+            for index in range(programs_to_add):
+                program = random.choice(programs_population)
+                if program not in team.programs:
+                    team._add_program(program)
+
         return teams_population, programs_population
 
     def _initialize_random_program(self, available_actions):

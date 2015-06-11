@@ -2,9 +2,6 @@
 TODO:
 
 - meeting notes:
-
-    - modify the teams in the initialization (randomly define the size of team, and then add already created programs to them)
-
     - permitir remover e adicionar ate dois programs por vez p^(i-1), i range: [1, quantity of programs in the team]
         - a adicao eh feita em relacao a programs_population
     - na criacao de programs, ao inves de preencher a populacao: adicionar chance de um program ser mutacionado (pmm) quando o time eh clonado
@@ -64,6 +61,7 @@ TODO:
     - add a way to reuse teams:
         - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
         - implementar tradutor que le o objeto do time e computa resultados?
+    - testar se a Step 2 da inicializacao dos teams realmente melhora
 
 - starting poker implementation:
     - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados? dividir pelo resultado maximo obtido?)

@@ -26,7 +26,7 @@ TEST_CONFIG = {
             'points': 12,
         },
         'replacement_rate': {
-            'teams': 0.7,
+            'teams': 0.5,
             'points': 0.2,
         },
         'mutation': {
