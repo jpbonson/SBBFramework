@@ -262,5 +262,6 @@ class SBB:
         with open(filepath+"/metrics_per_run.txt", "w") as text_file:
             text_file.write(output_messages_for_runs)
         for run_id in range(Config.USER['training_parameters']['runs_total']):
-            with open(filepath+"/best_team_run_"+str(run_id+1)+".txt", "w") as text_file:
+            os.makedirs(filepath+"/run"+str(run_id+1)+"/")
+            with open(filepath+"/run"+str(run_id+1)+"/best_team.txt", "w") as text_file:
                 text_file.write(str(best_teams_per_run[run_id]))

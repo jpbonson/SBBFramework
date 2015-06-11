@@ -2,7 +2,7 @@
 TODO:
 
 - meeting notes:
-    - fixed 1 bug with the new initialization, 1 bug with the new mutation, 1 bug with new removal, and now the new teams are cleaning the useless programs if they are full
+    - criar classe RunInfo
 
     - save more things when writing the outputs (both the metrics and the programs (and the .sbb file, if it is implemented already)):
         - the pareto front of the last generation
@@ -15,13 +15,16 @@ TODO:
             - poker: always fold, always raise, always call, agressive, defensive, smart
     - the size of the hall of fame is the size of the point population, and it should be swaped as the other point populations (to replace: use fitness? diversity? pareto?)
 
-    - add a way to reuse teams:
+    - add a way to reuse teams (.sbb file):
         - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
         - implementar tradutor que le o objeto do time e computa resultados?
 
     - update system tests (classification and tictactoe)
 
     - adicionar _ nos atributos internos das classes e atributos novos
+
+    - ao inves de gerar uma seed para todos os runs, gerar um array de seeds, um por run, de forma que os runs possam ser individualmente reproduziveis
+    - permitir usar um array de seeds, ao inves de uma seed unica
 
     - fazer release no github
 
@@ -53,11 +56,13 @@ TODO:
             - random.randint(0, 2147483647): 288545017, 1819850092, 1640193505
     - ver como fazer para executar runs de tictactoe no server do NIMS? (ver se tem como executar de casa atraves da maquina no lab)
     - testar se a Step 2 da inicializacao dos teams realmente melhora ou apenas consome processamento
+    - fazer reinforcement elarning para Othello?
 
 - starting poker implementation:
     - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados? dividir pelo resultado maximo obtido?)
     - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?
     - refatorar environments (criar environment de reinforcement?)
+    - no poker, permitir rodar point populations agrupando opponents for grupo, e sem agrupamento
 
 - quando der tempo:
     - experimentar violin plot na R language (our usar http://matplotlib.org/examples/statistics/violinplot_demo.html e integrar no pSBB?)
