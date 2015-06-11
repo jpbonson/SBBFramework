@@ -50,6 +50,7 @@ class Config():
                     'remove_instruction': 0.7,
                     'add_instruction': 0.8,
                     'change_instruction': 0.8,
+                    'swap_instructions': 0.8,
                     'change_action': 0.1,
                 },
             },

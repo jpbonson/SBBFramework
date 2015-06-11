@@ -76,6 +76,16 @@ class Program:
             self.instructions.insert(index, Instruction())
         
         mutation_chance = random.random()
+        if mutation_chance <= Config.USER['training_parameters']['mutation']['program']['swap_instructions']:
+            available_indeces = range(len(self.instructions))
+            index1 = random.choice(available_indeces)
+            available_indeces.remove(index1)
+            index2 = random.choice(available_indeces)
+            temp = self.instructions[index1]
+            self.instructions[index1] = self.instructions[index2]
+            self.instructions[index2] = temp
+
+        mutation_chance = random.random()
         if mutation_chance <= Config.USER['training_parameters']['mutation']['program']['change_action']:
             self.action = random.randrange(Config.RESTRICTIONS['total_actions'])
 

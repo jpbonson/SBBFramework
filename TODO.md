@@ -12,8 +12,6 @@ TODO:
     - dont enforce a fixed number of programs per generation, this number should change depending on the mutation operators (modify Selection)
     - se apos adicionar programs o team ficar cheio, testar se algum dos programs nunca foi um active_program e remove-lo (nesse teste, ignorar os programas recem adicionados)
 
-    - extra mutation: instruction swap
-
     - ?: se no final da generation houver programs que nunca foram ativos em nenhum team, remove-los (ignroar os que foram recem criados)
 
     - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
