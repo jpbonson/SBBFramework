@@ -1,5 +1,7 @@
 import random
+import copy
 from collections import Counter
+from program import Program
 from environments.default_opponent import DefaultOpponent
 from utils.helpers import round_value, round_array
 from config import Config
@@ -88,18 +90,30 @@ class Team(DefaultOpponent):
         selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
         return selected_program
 
-    def mutate(self, new_programs):
+    def mutate(self, programs_population):
         """
         Generates mutation chances and mutate the team if it is a valid mutation
         """
-        mutation_chance = random.random()
         if len(self.programs) > Config.USER['training_parameters']['team_size']['min']:
+            mutation_chance = random.random()
             if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['remove_program']:
                 self._randomly_remove_program()
+
         if len(self.programs) < Config.USER['training_parameters']['team_size']['max']:
             mutation_chance = random.random()
             if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['add_program']:
-                self._randomly_add_program(new_programs)          
+                self._randomly_add_program(programs_population)
+
+        mutation_occured = False
+        while not mutation_occured:
+            for program in self.programs:
+                mutation_chance = random.random()
+                if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['mutate_program']:
+                    mutation_occured = True
+                    clone = Program(self.generation, copy.deepcopy(program.instructions), program.action)
+                    clone.mutate()
+                    programs_population.append(clone)
+        return programs_population
 
     def _randomly_remove_program(self):
         """
@@ -113,11 +127,8 @@ class Team(DefaultOpponent):
                 self._remove_program(candidate_to_remove)
                 return
 
-    def _randomly_add_program(self, new_programs):
-        if len(new_programs) == 0:
-            print "Warning! No new programs to add from this generation! If this warning is occuring often you probably got a bug."
-            return
-        self._add_program(random.choice(new_programs))
+    def _randomly_add_program(self, programs_population):
+        self._add_program(random.choice(programs_population))
 
     def remove_references(self):
         """

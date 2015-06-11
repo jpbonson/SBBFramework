@@ -33,7 +33,6 @@ class Config():
             'generations_total': 100,
             'validate_after_each_generation': 20,
             'populations': {
-                'programs': 80,
                 'teams': 40,
                 'points': 100,
             },
@@ -44,19 +43,20 @@ class Config():
             'mutation': {
                 'team': {
                     'remove_program': 0.7,
-                    'add_program': 0.8,
+                    'add_program': 0.7,
+                    'mutate_program': 0.2, # is applied to all programs in the team, until at least one program is mutated
                 },
                 'program': {
-                    'remove_instruction': 0.7,
-                    'add_instruction': 0.8,
-                    'change_instruction': 0.8,
-                    'swap_instructions': 0.8,
+                    'remove_instruction': 0.5,
+                    'add_instruction': 0.5,
+                    'change_instruction': 1.0,
+                    'swap_instructions': 1.0,
                     'change_action': 0.1,
                 },
             },
             'team_size': { # the min and initial size are the total number of actions
                 'min': 2,
-                'max': 18,
+                'max': 9,
             },
             'program_size': {
                 'min': 2,

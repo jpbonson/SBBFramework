@@ -21,7 +21,6 @@ TEST_CONFIG = {
         'generations_total': 30,
         'validate_after_each_generation': 30,
         'populations': {
-            'programs': 24,
             'teams': 12,
             'points': 12,
         },
@@ -33,6 +32,7 @@ TEST_CONFIG = {
             'team': {
                 'remove_program': 0.7,
                 'add_program': 0.8,
+                'mutate_program': 0.2,
             },
             'program': {
                 'remove_instruction': 0.7,

@@ -1,7 +1,5 @@
 import random
-import copy
 import numpy
-from program import Program
 from team import Team
 from diversity_maintenance import DiversityMaintenance
 from pareto_dominance import ParetoDominance
@@ -30,8 +28,7 @@ class Selection:
 
         teams_population = self._remove_teams(teams_population, remove_teams)
         programs_population = self._remove_programs_with_no_teams(programs_population)
-        programs_population, new_programs = self._create_mutated_programs(current_generation, programs_population)
-        teams_population = self._create_mutated_teams(current_generation, teams_population, teams_to_clone, new_programs)
+        teams_population, programs_population = self._create_mutated_teams(current_generation, teams_to_clone, teams_population, programs_population)
         self._check_for_bugs(teams_population, programs_population)
         return teams_population, programs_population, diversity_means
 
@@ -97,32 +94,17 @@ class Selection:
                 programs_population.remove(p)
         return programs_population
 
-    def _create_mutated_programs(self, current_generation, programs_population):
+    def _create_mutated_teams(self, current_generation, teams_to_clone, teams_population, programs_population):
         """
-        Add new mutated programs to population, so it has the same size as before.
-        """
-        new_programs_to_create = Config.USER['training_parameters']['populations']['programs'] - len(programs_population)
-        programs_to_clone = random.sample(programs_population, new_programs_to_create)
-        new_programs = []
-        for program in programs_to_clone:
-            clone = Program(current_generation, copy.deepcopy(program.instructions), program.action)
-            clone.mutate()
-            new_programs.append(clone)
-            programs_population.append(clone)
-        return programs_population, new_programs
-
-    def _create_mutated_teams(self, current_generation, teams_population, teams_to_clone, new_programs):
-        """
-        Create new mutated teams, cloning the old ones and mutating (if adding a program, can only add a new created program)
+        Create new mutated teams, cloning the old ones and mutating. New programs are be added to the program population 
+        for the mutated programs in the new teams.
         """
         for team in teams_to_clone:
             clone = Team(current_generation, team.programs)
-            clone.mutate(new_programs)
+            programs_population = clone.mutate(programs_population)
             teams_population.append(clone)
-        return teams_population
+        return teams_population, programs_population
 
     def _check_for_bugs(self, teams_population, programs_population):
         if len(teams_population) != Config.USER['training_parameters']['populations']['teams']:
             raise ValueError("The size of the teams population changed during selection! You got a bug!")
-        if len(programs_population) != Config.USER['training_parameters']['populations']['programs']:
-            raise ValueError("The size of the programs population changed during selection! You got a bug!")
