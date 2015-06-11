@@ -36,12 +36,6 @@ class Team(DefaultOpponent):
         self.programs.append(program)
         program.add_team(self)
 
-    def _remove_program(self, program):
-        program.remove_team(self)
-        self.programs.remove(program)
-        if program in self.active_programs_:
-            self.active_programs_.remove(program)
-
     def initialize(self):
         """
         This method is called by the reinforcement learning environments to set 
@@ -68,8 +62,8 @@ class Team(DefaultOpponent):
                 output_class = selected_program.action
                 if Config.RESTRICTIONS['use_memmory_for_actions']:
                     self.actions_per_points_[point_id] = output_class
-                if selected_program.program_id_ not in self.active_programs_:
-                    self.active_programs_.append(selected_program.program_id_)
+                if selected_program not in self.active_programs_:
+                    self.active_programs_.append(selected_program)
                 return output_class
         else: # just run the code without changing the attributes or using memmory
             selected_program = self._select_program(inputs, valid_actions)
@@ -92,7 +86,7 @@ class Team(DefaultOpponent):
 
     def mutate(self, programs_population):
         """
-        Generates mutation chances and mutate the team if it is a valid mutation
+        Generates mutation chances and mutate the team if it is a valid mutation.
         """
         if len(self.programs) > Config.USER['training_parameters']['team_size']['min']:
             mutation_chance = random.random()
@@ -104,15 +98,19 @@ class Team(DefaultOpponent):
             if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['add_program']:
                 self._randomly_add_program(programs_population)
 
-        mutation_occured = False
-        while not mutation_occured:
+        to_mutate = []
+        while len(to_mutate) == 0:
             for program in self.programs:
                 mutation_chance = random.random()
                 if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['mutate_program']:
-                    mutation_occured = True
-                    clone = Program(self.generation, copy.deepcopy(program.instructions), program.action)
-                    clone.mutate()
-                    programs_population.append(clone)
+                    to_mutate.append(program)
+        for program in to_mutate:
+            clone = Program(self.generation, copy.deepcopy(program.instructions), program.action)
+            clone.mutate()
+            if self._is_ok_to_remove(program):
+                self.remove_program(program)
+            self._add_program(clone)
+            programs_population.append(clone)
         return programs_population
 
     def _randomly_remove_program(self):
@@ -120,15 +118,26 @@ class Team(DefaultOpponent):
         Remove a program from the team. A program can be removed only if removing it will maintain ['team_size']['min'] distinct actions in the team.
         """
         while True:
-            actions = [p.action for p in self.programs]
             candidate_to_remove = random.choice(self.programs)
-            actions.remove(candidate_to_remove.action)
-            if len(set(actions)) >= Config.USER['training_parameters']['team_size']['min']:
-                self._remove_program(candidate_to_remove)
+            if self._is_ok_to_remove(candidate_to_remove):
+                self.remove_program(candidate_to_remove)
                 return
+
+    def _is_ok_to_remove(self, program_to_remove):
+        actions = [p.action for p in self.programs]
+        actions.remove(program_to_remove.action)
+        if len(set(actions)) >= Config.USER['training_parameters']['team_size']['min']:
+            return True
+        return False
 
     def _randomly_add_program(self, programs_population):
         self._add_program(random.choice(programs_population))
+
+    def remove_program(self, program):
+        program.remove_team(self)
+        self.programs.remove(program)
+        if program in self.active_programs_:
+            self.active_programs_.remove(program)
 
     def remove_references(self):
         """

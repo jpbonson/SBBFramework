@@ -149,7 +149,7 @@ class SBB:
             programs_population += programs
 
         # randomly add more already created programs to the teams
-        programs_range = Config.USER['training_parameters']['program_size']['max'] - Config.USER['training_parameters']['program_size']['min']
+        programs_range = Config.USER['training_parameters']['team_size']['max'] - Config.USER['training_parameters']['team_size']['min']
         for team in teams_population:
             programs_to_add = random.randrange(0, programs_range+1)
             for index in range(programs_to_add):

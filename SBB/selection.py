@@ -101,6 +101,15 @@ class Selection:
         """
         for team in teams_to_clone:
             clone = Team(current_generation, team.programs)
+            if len(clone.programs) == Config.USER['training_parameters']['team_size']['max']:
+                # remove programs that were never used by the parent team
+                to_remove = []
+                for program in clone.programs:
+                    if program not in team.active_programs_:
+                        to_remove.append(program)
+                for program in to_remove:
+                    if clone._is_ok_to_remove(program):
+                        clone.remove_program(program)
             programs_population = clone.mutate(programs_population)
             teams_population.append(clone)
         return teams_population, programs_population

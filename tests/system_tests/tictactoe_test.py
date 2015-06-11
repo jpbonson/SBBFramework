@@ -48,7 +48,7 @@ TEST_CONFIG = {
         },
         'program_size': {
             'min': 2,
-            'max': 20,
+            'max': 12,
         },
     },
 

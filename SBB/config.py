@@ -37,7 +37,7 @@ class Config():
                 'points': 100,
             },
             'replacement_rate': {
-                'teams': 0.5,
+                'teams': 0.6,
                 'points': 0.2,
             },
             'mutation': {

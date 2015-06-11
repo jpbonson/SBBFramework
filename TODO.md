@@ -2,27 +2,27 @@
 TODO:
 
 - meeting notes:
-    - permitir remover e adicionar ate dois programs por vez p^(i-1), i range: [1, quantity of programs in the team]
-    - se apos adicionar programs o team ficar cheio, testar se algum dos programs nunca foi um active_program e remove-lo (nesse teste, ignorar os programas recem adicionados)
-    - ?: se no final da generation houver programs que nunca foram ativos em nenhum team, remove-los (ignroar os que foram recem criados)
-
-    - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
-        - example of type of opponents:
-            - tictactoe: random, smart, self-play, hall of fame
-            - poker: always fold, always raise, always call, agressive, defensive, smart
+    - fixed 1 bug with the new initialization, 1 bug with the new mutation, 1 bug with new removal, and now the new teams are cleaning the useless programs if they are full
 
     - save more things when writing the outputs (both the metrics and the programs (and the .sbb file, if it is implemented already)):
         - the pareto front of the last generation
         - the hall of fame of the last generation
         - all the teams of the last generation
 
+    - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
+        - example of type of opponents:
+            - tictactoe: random, smart, self-play, hall of fame
+            - poker: always fold, always raise, always call, agressive, defensive, smart
     - the size of the hall of fame is the size of the point population, and it should be swaped as the other point populations (to replace: use fitness? diversity? pareto?)
+
+    - add a way to reuse teams:
+        - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
+        - implementar tradutor que le o objeto do time e computa resultados?
 
     - update system tests (classification and tictactoe)
 
-- before the release/implementing poker:
     - adicionar _ nos atributos internos das classes e atributos novos
-    - ler paper do SBB e conferir se tem algo errado ou faltando (Symbiosis, Complexification and Simplicity under GP)
+
     - fazer release no github
 
 - ir testando enquanto implementa:
@@ -52,11 +52,7 @@ TODO:
             random.seed(1)
             - random.randint(0, 2147483647): 288545017, 1819850092, 1640193505
     - ver como fazer para executar runs de tictactoe no server do NIMS? (ver se tem como executar de casa atraves da maquina no lab)
-    - usar threads ou processes para executar runs em paralelo?
-    - add a way to reuse teams:
-        - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
-        - implementar tradutor que le o objeto do time e computa resultados?
-    - testar se a Step 2 da inicializacao dos teams realmente melhora
+    - testar se a Step 2 da inicializacao dos teams realmente melhora ou apenas consome processamento
 
 - starting poker implementation:
     - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados? dividir pelo resultado maximo obtido?)
