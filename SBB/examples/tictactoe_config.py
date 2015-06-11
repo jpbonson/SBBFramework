@@ -89,7 +89,7 @@ std. deviation: [0.04828, 0.01884, 0.0151, 0.01643, 0.01549]
 
 Finished execution, total elapsed time: 16958.914 secs (mean: 3391.7828, std: 214.35365)
 
-#################### OVERALL RESULTS #################### point_population = 30
+#################### OVERALL RESULTS #################### point_population = 30 (old)
 
 Test Score per Run: [0.6745, 0.672, 0.64249, 0.68725, 0.6745]
 mean: 0.67014

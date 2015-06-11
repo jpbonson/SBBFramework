@@ -148,28 +148,34 @@ class Team(DefaultOpponent):
 
     def metrics(self, full_version = False):
         teams_members_ids = [p.__repr__() for p in self.programs]
-        msg = str(self.team_id_)+":"+str(self.generation)
+        msg = self.__repr__()
         msg += "\nteam members ("+str(len(self.programs))+"): "+str(teams_members_ids)
         msg += "\nfitness (train): "+str(round_value(self.fitness_))+", score (train): "+str(round_value(self.score_trainingset_))+", score (test): "+str(round_value(self.score_testset_))
-        if Config.USER['task'] == 'classification':
+        if Config.USER['task'] == 'classification' and self.extra_metrics_:
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
-        if Config.USER['task'] == 'reinforcement':
+        if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
             msg += "\n"
             for key in self.extra_metrics_['opponents']:
                 msg += "\nscore against opponent ("+key+"): "+str(self.extra_metrics_['opponents'][key])
         if full_version:
-            if Config.USER['task'] == 'classification':
+            if Config.USER['task'] == 'classification' and self.extra_metrics_:
                 msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
                 msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])+"\n"
+            for key, value in self.diversity_.iteritems():
+                msg +=  "\n"+str(key)+": "+str(value)
         return msg
 
+    def json(self):
+        return "{}"
+
     def __repr__(self): 
-        return "("+str(self.team_id_)+":"+str(self.generation)+")"
+        return "("+str(self.team_id_)+"-"+str(self.generation)+")"
 
     def __str__(self):
-        text = "Team "+self.__repr__()+", team size: "+str(len(self.programs))
-        text += "\n################"
+        text = "TEAM "+self.__repr__()
+        text += "\n\n#### METRICS\n"
+        text += self.metrics(full_version = True)
+        text += "\n\n#### PROGRAMS"
         for p in self.programs:
             text += "\n"+str(p)
-        text += "\n################"
         return text

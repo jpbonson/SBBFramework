@@ -90,7 +90,10 @@ class SBB:
             print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())
             run_info.elapsed_time = time.time() - start_time
             run_info.best_team = best_team
-            run_info.actions_distribution_for_last_generation = actions_distribution
+            run_info.actions_distribution_in_last_generation = actions_distribution
+            for team in teams_population:
+                if team.generation != self.current_generation_:
+                    run_info.teams_in_last_generation.append(team)
             print("\nFinished run "+str(run_info.run_id)+", elapsed time: "+str(run_info.elapsed_time)+" secs")
             run_infos.append(run_info)
         
@@ -219,7 +222,17 @@ class SBB:
         for run in run_infos:
             path = filepath+"/run"+str(run.run_id)+"/"
             os.makedirs(path)
-            with open(path+"best_team.txt", "w") as text_file:
-                text_file.write(str(run.best_team))
             with open(path+"metrics.txt", "w") as text_file:
                 text_file.write(str(run))
+            self._save_team_info(run.best_team, path, "best_team")
+            path_all_teams = path+"last_generation_teams/"
+            os.makedirs(path_all_teams)
+            for team in run.teams_in_last_generation:
+                self._save_team_info(team, path_all_teams, team.__repr__())
+
+    def _save_team_info(self, team, path, filename):
+        with open(path+filename+".txt", "w") as text_file:
+            text_file.write(str(team))
+        with open(path+filename+".json", "w") as text_file:
+            text_file.write(team.json())
+            

@@ -99,17 +99,17 @@ class Program:
         return "("+str(self.program_id_)+":"+str(self.generation)+", "+str(self.action)+")"
 
     def __str__(self):
-        text = "\nCode for program "+self.__repr__()
+        text = "\n#### Program "+self.__repr__()
         teams_ids = [t.__repr__() for t in self.teams_]
         text += "\nParticipate in the teams ("+str(len(teams_ids))+"): "+str(teams_ids)
         text += "\nTotal instructions: "+str(len(self.instructions))
         text += "\n----------------\n"
         text += "\n"+Program.print_indented_instructions(self.instructions)
-        text += "\n++++++++++++++++"
+        text += "\n================\n"
         text += "\nTotal instructions (without introns): "+str(len(self.instructions_without_introns_))
         text += "\n----------------\n"
         text += "\n"+Program.print_indented_instructions(self.instructions_without_introns_)
-        text += "\n----------------"
+        text += "\n################"
         return text
 
     @staticmethod

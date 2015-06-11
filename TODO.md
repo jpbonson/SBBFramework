@@ -2,10 +2,13 @@
 TODO:
 
 - meeting notes:
+    - inicializar apenas meia populacao? (para ficar mais facil reutilizar depois?)
+
     - save more things when writing the outputs (both the metrics and the programs (and the .sbb file, if it is implemented already)):
         - the pareto front of the last generation
         - the hall of fame of the last generation
-        - all the teams of the last generation
+
+    - adicionar "Champion team test score in the initial matches" no extra_info do champion
 
     - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
         - example of type of opponents:
@@ -13,7 +16,7 @@ TODO:
             - poker: always fold, always raise, always call, agressive, defensive, smart
     - the size of the hall of fame is the size of the point population, and it should be swaped as the other point populations (to replace: use fitness? diversity? pareto?)
 
-    - add a way to reuse teams (.sbb file):
+    - add a way to reuse teams (.json):
         - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
         - implementar tradutor que le o objeto do time e computa resultados?
 

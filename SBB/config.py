@@ -11,7 +11,7 @@ class Config():
 
     # user configurable options
     USER = {
-        'task': 'classification',
+        'task': 'reinforcement',
         'classification_parameters': { # only used if 'task' is 'classification'
             'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
         },
