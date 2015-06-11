@@ -2,8 +2,6 @@
 TODO:
 
 - meeting notes:
-    - criar classe RunInfo
-
     - save more things when writing the outputs (both the metrics and the programs (and the .sbb file, if it is implemented already)):
         - the pareto front of the last generation
         - the hall of fame of the last generation

@@ -160,7 +160,7 @@ class Team(DefaultOpponent):
         if full_version:
             if Config.USER['task'] == 'classification':
                 msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
-                msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])
+                msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])+"\n"
         return msg
 
     def __repr__(self): 
