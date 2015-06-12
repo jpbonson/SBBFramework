@@ -222,7 +222,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         extra_metrics['opponents'] = defaultdict(list)
 
         dont_use_results_for_hall_of_fame = False
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and (is_training or mode == DefaultEnvironment.MODE['champion']):
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             # use hall of fame as a criteria during training, not used for validation, and only used as a metric for validation of the champion
             population = point_population + self.hall_of_fame_
             if mode == DefaultEnvironment.MODE['champion']:
@@ -297,7 +297,11 @@ class TictactoeEnvironment(DefaultEnvironment):
         score = [p.score_testset_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]
         print "\nChampion team test score in the initial matches: "+str(round_value(best_team.score_testset_))
+        validation_score = round_value(best_team.score_testset_)
+        validation_opponents = best_team.extra_metrics_['opponents']
         self.evaluate_team(best_team, DefaultEnvironment.MODE['champion'])
+        best_team.extra_metrics_['validation_score'] = validation_score
+        best_team.extra_metrics_['validation_opponents'] = validation_opponents
         return best_team
 
     def metrics(self):

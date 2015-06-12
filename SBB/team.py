@@ -160,9 +160,15 @@ class Team(DefaultOpponent):
         if full_version:
             if Config.USER['task'] == 'classification' and self.extra_metrics_:
                 msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
-                msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])+"\n"
+                msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])
+            msg += "\n"
             for key, value in self.diversity_.iteritems():
                 msg +=  "\n"+str(key)+": "+str(value)
+            if 'validation_score'in self.extra_metrics_:
+                msg += "\n\nThis team is a champion, so the test score contains its champion scores, below is its results for validation:"
+                msg += "\nscore (validation): "+str(self.extra_metrics_['validation_score'])
+                for key in self.extra_metrics_['validation_opponents']:
+                    msg += "\nvalidation score against opponent ("+key+"): "+str(self.extra_metrics_['validation_opponents'][key])
         return msg
 
     def json(self):
