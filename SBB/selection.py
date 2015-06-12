@@ -18,7 +18,7 @@ class Selection:
 
     def run(self, current_generation, teams_population, programs_population, validation = False):
         teams_population = self._evaluate_teams(teams_population)
-        keep_teams, remove_teams = self._select_teams_to_keep_and_remove(teams_population)
+        keep_teams, remove_teams, pareto_front = self._select_teams_to_keep_and_remove(teams_population)
         teams_to_clone = self._select_teams_to_clone(keep_teams)
 
         if validation:
@@ -30,7 +30,7 @@ class Selection:
         programs_population = self._remove_programs_with_no_teams(programs_population)
         teams_population, programs_population = self._create_mutated_teams(current_generation, teams_to_clone, teams_population, programs_population)
         self._check_for_bugs(teams_population, programs_population)
-        return teams_population, programs_population, diversity_means
+        return teams_population, programs_population, pareto_front, diversity_means
 
     def _evaluate_teams(self, teams_population):
         """
@@ -47,13 +47,14 @@ class Selection:
         teams_to_keep = len(teams_population) - teams_to_remove
 
         if Config.USER['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-            keep_teams, remove_teams = ParetoDominance.pareto_front_for_teams(teams_population, self.environment.point_population(), teams_to_keep)
+            keep_teams, remove_teams, pareto_front = ParetoDominance.pareto_front_for_teams(teams_population, self.environment.point_population(), teams_to_keep)
         else:
             DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, self.environment.point_population())
             sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
             keep_teams = sorted_solutions[0:teams_to_keep]
             remove_teams = sorted_solutions[teams_to_keep:]
-        return keep_teams, remove_teams
+            pareto_front = []
+        return keep_teams, remove_teams, pareto_front
 
     def _calculate_global_diversity_means(self, teams_population, point_population):
         """

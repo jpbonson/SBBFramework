@@ -4,10 +4,6 @@ TODO:
 - meeting notes:
     - inicializar apenas meia populacao? (para ficar mais facil reutilizar depois?)
 
-    - save more things when writing the outputs (both the metrics and the programs (and the .sbb file, if it is implemented already)):
-        - the pareto front of the last generation
-        - the hall of fame of the last generation
-
     - adicionar "Champion team test score in the initial matches" no extra_info do champion
 
     - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.

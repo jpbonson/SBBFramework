@@ -100,6 +100,9 @@ class DefaultEnvironment(object):
         start and at the end of the execution, and it is also saved in the output file.
         """
 
+    def hall_of_fame(self):
+        return []
+
     def _round_point_population_based_on(self, criteria):
         """
         Ensures that the point population will be balanced.

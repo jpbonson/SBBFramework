@@ -28,7 +28,7 @@ class TictactoeEnvironment(DefaultEnvironment):
 
     def __init__(self):
         self.point_population_ = None
-        self.hall_of_fame = []
+        self.hall_of_fame_ = []
         self.team_to_add_to_hall_of_fame = None
         self.total_actions_ = 9 # spaces in the board
         self.total_inputs_ = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
@@ -67,14 +67,14 @@ class TictactoeEnvironment(DefaultEnvironment):
         return population
 
     def point_population(self):
-        training_population = self.point_population_ + self.hall_of_fame
+        training_population = self.point_population_ + self.hall_of_fame_
         return training_population
 
     def reset_point_population(self):
         self.point_population_ = None
         self.test_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['champion_population'])
-        self.hall_of_fame = []
+        self.hall_of_fame_ = []
         self.team_to_add_to_hall_of_fame = None
 
     def setup_point_population(self, teams_population):
@@ -104,15 +104,15 @@ class TictactoeEnvironment(DefaultEnvironment):
             random.shuffle(sample)
             self.point_population_ = sample
 
-        if self.team_to_add_to_hall_of_fame and self.team_to_add_to_hall_of_fame not in self.hall_of_fame:
-            self.hall_of_fame.append(copy.deepcopy(self.team_to_add_to_hall_of_fame))
-            if len(self.hall_of_fame) > Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
+        if self.team_to_add_to_hall_of_fame and self.team_to_add_to_hall_of_fame not in self.hall_of_fame_:
+            self.hall_of_fame_.append(copy.deepcopy(self.team_to_add_to_hall_of_fame))
+            if len(self.hall_of_fame_) > Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
                 if Config.USER['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity']:
-                    teams = [p.opponent for p in self.hall_of_fame]
+                    teams = [p.opponent for p in self.hall_of_fame_]
                     DiversityMaintenance.genotype_diversity(teams, p = 0.8, k = Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
-                score = [p.opponent.fitness_ for p in self.hall_of_fame]
-                worst_team = self.hall_of_fame[score.index(min(score))]
-                self.hall_of_fame.remove(worst_team)
+                score = [p.opponent.fitness_ for p in self.hall_of_fame_]
+                worst_team = self.hall_of_fame_[score.index(min(score))]
+                self.hall_of_fame_.remove(worst_team)
 
         super(TictactoeEnvironment, self)._check_for_bugs()
 
@@ -194,7 +194,7 @@ class TictactoeEnvironment(DefaultEnvironment):
             self.evaluate_team(team, DefaultEnvironment.MODE['training'])
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             sorted_teams = sorted(teams_population, key=lambda team: team.fitness_, reverse = True) # better ones first
-            team_ids = [p.opponent.team_id_ for p in self.hall_of_fame]
+            team_ids = [p.opponent.team_id_ for p in self.hall_of_fame_]
             for team in sorted_teams:
                 if team.team_id_ not in team_ids:
                     self.team_to_add_to_hall_of_fame = TictactoePoint(team.__repr__(), team)
@@ -224,7 +224,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         dont_use_results_for_hall_of_fame = False
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and (is_training or mode == DefaultEnvironment.MODE['champion']):
             # use hall of fame as a criteria during training, not used for validation, and only used as a metric for validation of the champion
-            population = point_population + self.hall_of_fame
+            population = point_population + self.hall_of_fame_
             if mode == DefaultEnvironment.MODE['champion']:
                 dont_use_results_for_hall_of_fame = True
         else:
@@ -309,3 +309,6 @@ class TictactoeEnvironment(DefaultEnvironment):
         msg += "\npositions: "+str(self.total_positions_)
         msg += "\nmatches per opponents (for each position): "+str(Config.USER['training_parameters']['populations']['points']/len(self.opponents_))
         return msg
+
+    def hall_of_fame(self):
+        return [p.opponent for p in self.hall_of_fame_]

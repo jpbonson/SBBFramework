@@ -16,6 +16,7 @@ class ParetoDominance():
         results_map = ParetoDominance._generate_results_map_for_teams(teams_population, point_population)
         front, dominateds = ParetoDominance._pareto_front(teams_population, results_map)
 
+        pareto_front = [team for team in front]
         keep_solutions = front
         remove_solutions = dominateds
         if len(keep_solutions) < to_keep:  # must include some teams from dominateds
@@ -26,7 +27,7 @@ class ParetoDominance():
             keep_solutions, remove_solutions = ParetoDominance._balance_pareto_front_to_down(front, keep_solutions, remove_solutions, to_keep)
         if len(keep_solutions) == to_keep:
             DiversityMaintenance.apply_diversity_maintenance_to_teams(keep_solutions, point_population) # in order to calculate fitness to obtain the teams to clone
-        return keep_solutions, remove_solutions
+        return keep_solutions, remove_solutions, pareto_front
 
     @staticmethod
     def pareto_front_for_points(point_population, teams_population, to_keep):

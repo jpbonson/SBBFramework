@@ -10,8 +10,10 @@ class RunInfo:
         self.run_id = run_id
         self.elapsed_time = None
         self.best_team = None
-        self.actions_distribution_in_last_generation = None
+        self.actions_distribution_in_last_generation = []
         self.teams_in_last_generation = []
+        self.hall_of_fame_in_last_generation = []
+        self.pareto_front_in_last_generation = []
         self.train_score_per_generation = []
         self.test_score_per_generation = []
         self.diversity_per_generation = []

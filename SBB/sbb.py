@@ -63,7 +63,7 @@ class SBB:
                     validation = False
 
                 # 3. Selection
-                teams_population, programs_population, diversity_means = selection.run(self.current_generation_, teams_population, programs_population, validation)
+                teams_population, programs_population, pareto_front, diversity_means = selection.run(self.current_generation_, teams_population, programs_population, validation)
 
                 # validation
                 if not validation:
@@ -94,6 +94,8 @@ class SBB:
             for team in teams_population:
                 if team.generation != self.current_generation_:
                     run_info.teams_in_last_generation.append(team)
+            run_info.pareto_front_in_last_generation = pareto_front
+            run_info.hall_of_fame_in_last_generation = environment.hall_of_fame()
             print("\nFinished run "+str(run_info.run_id)+", elapsed time: "+str(run_info.elapsed_time)+" secs")
             run_infos.append(run_info)
         
@@ -224,15 +226,21 @@ class SBB:
             os.makedirs(path)
             with open(path+"metrics.txt", "w") as text_file:
                 text_file.write(str(run))
-            self._save_team_info(run.best_team, path, "best_team")
-            path_all_teams = path+"last_generation_teams/"
-            os.makedirs(path_all_teams)
-            for team in run.teams_in_last_generation:
-                self._save_team_info(team, path_all_teams, team.__repr__())
+            with open(path+"best_team.txt", "w") as text_file:
+                text_file.write(str(run.best_team))
+            with open(path+"best_team.json", "w") as text_file:
+                text_file.write(run.best_team.json())
+            self._save_teams(run.teams_in_last_generation, path+"last_generation_teams/")
+            self._save_teams(run.pareto_front_in_last_generation, path+"pareto_front/")
+            self._save_teams(run.hall_of_fame_in_last_generation, path+"hall_of_fame/")
 
-    def _save_team_info(self, team, path, filename):
-        with open(path+filename+".txt", "w") as text_file:
-            text_file.write(str(team))
-        with open(path+filename+".json", "w") as text_file:
-            text_file.write(team.json())
-            
+    def _save_teams(self, teams, path):
+        if len(teams) > 0:
+            os.makedirs(path)
+            json_path = path+"json/"
+            os.makedirs(json_path)
+            for team in teams:
+                with open(path+team.__repr__()+".txt", "w") as text_file:
+                    text_file.write(str(team))
+                with open(json_path+team.__repr__()+".json", "w") as text_file:
+                    text_file.write(team.json())
