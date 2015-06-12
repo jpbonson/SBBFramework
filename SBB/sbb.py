@@ -4,8 +4,9 @@
 
 import random
 import time
-import numpy
 import os
+import sys
+import numpy
 from collections import Counter
 from run_info import RunInfo
 from program import Program, reset_programs_ids
@@ -53,7 +54,7 @@ class SBB:
             self.current_generation_ = 0
             teams_population, programs_population = self._initialize_populations()
             
-            environment.reset_point_population()
+            environment.reset()
             while not self._stop_criterion():
                 self.current_generation_ += 1
                 
@@ -68,6 +69,7 @@ class SBB:
                 # validation
                 if not validation:
                     print ".",
+                    sys.stdout.flush()
                 else:
                     print "\n\n>>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_info.run_id)
                     best_team = environment.validate(self.current_generation_, teams_population)

@@ -127,10 +127,10 @@ class ClassificationEnvironment(DefaultEnvironment):
     def point_population(self):
         return self.point_population_
 
-    def reset_point_population(self):
+    def reset(self):
         self.point_population_ = None
 
-    def setup_point_population(self, teams_population):
+    def setup(self, teams_population):
         """
         Get a sample of the training dataset to create the point population. If it is the first generation 
         of the run, just gets random samples for each action of the dataset. For the next generations, it 

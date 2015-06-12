@@ -42,21 +42,14 @@ class DefaultEnvironment(object):
          """
 
     @abc.abstractmethod
-    def reset_point_population(self):
+    def reset(self):
          """
          Method that is called at the beginning of each run by SBB, to reset the 
          variables that will be used by the generations.
          """
 
     @abc.abstractmethod
-    def reset_point_population(self):
-         """
-         Method that is called at the beginning of each run by SBB, to reset the 
-         variables that will be used by the generations.
-         """
-
-    @abc.abstractmethod
-    def setup_point_population(self, teams_population):
+    def setup(self, teams_population):
          """
          Method that is called at the beginning of each generation by SBB, to set the 
          variables that will be used by the generationand remove the ones that are no 

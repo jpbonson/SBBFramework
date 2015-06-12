@@ -70,14 +70,14 @@ class TictactoeEnvironment(DefaultEnvironment):
         training_population = self.point_population_ + self.hall_of_fame_
         return training_population
 
-    def reset_point_population(self):
+    def reset(self):
         self.point_population_ = None
-        self.test_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['validation_population'])
-        self.champion_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['champion_population'])
         self.hall_of_fame_ = []
         self.team_to_add_to_hall_of_fame = None
-
-    def setup_point_population(self, teams_population):
+        self.test_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['validation_population'])
+        self.champion_population_ = self._initialize_random_balanced_population_of_coded_opponents(Config.USER['reinforcement_parameters']['champion_population'])
+    
+    def setup(self, teams_population):
         """
         Get a sample of the training dataset to create the point population. If it is the first generation 
         of the run, just gets random samples for each action of the dataset. For the next generations, it 
@@ -223,9 +223,9 @@ class TictactoeEnvironment(DefaultEnvironment):
 
         dont_use_results_for_hall_of_fame = False
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            # use hall of fame as a criteria during training, not used for validation, and only used as a metric for validation of the champion
+            # use hall of fame as a criteria during training, and only used as a metric during validation
             population = point_population + self.hall_of_fame_
-            if mode == DefaultEnvironment.MODE['champion']:
+            if not is_training:
                 dont_use_results_for_hall_of_fame = True
         else:
             population = point_population
@@ -296,9 +296,11 @@ class TictactoeEnvironment(DefaultEnvironment):
                 self.evaluate_team(team, DefaultEnvironment.MODE['validation'])
         score = [p.score_testset_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]
-        print "\nChampion team test score in the initial matches: "+str(round_value(best_team.score_testset_))
         validation_score = round_value(best_team.score_testset_)
         validation_opponents = best_team.extra_metrics_['opponents']
+        print "score (validation): "+str(validation_score)
+        for key in validation_opponents:
+            print "validation score against opponent ("+key+"): "+str(validation_opponents[key])
         self.evaluate_team(best_team, DefaultEnvironment.MODE['champion'])
         best_team.extra_metrics_['validation_score'] = validation_score
         best_team.extra_metrics_['validation_opponents'] = validation_opponents

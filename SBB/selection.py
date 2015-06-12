@@ -37,7 +37,7 @@ class Selection:
         Create a point population in the environment, use it to evaluate the teams (calculate fitness_ and results_per_points_), 
         and then use the teams results to evluate the point population.
         """
-        self.environment.setup_point_population(teams_population)
+        self.environment.setup(teams_population)
         self.environment.evaluate_teams_population(teams_population)
         self.environment.evaluate_point_population(teams_population)
         return teams_population
