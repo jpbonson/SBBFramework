@@ -97,8 +97,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.7]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_without_pareto_and_with_diversity_maintenance(self):
@@ -113,8 +113,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.83333]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_pareto_and_without_diversity_maintenance(self):
@@ -129,8 +129,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.7]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_pareto_for_teams_without_pareto_for_points(self):
@@ -145,8 +145,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.73333]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_classification_for_thyroid(self):
