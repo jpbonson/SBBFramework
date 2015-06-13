@@ -2,8 +2,6 @@
 TODO:
 
 - meeting notes:
-    - inicializar apenas meia populacao? (para ficar mais facil reutilizar depois?)
-
     - the size of the hall of fame is the size of the point population, and it should be swaped as the other point populations (to replace: use fitness? diversity? pareto?)
 
     - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
@@ -11,9 +9,7 @@ TODO:
             - tictactoe: random, smart, self-play, hall of fame
             - poker: always fold, always raise, always call, agressive, defensive, smart
     
-    - add a way to reuse teams (.json):
-        - poder salvar os melhores times no formato objeto? ou como um array de sets de instructions? (para ser mais reutilizavel?)
-        - implementar tradutor que le o objeto do time e computa resultados?
+    - permitir salvar teams no formato .json:
 
     - update system tests (classification and tictactoe)
 
@@ -32,6 +28,10 @@ TODO:
     - ver como fazer para executar runs de tictactoe no server do NIMS?
     - testar se a Step 2 da inicializacao dos teams realmente melhora ou apenas consome processamento
     - fazer reinforcement learning para Othello?
+    - implementar um tradutor que usa teams salvas em .json
+        - deve ser possivel usa-lo para testar um time no ambiente
+        - deve ser possivel usa-lo para treinar mais um conjunto de teams
+            - se o pop_size nao for o suficiente, deve preendher o pop_gap com random ou children
 
 - starting poker implementation:
     - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados? dividir pelo resultado maximo obtido?)
@@ -92,6 +92,12 @@ max program size = 48
 
 ========
 NOTES:
+
+- inicializar apenas meia populacao? (para ficar mais facil reutilizar depois?)
+    - nao, inicializar com toda a populacao sendo random da mais diversidade e um search space mais amplo
+    - o que pode ser feito no futuro, quando for reutilizar populacoes (ou seja, usando pop_size - pop_gap) posso dar as opcoes de:
+        - preencher o gap com novos teams randomicos
+        - preencher o gap com children dos teams em pop_size
 
 - initialize teams with 2 different actions (instead of 1 action per available action. In order to start simple and complexify over time, allowing SBB time to understand and mix the simpler teams and programs. It is necessary to use a higher number of generations.)
 - the initial teams must have unique sets of programs (in order to start with the maximum diversity)
