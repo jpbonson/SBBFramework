@@ -140,13 +140,14 @@ class SBB:
             programs_population += programs
 
         # randomly add more already created programs to the teams
-        programs_range = Config.USER['training_parameters']['team_size']['max'] - Config.USER['training_parameters']['team_size']['min']
-        for team in teams_population:
-            programs_to_add = random.randrange(0, programs_range+1)
-            for index in range(programs_to_add):
-                program = random.choice(programs_population)
-                if program not in team.programs:
-                    team._add_program(program)
+        if Config.USER['advanced_training_parameters']['run_initialization_step2']:
+            programs_range = Config.USER['training_parameters']['team_size']['max'] - Config.USER['training_parameters']['team_size']['min']
+            for team in teams_population:
+                programs_to_add = random.randrange(0, programs_range+1)
+                for index in range(programs_to_add):
+                    program = random.choice(programs_population)
+                    if program not in team.programs:
+                        team._add_program(program)
 
         return teams_population, programs_population
 

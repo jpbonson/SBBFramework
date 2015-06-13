@@ -71,6 +71,7 @@ TEST_CONFIG = {
                 'p_value': 0.1,
             },       
         },
+        'run_initialization_step2': True,
     },
 }
 
