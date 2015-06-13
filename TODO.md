@@ -2,9 +2,6 @@
 TODO:
 
 - meeting notes:
-    - fix id dos points
-    - melhorar nome dos oponentes
-
     - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
         - example of type of opponents:
             - tictactoe: random, smart, self-play, hall of fame

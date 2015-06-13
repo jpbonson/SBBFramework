@@ -28,12 +28,12 @@ class Config():
         },
 
         'training_parameters': {
-            'runs_total': 2,
-            'generations_total': 40,
+            'runs_total': 3,
+            'generations_total': 100,
             'validate_after_each_generation': 20,
             'populations': {
-                'teams': 40,
-                'points': 30,
+                'teams': 60,
+                'points': 50,
             },
             'replacement_rate': {
                 'teams': 0.6,
@@ -55,7 +55,7 @@ class Config():
             },
             'team_size': { # the min and initial size are the total number of actions
                 'min': 2,
-                'max': 9,
+                'max': 18,
             },
             'program_size': {
                 'min': 2,
@@ -64,7 +64,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 1, # default = None
+            'seed': None, # default = None
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],

@@ -93,7 +93,8 @@ class TictactoeEnvironment(DefaultEnvironment):
         population = []
         for opponent_class in self.coded_opponents_:
             for index in range(self.point_population_size_per_opponent_):
-                population.append(TictactoePoint(str(opponent_class), opponent_class()))
+                instance = opponent_class()
+                population.append(TictactoePoint(str(instance), instance))
         return population
 
     def setup(self, teams_population):
@@ -163,7 +164,8 @@ class TictactoeEnvironment(DefaultEnvironment):
     def _initialize_point_population_per_opponent_for_coded_opponents(self):
         for opponent_class in self.coded_opponents_:
             for index in range(self.point_population_size_per_opponent_):
-                self.point_population_per_opponent_[str(opponent_class)].append(TictactoePoint(str(opponent_class), opponent_class()))
+                instance = opponent_class()
+                self.point_population_per_opponent_[str(opponent_class)].append(TictactoePoint(str(instance), instance))
 
     def _check_for_bugs(self):
         for key, values in self.point_population_per_opponent_.iteritems():
@@ -196,14 +198,16 @@ class TictactoeEnvironment(DefaultEnvironment):
             for subset, opponent_class_name in zip(kept_subsets_per_opponent, opponents):
                 samples_per_opponent_to_add = self.point_population_size_per_opponent_ - len(subset)
                 for x in range(samples_per_opponent_to_add):
-                    subset.append(TictactoePoint(opponent_class_name, self.opponent_class_mapping[opponent_class_name]()))
+                    instance = self.opponent_class_mapping[opponent_class_name]()
+                    subset.append(TictactoePoint(str(instance), instance))
         else:
             # obtain the data points that will be kept and that will be removed for each subset using uniform probability
             total_samples_per_opponent_to_add = self.point_population_size_per_opponent_ - samples_per_opponent_to_keep
             for subset, opponent_class_name in zip(current_subsets_per_opponent, opponents):
                 kept_subsets = random.sample(subset, samples_per_opponent_to_keep) # get points that will be kept
                 for x in range(total_samples_per_opponent_to_add):
-                    kept_subsets.append(TictactoePoint(opponent_class_name, self.opponent_class_mapping[opponent_class_name]())) # add new points
+                    instance = self.opponent_class_mapping[opponent_class_name]()
+                    kept_subsets.append(TictactoePoint(str(instance), instance)) # add new points
                 kept_subsets_per_opponent.append(kept_subsets)
                 removed_subsets_per_opponent.append(list(set(subset) - set(kept_subsets))) # find the remvoed points
         
@@ -238,7 +242,10 @@ class TictactoeEnvironment(DefaultEnvironment):
         else:
             is_training = False
             if mode == DefaultEnvironment.MODE['validation']:
-                point_population = self.test_population_
+                if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+                    point_population = self.test_population_ + self.point_population_per_opponent_['hall_of_fame']
+                else:
+                    point_population = self.test_population_
             elif mode == DefaultEnvironment.MODE['champion']:
                 point_population = self.champion_population_
 
@@ -319,7 +326,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         best_team = teams_population[score.index(max(score))]
         validation_score = round_value(best_team.score_testset_)
         validation_opponents = best_team.extra_metrics_['opponents']
-        print "score (validation): "+str(validation_score)
+        print "\nscore (validation): "+str(validation_score)
         for key in validation_opponents:
             print "validation score against opponent ("+key+"): "+str(validation_opponents[key])
         self.evaluate_team(best_team, DefaultEnvironment.MODE['champion'])
