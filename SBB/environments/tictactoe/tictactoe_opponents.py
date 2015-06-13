@@ -7,7 +7,7 @@ from ...config import Config
 
 class TictactoeRandomOpponent(DefaultOpponent):
     def __init__(self):
-        super(TictactoeRandomOpponent, self).__init__("random")
+        super(TictactoeRandomOpponent, self).__init__(str(TictactoeRandomOpponent))
         self.seed = random.randint(0, Config.RESTRICTIONS['max_seed'])
 
     def initialize(self):
@@ -24,7 +24,7 @@ class TictactoeRandomOpponent(DefaultOpponent):
 
 class TictactoeSmartOpponent(DefaultOpponent):
     def __init__(self):
-        super(TictactoeSmartOpponent, self).__init__("smart")
+        super(TictactoeSmartOpponent, self).__init__(str(TictactoeSmartOpponent))
         self.seed = random.randint(0, Config.RESTRICTIONS['max_seed'])
 
     def initialize(self):

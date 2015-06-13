@@ -38,7 +38,9 @@ class ClassificationEnvironment(DefaultEnvironment):
         Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
         Config.RESTRICTIONS['use_memmory_for_actions'] = True # since for the same input, the output label is always the same
         Config.RESTRICTIONS['use_memmory_for_results'] = False # since it is necessary to know exactly what labels were correct or incorrect, not just the overall results
-        super(ClassificationEnvironment, self)._round_point_population_based_on(self.total_actions_)
+        # ensures that the point population will be balanced:
+        total_samples_per_criteria = Config.USER['training_parameters']['populations']['points']/self.total_actions_
+        Config.USER['training_parameters']['populations']['points'] = total_samples_per_criteria*self.total_actions_
 
     def _initialize_datasets(self):
         """
@@ -155,7 +157,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         sample = flatten(samples_per_class) # join samples per class
         random.shuffle(sample)
         self.point_population_ = sample
-        super(ClassificationEnvironment, self)._check_for_bugs()
+        self._check_for_bugs()
 
     def _sample_subset(self, subset, sample_size):
         if len(subset) <= sample_size:
@@ -163,6 +165,10 @@ class ClassificationEnvironment(DefaultEnvironment):
         else:
             sample = random.sample(subset, sample_size)
         return sample
+
+    def _check_for_bugs(self):
+        if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
+            raise ValueError("The size of the points population changed during selection! You got a bug! (it is: "+str(len(self.point_population_))+", should be: "+str(Config.USER['training_parameters']['populations']['points'])+")")
 
     def evaluate_point_population(self, teams_population):
         current_subsets_per_class = self._get_data_per_action(self.point_population_)

@@ -96,13 +96,6 @@ class DefaultEnvironment(object):
     def hall_of_fame(self):
         return []
 
-    def _round_point_population_based_on(self, criteria):
-        """
-        Ensures that the point population will be balanced.
-        """
-        total_samples_per_criteria = Config.USER['training_parameters']['populations']['points']/criteria
-        Config.USER['training_parameters']['populations']['points'] = total_samples_per_criteria*criteria
-
     def _remove_points(self, points_to_remove, teams_population):
         """
         Remove the points to remove from the teams, in order to save memory.
@@ -115,7 +108,3 @@ class DefaultEnvironment(object):
                     team.results_per_points_.pop(point.point_id)
                 if point.point_id in team.actions_per_points_:
                     team.actions_per_points_.pop(point.point_id)
-
-    def _check_for_bugs(self):
-        if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
-            raise ValueError("The size of the points population changed during selection! You got a bug! (it is: "+str(len(self.point_population_))+", should be: "+str(Config.USER['training_parameters']['populations']['points'])+")")

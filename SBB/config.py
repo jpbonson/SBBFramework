@@ -22,7 +22,6 @@ class Config():
             'opponents_pool': 'hybrid',
             'hall_of_fame': {
                 'enabled': True,
-                'size': 5,
                 'use_genotype_diversity': True, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'print_matches': False, # use this option to debug
@@ -65,7 +64,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': None, # default = None
+            'seed': 1, # default = None
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],

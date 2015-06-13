@@ -2,7 +2,8 @@
 TODO:
 
 - meeting notes:
-    - the size of the hall of fame is the size of the point population, and it should be swaped as the other point populations (to replace: use fitness? diversity? pareto?)
+    - fix id dos points
+    - melhorar nome dos oponentes
 
     - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
         - example of type of opponents:
