@@ -35,6 +35,16 @@ class IntronRemovalTests(unittest.TestCase):
         instructions.pop(0)
         self.assertEqual(instructions, instructions_without_introns)
 
+    def test_remove_introns_for_ifs_at_the_end(self):
+        """ Ensures the algorithm removes instructions for irrelevant registers """
+        instructions = []
+        instructions.append(Instruction(mode = 'read-register', target = 2, op = 'cos', source = 0))
+        instructions.append(Instruction(mode = 'read-register', target = 0, op = '+', source = 2))
+        instructions.append(Instruction(mode = 'read-register', target = 0, op = 'if_lesser_than', source = 1))
+        instructions_without_introns = Program.remove_introns(instructions)
+        instructions.pop(len(instructions)-1)
+        self.assertEqual(instructions, instructions_without_introns)
+
     def test_remove_irrelevant_ifs(self):
         """ Ensures the algorithm removes irrelevant 'if' instructions """
         instructions = []

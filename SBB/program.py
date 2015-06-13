@@ -132,7 +132,7 @@ class Program:
         """
         instructions_without_introns = []
         relevant_registers = [0]
-        ignore_previous_if = False
+        ignore_previous_if = True
         # Run throught the instructions from the last to the first one
         for instruction in reversed(instructions):
             if instruction.target in relevant_registers or instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
