@@ -30,10 +30,15 @@ class TictactoeEnvironment(DefaultEnvironment):
         self.team_to_add_to_hall_of_fame = None
         self.test_population_ = None
         self.champion_population_ = None
+        self.first_sampling_ = True
+        self.current_population_ = None
         self.total_actions_ = 9 # spaces in the board
         self.total_inputs_ = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
         self.total_positions_ = 2
         self.coded_opponents_ = [TictactoeRandomOpponent, TictactoeSmartOpponent]
+        self.opponent_class_mapping = {}
+        for opponent in self.coded_opponents_:
+            self.opponent_class_mapping[str(opponent)] = opponent
         self.action_mapping_ = {
             '[0,0]': 0, '[0,1]': 1, '[0,2]': 2,
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
@@ -46,13 +51,15 @@ class TictactoeEnvironment(DefaultEnvironment):
         Config.RESTRICTIONS['use_memmory_for_results'] = True # since the opponents are seeded, the same point will always produce the same final result
         self.point_population_size_per_opponent_, self.total_opponents_, self.point_population_per_opponent_ = self._get_balanced_metrics()
         Config.USER['training_parameters']['populations']['points'] = self.point_population_size_per_opponent_*self.total_opponents_
-        self.opponent_class_mapping = {}
-        for opponent in self.coded_opponents_:
-            self.opponent_class_mapping[str(opponent)] = opponent
+        if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            self.population_size_ = self.point_population_size_per_opponent_
+        else:
+            self.population_size_ = Config.USER['training_parameters']['populations']['points']
     
     def _get_balanced_metrics(self):
         """
-        Ensure the matches per opponents are balanced, and that no more than the team population size is used as sbb opponents.
+        Ensure the matches per opponents are balanced across opponents, and that no more than the team population
+        size is used as sbb opponents.
         """
         total_opponents = 0
         point_population_per_opponent = {}
@@ -79,7 +86,10 @@ class TictactoeEnvironment(DefaultEnvironment):
         return point_population_size_per_opponent, total_opponents, point_population_per_opponent
 
     def point_population(self):
-        return flatten(self.point_population_per_opponent_.values())
+        if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            return flatten(self.point_population_per_opponent_.values())
+        else:
+            return self.point_population_per_opponent_[self.current_population_]
 
     def reset(self):
         for key in self.point_population_per_opponent_:
@@ -87,7 +97,8 @@ class TictactoeEnvironment(DefaultEnvironment):
         self.team_to_add_to_hall_of_fame = None
         self.test_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
-        self.first_sampling = True
+        self.first_sampling_ = True
+        self.current_population_ = None
 
     def _initialize_random_balanced_population_of_coded_opponents_for_validation(self, population_size):
         population = []
@@ -99,18 +110,21 @@ class TictactoeEnvironment(DefaultEnvironment):
 
     def setup(self, teams_population):
         """
-        Get a sample of the training dataset to create the point population. If it is the first generation 
-        of the run, just get random samples for each action of the dataset. For the next generations, it 
-        replaces some of the points in the sample for new points.
+        
         """
-        population_size = Config.USER['training_parameters']['populations']['points']
+        if not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            options = self.point_population_per_opponent_.keys()
+            if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.point_population_per_opponent_['hall_of_fame']) == 0:
+                options.remove('hall_of_fame')
+            self.current_population_ = random.choice(options)
+
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_sbb':
             if len(self.point_population_per_opponent_['sbb']) > 0:
                 super(TictactoeEnvironment, self)._remove_points(self.point_population_per_opponent_['sbb'], teams_population)
             self.point_population_per_opponent_['sbb'] = self._initialize_point_population_of_sbb_opponents(teams_population)
         else:
-            if self.first_sampling:
-                self.first_sampling = False
+            if self.first_sampling_:
+                self.first_sampling_ = False
                 if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded':
                     self._initialize_point_population_per_opponent_for_coded_opponents()
                 elif Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
@@ -119,7 +133,8 @@ class TictactoeEnvironment(DefaultEnvironment):
             else: # uses attributes defined in evaluate_point_population() to update the point population
                 super(TictactoeEnvironment, self)._remove_points(flatten(self.samples_per_opponent_to_remove.values()), teams_population)
                 if Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
-                    self.point_population_per_opponent_['sbb'] = self._initialize_point_population_of_sbb_opponents(teams_population)
+                    if not self.current_population_ or (self.current_population_ and self.current_population_ == 'sbb'):
+                        self.point_population_per_opponent_['sbb'] = self._initialize_point_population_of_sbb_opponents(teams_population)
                 for key, values in self.samples_per_opponent_to_keep.iteritems():
                     self.point_population_per_opponent_[key] = values
 
@@ -127,10 +142,10 @@ class TictactoeEnvironment(DefaultEnvironment):
             hall_of_fame = self.point_population_per_opponent_['hall_of_fame']
             if self.team_to_add_to_hall_of_fame and self.team_to_add_to_hall_of_fame not in hall_of_fame:
                 hall_of_fame.append(copy.deepcopy(self.team_to_add_to_hall_of_fame))
-                if len(hall_of_fame) > self.point_population_size_per_opponent_:
+                if len(hall_of_fame) > self.population_size_:
                     if Config.USER['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity']:
                         teams = [p.opponent for p in hall_of_fame]
-                        DiversityMaintenance.genotype_diversity(teams, p = 0.8, k = self.point_population_size_per_opponent_)
+                        DiversityMaintenance.genotype_diversity(teams, p = 0.8, k = self.population_size_)
                     score = [p.opponent.fitness_ for p in hall_of_fame]
                     worst_team = hall_of_fame[score.index(min(score))]
                     hall_of_fame.remove(worst_team)
@@ -138,7 +153,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         self._check_for_bugs()
 
     def _initialize_point_population_of_sbb_opponents(self, teams_population):
-        size = self.point_population_size_per_opponent_
+        size = self.population_size_
         if size >= len(teams_population):
             sbb_opponents = teams_population
         else:
@@ -163,27 +178,33 @@ class TictactoeEnvironment(DefaultEnvironment):
 
     def _initialize_point_population_per_opponent_for_coded_opponents(self):
         for opponent_class in self.coded_opponents_:
-            for index in range(self.point_population_size_per_opponent_):
+            for index in range(self.population_size_):
                 instance = opponent_class()
                 self.point_population_per_opponent_[str(opponent_class)].append(TictactoePoint(str(instance), instance))
 
     def _check_for_bugs(self):
         for key, values in self.point_population_per_opponent_.iteritems():
-            if key != 'hall_of_fame' and len(values) != self.point_population_size_per_opponent_:
-                raise ValueError("The size of the points population changed during selection for opponent "+str(key)+"! You got a bug! (it is: "+str(len(values))+", should be: "+str(self.point_population_size_per_opponent_)+")")
+            if key != 'hall_of_fame' and len(values) != self.population_size_:
+                raise ValueError("The size of the points population changed during selection for opponent "+str(key)+"! You got a bug! (it is: "+str(len(values))+", should be: "+str(self.population_size_)+")")
 
     def evaluate_point_population(self, teams_population):
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_sbb':
-            return
+            return        
 
-        samples_per_opponent_to_keep = int(round(self.point_population_size_per_opponent_*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
-        
-        opponents = []
-        current_subsets_per_opponent = []
-        for key, values in self.point_population_per_opponent_.iteritems():
-            if key != 'hall_of_fame' and key != 'sbb':
-                opponents.append(key)
-                current_subsets_per_opponent.append(values)
+        if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            opponents = []
+            current_subsets_per_opponent = []
+            for key, values in self.point_population_per_opponent_.iteritems():
+                if key != 'hall_of_fame' and key != 'sbb':
+                    opponents.append(key)
+                    current_subsets_per_opponent.append(values)
+        else:
+            if self.current_population_ == 'hall_of_fame' or self.current_population_ == 'sbb':
+                return
+            opponents = [self.current_population_]
+            current_subsets_per_opponent = [self.point_population_per_opponent_[self.current_population_]]
+
+        samples_per_opponent_to_keep = int(round(self.population_size_*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
         
         kept_subsets_per_opponent = []
         removed_subsets_per_opponent = []
@@ -196,13 +217,13 @@ class TictactoeEnvironment(DefaultEnvironment):
             
             # add new points
             for subset, opponent_class_name in zip(kept_subsets_per_opponent, opponents):
-                samples_per_opponent_to_add = self.point_population_size_per_opponent_ - len(subset)
+                samples_per_opponent_to_add = self.population_size_ - len(subset)
                 for x in range(samples_per_opponent_to_add):
                     instance = self.opponent_class_mapping[opponent_class_name]()
                     subset.append(TictactoePoint(str(instance), instance))
         else:
             # obtain the data points that will be kept and that will be removed for each subset using uniform probability
-            total_samples_per_opponent_to_add = self.point_population_size_per_opponent_ - samples_per_opponent_to_keep
+            total_samples_per_opponent_to_add = self.population_size_ - samples_per_opponent_to_keep
             for subset, opponent_class_name in zip(current_subsets_per_opponent, opponents):
                 kept_subsets = random.sample(subset, samples_per_opponent_to_keep) # get points that will be kept
                 for x in range(total_samples_per_opponent_to_add):
@@ -341,7 +362,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(self.action_mapping_)
         msg += "\npositions: "+str(self.total_positions_)
-        msg += "\nmatches per opponents (for each position): "+str(self.point_population_size_per_opponent_)
+        msg += "\nmatches per opponents (for each position): "+str(self.population_size_)
         return msg
 
     def hall_of_fame(self):

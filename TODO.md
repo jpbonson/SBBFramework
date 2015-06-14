@@ -1,20 +1,15 @@
 ===
 TODO:
 
-- meeting notes:
-    - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
-        - example of type of opponents:
-            - tictactoe: random, smart, self-play, hall of fame
-            - poker: always fold, always raise, always call, agressive, defensive, smart
-    
-    - permitir salvar teams no formato .json:
-
-    - update system tests (classification and tictactoe)
-
-    - adicionar _ nos atributos internos das classes e atributos novos
+- meeting notes:    
+    - permitir salvar teams no formato .json
 
     - ao inves de gerar uma seed para todos os runs, gerar um array de seeds, um por run, de forma que os runs possam ser individualmente reproduziveis
     - permitir usar um array de seeds, ao inves de uma seed unica
+
+    - adicionar _ nos atributos internos das classes e atributos novos
+
+    - update system tests (classification and tictactoe)
 
     - fazer release no github
 
@@ -90,6 +85,12 @@ max program size = 48
 
 ========
 NOTES:
+
+opponents:
+- instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.
+        - example of type of opponents:
+            - tictactoe: random, smart, self-play, hall of fame
+            - poker: always fold, always raise, always call, agressive, defensive, smart
 
 - inicializar apenas meia populacao? (para ficar mais facil reutilizar depois?)
     - nao, inicializar com toda a populacao sendo random da mais diversidade e um search space mais amplo

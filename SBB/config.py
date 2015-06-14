@@ -20,6 +20,7 @@ class Config():
             'validation_population': 100, # at a validated generation, all the teams with be tested against this population, the best one is the champion
             'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'opponents_pool': 'hybrid',
+            'balanced_opponent_populations': False, # if false, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
                 'enabled': True,
                 'use_genotype_diversity': True, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
