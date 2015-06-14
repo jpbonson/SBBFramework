@@ -1,5 +1,6 @@
 import random
 import copy
+import json
 from collections import Counter
 from program import Program
 from environments.default_opponent import DefaultOpponent
@@ -172,7 +173,10 @@ class Team(DefaultOpponent):
         return msg
 
     def json(self):
-        return "{}"
+        programs_json = []
+        for program in self.programs:
+            programs_json.append(program.dict())
+        return json.dumps(programs_json)
 
     def __repr__(self): 
         return "("+str(self.team_id_)+"-"+str(self.generation)+")"

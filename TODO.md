@@ -3,6 +3,7 @@ TODO:
 
 - meeting notes:    
     - permitir salvar teams no formato .json
+        - conferir bug com mode = 9?
 
     - ao inves de gerar uma seed para todos os runs, gerar um array de seeds, um por run, de forma que os runs possam ser individualmente reproduziveis
     - permitir usar um array de seeds, ao inves de uma seed unica

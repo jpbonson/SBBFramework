@@ -40,6 +40,9 @@ class Instruction:
             else:
                 self.source = random.randrange(Config.RESTRICTIONS['total_inputs'])
 
+    def dict(self):
+        return {'mode': str(self.mode), 'target': self.target, 'op': str(self.op), 'source': self.source}
+
     def __repr__(self):
         if self.op in Config.RESTRICTIONS['genotype_options']['one-operand-instructions']:
             text = self._one_op_instruction_to_str()

@@ -95,6 +95,14 @@ class Program:
     def remove_team(self, team):
         self.teams_.remove(team)
 
+    def dict(self):
+        save = {}
+        save['action'] = self.action
+        save['instructions'] = []
+        for instruction in self.instructions:
+            save['instructions'].append(instruction.dict())
+        return save
+
     def __repr__(self):
         return "("+str(self.program_id_)+":"+str(self.generation)+", "+str(self.action)+")"
 

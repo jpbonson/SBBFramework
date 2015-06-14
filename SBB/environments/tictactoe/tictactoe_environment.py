@@ -32,6 +32,8 @@ class TictactoeEnvironment(DefaultEnvironment):
         self.champion_population_ = None
         self.first_sampling_ = True
         self.current_population_ = None
+        self.samples_per_opponent_to_keep = {}
+        self.samples_per_opponent_to_remove = {}
         self.total_actions_ = 9 # spaces in the board
         self.total_inputs_ = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
         self.total_positions_ = 2
@@ -54,6 +56,9 @@ class TictactoeEnvironment(DefaultEnvironment):
         if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
             self.population_size_ = self.point_population_size_per_opponent_
         else:
+            if Config.USER['reinforcement_parameters']['opponents_pool'] != 'only_coded':
+                if Config.USER['training_parameters']['populations']['points'] > Config.USER['training_parameters']['populations']['teams']:
+                    Config.USER['training_parameters']['populations']['points'] = Config.USER['training_parameters']['populations']['teams']
             self.population_size_ = Config.USER['training_parameters']['populations']['points']
     
     def _get_balanced_metrics(self):
@@ -102,8 +107,9 @@ class TictactoeEnvironment(DefaultEnvironment):
 
     def _initialize_random_balanced_population_of_coded_opponents_for_validation(self, population_size):
         population = []
+        total_per_opponent = population_size/len(self.coded_opponents_)
         for opponent_class in self.coded_opponents_:
-            for index in range(self.point_population_size_per_opponent_):
+            for index in range(total_per_opponent):
                 instance = opponent_class()
                 population.append(TictactoePoint(str(instance), instance))
         return population
