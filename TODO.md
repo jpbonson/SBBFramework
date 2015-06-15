@@ -5,8 +5,6 @@ TODO:
     - ao inves de gerar uma seed para todos os runs, gerar um array de seeds, um por run, de forma que os runs possam ser individualmente reproduziveis
     - permitir usar um array de seeds, ao inves de uma seed unica
 
-    - adicionar _ nos atributos internos das classes e atributos novos
-
     - update system tests (classification and tictactoe)
 
     - fazer release no github
@@ -50,7 +48,7 @@ Observacoes:
 
 Guidelines:
 - usar apenas um _ no methods
-- usar _ no final dos atributos internos (que nao vieram de parametros)
+- usar _ no final dos internal classes attributes (que nao vieram de parametros)
 
 jSBB:
 - teams always start with 2 learners

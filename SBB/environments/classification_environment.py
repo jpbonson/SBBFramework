@@ -25,6 +25,8 @@ class ClassificationEnvironment(DefaultEnvironment):
 
     def __init__(self):
         self.point_population_ = None
+        self.samples_per_opponent_to_keep_ = {}
+        self.samples_per_opponent_to_remove_ = {}
         train, test = self._initialize_datasets()
         self.train_population_ = self._dataset_to_points(train)
         self.test_population_ = self._dataset_to_points(test)
@@ -146,8 +148,8 @@ class ClassificationEnvironment(DefaultEnvironment):
             for subset in self.trainset_per_action_:
                 samples_per_class.append(self._sample_subset(subset, total_samples_per_class))
         else: # uses attributes defined in evaluate_point_population()
-            super(ClassificationEnvironment, self)._remove_points(flatten(self.samples_per_class_to_remove), teams_population)
-            samples_per_class = self.samples_per_class_to_keep
+            super(ClassificationEnvironment, self)._remove_points(flatten(self.samples_per_class_to_remove_), teams_population)
+            samples_per_class = self.samples_per_class_to_keep_
         
         # ensure that the sampling is balanced for all classes, using oversampling for the ones with less than the minimum samples
         for sample in samples_per_class:
@@ -196,8 +198,8 @@ class ClassificationEnvironment(DefaultEnvironment):
                 kept_subsets_per_class.append(kept_subsets)
                 removed_subsets_per_class.append(list(set(subset) - set(kept_subsets))) # find the remvoed points
 
-        self.samples_per_class_to_keep = kept_subsets_per_class
-        self.samples_per_class_to_remove = removed_subsets_per_class
+        self.samples_per_class_to_keep_ = kept_subsets_per_class
+        self.samples_per_class_to_remove_ = removed_subsets_per_class
 
     def evaluate_teams_population(self, teams_population):
         for team in teams_population:

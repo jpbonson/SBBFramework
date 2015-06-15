@@ -8,27 +8,27 @@ from ...config import Config
 class TictactoeRandomOpponent(DefaultOpponent):
     def __init__(self):
         super(TictactoeRandomOpponent, self).__init__("random")
-        self.seed = random.randint(0, Config.RESTRICTIONS['max_seed'])
+        self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
 
     def initialize(self):
-        self.random_generator = numpy.random.RandomState(seed=self.seed)
+        self.random_generator_ = numpy.random.RandomState(seed=self.seed_)
 
     def execute(self, point_id, inputs, valid_actions, is_training):
-        return self.random_generator.choice(valid_actions)
+        return self.random_generator_.choice(valid_actions)
 
     def __str__(self):
-        return self.opponent_id +":"+str(self.seed)
+        return self.opponent_id +":"+str(self.seed_)
 
     def __repr__(self):
-        return self.opponent_id +":"+str(self.seed)
+        return self.opponent_id +":"+str(self.seed_)
 
 class TictactoeSmartOpponent(DefaultOpponent):
     def __init__(self):
         super(TictactoeSmartOpponent, self).__init__("smart")
-        self.seed = random.randint(0, Config.RESTRICTIONS['max_seed'])
+        self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
 
     def initialize(self):
-        self.random_generator = numpy.random.RandomState(seed=self.seed)
+        self.random_generator_ = numpy.random.RandomState(seed=self.seed_)
 
     def execute(self, point_id, inputs, valid_actions, is_training):
         current_player = 1
@@ -53,7 +53,7 @@ class TictactoeSmartOpponent(DefaultOpponent):
         corners = [0, 2, 6, 8]
         valid_corners = list(set(valid_actions).intersection(corners))
         if valid_corners:
-            return self.random_generator.choice(valid_corners)
+            return self.random_generator_.choice(valid_corners)
 
         # try to take the center
         center = 4
@@ -61,10 +61,10 @@ class TictactoeSmartOpponent(DefaultOpponent):
             return center
 
         # get anything that is valid
-        return self.random_generator.choice(valid_actions)
+        return self.random_generator_.choice(valid_actions)
 
     def __str__(self):
-        return self.opponent_id +":"+str(self.seed)
+        return self.opponent_id +":"+str(self.seed_)
 
     def __repr__(self):
-        return self.opponent_id +":"+str(self.seed)
+        return self.opponent_id +":"+str(self.seed_)

@@ -27,20 +27,20 @@ class TictactoeEnvironment(DefaultEnvironment):
     """
 
     def __init__(self):
-        self.team_to_add_to_hall_of_fame = None
+        self.team_to_add_to_hall_of_fame_ = None
         self.test_population_ = None
         self.champion_population_ = None
         self.first_sampling_ = True
         self.current_population_ = None
-        self.samples_per_opponent_to_keep = {}
-        self.samples_per_opponent_to_remove = {}
+        self.samples_per_opponent_to_keep_ = {}
+        self.samples_per_opponent_to_remove_ = {}
         self.total_actions_ = 9 # spaces in the board
         self.total_inputs_ = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
         self.total_positions_ = 2
         self.coded_opponents_ = [TictactoeRandomOpponent, TictactoeSmartOpponent]
-        self.opponent_class_mapping = {}
+        self.opponent_class_mapping_ = {}
         for opponent in self.coded_opponents_:
-            self.opponent_class_mapping[str(opponent)] = opponent
+            self.opponent_class_mapping_[str(opponent)] = opponent
         self.action_mapping_ = {
             '[0,0]': 0, '[0,1]': 1, '[0,2]': 2,
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
@@ -99,7 +99,7 @@ class TictactoeEnvironment(DefaultEnvironment):
     def reset(self):
         for key in self.point_population_per_opponent_:
             self.point_population_per_opponent_[key] = []
-        self.team_to_add_to_hall_of_fame = None
+        self.team_to_add_to_hall_of_fame_ = None
         self.test_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
@@ -137,17 +137,17 @@ class TictactoeEnvironment(DefaultEnvironment):
                     self._initialize_point_population_per_opponent_for_coded_opponents()
                     self.point_population_per_opponent_['sbb'] = self._initialize_point_population_of_sbb_opponents(teams_population)
             else: # uses attributes defined in evaluate_point_population() to update the point population
-                super(TictactoeEnvironment, self)._remove_points(flatten(self.samples_per_opponent_to_remove.values()), teams_population)
+                super(TictactoeEnvironment, self)._remove_points(flatten(self.samples_per_opponent_to_remove_.values()), teams_population)
                 if Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
                     if not self.current_population_ or (self.current_population_ and self.current_population_ == 'sbb'):
                         self.point_population_per_opponent_['sbb'] = self._initialize_point_population_of_sbb_opponents(teams_population)
-                for key, values in self.samples_per_opponent_to_keep.iteritems():
+                for key, values in self.samples_per_opponent_to_keep_.iteritems():
                     self.point_population_per_opponent_[key] = values
 
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             hall_of_fame = self.point_population_per_opponent_['hall_of_fame']
-            if self.team_to_add_to_hall_of_fame and self.team_to_add_to_hall_of_fame not in hall_of_fame:
-                hall_of_fame.append(copy.deepcopy(self.team_to_add_to_hall_of_fame))
+            if self.team_to_add_to_hall_of_fame_ and self.team_to_add_to_hall_of_fame_ not in hall_of_fame:
+                hall_of_fame.append(copy.deepcopy(self.team_to_add_to_hall_of_fame_))
                 if len(hall_of_fame) > self.population_size_:
                     if Config.USER['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity']:
                         teams = [p.opponent for p in hall_of_fame]
@@ -225,7 +225,7 @@ class TictactoeEnvironment(DefaultEnvironment):
             for subset, opponent_class_name in zip(kept_subsets_per_opponent, opponents):
                 samples_per_opponent_to_add = self.population_size_ - len(subset)
                 for x in range(samples_per_opponent_to_add):
-                    instance = self.opponent_class_mapping[opponent_class_name]()
+                    instance = self.opponent_class_mapping_[opponent_class_name]()
                     subset.append(TictactoePoint(str(instance), instance))
         else:
             # obtain the data points that will be kept and that will be removed for each subset using uniform probability
@@ -233,17 +233,17 @@ class TictactoeEnvironment(DefaultEnvironment):
             for subset, opponent_class_name in zip(current_subsets_per_opponent, opponents):
                 kept_subsets = random.sample(subset, samples_per_opponent_to_keep) # get points that will be kept
                 for x in range(total_samples_per_opponent_to_add):
-                    instance = self.opponent_class_mapping[opponent_class_name]()
+                    instance = self.opponent_class_mapping_[opponent_class_name]()
                     kept_subsets.append(TictactoePoint(str(instance), instance)) # add new points
                 kept_subsets_per_opponent.append(kept_subsets)
                 removed_subsets_per_opponent.append(list(set(subset) - set(kept_subsets))) # find the remvoed points
         
-        self.samples_per_opponent_to_keep = {}
+        self.samples_per_opponent_to_keep_ = {}
         for key, values in zip(opponents, kept_subsets_per_opponent):
-            self.samples_per_opponent_to_keep[key] = values
-        self.samples_per_opponent_to_remove = {}
+            self.samples_per_opponent_to_keep_[key] = values
+        self.samples_per_opponent_to_remove_ = {}
         for key, values in zip(opponents, removed_subsets_per_opponent):
-            self.samples_per_opponent_to_remove[key] = values
+            self.samples_per_opponent_to_remove_[key] = values
 
     def evaluate_teams_population(self, teams_population):
         for team in teams_population:
@@ -253,8 +253,8 @@ class TictactoeEnvironment(DefaultEnvironment):
             team_ids = [p.opponent.team_id_ for p in self.point_population_per_opponent_['hall_of_fame']]
             for team in sorted_teams:
                 if team.team_id_ not in team_ids:
-                    self.team_to_add_to_hall_of_fame = TictactoePoint(team.__repr__(), team)
-                    self.team_to_add_to_hall_of_fame.opponent.opponent_id = "hall_of_fame"
+                    self.team_to_add_to_hall_of_fame_ = TictactoePoint(team.__repr__(), team)
+                    self.team_to_add_to_hall_of_fame_.opponent.opponent_id = "hall_of_fame"
                     break
 
     def evaluate_team(self, team, mode):
