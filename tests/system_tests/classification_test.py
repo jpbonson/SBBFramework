@@ -186,7 +186,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.65387]
+        expected = [0.41904]
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':

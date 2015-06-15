@@ -155,7 +155,7 @@ class SBB:
         instructions = []
         total_instructions = random.randrange(Config.USER['training_parameters']['program_size']['min'], Config.USER['training_parameters']['program_size']['max']+1)
         for i in range(total_instructions):
-            instructions.append(Instruction(Config.RESTRICTIONS['total_inputs']))
+            instructions.append(Instruction())
         action = random.choice(available_actions)
         program = Program(self.current_generation_, instructions, action)
         return program
