@@ -29,7 +29,7 @@ class Config():
         },
 
         'training_parameters': {
-            'runs_total': 1,
+            'runs_total': 2,
             'generations_total': 20,
             'validate_after_each_generation': 20,
             'populations': {
@@ -65,7 +65,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': None, # default = None
+            'seed': None, # default = None, it can be a single seed for all runs, or an array of seeds per run
             'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
@@ -141,6 +141,10 @@ class Config():
             sys.stderr.write("Error: 'validate_after_each_generation' should be a multiple for 'generations_total', in order to ensure validation of the last generation.\n")
             raise SystemExit
 
+        if isinstance(Config.USER['advanced_training_parameters']['seed'], list):
+            if len(Config.USER['advanced_training_parameters']['seed']) != Config.USER['training_parameters']['runs_total']:
+                sys.stderr.write("Error: If you are using an array of seeds, the size of the array must be equal to the total of runs.\n")
+                raise SystemExit
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
 # Config.USER = thyroid_config.THYROID_DEFAULT

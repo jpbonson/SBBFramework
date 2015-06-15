@@ -27,10 +27,15 @@ class SBB:
     def __init__(self):
         self.current_generation_ = 0
         self.best_scores_per_runs_ = [] # used by tests
-        if not Config.USER['advanced_training_parameters']['seed']:
-            Config.USER['advanced_training_parameters']['seed'] = random.randint(0, Config.RESTRICTIONS['max_seed'])
-        random.seed(Config.USER['advanced_training_parameters']['seed'])
-        numpy.random.seed(Config.USER['advanced_training_parameters']['seed'])
+        if isinstance(Config.USER['advanced_training_parameters']['seed'], list):
+            self.seeds_per_run_ = Config.USER['advanced_training_parameters']['seed']
+        else:
+            if not Config.USER['advanced_training_parameters']['seed']:
+                Config.USER['advanced_training_parameters']['seed'] = random.randint(0, Config.RESTRICTIONS['max_seed'])
+            random.seed(Config.USER['advanced_training_parameters']['seed'])
+            self.seeds_per_run_ = []
+            for index in range(Config.USER['training_parameters']['runs_total']):
+                self.seeds_per_run_.append(random.randint(0, Config.RESTRICTIONS['max_seed']))
 
     def run(self):
         print "\n### Starting pSBB"
@@ -42,13 +47,16 @@ class SBB:
         overall_info = ""
         overall_info += "\n### CONFIG: "+str(Config.USER)+"\n"
         overall_info += environment.metrics()
+        overall_info += "\nSeeds per run: "+str(self.seeds_per_run_)
         print overall_info
 
         run_infos = []
-        for run_id in range(1, Config.USER['training_parameters']['runs_total']+1):
+        for run_id in range(Config.USER['training_parameters']['runs_total']):
             start_time = time.time()
-            run_info = RunInfo(run_id)
-            print("\nStarting run: "+str(run_info.run_id)+"\n")            
+            run_info = RunInfo(run_id+1, self.seeds_per_run_[run_id])
+            print "\nStarting run: "+str(run_info.run_id)
+
+            self._set_seed(run_info.seed)
 
             # 2. Randomly initialize populations
             self.current_generation_ = 0
@@ -114,6 +122,10 @@ class SBB:
             if Config.USER['reinforcement_parameters']['environment'] == 'tictactoe':
                 return TictactoeEnvironment()
         raise ValueError("No environment exists for "+str(Config.USER['task']))
+
+    def _set_seed(self, seed):
+        random.seed(seed)
+        numpy.random.seed(seed)
 
     def _initialize_populations(self):
         """

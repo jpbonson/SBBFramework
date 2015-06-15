@@ -185,8 +185,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.41904]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':

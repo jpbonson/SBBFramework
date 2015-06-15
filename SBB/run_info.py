@@ -6,8 +6,9 @@ class RunInfo:
     Stores metrics for the runs.
     """
 
-    def __init__(self, run_id):
+    def __init__(self, run_id, seed):
         self.run_id = run_id
+        self.seed = seed
         self.elapsed_time = None
         self.best_team = None
         self.actions_distribution_in_last_generation = []
@@ -20,7 +21,8 @@ class RunInfo:
         self.recall_per_generation = [] # only for classification task
         
     def __str__(self):
-        msg = "RUN "+str(self.run_id)
+        msg = "RUN "+str(self.run_id)+"\n"
+        msg += "seed: "+str(self.seed)
         msg += "\n\n##### METRICS PER GENERATION"
         msg += "\n\nTrain Score per Generation: "+str(round_array(self.train_score_per_generation))
         msg += "\n\nTest Score per Generation: "+str(round_array(self.test_score_per_generation))

@@ -91,6 +91,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
         config['training_parameters']['runs_total'] = 2
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = 1
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -110,6 +111,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = [1]
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -129,6 +131,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = False
+        config['advanced_training_parameters']['seed'] = [1]
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -148,6 +151,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = [1]
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -167,6 +171,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = [1]
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -186,6 +191,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = [1]
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -205,11 +211,12 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = [1]
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.69166]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame(self):
@@ -224,6 +231,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = [1]
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -243,6 +251,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = True
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = [1]
         Config.USER = config
         sbb = SBB()
         sbb.run()
