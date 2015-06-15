@@ -1,14 +1,6 @@
 ===
 TODO:
 
-- meeting notes:    
-    - ao inves de gerar uma seed para todos os runs, gerar um array de seeds, um por run, de forma que os runs possam ser individualmente reproduziveis
-    - permitir usar um array de seeds, ou uma seed unica
-
-    - update system tests (classification and tictactoe)
-
-    - fazer release no github
-
 - ir testando enquanto implementa:
     - fazer example para tictactoe (fazer sets de 10 runs separadas?)
     - fazer example para thyroid (mas nao focar muito nisso)
