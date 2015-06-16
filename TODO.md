@@ -1,6 +1,16 @@
 ===
 TODO:
 
+- poker
+    - implementar Match, usando [random opponents, myself] e o server da ACPC + testar
+    - testar acessar o server do NIMS
+    - fazer reinforcement learning funcionar para poker (ver o quanto precisa ser refatorado por ser comum ao tictactoe e ao poker)
+        - se necessario, criar classe abstrata para Match e usar um unico Environment, com as Matches tendo as coisas especificas
+        - ou criar a classe Game
+        - ou apenas deixar a maior parte das coisas na classe abstrata
+    - testar poker + fazer system tests
+    - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
+
 - ir testando enquanto implementa:
     - fazer example para tictactoe (fazer sets de 10 runs separadas?)
     - fazer example para thyroid (mas nao focar muito nisso)
@@ -12,7 +22,7 @@ TODO:
     - implementar um tradutor que usa teams salvas em .json
         - deve ser possivel usa-lo para testar um time no ambiente
         - deve ser possivel usa-lo para treinar mais um conjunto de teams
-            - se o pop_size nao for o suficiente, deve preendher o pop_gap com random ou children
+            - se o pop_size nao for o suficiente, deve preencher o pop_gap com random ou children
 
 - starting poker implementation:
     - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados? dividir pelo resultado maximo obtido?)

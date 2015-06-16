@@ -203,13 +203,13 @@ class ClassificationEnvironment(DefaultEnvironment):
 
     def evaluate_teams_population(self, teams_population):
         for team in teams_population:
-            self.evaluate_team(team, DefaultEnvironment.MODE['training'])
+            self.evaluate_team(team, Config.RESTRICTIONS['mode']['training'])
 
     def evaluate_team(self, team, mode):
         """
         Evaluate the team using the environment inputs.
         """
-        if mode == DefaultEnvironment.MODE['training']:
+        if mode == Config.RESTRICTIONS['mode']['training']:
             population = self.point_population_
             is_training = True
         else:
@@ -250,7 +250,7 @@ class ClassificationEnvironment(DefaultEnvironment):
     def validate(self, current_generation, teams_population):
         fitness = [p.fitness_ for p in teams_population]
         best_team = teams_population[fitness.index(max(fitness))]
-        self.evaluate_team(best_team, DefaultEnvironment.MODE['validation'])
+        self.evaluate_team(best_team, Config.RESTRICTIONS['mode']['validation'])
         return best_team
 
     def metrics(self):

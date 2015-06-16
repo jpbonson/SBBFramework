@@ -5,6 +5,7 @@ class DefaultPoint(object):
     """
     Encapsulates a value from the environment as a point.
     """
+    __metaclass__  = abc.ABCMeta
 
     def __init__(self, point_id):
         self.point_id = point_id
@@ -21,12 +22,6 @@ class DefaultEnvironment(object):
     methods to be able to work with SBB.
     """
     __metaclass__  = abc.ABCMeta
-
-    MODE = {
-        'training': 0,
-        'validation': 1,
-        'champion': 2,
-    }
 
     @abc.abstractmethod
     def __init__(self):

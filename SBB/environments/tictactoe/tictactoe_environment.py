@@ -4,26 +4,24 @@ import numpy
 from collections import defaultdict
 from tictactoe_match import TictactoeMatch
 from tictactoe_opponents import TictactoeRandomOpponent, TictactoeSmartOpponent
-from ..default_environment import DefaultEnvironment, DefaultPoint
+from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
 from ...team import Team
 from ...diversity_maintenance import DiversityMaintenance
 from ...pareto_dominance import ParetoDominance
 from ...utils.helpers import round_value, flatten, is_nearly_equal_to
 from ...config import Config
 
-class TictactoePoint(DefaultPoint):
+class TictactoePoint(ReinforcementPoint):
     """
     Encapsulates a tictactoe board configuration as a point.
     """
 
     def __init__(self, point_id, opponent):
-        super(TictactoePoint, self).__init__(point_id)
-        self.opponent = opponent
+        super(TictactoePoint, self).__init__(point_id, opponent)
 
-class TictactoeEnvironment(DefaultEnvironment):
+class TictactoeEnvironment(ReinforcementEnvironment):
     """
     This environment encapsulates all methods to deal with a reinforcement learning task for TicTacToe.
-    This is a dummy environment, where the only point in the population is a random player.
     """
 
     def __init__(self):
@@ -247,7 +245,7 @@ class TictactoeEnvironment(DefaultEnvironment):
 
     def evaluate_teams_population(self, teams_population):
         for team in teams_population:
-            self.evaluate_team(team, DefaultEnvironment.MODE['training'])
+            self.evaluate_team(team, Config.RESTRICTIONS['mode']['training'])
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             sorted_teams = sorted(teams_population, key=lambda team: team.fitness_, reverse = True) # better ones first
             team_ids = [p.opponent.team_id_ for p in self.point_population_per_opponent_['hall_of_fame']]
@@ -263,17 +261,17 @@ class TictactoeEnvironment(DefaultEnvironment):
         One match as the player 1, another as player 2. The final score is 
         the mean of the scores in the matches (1: win, 0.5: draw, 0: lose)
         """
-        if mode == DefaultEnvironment.MODE['training']:
+        if mode == Config.RESTRICTIONS['mode']['training']:
             is_training = True
             point_population = self.point_population()
         else:
             is_training = False
-            if mode == DefaultEnvironment.MODE['validation']:
+            if mode == Config.RESTRICTIONS['mode']['validation']:
                 if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
                     point_population = self.test_population_ + self.point_population_per_opponent_['hall_of_fame']
                 else:
                     point_population = self.test_population_
-            elif mode == DefaultEnvironment.MODE['champion']:
+            elif mode == Config.RESTRICTIONS['mode']['champion']:
                 point_population = self.champion_population_
 
         results = []
@@ -348,7 +346,7 @@ class TictactoeEnvironment(DefaultEnvironment):
     def validate(self, current_generation, teams_population):
         for team in teams_population:
             if team.generation != current_generation: # dont evaluate teams that have just being created (to improve performance and to get training metrics)
-                self.evaluate_team(team, DefaultEnvironment.MODE['validation'])
+                self.evaluate_team(team, Config.RESTRICTIONS['mode']['validation'])
         score = [p.score_testset_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]
         validation_score = round_value(best_team.score_testset_)
@@ -356,7 +354,7 @@ class TictactoeEnvironment(DefaultEnvironment):
         print "\nscore (validation): "+str(validation_score)
         for key in validation_opponents:
             print "validation score against opponent ("+key+"): "+str(validation_opponents[key])
-        self.evaluate_team(best_team, DefaultEnvironment.MODE['champion'])
+        self.evaluate_team(best_team, Config.RESTRICTIONS['mode']['champion'])
         best_team.extra_metrics_['validation_score'] = validation_score
         best_team.extra_metrics_['validation_opponents'] = validation_opponents
         return best_team

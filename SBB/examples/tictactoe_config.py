@@ -16,7 +16,7 @@ TICTACTOE_DEFAULT = {
         'opponents_pool': 'only_coded',
         'balanced_opponent_populations': True, # if false, the opponent populations will be swapped instead of mixed
         'hall_of_fame': {
-            'enabled': True,
+            'enabled': False,
             'use_genotype_diversity': True, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
         },
         'print_matches': False, # use this option to debug
@@ -24,14 +24,14 @@ TICTACTOE_DEFAULT = {
 
     'training_parameters': {
         'runs_total': 10,
-        'generations_total': 300,
+        'generations_total': 500,
         'validate_after_each_generation': 50,
         'populations': {
-            'teams': 60,
+            'teams': 100,
             'points': 60,
         },
         'replacement_rate': {
-            'teams': 0.7,
+            'teams': 0.5,
             'points': 0.2,
         },
         'mutation': {
@@ -81,8 +81,20 @@ TICTACTOE_DEFAULT = {
     },
 }
 """
-#################### OVERALL RESULTS ####################
+#################### OVERALL RESULTS #################### teams = 60, generations = 300
 
+Test Score per Run: [0.7015, 0.66675, 0.70375, 0.69325, 0.6795, 0.71975, 0.73325, 0.72225, 0.68075, 0.65475]
+mean: 0.69554
+std. deviation: 0.02408
+best run: 7
 
+Train Score per Generation across Runs:
+mean: [0.40791, 0.61541, 0.66375, 0.67791, 0.695, 0.69375, 0.6975]
+std. deviation: [0.03024, 0.05287, 0.05728, 0.03151, 0.03105, 0.04327, 0.02893]
 
+Test Score per Generation across Runs:
+mean: [0.3963, 0.60967, 0.6521, 0.67597, 0.6831, 0.68625, 0.69554]
+std. deviation: [0.00992, 0.01799, 0.02679, 0.02847, 0.02617, 0.0232, 0.02408]
+
+Finished execution, total elapsed time: 9863.88489 secs (mean: 986.38848, std: 178.24815)
 """

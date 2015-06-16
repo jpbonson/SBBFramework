@@ -14,6 +14,7 @@ from team import Team, reset_teams_ids
 from instruction import Instruction
 from environments.classification_environment import ClassificationEnvironment
 from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
+from environments.poker.poker_environment import PokerEnvironment
 from diversity_maintenance import DiversityMaintenance
 from selection import Selection
 from utils.helpers import round_value
@@ -121,6 +122,8 @@ class SBB:
         if Config.USER['task'] == 'reinforcement':
             if Config.USER['reinforcement_parameters']['environment'] == 'tictactoe':
                 return TictactoeEnvironment()
+            if Config.USER['reinforcement_parameters']['environment'] == 'poker':
+                return PokerEnvironment()
         raise ValueError("No environment exists for "+str(Config.USER['task']))
 
     def _set_seed(self, seed):

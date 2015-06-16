@@ -90,7 +90,7 @@ class Config():
     # restrictions used to validate CONFIG and to control the system low-level configurations
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
-        'environment_types': ['tictactoe'],
+        'environment_types': ['tictactoe', 'poker'],
         'opponents_pool_options': ['only_sbb', 'only_coded', 'hybrid'],
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
@@ -112,6 +112,11 @@ class Config():
         'use_memmory_for_actions': False, # initialized by the environment
         'use_memmory_for_results': False, # initialized by the environment
         'write_output_files': True, # used by the test cases
+        'mode': {
+            'training': 0,
+            'validation': 1,
+            'champion': 2,
+        },
     }
 
     @staticmethod
@@ -147,5 +152,5 @@ class Config():
                 raise SystemExit
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
-# Config.USER = thyroid_config.THYROID_DEFAULT
+# Config.USER = thyroid_config.THYROID_WITH_PARETO_FOR_TEAM_ONLY
 # Config.USER = tictactoe_config.TICTACTOE_DEFAULT

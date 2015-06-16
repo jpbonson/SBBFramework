@@ -1,6 +1,9 @@
 import abc
 
 class DefaultOpponent(object):
+    
+    __metaclass__  = abc.ABCMeta
+
     def __init__(self, opponent_id):
         self.opponent_id = opponent_id
 
