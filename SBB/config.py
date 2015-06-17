@@ -152,5 +152,5 @@ class Config():
                 raise SystemExit
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
-# Config.USER = thyroid_config.THYROID_WITH_PARETO_FOR_TEAM_ONLY
+# Config.USER = thyroid_config.THYROID_WITH_PARETOS_WITH_INIT2
 # Config.USER = tictactoe_config.TICTACTOE_DEFAULT

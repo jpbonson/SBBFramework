@@ -28,6 +28,11 @@ In the Windows console, type 'anaconda' before running the python commands.
 
 **Ubuntu:**
 
+First, you must have pip installed:
+```
+sudo apt-get install python-pip
+```
+
 Execute:
 ```
 pip install -r requirement.txt

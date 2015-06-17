@@ -50,7 +50,7 @@ TICTACTOE_DEFAULT = {
         },
         'team_size': { # the min size is the total number of actions
             'min': 2,
-            'max': 18,
+            'max': 12,
         },
         'program_size': {
             'min': 2,
@@ -97,4 +97,44 @@ mean: [0.3963, 0.60967, 0.6521, 0.67597, 0.6831, 0.68625, 0.69554]
 std. deviation: [0.00992, 0.01799, 0.02679, 0.02847, 0.02617, 0.0232, 0.02408]
 
 Finished execution, total elapsed time: 9863.88489 secs (mean: 986.38848, std: 178.24815)
+
+#################### OVERALL RESULTS #################### teams = 100, generations = 500
+
+Test Score per Run: [0.73975, 0.70775, 0.7075, 0.72975, 0.707, 0.71475, 0.69675, 0.71725, 0.72125, 0.67475]
+mean: 0.71165
+std. deviation: 0.01699
+best run: 1
+
+Train Score per Generation across Runs:
+mean: [0.39416, 0.64125, 0.66458, 0.70416, 0.71333, 0.69916, 0.70708, 0.71666, 0.70416, 0.71166, 0.71375]
+std. deviation: [0.04278, 0.03245, 0.04591, 0.04018, 0.03881, 0.03077, 0.02116, 0.0268, 0.03195, 0.01898, 0.03891]
+
+Test Score per Generation across Runs:
+mean: [0.39727, 0.631, 0.6713, 0.68824, 0.69767, 0.70275, 0.7069, 0.71069, 0.71145, 0.71152, 0.71165]
+std. deviation: [0.01097, 0.01699, 0.02619, 0.02753, 0.02205, 0.01793, 0.02164, 0.01868, 0.01884, 0.01744, 0.01699]
+
+Finished execution, total elapsed time: 28757.88647 secs (mean: 2875.78864, std: 923.07447)
+
+#################### OVERALL RESULTS #################### teams = 80, generations = 300
+
+Test Score per Run: [0.674, 0.675, 0.7295, 0.70375, 0.65775, 0.676, 0.716, 0.72775, 0.6635, 0.68175]
+mean: 0.6905
+std. deviation: 0.02516
+best run: 3
+
+Train Score per Generation across Runs:
+mean: [0.39916, 0.61541, 0.66875, 0.68541, 0.6825, 0.69833, 0.70208]
+std. deviation: [0.04436, 0.0375, 0.05343, 0.03391, 0.02647, 0.02629, 0.03376]
+
+Test Score per Generation across Runs:
+mean: [0.4012, 0.63184, 0.66635, 0.67587, 0.68382, 0.68552, 0.6905]
+std. deviation: [0.0073, 0.02225, 0.02368, 0.02074, 0.02087, 0.0256, 0.02516]
+
+Finished execution, total elapsed time: 10422.17372 secs (mean: 1042.21737, std: 296.35298)
+
+#################### OVERALL RESULTS #################### teams = 60, generations = 500
+
+
+#################### OVERALL RESULTS #################### teams = 100, generations = 500, team_size, max: 12
+
 """
