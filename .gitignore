@@ -1,3 +1,7 @@
 outputs/*
 __pycache__
 *.pyc
+SBB/environments/poker/ACPC/dealer
+SBB/environments/poker/ACPC/all_in_expectation
+SBB/environments/poker/ACPC/bm_run_matches
+SBB/environments/poker/ACPC/example_player
