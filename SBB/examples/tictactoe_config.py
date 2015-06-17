@@ -149,7 +149,20 @@ std. deviation: [0.00992, 0.01799, 0.02679, 0.02847, 0.02617, 0.0232, 0.02408, 0
 Finished execution, total elapsed time: 17603.03488 secs (mean: 1760.30348, std: 362.7728)
 
 #################### OVERALL RESULTS #################### teams = 100, generations = 500, team_size, max: 12, points: 60 (HERE)
+Test Score per Run: [0.74175, 0.711, 0.7075, 0.718, 0.70025, 0.68775, 0.71325, 0.7005, 0.66575, 0.688]
+mean: 0.70337
+std. deviation: 0.01942
+best run: 1
 
+Train Score per Generation across Runs:
+mean: [0.39416, 0.61625, 0.66583, 0.69666, 0.70208, 0.69416, 0.68458, 0.71374, 0.69916, 0.70125, 0.69375]
+std. deviation: [0.04278, 0.02954, 0.03693, 0.03133, 0.01434, 0.03447, 0.03496, 0.03338, 0.03128, 0.03594, 0.02746]
+
+Test Score per Generation across Runs:
+mean: [0.39727, 0.62655, 0.6645, 0.68217, 0.68827, 0.69802, 0.6971, 0.70082, 0.70277, 0.70525, 0.70337]
+std. deviation: [0.01097, 0.0172, 0.02212, 0.02625, 0.01928, 0.02595, 0.02416, 0.02127, 0.02224, 0.01977, 0.01942]
+
+Finished execution, total elapsed time: 22859.53834 secs (mean: 2285.95383, std: 645.12023)
 
 #################### OVERALL RESULTS #################### teams = 100, generations = 500, team_size, max: 18, points: 100 (HERE)
 
