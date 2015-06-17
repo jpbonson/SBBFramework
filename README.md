@@ -1,5 +1,5 @@
 # pSBB
-Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming. Developed by the NIMS laboratory, Dalhousie University, Canada. The current implementation can be used to develop teams of programs to solve classification tasks. The next version will apply it to reinforcement learning.
+Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming. Developed by the NIMS laboratory, Dalhousie University, Canada. The current implementation can be used to develop teams of programs to solve classification and reinforcement learning tasks. All the teams evolved are saved in .json files, but still can't be reused, this is a future feature.
 
 # Index
 1. Introduction
