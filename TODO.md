@@ -15,7 +15,7 @@ TODO:
 - ir testando enquanto implementa:
     - fazer example para tictactoe (fazer sets de 10 runs separadas?)
     - fazer example para thyroid (mas nao focar muito nisso)
-    - (pc de casa, pc do lab, NIMS server, Hector, e Bluenose(?))
+    - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector, e Bluenose(?))
 
 - extra:
     - ver como fazer para executar runs de tictactoe no server do NIMS?

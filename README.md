@@ -7,8 +7,7 @@ Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem dec
 3. How to Install
 4. How to Run
 5. How to Test
-6. Implementation Details
-7. SBB Examples
+6. SBB Examples
 
 ## 1. Introduction
 ...
@@ -44,7 +43,7 @@ sudo pip install -r requirements.txt
 ```
 Obs.: You also have the option to use Anaconda for Ubuntu.
 
-Obs.: The Poker environment only works with Ubuntu.
+Obs.: The Poker environment only works with Ubuntu, since the ACPC server only works in Ubuntu. You will need to execute the command 'make' in the ACPC folder to compile the C files for your computer if you want to use the Poker environment.
 
 ## 4. How to Run
 
@@ -66,8 +65,5 @@ You can also execute individual tests files using the file name, for example:
 python tests/unit_tests/unit_tests.py
 ```
 
-## 6. Implementation Details
-- the poker environment only works in Ubuntu since the ACPC server only works in Ubuntu, also you may need to execute the command 'make' in the ACPC folder to compile the C files for your computer.
-
-## 7. SBB Examples
+## 6. SBB Examples
 ...
