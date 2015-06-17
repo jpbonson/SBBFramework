@@ -33,12 +33,15 @@ First, you must have pip installed:
 sudo apt-get install python-pip
 ```
 
-Execute:
+Install the dependencies:
 ```
-pip install -r requirement.txt
+sudo apt-get install build-essential python-dev pkg-config python-setuptools python-numpy python-scipy  libatlas-dev libatlas3gf-base libfreetype6-dev
 ```
-Obs.: Some packages may need additional installations through apt-get install
 
+Then execute:
+```
+sudo pip install -r requirements.txt
+```
 Obs.: You also have the option to use Anaconda for Ubuntu.
 
 Obs.: The Poker environment only works with Ubuntu.

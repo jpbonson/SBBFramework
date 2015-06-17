@@ -15,6 +15,7 @@ TODO:
 - ir testando enquanto implementa:
     - fazer example para tictactoe (fazer sets de 10 runs separadas?)
     - fazer example para thyroid (mas nao focar muito nisso)
+    - (pc de casa, pc do lab, NIMS server, Hector, e Bluenose(?))
 
 - extra:
     - ver como fazer para executar runs de tictactoe no server do NIMS?
@@ -34,11 +35,10 @@ TODO:
 - quando der tempo:
     - experimentar violin plot na R language (our usar http://matplotlib.org/examples/statistics/violinplot_demo.html e integrar no pSBB?)
     - usar import logging para nao floodar a tela com prints qd um test falhar
-    - melhorar README.md (sudo apt-get install build-essential python-dev ? usar virtualenv?)
-    - conferir se requirement.txt funciona
+    - melhorar README.md
     - velocidade de rodar? (pypy, cpython, or c)
     - fazer mais testes unitarios (pareto, diversity, selection, matches, operations, program execution)
-    - adicionar mais documentacao
+    - adicionar mais documentacao no codigo
     - remover comentarios em portugues
 
 ===
