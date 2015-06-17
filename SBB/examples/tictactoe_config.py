@@ -28,7 +28,7 @@ TICTACTOE_DEFAULT = {
         'validate_after_each_generation': 50,
         'populations': {
             'teams': 100,
-            'points': 60,
+            'points': 100,
         },
         'replacement_rate': {
             'teams': 0.5,
@@ -50,7 +50,7 @@ TICTACTOE_DEFAULT = {
         },
         'team_size': { # the min size is the total number of actions
             'min': 2,
-            'max': 12,
+            'max': 18,
         },
         'program_size': {
             'min': 2,
@@ -98,7 +98,7 @@ std. deviation: [0.00992, 0.01799, 0.02679, 0.02847, 0.02617, 0.0232, 0.02408]
 
 Finished execution, total elapsed time: 9863.88489 secs (mean: 986.38848, std: 178.24815)
 
-#################### OVERALL RESULTS #################### teams = 100, generations = 500
+#################### OVERALL RESULTS #################### teams = 100, generations = 500, max: 18, points: 60 (HERE)
 
 Test Score per Run: [0.73975, 0.70775, 0.7075, 0.72975, 0.707, 0.71475, 0.69675, 0.71725, 0.72125, 0.67475]
 mean: 0.71165
@@ -133,8 +133,24 @@ std. deviation: [0.0073, 0.02225, 0.02368, 0.02074, 0.02087, 0.0256, 0.02516]
 Finished execution, total elapsed time: 10422.17372 secs (mean: 1042.21737, std: 296.35298)
 
 #################### OVERALL RESULTS #################### teams = 60, generations = 500
+Test Score per Run: [0.7045, 0.6645, 0.70375, 0.701, 0.686, 0.73625, 0.7315, 0.742, 0.68325, 0.675]
+mean: 0.70277
+std. deviation: 0.02527
+best run: 8
+
+Train Score per Generation across Runs:
+mean: [0.40791, 0.61541, 0.66375, 0.67791, 0.695, 0.69375, 0.6975, 0.68, 0.71125, 0.71041, 0.68791]
+std. deviation: [0.03024, 0.05287, 0.05728, 0.03151, 0.03105, 0.04327, 0.02893, 0.03849, 0.03302, 0.05512, 0.03888]
+
+Test Score per Generation across Runs:
+mean: [0.3963, 0.60967, 0.6521, 0.67597, 0.6831, 0.68625, 0.69554, 0.6963, 0.69705, 0.7004, 0.70277]
+std. deviation: [0.00992, 0.01799, 0.02679, 0.02847, 0.02617, 0.0232, 0.02408, 0.02667, 0.02484, 0.0216, 0.02527]
+
+Finished execution, total elapsed time: 17603.03488 secs (mean: 1760.30348, std: 362.7728)
+
+#################### OVERALL RESULTS #################### teams = 100, generations = 500, team_size, max: 12, points: 60 (HERE)
 
 
-#################### OVERALL RESULTS #################### teams = 100, generations = 500, team_size, max: 12
+#################### OVERALL RESULTS #################### teams = 100, generations = 500, team_size, max: 18, points: 100 (HERE)
 
 """

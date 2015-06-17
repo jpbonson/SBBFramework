@@ -41,6 +41,8 @@ Obs.: Some packages may need additional installations through apt-get install
 
 Obs.: You also have the option to use Anaconda for Ubuntu.
 
+Obs.: The Poker environment only works with Ubuntu.
+
 ## 4. How to Run
 
 ```
@@ -62,8 +64,7 @@ python tests/unit_tests/unit_tests.py
 ```
 
 ## 6. Implementation Details
-
-...
+- the poker environment only works in Ubuntu since the ACPC server only works in Ubuntu, also you may need to execute the command 'make' in the ACPC folder to compile the C files for your computer.
 
 ## 7. SBB Examples
 ...

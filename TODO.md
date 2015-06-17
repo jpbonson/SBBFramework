@@ -2,6 +2,7 @@
 TODO:
 
 - poker
+    - ententer o programa 'dealer' do server ACPC
     - implementar Match, usando [random opponents, myself] e o server da ACPC + testar
     - testar acessar o server do NIMS
     - fazer reinforcement learning funcionar para poker (ver o quanto precisa ser refatorado por ser comum ao tictactoe e ao poker)
