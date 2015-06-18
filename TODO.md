@@ -2,6 +2,8 @@
 TODO:
 
 - poker
+    - fazer poker_player.py, que se conecta ao dealer e joga aleatoriamente, testar dois desses + dealer e ver resultados
+    - encapcular dealer no SBB
     - ententer o programa 'dealer' do server ACPC
     - implementar Match, usando [random opponents, myself] e o server da ACPC + testar
     - testar acessar o server do NIMS

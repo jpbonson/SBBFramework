@@ -81,5 +81,32 @@ TICTACTOE_DEFAULT = {
     },
 }
 """
+#################### OVERALL RESULTS ####################
 
+Test Score per Run: [0.73975, 0.70775, 0.7075, 0.72975, 0.707, 0.71475, 0.69675, 0.71725, 0.72125, 0.67475, 0.7, 0.6975, 0.69225, 0.7485, 0.6775, 0.6655, 0.71075, 0.69875, 0.70625, 0.70725, 0.7095, 0.716, 0.687, 0.74425, 0.66575]
+mean: 0.70573
+std. deviation: 0.02134
+best run: 14
+
+Train Score per Generation across Runs:
+mean: [0.39883, 0.64133, 0.669, 0.693, 0.69566, 0.69849, 0.70416, 0.70083, 0.70216, 0.71116, 0.712]
+std. deviation: [0.04157, 0.04189, 0.037, 0.03633, 0.03722, 0.02712, 0.02988, 0.03636, 0.02944, 0.0257, 0.03812]
+
+Test Score per Generation across Runs:
+mean: [0.4018, 0.62317, 0.66476, 0.68204, 0.68957, 0.69345, 0.69827, 0.70035, 0.70354, 0.70459, 0.70573]
+std. deviation: [0.01183, 0.01776, 0.01979, 0.02299, 0.01989, 0.02239, 0.0218, 0.02332, 0.02354, 0.0218, 0.02134]
+
+Finished execution, total elapsed time: 73960.5714 secs (20.54 hours) (mean: 2958.42285, std: 764.88837)
+"""
+
+TICTACTOE_DEFAULT = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_DEFAULT['advanced_training_parameters']['run_initialization_step2'] = True
+"""
+Running on server
+"""
+
+TICTACTOE_DEFAULT = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_DEFAULT['training_parameters']['generations_total'] = 1000
+"""
+Running on server
 """
