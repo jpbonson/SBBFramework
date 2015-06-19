@@ -3,6 +3,14 @@ import copy
 """
 ##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
+### COMPARISON REGARDING STEP2 IN INITIALIZATION
+
+TICTACTOE_DEFAULT == TICTACTOE_WITH_INIT2
+The U-value is 255.5. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is -1.0963. The p-value is 0.27134. The result is not significant at p <= 0.05.
+
+Results: Increases runtime without increasing performance.
+
 
 
 """
@@ -99,14 +107,36 @@ std. deviation: [0.01183, 0.01776, 0.01979, 0.02299, 0.01989, 0.02239, 0.0218, 0
 Finished execution, total elapsed time: 73960.5714 secs (20.54 hours) (mean: 2958.42285, std: 764.88837)
 """
 
-TICTACTOE_DEFAULT = copy.deepcopy(TICTACTOE_DEFAULT)
-TICTACTOE_DEFAULT['advanced_training_parameters']['run_initialization_step2'] = True
+TICTACTOE_WITH_INIT2 = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_WITH_INIT2['advanced_training_parameters']['run_initialization_step2'] = True
 """
-Running on server
+#################### OVERALL RESULTS ####################
+
+Test Score per Run: [0.7055, 0.72025, 0.711, 0.71075, 0.71625, 0.72025, 0.68625, 0.6795, 0.6875, 0.718, 0.7155, 0.69675, 0.6915, 0.71625, 0.736, 0.71225, 0.706, 0.72425, 0.72675, 0.70425, 0.71625, 0.73975, 0.7155, 0.68325, 0.7285]
+mean: 0.71071
+std. deviation: 0.01566
+best run: 22
+
+Train Score per Generation across Runs:
+mean: [0.529, 0.6635, 0.68283, 0.69016, 0.696, 0.7045, 0.7055, 0.72466, 0.71516, 0.71933, 0.72333]
+std. deviation: [0.05542, 0.04472, 0.04076, 0.03124, 0.04932, 0.04813, 0.03666, 0.02793, 0.03479, 0.0451, 0.03867]
+
+Test Score per Generation across Runs:
+mean: [0.52298, 0.65516, 0.67585, 0.68552, 0.69154, 0.69758, 0.70072, 0.70123, 0.70528, 0.70719, 0.71071]
+std. deviation: [0.04688, 0.02739, 0.02559, 0.02493, 0.02226, 0.01906, 0.01728, 0.01729, 0.01882, 0.01905, 0.01566]
+
+Finished execution, total elapsed time: 176251.19767 secs (mean: 7050.0479, std: 1366.09781)
 """
 
-TICTACTOE_DEFAULT = copy.deepcopy(TICTACTOE_DEFAULT)
-TICTACTOE_DEFAULT['training_parameters']['generations_total'] = 1000
+TICTACTOE_MORE_GENERATIONS = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_MORE_GENERATIONS['training_parameters']['generations_total'] = 1000
 """
-Running on server
+Running on server (26881 nohup.out) - check if the Config is ok when finished
+"""
+
+TICTACTOE_WITH_PARETOS = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_WITH_PARETOS['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
+TICTACTOE_WITH_PARETOS['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
+"""
+Running on server (27330 nohup2.out) - check if the Config is ok when finished
 """

@@ -30,6 +30,8 @@ THYROID_WITH_PARETOS == THYROID_WITH_PARETOS_WITH_INIT2
 The U-value is 309. The distribution is approximately normal. Therefore, the Z-value can be used.
 The Z-Score is -0.0582. The p-value is 0.95216. The result is not significant at p <= 0.05.
 
+Results: Increases runtime without increasing performance.
+
 
 ### COMPARISON REGARDING GENOTYPE DIVERSITY
 
@@ -54,7 +56,8 @@ The U-value is 251. The distribution is approximately normal. Therefore, the Z-v
 The Z-Score is 1.1836. The p-value is 0.238. The result is not significant at p <= 0.05.
 
 Result: Genotype diversity wasn't very useful for this dataset and configuration, the only one 
-that didn't decrease the performance was THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY01.
+that didn't decrease the performance was THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY01. Further tests, 
+for more generations, may improve the performance.
 
 
 ### COMPARISON REGARDING FITNESS SHARING DIVERSITY
@@ -66,6 +69,35 @@ The Z-Score is -1.3. The p-value is 0.1936. The result is not significant at p <
 THYROID_WITH_PARETOS > THYROID_WITH_PARETOS_SHARING_DIVERSITY05
 The U-value is 194. The distribution is approximately normal. Therefore, the Z-value can be used.
 The Z-Score is 2.2895. The p-value is 0.02202. The result is significant at p <= 0.05.
+
+THYROID_WITH_PARETOS == THYROID_WITH_PARETOS_SHARING_DIVERSITY02
+The U-value is 278. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is 0.6597. The p-value is 0.50926. The result is not significant at p <= 0.05.
+
+THYROID_WITH_PARETOS == THYROID_WITH_PARETOS_SHARING_DIVERSITY04
+The U-value is 277. The distribution is approximately normal. Therefore, the Z-value above can be used.
+The Z-Score is -0.6791. The p-value is 0.4965. The result is not significant at p <= 0.05.
+
+Result: Fitness sharing wasn't very useful for this dataset and configuration, for p values equal or 
+lower than 0.4 the diversity didn't decrease the performance. Further tests, for more generations, may 
+improve the performance.
+
+
+### COMPARISON REGARDING GENOTYPE DIVERSITY WITHOUT PARETO
+
+
+### COMPARISON REGARDING FITNESS SHARING DIVERSITY WITHOUT PARETO
+
+
+### COMPARISON REGARDING PROGRAM SIZE
+
+
+### COMPARISON REGARDING DIVERSITY FOR MORE GENERATIONS
+
+
+### COMPARISON REGARDING MORE REGISTERS
+
+
 """
 
 THYROID_DEFAULT = {
@@ -396,12 +428,62 @@ THYROID_WITH_PARETOS_SHARING_DIVERSITY02 = copy.deepcopy(THYROID_WITH_PARETOS)
 THYROID_WITH_PARETOS_SHARING_DIVERSITY02['advanced_training_parameters']['diversity']['fitness_sharing'] = True
 THYROID_WITH_PARETOS_SHARING_DIVERSITY02['advanced_training_parameters']['diversity_configs']['fitness_sharing']['p_value'] = 0.2
 """
+#################### OVERALL RESULTS ####################
 
+Test Score per Run: [0.91304, 0.92354, 0.94423, 0.86432, 0.91015, 0.93657, 0.91441, 0.88044, 0.9754, 0.9776, 0.95282, 0.93024, 0.8923, 0.9586, 0.95629, 0.96564, 0.98012, 0.9575, 0.95235, 0.95474, 0.97125, 0.88683, 0.92005, 0.94395, 0.96705]
+mean: 0.93717
+std. deviation: 0.03184
+best run: 17
+
+Train Score per Generation across Runs:
+mean: [0.49766, 0.74666, 0.81433, 0.83499, 0.85466, 0.85533, 0.87333]
+std. deviation: [0.10618, 0.07176, 0.05459, 0.04515, 0.0446, 0.04777, 0.04606]
+
+Test Score per Generation across Runs:
+mean: [0.49458, 0.7972, 0.87742, 0.90667, 0.91534, 0.92982, 0.93718]
+std. deviation: [0.10525, 0.11565, 0.06911, 0.05174, 0.04653, 0.03472, 0.03184]
+
+Mean Diversity per Generation across Runs (fitness_sharing_diversity):
+mean: [0.01202, 0.01215, 0.01218, 0.01217, 0.01219, 0.01219, 0.0122]
+std. deviation: [1e-05, 4e-05, 4e-05, 5e-05, 3e-05, 4e-05, 4e-05]
+
+Finished execution, total elapsed time: 17254.93292 secs (mean: 690.19731, std: 76.81315)
 """
 
 THYROID_WITH_PARETOS_SHARING_DIVERSITY04 = copy.deepcopy(THYROID_WITH_PARETOS)
 THYROID_WITH_PARETOS_SHARING_DIVERSITY04['advanced_training_parameters']['diversity']['fitness_sharing'] = True
 THYROID_WITH_PARETOS_SHARING_DIVERSITY04['advanced_training_parameters']['diversity_configs']['fitness_sharing']['p_value'] = 0.4
+"""
+#################### OVERALL RESULTS ####################
+
+Test Score per Run: [0.97481, 0.9829, 0.96692, 0.94766, 0.91753, 0.94019, 0.98263, 0.97434, 0.94263, 0.92169, 0.88732, 0.98238, 0.95816, 0.97583, 0.95642, 0.95052, 0.93494, 0.91456, 0.90081, 0.9807, 0.97279, 0.94339, 0.9159, 0.95439, 0.96728]
+mean: 0.94986
+std. deviation: 0.02705
+best run: 2
+
+Train Score per Generation across Runs:
+mean: [0.49566, 0.75833, 0.79866, 0.84233, 0.87766, 0.88733, 0.88966]
+std. deviation: [0.10809, 0.08673, 0.07636, 0.06703, 0.04266, 0.04784, 0.04906]
+
+Test Score per Generation across Runs:
+mean: [0.49356, 0.77157, 0.8455, 0.90738, 0.94195, 0.95044, 0.94987]
+std. deviation: [0.10605, 0.12858, 0.11726, 0.06499, 0.03103, 0.03172, 0.02705]
+
+Mean Diversity per Generation across Runs (fitness_sharing_diversity):
+mean: [0.01202, 0.01214, 0.01216, 0.01217, 0.01219, 0.0122, 0.01221]
+std. deviation: [1e-05, 7e-05, 0.0001, 7e-05, 5e-05, 5e-05, 4e-05]
+
+Finished execution, total elapsed time: 17322.42747 secs (mean: 692.89709, std: 81.17469)
+"""
+
+THYROID_GENOTYPE_DIVERSITY03 = copy.deepcopy(THYROID_DEFAULT)
+THYROID_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
+"""
+
+"""
+
+THYROID_SHARING_DIVERSITY03 = copy.deepcopy(THYROID_DEFAULT)
+THYROID_SHARING_DIVERSITY03['advanced_training_parameters']['diversity']['fitness_sharing'] = True
 """
 
 """
