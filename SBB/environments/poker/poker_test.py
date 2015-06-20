@@ -75,20 +75,7 @@ class PokerPlayer():
 
     def execute(self):
         self.socket.send("VERSION:2.0.0\r\n")
-        message = self.socket.recv(1000)
-        while message:
-            message = message.replace("\r\n", "")
-            print "message: "+str(message)
-            for msg in message.split("MATCHSTATE"):
-                if msg:
-                    print "msg: "+str(msg)
-                    match_state = MatchState(msg)
-                    if match_state.is_current_player_to_act():
-                        send_msg = "MATCHSTATE"+msg+":c\r\n"
-                        self.socket.send(send_msg)
-                        print "send_msg: "+str(send_msg)
-                    else:
-                        print "nothing to do"
+        while True:
             try:
                 message = self.socket.recv(1000)
             except socket_error as e:
@@ -96,6 +83,21 @@ class PokerPlayer():
                     break
                 else:
                     raise e
+            if not message:
+                break
+            message = message.replace("\r\n", "")
+            print "messages: "+str(message)
+            partial_messages = message.split("MATCHSTATE")
+            message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
+            print "last_message: "+str(message)
+            match_state = MatchState(message)
+            if match_state.is_current_player_to_act():
+                send_msg = "MATCHSTATE"+message+":c\r\n"
+                self.socket.send(send_msg)
+                print "send_msg: "+str(send_msg)
+            else:
+                print "nothing to do"
+        print "The end."
         self.finalize()
 
     def finalize(self):
