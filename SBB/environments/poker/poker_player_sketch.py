@@ -30,15 +30,26 @@ class MatchState():
         self.position = None
         self.hand_number = None
         self.rounds = None
-        self.cards = None
+        self.hole_cards = None
+        self.current_hole_cards = None
+        self.opponent_hole_cards = None
+        self.board_cards = None
         self._decode_message(message)
 
     def _decode_message(self, message):
         splitted = message.split(":")
-        self.position = splitted[1]
-        self.hand_number = splitted[2]
+        self.position = int(splitted[1])
+        self.hand_number = int(splitted[2])
         self.rounds = splitted[3].split("/")
-        self.cards = splitted[4].split("/")
+        cards = splitted[4].split("/")
+        self.hole_cards = cards[0].split("|")
+        if self.position == 0:
+            self.current_hole_cards = self.hole_cards[0]
+            self.opponent_hole_cards = self.hole_cards[1]
+        else:
+            self.current_hole_cards = self.hole_cards[1]
+            self.opponent_hole_cards = self.hole_cards[0]
+        self.board_cards = cards[1:-1]
 
     def is_current_player_to_act(self):
         if len(self.rounds) == 1: # since the game uses reverse blinds
@@ -56,22 +67,33 @@ class MatchState():
         else:
             return False
 
+    def is_showdown(self):
+        if self.opponent_hole_cards:
+            return True
+        else:
+            return False
+
     def __str__(self):
         msg = "\n"
         msg += "position: "+str(self.position)+"\n"
         msg += "hand_number: "+str(self.hand_number)+"\n"
         msg += "rounds: "+str(self.rounds)+"\n"
-        msg += "cards: "+str(self.cards)+"\n"
+        msg += "hole_cards: "+str(self.hole_cards)+"\n"
+        msg += "current_hole_cards: "+str(self.current_hole_cards)+"\n"
+        msg += "opponent_hole_cards: "+str(self.opponent_hole_cards)+"\n"
+        msg += "board_cards: "+str(self.board_cards)+"\n"
         return msg
 
 class PokerPlayer():
 
     def __init__(self):
-        pass
+        self.debug = True
 
     def initialize(self, port):
         self.socket = socket.socket()
         self.socket.connect(("localhost", port))
+        if self.debug:
+            self.debug_file = open('./ACPC/outputs/player'+str(port)+'.log','w')
 
     def execute(self):
         self.socket.send("VERSION:2.0.0\r\n")
@@ -86,25 +108,27 @@ class PokerPlayer():
             if not message:
                 break
             message = message.replace("\r\n", "")
-            print "messages: "+str(message)
+            if self.debug:
+                self.debug_file.write("messages: "+str(message)+"\n\n")
             partial_messages = message.split("MATCHSTATE")
             message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-            print "last_message: "+str(message)
             match_state = MatchState(message)
-            if match_state.is_current_player_to_act():
+            if self.debug:
+                self.debug_file.write("last_message: "+str(message)+"\n\n")
+                self.debug_file.write("match_state: "+str(match_state)+"\n\n")
+            if match_state.is_current_player_to_act() and not match_state.is_showdown():
                 send_msg = "MATCHSTATE"+message+":c\r\n"
                 self.socket.send(send_msg)
-                print "send_msg: "+str(send_msg)
+                if self.debug:
+                    self.debug_file.write("send_msg: "+str(send_msg)+"\n\n")
             else:
-                print "nothing to do"
-        print "The end."
+                if self.debug:
+                    self.debug_file.write("nothing to do\n\n")
+        if self.debug:
+            self.debug_file.write("The end.\n\n")
         self.finalize()
 
     def finalize(self):
         self.socket.close()
-
-if __name__ == "__main__":
-    port = int(sys.argv[1])
-    p1 = PokerPlayer()
-    p1.initialize(port)
-    p1.execute()
+        if self.debug:
+            self.debug_file.close()
