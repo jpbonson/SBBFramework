@@ -66,12 +66,12 @@ class MatchState():
 
 class PokerPlayer():
 
-    def __init__(self, port):
+    def __init__(self):
+        pass
+
+    def initialize(self, port):
         self.socket = socket.socket()
         self.socket.connect(("localhost", port))
-
-    def initialize(self):
-        pass
 
     def execute(self):
         self.socket.send("VERSION:2.0.0\r\n")
@@ -105,4 +105,6 @@ class PokerPlayer():
 
 if __name__ == "__main__":
     port = int(sys.argv[1])
-    PokerPlayer(port).execute()
+    p1 = PokerPlayer()
+    p1.initialize(port)
+    p1.execute()
