@@ -1,5 +1,7 @@
 import sys
+import errno
 import socket
+from socket import error as socket_error
 
 # import random
 # import numpy
@@ -87,7 +89,13 @@ class PokerPlayer():
                         print "send_msg: "+str(send_msg)
                     else:
                         print "nothing to do"
-            message = self.socket.recv(1000)
+            try:
+                message = self.socket.recv(1000)
+            except socket_error as e:
+                if e.errno == errno.ECONNRESET:
+                    break
+                else:
+                    raise e
         self.finalize()
 
     def finalize(self):
