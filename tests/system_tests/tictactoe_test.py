@@ -14,7 +14,7 @@ TEST_CONFIG = {
             'enabled': False,
             'use_genotype_diversity': False,
         },
-        'print_matches': False, # use this option to debug
+        'debug_matches': False, # use this option to debug
     },
     'training_parameters': {
         'runs_total': 2,

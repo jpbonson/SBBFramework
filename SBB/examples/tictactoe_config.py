@@ -37,7 +37,7 @@ TICTACTOE_DEFAULT = {
             'enabled': False,
             'use_genotype_diversity': True, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
         },
-        'print_matches': False, # use this option to debug
+        'debug_matches': False, # use this option to debug
     },
 
     'training_parameters': {

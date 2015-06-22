@@ -8,7 +8,7 @@ class PokerMatch():
     def __init__(self):
         self.inputs_ = [] # TODO
         self.result_ = -1
-        self.print_game_ = Config.USER['reinforcement_parameters']['print_matches']
+        self.print_game_ = Config.USER['reinforcement_parameters']['debug_matches']
 
     def perform_action(self, current_player, action):
         """

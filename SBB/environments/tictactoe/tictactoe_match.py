@@ -13,7 +13,7 @@ class TictactoeMatch():
                         TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY,
                         TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY]
         self.result_ = -1
-        self.print_game_ = Config.USER['reinforcement_parameters']['print_matches']
+        self.print_game_ = Config.USER['reinforcement_parameters']['debug_matches']
 
     def perform_action(self, current_player, action):
         """
