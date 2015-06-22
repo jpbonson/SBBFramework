@@ -153,7 +153,7 @@ class MatchState():
 path = "SBB/environments/poker/ACPC"
 
 def player(player, port):
-    debug = True # Config.USER['reinforcement_parameters']['debug_matches']
+    debug = Config.USER['reinforcement_parameters']['debug_matches']
     socket_tmp = socket.socket()
     socket_tmp.connect(("localhost", port))
     if debug:
@@ -179,7 +179,8 @@ def player(player, port):
             debug_file.write("last_message: "+str(message)+"\n\n")
             debug_file.write("match_state: "+str(match_state)+"\n\n")
         if match_state.is_current_player_to_act() and not match_state.is_showdown():
-            send_msg = "MATCHSTATE"+message+":c\r\n"
+            action = player.execute(point_id = None, inputs = None, valid_actions = ["c"], is_training = None)
+            send_msg = "MATCHSTATE"+message+":"+action+"\r\n"
             socket_tmp.send(send_msg)
             if debug:
                 debug_file.write("send_msg: "+str(send_msg)+"\n\n")
@@ -207,6 +208,8 @@ class PokerMatch():
 
         p1 = PokerRandomOpponent()
         p2 = PokerRandomOpponent()
+        p1.initialize()
+        p2.initialize()
         t1 = threading.Thread(target=player, args=[p1, ports[0]])
         t2 = threading.Thread(target=player, args=[p2, ports[1]])
         p = subprocess.Popen([path+'/dealer', path+'/outputs/test_match', path+'/holdem.limit.2p.reverse_blinds.game', str(total_hand), str(seed),
@@ -224,6 +227,3 @@ class PokerMatch():
         players = splitted_score[1].split("|")
         print "scores: "+str(scores)
         print "players: "+str(players)
-
-# mix o player_sketch e a classe de oponents
-# mix match_sketch e a classe de match
