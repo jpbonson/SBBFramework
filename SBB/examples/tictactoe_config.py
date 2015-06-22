@@ -11,6 +11,16 @@ The Z-Score is -1.0963. The p-value is 0.27134. The result is not significant at
 
 Results: Increases runtime without increasing performance.
 
+### COMPARISON REGARDING PARETO
+
+TICTACTOE_DEFAULT < TICTACTOE_WITH_PARETOS
+The U-value is 143.5. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is -3.2694. The p-value is 0.00108. The result is significant at p <= 0.05.
+
+TICTACTOE_WITH_PARETOS ? TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY
+
+
+TICTACTOE_WITH_PARETOS ? TICTACTOE_WITH_PARETO_FOR_POINT_ONLY
 
 
 """
@@ -89,7 +99,7 @@ TICTACTOE_DEFAULT = {
     },
 }
 """
-#################### OVERALL RESULTS ####################
+#################### OVERALL RESULTS #################### (rerun, to get the runtime)
 
 Test Score per Run: [0.73975, 0.70775, 0.7075, 0.72975, 0.707, 0.71475, 0.69675, 0.71725, 0.72125, 0.67475, 0.7, 0.6975, 0.69225, 0.7485, 0.6775, 0.6655, 0.71075, 0.69875, 0.70625, 0.70725, 0.7095, 0.716, 0.687, 0.74425, 0.66575]
 mean: 0.70573
@@ -138,5 +148,34 @@ TICTACTOE_WITH_PARETOS = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_WITH_PARETOS['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
 TICTACTOE_WITH_PARETOS['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
 """
-Running on server (27330 nohup2.out) - check if the Config is ok when finished
+#################### OVERALL RESULTS ####################
+
+Test Score per Run: [0.72275, 0.727, 0.761, 0.701, 0.72525, 0.671, 0.73575, 0.71525, 0.743, 0.71075, 0.71125, 0.7245, 0.76, 0.731, 0.72075, 0.737, 0.7205, 0.73175, 0.70675, 0.722, 0.7235, 0.713, 0.733, 0.72475, 0.71975]
+mean: 0.72369
+std. deviation: 0.0176
+best run: 3
+
+Train Score per Generation across Runs:
+mean: [0.40183, 0.58866, 0.63416, 0.65083, 0.65883, 0.665, 0.66483, 0.67983, 0.68866, 0.68633, 0.68666]
+std. deviation: [0.03314, 0.0385, 0.03853, 0.03749, 0.04531, 0.02513, 0.03844, 0.03045, 0.03656, 0.0341, 0.02974]
+
+Test Score per Generation across Runs:
+mean: [0.3994, 0.63549, 0.66534, 0.68267, 0.69463, 0.70086, 0.71284, 0.71159, 0.71767, 0.72099, 0.72369]
+std. deviation: [0.01369, 0.02178, 0.02907, 0.02752, 0.02583, 0.02569, 0.02045, 0.01991, 0.01735, 0.01949, 0.0176]
+
+Finished execution, total elapsed time: 175879.44134 secs (mean: 7035.17765, std: 1449.83035)
+"""
+
+TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
+TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+"""
+28247, nohup3
+"""
+
+TICTACTOE_WITH_PARETO_FOR_POINT_ONLY = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_WITH_PARETO_FOR_POINT_ONLY['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
+TICTACTOE_WITH_PARETO_FOR_POINT_ONLY['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
+"""
+28249, nohup4
 """
