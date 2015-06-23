@@ -4,6 +4,7 @@ TODO:
 - I was thinking if in some way the result of the showdown could be useful for the SBB player (during and after training), e.g. be able to know if the opponent was bluffing or not. An option would be to create an input "% of showdown hands the opponent has bluffed", but then it woulb be necessary to implement a way to define what is or isn't a bluff.
 
 - poker
+    - cofnerir se rpecisar das classes PokerPoint e TictactoePoint, ao inves de apenas ReinforcementPoint (+ os dois metodos de instanciar)
     - fazer poker_player.py, que se conecta ao dealer e joga aleatoriamente, testar dois desses + dealer e ver resultados
     - encapcular dealer no SBB
     - ententer o programa 'dealer' do server ACPC

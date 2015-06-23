@@ -37,7 +37,6 @@ class ClassificationEnvironment(DefaultEnvironment):
         self.trainset_per_action_ = self._get_data_per_action(self.train_population_)
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
-        Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
         Config.RESTRICTIONS['use_memmory_for_actions'] = True # since for the same input, the output label is always the same
         Config.RESTRICTIONS['use_memmory_for_results'] = False # since it is necessary to know exactly what labels were correct or incorrect, not just the overall results
         # ensures that the point population will be balanced:

@@ -30,7 +30,7 @@ class PokerMatch2():
         #     print str(self.inputs_[3:6])
         #     print str(self.inputs_[6:9])
 
-    def valid_actions(self):
+    def valid_actions(self): # precisa ser um array com [0,1,2]
         """
         
         """

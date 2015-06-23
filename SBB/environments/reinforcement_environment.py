@@ -4,10 +4,9 @@ import copy
 import numpy
 from collections import defaultdict
 from default_environment import DefaultEnvironment, DefaultPoint
-from ..team import Team
 from ..diversity_maintenance import DiversityMaintenance
 from ..pareto_dominance import ParetoDominance
-from ..utils.helpers import round_value, flatten, is_nearly_equal_to
+from ..utils.helpers import round_value, flatten
 from ..config import Config
 
 class ReinforcementPoint(DefaultPoint):
@@ -44,18 +43,15 @@ class ReinforcementEnvironment(DefaultEnvironment):
         
         """
 
-    @abc.abstractmethod
-    def metrics(self):
-        """
-
-        """
-
-    def __init__(self, total_actions, total_inputs, coded_opponents, opponent_class_mapping, action_mapping):
+    def __init__(self, total_actions, total_inputs, coded_opponents):
         self.total_actions_ = total_actions
         self.total_inputs_ = total_inputs
         self.coded_opponents_ = coded_opponents
-        self.opponent_class_mapping_ = opponent_class_mapping
-        self.action_mapping_ = action_mapping
+        self.opponent_class_mapping_ = {}
+        for opponent in self.coded_opponents_:
+            self.opponent_class_mapping_[str(opponent)] = opponent
+        Config.RESTRICTIONS['total_actions'] = self.total_actions_
+        Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         self.team_to_add_to_hall_of_fame_ = None
         self.test_population_ = None
         self.champion_population_ = None
@@ -63,9 +59,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.current_population_ = None
         self.samples_per_opponent_to_keep_ = {}
         self.samples_per_opponent_to_remove_ = {}
-        Config.RESTRICTIONS['total_actions'] = self.total_actions_
-        Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
-        Config.RESTRICTIONS['action_mapping'] = self.action_mapping_
         Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
         Config.RESTRICTIONS['use_memmory_for_results'] = True # since the opponents are seeded, the same point will always produce the same final result
         self.point_population_size_per_opponent_, self.total_opponents_, self.point_population_per_opponent_ = self._get_balanced_metrics()

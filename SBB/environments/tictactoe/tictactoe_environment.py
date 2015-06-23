@@ -1,15 +1,8 @@
 import random
-# import copy
 import numpy
-# from collections import defaultdict
 from tictactoe_match import TictactoeMatch
 from tictactoe_opponents import TictactoeRandomOpponent, TictactoeSmartOpponent
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
-# from ...team import Team
-# from ...diversity_maintenance import DiversityMaintenance
-# from ...pareto_dominance import ParetoDominance
-# from ...utils.helpers import round_value, flatten, is_nearly_equal_to
-# from ...config import Config
 
 class TictactoePoint(ReinforcementPoint):
     """
@@ -27,16 +20,13 @@ class TictactoeEnvironment(ReinforcementEnvironment):
         total_actions = 9 # spaces in the board
         total_inputs = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
         coded_opponents = [TictactoeRandomOpponent, TictactoeSmartOpponent]
-        opponent_class_mapping = {}
-        for opponent in coded_opponents:
-            opponent_class_mapping[str(opponent)] = opponent
-        action_mapping = {
+        super(TictactoeEnvironment, self).__init__(total_actions, total_inputs, coded_opponents)
+        self.total_positions_ = 2
+        self.action_mapping_ = {
             '[0,0]': 0, '[0,1]': 1, '[0,2]': 2,
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
             '[2,0]': 6, '[2,1]': 7, '[2,2]': 8,
         }
-        super(TictactoeEnvironment, self).__init__(total_actions, total_inputs, coded_opponents, opponent_class_mapping, action_mapping)
-        self.total_positions_ = 2
 
     def instantiate_point_for_coded_opponent_class(self, opponent_class):
         """
@@ -52,6 +42,9 @@ class TictactoeEnvironment(ReinforcementEnvironment):
         return TictactoePoint(team.__repr__(), team)
 
     def play_match(self, team, point, is_training):
+        """
+
+        """
         outputs = []
         for position in range(1, self.total_positions_+1):
             if position == 1:
