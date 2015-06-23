@@ -5,4 +5,4 @@ from SBB.environments.poker.poker_match import PokerMatch
 if __name__ == "__main__":
     Config.check_parameters()
     SBB().run()
-    # PokerMatch().run()
+    # PokerMatch()._play_match()

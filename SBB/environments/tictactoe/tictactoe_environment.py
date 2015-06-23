@@ -309,7 +309,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
             team.score_testset_ = score
             team.extra_metrics_ = extra_metrics
 
-    def _play_match(self, position, point, team, is_training):
+    def _play_match(self, position, point, team, is_training): # remover position dos parametros?, trocar team e point de ordem
         if position == 1:
             first_player = point.opponent
             is_training_for_first_player = False

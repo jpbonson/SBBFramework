@@ -170,17 +170,16 @@ def player(player, port):
         if not message:
             break
         message = message.replace("\r\n", "")
+        partial_messages = message.split("MATCHSTATE")
+        last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
+        match_state = MatchState(last_message)
         if debug:
             debug_file.write("messages: "+str(message)+"\n\n")
-        partial_messages = message.split("MATCHSTATE")
-        message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-        match_state = MatchState(message)
-        if debug:
-            debug_file.write("last_message: "+str(message)+"\n\n")
+            debug_file.write("last_message: "+str(last_message)+"\n\n")
             debug_file.write("match_state: "+str(match_state)+"\n\n")
         if match_state.is_current_player_to_act() and not match_state.is_showdown():
             action = player.execute(point_id = None, inputs = None, valid_actions = ["c"], is_training = None)
-            send_msg = "MATCHSTATE"+message+":"+action+"\r\n"
+            send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
             socket_tmp.send(send_msg)
             if debug:
                 debug_file.write("send_msg: "+str(send_msg)+"\n\n")
@@ -197,7 +196,7 @@ class PokerMatch():
 
     """
 
-    def run(self):
+    def _play_match(self):
         if not os.path.exists(path+"/outputs/"):
             os.makedirs(path+"/outputs/")
         debug = True
