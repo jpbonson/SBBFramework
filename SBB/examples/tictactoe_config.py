@@ -11,6 +11,16 @@ The Z-Score is -1.0963. The p-value is 0.27134. The result is not significant at
 
 Results: Increases runtime without increasing performance.
 
+### COMPARISON REGARDING 1000 GENS
+
+TICTACTOE_DEFAULT < TICTACTOE_MORE_GENERATIONS
+The U-value is 197. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is -2.2313. The p-value is 0.02574. The result is significant at p <= 0.05.
+
+Results: From 500 to 1000 generations the default configuration improved from (mean: 0.70573
+std. deviation: 0.02134) to (mean: 0.71866 std. deviation: 0.01797). So it indeed improved but 
+the extra runtime wasn't really worth it.
+
 ### COMPARISON REGARDING PARETO
 
 TICTACTOE_DEFAULT < TICTACTOE_WITH_PARETOS
@@ -21,6 +31,9 @@ TICTACTOE_WITH_PARETOS ? TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY
 
 
 TICTACTOE_WITH_PARETOS ? TICTACTOE_WITH_PARETO_FOR_POINT_ONLY
+
+
+Results: 
 
 
 """
@@ -115,6 +128,8 @@ mean: [0.4018, 0.62317, 0.66476, 0.68204, 0.68957, 0.69345, 0.69827, 0.70035, 0.
 std. deviation: [0.01183, 0.01776, 0.01979, 0.02299, 0.01989, 0.02239, 0.0218, 0.02332, 0.02354, 0.0218, 0.02134]
 
 Finished execution, total elapsed time: 73960.5714 secs (20.54 hours) (mean: 2958.42285, std: 764.88837)
+
+28586, nohup5
 """
 
 TICTACTOE_WITH_INIT2 = copy.deepcopy(TICTACTOE_DEFAULT)
@@ -141,7 +156,22 @@ Finished execution, total elapsed time: 176251.19767 secs (mean: 7050.0479, std:
 TICTACTOE_MORE_GENERATIONS = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_MORE_GENERATIONS['training_parameters']['generations_total'] = 1000
 """
-Running on server (26881 nohup.out) - check if the Config is ok when finished
+#################### OVERALL RESULTS ####################
+
+Test Score per Run: [0.74075, 0.71175, 0.7175, 0.73725, 0.70675, 0.7205, 0.72775, 0.72475, 0.7315, 0.718, 0.70925, 0.69425, 0.69425, 0.74775, 0.6835, 0.708, 0.744, 0.73375, 0.7185, 0.7175, 0.71125, 0.7375, 0.7005, 0.74375, 0.68625]
+mean: 0.71866
+std. deviation: 0.01797
+best run: 14
+
+Train Score per Generation across Runs:
+mean: [0.39883, 0.64133, 0.669, 0.693, 0.69566, 0.69849, 0.70416, 0.70083, 0.70216, 0.71116, 0.712, 0.69783, 0.71849, 0.71516, 0.72416, 0.71066, 0.717, 0.7175, 0.727, 0.73233, 0.722]
+std. deviation: [0.04157, 0.04189, 0.037, 0.03633, 0.03722, 0.02712, 0.02988, 0.03636, 0.02944, 0.0257, 0.03812, 0.03426, 0.03574, 0.03117, 0.03553, 0.02891, 0.03106, 0.0406, 0.0368, 0.03296, 0.04637]
+
+Test Score per Generation across Runs:
+mean: [0.4018, 0.62317, 0.66476, 0.68204, 0.68957, 0.69345, 0.69827, 0.70035, 0.70354, 0.70459, 0.70573, 0.70668, 0.70813, 0.70849, 0.71223, 0.71294, 0.71369, 0.71464, 0.71649, 0.71876, 0.71866]
+std. deviation: [0.01183, 0.01776, 0.01979, 0.02299, 0.01989, 0.02239, 0.0218, 0.02332, 0.02354, 0.0218, 0.02134, 0.02043, 0.01991, 0.02049, 0.01982, 0.01896, 0.01927, 0.01902, 0.01747, 0.0188, 0.01797]
+
+Finished execution, total elapsed time: 366270.24336 secs (mean: 14650.80973, std: 4126.0743)
 """
 
 TICTACTOE_WITH_PARETOS = copy.deepcopy(TICTACTOE_DEFAULT)
