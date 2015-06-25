@@ -25,9 +25,9 @@ class Config():
                 'enabled': True,
                 'use_genotype_diversity': True, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
-            'debug_matches': False, # use this option to debug
+            'debug_matches': True, # use this option to debug
             'poker': {
-                'total_hand': 7,
+                'total_hands': 7,
             }
         },
 

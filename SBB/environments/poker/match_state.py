@@ -1,7 +1,10 @@
 class MatchState():
+
+    TOTAL_INPUTS = -1 # TODO
+
     def __init__(self, message):
         self.position = None
-        self.hand_number = None
+        self.hand_id = None
         self.rounds = None
         self.hole_cards = None
         self.current_hole_cards = None
@@ -12,7 +15,7 @@ class MatchState():
     def _decode_message(self, message):
         splitted = message.split(":")
         self.position = int(splitted[1])
-        self.hand_number = int(splitted[2])
+        self.hand_id = int(splitted[2])
         self.rounds = splitted[3].split("/")
         cards = splitted[4].split("/")
         self.hole_cards = cards[0].split("|")
@@ -46,10 +49,22 @@ class MatchState():
         else:
             return False
 
+    def inputs(self):
+        """
+        
+        """
+        pass # TODO from_the_point_of_view_of the current player
+
+    def valid_actions(self):
+        """
+        
+        """
+        return [2] # TODO precisa ser um array com [0,1,2]
+
     def __str__(self):
         msg = "\n"
         msg += "position: "+str(self.position)+"\n"
-        msg += "hand_number: "+str(self.hand_number)+"\n"
+        msg += "hand_id: "+str(self.hand_id)+"\n"
         msg += "rounds: "+str(self.rounds)+"\n"
         msg += "hole_cards: "+str(self.hole_cards)+"\n"
         msg += "current_hole_cards: "+str(self.current_hole_cards)+"\n"
