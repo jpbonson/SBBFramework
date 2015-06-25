@@ -6,7 +6,7 @@ from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementP
 
 class TictactoePoint(ReinforcementPoint):
     """
-    Encapsulates a tictactoe board configuration as a point.
+    Encapsulates a tictactoe opponent as a point.
     """
 
     def __init__(self, point_id, opponent):
@@ -29,16 +29,10 @@ class TictactoeEnvironment(ReinforcementEnvironment):
         }
 
     def instantiate_point_for_coded_opponent_class(self, opponent_class):
-        """
-        
-        """
         instance = opponent_class()
         return TictactoePoint(str(instance), instance)
 
     def instantiate_point_for_sbb_opponent(self, team):
-        """
-        
-        """
         return TictactoePoint(team.__repr__(), team)
 
     def play_match(self, team, point, is_training):

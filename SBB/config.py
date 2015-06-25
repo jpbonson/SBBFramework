@@ -26,6 +26,9 @@ class Config():
                 'use_genotype_diversity': True, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
+            'poker': {
+                'total_hand': 7,
+            }
         },
 
         'training_parameters': {
@@ -117,6 +120,10 @@ class Config():
             'validation': 1,
             'champion': 2,
         },
+        'poker': {
+            'acpc_path': "SBB/environments/poker/ACPC/",
+            'available_ports': range(18790, 18800),
+        }
     }
 
     @staticmethod
