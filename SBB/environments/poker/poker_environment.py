@@ -90,9 +90,9 @@ class PokerEnvironment(ReinforcementEnvironment):
             raise SystemExit
         avg_score = float(scores[0])/float(Config.USER['reinforcement_parameters']['poker']['total_hand'])
         print "avg score: "+str(avg_score)
-        # como normalizar? considerar que pode ser positivo ou negativo
-        # 10/20 (10 = valor do bet/raise no pre-flop e flop, 20 = valor no turn e river)
-        # maximum per round: call, raise, raise, raise
+        normalized_value = self._normalize_winning(avg_score)
+        print "normalized_value: "+str(normalized_value)
+        return normalized_value
 
         # outputs = []
         # for position in range(1, self.total_positions_+1):
@@ -132,6 +132,16 @@ class PokerEnvironment(ReinforcementEnvironment):
         #             break
         # return numpy.mean(outputs)
 
+    def _normalize_winning(self, value):
+        max_winning = self._get_maximum_winning()
+        max_losing = -max_winning
+        return (value - max_losing)/(max_winning - max_losing)
+
+    def _get_maximum_winning(self):
+        max_small_bet_turn_winning = Config.RESTRICTIONS['poker']['small_bet']*4
+        max_big_bet_turn_winning = Config.RESTRICTIONS['poker']['big_bet']*4
+        return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
+
     def metrics(self):
         msg = ""
         msg += "\n### Environment Info:"
@@ -169,7 +179,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                 debug_file.write("last_message: "+str(last_message)+"\n\n")
                 debug_file.write("match_state: "+str(match_state)+"\n\n")
             if match_state.is_current_player_to_act() and not match_state.is_showdown():
-                action = player.execute(point_id = None, inputs = None, valid_actions = ["c"], is_training = None)
+                action = player.execute(point_id = None, inputs = None, valid_actions = ["r"], is_training = None)
                 send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
                 socket_tmp.send(send_msg)
                 if debug:
