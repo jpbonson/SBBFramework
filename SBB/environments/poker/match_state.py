@@ -59,7 +59,19 @@ class MatchState():
         """
         
         """
-        return [2] # TODO precisa ser um array com [0,1,2]
+        valid = [0, 1]
+        # check if can raise
+        if len(self.rounds) == 1:
+            max_raises = 3
+        else:
+            max_raises = 4
+        raises = 0
+        for action in self.rounds[-1]:
+            if action == 'r':
+                raises += 1
+        if raises < max_raises:
+            valid.append(2)
+        return valid
 
     def __str__(self):
         msg = "\n"

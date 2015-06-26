@@ -50,10 +50,15 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
         # TODO temp, for debug
         team = PokerRandomOpponent()
-        team.seed_ = 0
+        # team.seed_ = 3
+        team.opponent_id = "team"
         point = self.instantiate_point_for_coded_opponent_class(PokerRandomOpponent)
-        point.opponent.seed_ = 0
-        point.seed_ = 0
+        # point.opponent.seed_ = 2
+        point.opponent.opponent_id = "opponent"
+        point.seed_ = 1 # TODO: nao consegue iniciar quando o valor da seed eh alto, ex.: 100
+        print str(team.seed_ )
+        print str(point.opponent.seed_)
+        print str(point.seed_)
         #
 
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/"):
@@ -71,7 +76,6 @@ class PokerEnvironment(ReinforcementEnvironment):
                                 '-p', str(Config.RESTRICTIONS['poker']['available_ports'][0]), str(Config.RESTRICTIONS['poker']['available_ports'][1]), 
                                 '-l'
                             ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        time.sleep(1) # so the dealer have enough time to initialize
         t1.start()
         t2.start()
         out, err = p.communicate()
@@ -118,12 +122,24 @@ class PokerEnvironment(ReinforcementEnvironment):
     @staticmethod
     def execute_player(player, port, point_id, is_training):
         socket_tmp = socket.socket()
-        socket_tmp.connect(("localhost", port))
+
+        total = 10
+        attempt = 0
+        while True:
+            try:
+                socket_tmp.connect(("localhost", port))
+                break
+            except socket_error as e:
+                attempt += 1
+                if e.errno == errno.ECONNREFUSED:
+                    time.sleep(1)
+                if attempt > total:
+                    raise ValueError(player.opponent_id+" could not connect to port "+str(port))
+
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file = open(Config.RESTRICTIONS['poker']['acpc_path']+'outputs/player'+str(port)+'.log','w')
         socket_tmp.send("VERSION:2.0.0\r\n")
         last_hand_id = -1
-        has_folded = False
         while True:
             try:
                 message = socket_tmp.recv(1000)
@@ -141,25 +157,26 @@ class PokerEnvironment(ReinforcementEnvironment):
             if match_state.hand_id != last_hand_id:
                 last_hand_id = match_state.hand_id
                 player.initialize() # so a probabilistic opponent will always play equal for the same hands and actions
-                has_folded = False
             if Config.USER['reinforcement_parameters']['debug_matches']:
                 debug_file.write("match_state: "+str(match_state)+"\n\n")
-            if not has_folded and match_state.is_current_player_to_act() and not match_state.is_showdown():
+                # print "("+str(player.opponent_id)+") match_state: "+str(match_state)
+            if match_state.is_current_player_to_act() and not match_state.is_showdown():
                 action = player.execute(point_id, match_state.inputs(), match_state.valid_actions(), is_training)
                 if action is None:
                     action = "c"
                 else:
                     action = PokerEnvironment.ACTION_MAPPING[action]
-                if action == 'f':
-                    has_folded = True
                 send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
                 socket_tmp.send(send_msg)
                 if Config.USER['reinforcement_parameters']['debug_matches']:
                     debug_file.write("send_msg: "+str(send_msg)+"\n\n")
+                    # print "("+str(player.opponent_id)+") send_msg: "+str(send_msg)
             else:
                 if Config.USER['reinforcement_parameters']['debug_matches']:
                     debug_file.write("nothing to do\n\n")
+                    # print "("+str(player.opponent_id)+") nothing to do\n\n"
         socket_tmp.close()
         if Config.USER['reinforcement_parameters']['debug_matches']:
+            # print "("+str(player.opponent_id)+") The end.\n\n"
             debug_file.write("The end.\n\n")
             debug_file.close()
