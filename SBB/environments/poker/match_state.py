@@ -59,7 +59,8 @@ class MatchState():
         """
         
         """
-        valid = [0, 1]
+        # valid = [0, 1]
+        valid = [1]
         # check if can raise
         if len(self.rounds) == 1:
             max_raises = 3

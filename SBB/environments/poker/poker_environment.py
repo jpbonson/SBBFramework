@@ -31,7 +31,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     ACTION_MAPPING = {0: 'f', 1: 'c', 2: 'r'}
 
     def __init__(self):
-        total_actions = 3 # call, fold, raise
+        total_actions = 3 # fold, call, raise
         total_inputs = MatchState.TOTAL_INPUTS
         coded_opponents = [PokerRandomOpponent] # TODO more opponents
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents)
@@ -53,9 +53,9 @@ class PokerEnvironment(ReinforcementEnvironment):
         # team.seed_ = 3
         team.opponent_id = "team"
         point = self.instantiate_point_for_coded_opponent_class(PokerRandomOpponent)
-        # point.opponent.seed_ = 2
+        # point.opponent.seed_ = 1
         point.opponent.opponent_id = "opponent"
-        point.seed_ = 1 # TODO: nao consegue iniciar quando o valor da seed eh alto, ex.: 100
+        # point.seed_ = 100
         print str(team.seed_ )
         print str(point.opponent.seed_)
         print str(point.seed_)
@@ -73,12 +73,13 @@ class PokerEnvironment(ReinforcementEnvironment):
                                 str(Config.USER['reinforcement_parameters']['poker']['total_hands']), 
                                 str(point.seed_),
                                 'sbb', 'opponent', 
-                                '-p', str(Config.RESTRICTIONS['poker']['available_ports'][0]), str(Config.RESTRICTIONS['poker']['available_ports'][1]), 
+                                '-p', str(Config.RESTRICTIONS['poker']['available_ports'][0])+","+str(Config.RESTRICTIONS['poker']['available_ports'][1]),
                                 '-l'
                             ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         t1.start()
         t2.start()
         out, err = p.communicate()
+
         if Config.USER['reinforcement_parameters']['debug_matches']:
             with open(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/match.log", "w") as text_file:
                 text_file.write(str(err))

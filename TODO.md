@@ -6,6 +6,7 @@ TODO:
     - metrica para saber quais inputs estao sendo usados
     - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
     - permitir rodar point populations agrupando opponents for grupo, e sem agrupamento
+    - nos testar, cehcar se os teams sabem blefar
 
 - ir testando enquanto implementa:
     - fazer example para tictactoe (fazer sets de 10 runs separadas?)
