@@ -1,22 +1,11 @@
 ===
 TODO:
 
-- metrica para saber quais inputs estao sendo usados
-- I was thinking if in some way the result of the showdown could be useful for the SBB player (during and after training), e.g. be able to know if the opponent was bluffing or not. An option would be to create an input "% of showdown hands the opponent has bluffed", but then it woulb be necessary to implement a way to define what is or isn't a bluff.
-
 - poker
-    - cofnerir se rpecisar das classes PokerPoint e TictactoePoint, ao inves de apenas ReinforcementPoint (+ os dois metodos de instanciar)
-    - fazer poker_player.py, que se conecta ao dealer e joga aleatoriamente, testar dois desses + dealer e ver resultados
-    - encapcular dealer no SBB
-    - ententer o programa 'dealer' do server ACPC
-    - implementar Match, usando [random opponents, myself] e o server da ACPC + testar
-    - testar acessar o server do NIMS
-    - fazer reinforcement learning funcionar para poker (ver o quanto precisa ser refatorado por ser comum ao tictactoe e ao poker)
-        - se necessario, criar classe abstrata para Match e usar um unico Environment, com as Matches tendo as coisas especificas
-        - ou criar a classe Game
-        - ou apenas deixar a maior parte das coisas na classe abstrata
-    - testar poker + fazer system tests
+    - implementar poker + testar + fazer system tests
+    - metrica para saber quais inputs estao sendo usados
     - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
+    - permitir rodar point populations agrupando opponents for grupo, e sem agrupamento
 
 - ir testando enquanto implementa:
     - fazer example para tictactoe (fazer sets de 10 runs separadas?)
@@ -24,19 +13,11 @@ TODO:
     - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector, e Bluenose(?))
 
 - extra:
-    - ver como fazer para executar runs de tictactoe no server do NIMS?
-    - testar se a Step 2 da inicializacao dos teams realmente melhora ou apenas consome processamento
     - fazer reinforcement learning para Othello?
     - implementar um tradutor que usa teams salvas em .json
         - deve ser possivel usa-lo para testar um time no ambiente
         - deve ser possivel usa-lo para treinar mais um conjunto de teams
             - se o pop_size nao for o suficiente, deve preencher o pop_gap com random ou children
-
-- starting poker implementation:
-    - conferir se pareto e fitness sharing ainda funcionam mesmo quando a fitness sao vitorias ou dinheiro ganho (normalizar resultados? dividir pelo resultado maximo obtido?)
-    - implementar poker environment (resetar os registers apos cada acao (ou logo antes) e point population: opponents (static, dynamic, itself), hands, positions), um point inclui a position, ou todos os points sempre incluem varias matches em todas as positions?
-    - refatorar environments (criar environment de reinforcement?)
-    - no poker, permitir rodar point populations agrupando opponents for grupo, e sem agrupamento
 
 - quando der tempo:
     - experimentar violin plot na R language (our usar http://matplotlib.org/examples/statistics/violinplot_demo.html e integrar no pSBB?)
@@ -90,6 +71,9 @@ max program size = 48
 
 ========
 NOTES:
+
+showdown:
+- I was thinking if in some way the result of the showdown could be useful for the SBB player (during and after training), e.g. be able to know if the opponent was bluffing or not. An option would be to create an input "% of showdown hands the opponent has bluffed", but then it woulb be necessary to implement a way to define what is or isn't a bluff.
 
 opponents:
 - instead of balancing opponents in each generation, just use different point populations for each opponent and uniform randomly swap them across generations (in order to have a better control over the gradient of learning, and this was the result of a paper that Malcolm pointed out). If possible, mantain the option to balance opponents so these options can be compared.

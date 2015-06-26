@@ -49,7 +49,7 @@ The Z-Score is -1.7657. The p-value is 0.07672. The result is not significant at
 
 Results: The pareto for the teams didn't improved the performance significantly, while the pareto 
 for the points improved the performance. It is worth noting that the opposite occured for the 
-thyroid dataset. Since the runtime dídn't change significantly, I think it is worth to keep both 
+thyroid dataset. Since the runtime didn't change significantly, I think it is worth to keep both 
 paretos to try to improve results.
 
 ### COMPARISON REGARDING MORE REGISTERS
