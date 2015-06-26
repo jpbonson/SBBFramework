@@ -2,7 +2,7 @@ from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'chips']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position']
 
     def __init__(self, message):
         self.position = None
@@ -60,8 +60,8 @@ class MatchState():
         inputs[1] = bet
         inputs[2] = pot odds
         inputs[3] = betting position (0: firt betting, 1: last betting)
-        inputs[4] = chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
 
+        Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
         Card evaluator (hand strenght, hand potential, effective hand strength (EHS));
         Opponent model (percentage of actions, shot-term agressiveness, long-term agressiveness)
 
@@ -101,7 +101,6 @@ class MatchState():
         else:
             inputs[2] = 0
         inputs[3] = self._betting_position()
-        # inputs[4] = chips # must be controlled by the environment, use last messages and pot to define chips, test it
         return inputs
 
     def _calculate_pot(self):

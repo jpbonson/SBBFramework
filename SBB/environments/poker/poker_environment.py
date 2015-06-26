@@ -68,7 +68,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, Config.RESTRICTIONS['poker']['available_ports'][1], point.point_id, False])
         p = subprocess.Popen([
                                 Config.RESTRICTIONS['poker']['acpc_path']+'dealer', 
-                                Config.RESTRICTIONS['poker']['acpc_path']+'outputs/test_match', 
+                                Config.RESTRICTIONS['poker']['acpc_path']+'outputs/match_output', 
                                 Config.RESTRICTIONS['poker']['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
                                 str(Config.USER['reinforcement_parameters']['poker']['total_hands']), 
                                 str(point.seed_),
