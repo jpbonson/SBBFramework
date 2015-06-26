@@ -32,7 +32,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
-        total_inputs = MatchState.TOTAL_INPUTS
+        total_inputs = len(MatchState.INPUTS)
         coded_opponents = [PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents)
         self.total_positions_ = 2
@@ -56,8 +56,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         # point.opponent.seed_ = 1
         point.opponent.opponent_id = "opponent"
         # point.seed_ = 100
-        print str(team.seed_ )
-        print str(point.opponent.seed_)
+        # print str(team.seed_ )
+        # print str(point.opponent.seed_)
         print str(point.seed_)
         #
 
@@ -116,6 +116,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg = ""
         msg += "\n### Environment Info:"
         msg += "\ntotal inputs: "+str(self.total_inputs_)
+        msg += "\ninputs: "+str(MatchState.INPUTS)
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(PokerEnvironment.ACTION_MAPPING)
         msg += "\npositions: "+str(self.total_positions_)
