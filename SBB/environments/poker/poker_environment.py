@@ -21,7 +21,7 @@ class PokerPoint(ReinforcementPoint):
 
     def __init__(self, point_id, opponent):
         super(PokerPoint, self).__init__(point_id, opponent)
-        self.seed = random.randint(0, Config.RESTRICTIONS['max_seed'])
+        self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
 
 class PokerEnvironment(ReinforcementEnvironment):
     """
@@ -50,8 +50,10 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
         # TODO temp, for debug
         team = PokerRandomOpponent()
+        team.seed_ = 0
         point = self.instantiate_point_for_coded_opponent_class(PokerRandomOpponent)
-        point.seed = 0
+        point.opponent.seed_ = 0
+        point.seed_ = 0
         #
 
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/"):
@@ -64,7 +66,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                                 Config.RESTRICTIONS['poker']['acpc_path']+'outputs/test_match', 
                                 Config.RESTRICTIONS['poker']['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
                                 str(Config.USER['reinforcement_parameters']['poker']['total_hands']), 
-                                str(point.seed),
+                                str(point.seed_),
                                 'sbb', 'opponent', 
                                 '-p', str(Config.RESTRICTIONS['poker']['available_ports'][0]), str(Config.RESTRICTIONS['poker']['available_ports'][1]), 
                                 '-l'
@@ -121,6 +123,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             debug_file = open(Config.RESTRICTIONS['poker']['acpc_path']+'outputs/player'+str(port)+'.log','w')
         socket_tmp.send("VERSION:2.0.0\r\n")
         last_hand_id = -1
+        has_folded = False
         while True:
             try:
                 message = socket_tmp.recv(1000)
@@ -138,14 +141,17 @@ class PokerEnvironment(ReinforcementEnvironment):
             if match_state.hand_id != last_hand_id:
                 last_hand_id = match_state.hand_id
                 player.initialize() # so a probabilistic opponent will always play equal for the same hands and actions
+                has_folded = False
             if Config.USER['reinforcement_parameters']['debug_matches']:
                 debug_file.write("match_state: "+str(match_state)+"\n\n")
-            if match_state.is_current_player_to_act() and not match_state.is_showdown():
+            if not has_folded and match_state.is_current_player_to_act() and not match_state.is_showdown():
                 action = player.execute(point_id, match_state.inputs(), match_state.valid_actions(), is_training)
                 if action is None:
                     action = "c"
                 else:
                     action = PokerEnvironment.ACTION_MAPPING[action]
+                if action == 'f':
+                    has_folded = True
                 send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
                 socket_tmp.send(send_msg)
                 if Config.USER['reinforcement_parameters']['debug_matches']:
