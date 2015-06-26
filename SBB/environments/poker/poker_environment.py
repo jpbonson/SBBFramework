@@ -10,7 +10,7 @@ import random
 import numpy
 from match_state import MatchState
 from poker_match import PokerMatch
-from poker_opponents import PokerRandomOpponent
+from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
 from ...config import Config
 
@@ -33,7 +33,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def __init__(self):
         total_actions = 3 # fold, call, raise
         total_inputs = MatchState.TOTAL_INPUTS
-        coded_opponents = [PokerRandomOpponent] # TODO more opponents
+        coded_opponents = [PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents)
         self.total_positions_ = 2
 

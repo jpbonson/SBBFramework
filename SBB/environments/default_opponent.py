@@ -21,3 +21,6 @@ class DefaultOpponent(object):
 
     def __str__(self):
         return self.opponent_id
+
+    def __repr__(self):
+        return self.opponent_id

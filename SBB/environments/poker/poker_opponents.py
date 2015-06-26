@@ -19,3 +19,33 @@ class PokerRandomOpponent(DefaultOpponent):
 
     def __repr__(self):
         return self.opponent_id +":"+str(self.seed_)
+
+class PokerAlwaysFoldOpponent(DefaultOpponent):
+    def __init__(self):
+        super(PokerAlwaysFoldOpponent, self).__init__("always_fold")
+
+    def initialize(self):
+        pass
+
+    def execute(self, point_id, inputs, valid_actions, is_training):
+        return 0
+
+class PokerAlwaysCallOpponent(DefaultOpponent):
+    def __init__(self):
+        super(PokerAlwaysCallOpponent, self).__init__("always_call")
+
+    def initialize(self):
+        pass
+
+    def execute(self, point_id, inputs, valid_actions, is_training):
+        return 1
+
+class PokerAlwaysRaiseOpponent(DefaultOpponent):
+    def __init__(self):
+        super(PokerAlwaysRaiseOpponent, self).__init__("always_raise")
+
+    def initialize(self):
+        pass
+
+    def execute(self, point_id, inputs, valid_actions, is_training):
+        return 2
