@@ -27,13 +27,38 @@ TICTACTOE_DEFAULT < TICTACTOE_WITH_PARETOS
 The U-value is 143.5. The distribution is approximately normal. Therefore, the Z-value can be used.
 The Z-Score is -3.2694. The p-value is 0.00108. The result is significant at p <= 0.05.
 
-TICTACTOE_WITH_PARETOS ? TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY
+TICTACTOE_DEFAULT == TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY
+The U-value is 251.5. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is -1.1739. The p-value is 0.242. The result is not significant at p <= 0.05.
+
+TICTACTOE_DEFAULT < TICTACTOE_WITH_PARETO_FOR_POINT_ONLY
+The U-value is 180.5. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is -2.5515. The p-value is 0.01078. The result is significant at p <= 0.05.
+
+TICTACTOE_WITH_PARETOS > TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY
+The U-value is 193. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is 2.3089. The p-value is 0.02088. The result is significant at p <= 0.05.
+
+TICTACTOE_WITH_PARETOS == TICTACTOE_WITH_PARETO_FOR_POINT_ONLY
+The U-value is 294. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is 0.3493. The p-value is 0.72634. The result is not significant at p <= 0.05.
+
+TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY == TICTACTOE_WITH_PARETO_FOR_POINT_ONLY
+The U-value is 221. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is -1.7657. The p-value is 0.07672. The result is not significant at p <= 0.05.
+
+Results: The pareto for the teams didn't improved the performance significantly, while the pareto 
+for the points improved the performance. It is worth noting that the opposite occured for the 
+thyroid dataset. Since the runtime dídn't change significantly, I think it is worth to keep both 
+paretos to try to improve results.
+
+### COMPARISON REGARDING MORE REGISTERS
 
 
-TICTACTOE_WITH_PARETOS ? TICTACTOE_WITH_PARETO_FOR_POINT_ONLY
+### COMPARISON REGARDING GENOTYPE DIVERSITY
 
 
-Results: 
+### COMPARISON REGARDING FITNESS SHARING DIVERSITY
 
 
 """
@@ -101,11 +126,11 @@ TICTACTOE_DEFAULT = {
         },
         'diversity_configs': { # p_value is with how much strenght this diversity metric will be applied to the fitness
             'genotype_fitness_maintanance': {
-                'p_value': 0.1,
+                'p_value': 0.3,
                 'k': 8,
             },
             'fitness_sharing': {
-                'p_value': 0.1,
+                'p_value': 0.3,
             },       
         },
         'run_initialization_step2': False,
@@ -129,7 +154,7 @@ std. deviation: [0.01183, 0.01776, 0.01979, 0.02299, 0.01989, 0.02239, 0.0218, 0
 
 Finished execution, total elapsed time: 73960.5714 secs (20.54 hours) (mean: 2958.42285, std: 764.88837)
 
-28586, nohup5
+32407, nohup1
 """
 
 TICTACTOE_WITH_INIT2 = copy.deepcopy(TICTACTOE_DEFAULT)
@@ -200,12 +225,62 @@ TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
 TICTACTOE_WITH_PARETO_FOR_TEAM_ONLY['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
 """
-28247, nohup3
+#################### OVERALL RESULTS ####################
+
+Test Score per Run: [0.716, 0.7155, 0.72425, 0.694, 0.71875, 0.7305, 0.72475, 0.668, 0.7165, 0.726, 0.7025, 0.71375, 0.718, 0.71, 0.689, 0.71075, 0.69425, 0.68725, 0.69875, 0.685, 0.70525, 0.7265, 0.734, 0.73925, 0.73075]
+mean: 0.71117
+std. deviation: 0.01734
+best run: 24
+
+Train Score per Generation across Runs:
+mean: [0.40666, 0.634, 0.669, 0.69, 0.7015, 0.70366, 0.7055, 0.70983, 0.72416, 0.70849, 0.7185]
+std. deviation: [0.03756, 0.03363, 0.03519, 0.04043, 0.03068, 0.03846, 0.0332, 0.03263, 0.03197, 0.02851, 0.0414]
+
+Test Score per Generation across Runs:
+mean: [0.40335, 0.62671, 0.67012, 0.68827, 0.6947, 0.70146, 0.7066, 0.70884, 0.70885, 0.70577, 0.71117]
+std. deviation: [0.0098, 0.02209, 0.02705, 0.02126, 0.02542, 0.02626, 0.01849, 0.02415, 0.02195, 0.02083, 0.01734]
+
+Finished execution, total elapsed time: 166642.0459 secs (mean: 6665.68183, std: 1377.27169)
 """
 
 TICTACTOE_WITH_PARETO_FOR_POINT_ONLY = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_WITH_PARETO_FOR_POINT_ONLY['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
 TICTACTOE_WITH_PARETO_FOR_POINT_ONLY['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
 """
-28249, nohup4
+#################### OVERALL RESULTS ####################
+
+Test Score per Run: [0.706, 0.724, 0.7485, 0.73075, 0.75925, 0.71625, 0.7215, 0.711, 0.69725, 0.727, 0.65975, 0.7275, 0.742, 0.6945, 0.70375, 0.73725, 0.7085, 0.7565, 0.70875, 0.73825, 0.723, 0.7385, 0.71, 0.73575, 0.71275]
+mean: 0.72152
+std. deviation: 0.0213
+best run: 5
+
+Train Score per Generation across Runs:
+mean: [0.4, 0.608, 0.63566, 0.65716, 0.67466, 0.67133, 0.68116, 0.67983, 0.6825, 0.68116, 0.68666]
+std. deviation: [0.04043, 0.04821, 0.02813, 0.0355, 0.03108, 0.03669, 0.02749, 0.03361, 0.0336, 0.02925, 0.02254]
+
+Test Score per Generation across Runs:
+mean: [0.39702, 0.62181, 0.65783, 0.67619, 0.6915, 0.69893, 0.70365, 0.7122, 0.71674, 0.71986, 0.72152]
+std. deviation: [0.01453, 0.02565, 0.03063, 0.0339, 0.03252, 0.02879, 0.02758, 0.0238, 0.02237, 0.02053, 0.0213]
+
+Finished execution, total elapsed time: 182552.65461 secs (mean: 7302.10618, std: 1520.57008)
+"""
+
+TICTACTOE_WITH_PARETO_MORE_REGISTERS2 = copy.deepcopy(TICTACTOE_WITH_PARETOS)
+TICTACTOE_WITH_PARETO_MORE_REGISTERS2['advanced_training_parameters']['extra_registers'] = 2
+"""
+32464, nohu21.out
+"""
+
+TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03 = copy.deepcopy(TICTACTOE_WITH_PARETOS)
+TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
+TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'] = 0.3
+"""
+32467, nohup3.out
+"""
+
+TICTACTOE_WITH_PARETO_SHARING_DIVERSITY03 = copy.deepcopy(TICTACTOE_WITH_PARETOS)
+TICTACTOE_WITH_PARETO_SHARING_DIVERSITY03['advanced_training_parameters']['diversity']['fitness_sharing'] = True
+TICTACTOE_WITH_PARETO_SHARING_DIVERSITY03['advanced_training_parameters']['diversity_configs']['fitness_sharing']['p_value'] = 0.3
+"""
+32469, nohup4.out
 """
