@@ -65,7 +65,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             os.makedirs(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/")
 
         t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, Config.RESTRICTIONS['poker']['available_ports'][0], point.point_id, is_training])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, Config.RESTRICTIONS['poker']['available_ports'][1], None, False])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, Config.RESTRICTIONS['poker']['available_ports'][1], point.point_id, False])
         p = subprocess.Popen([
                                 Config.RESTRICTIONS['poker']['acpc_path']+'dealer', 
                                 Config.RESTRICTIONS['poker']['acpc_path']+'outputs/test_match', 
@@ -79,6 +79,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         t1.start()
         t2.start()
         out, err = p.communicate()
+        t1.join()
+        t2.join()
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             with open(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/match.log", "w") as text_file:
@@ -160,7 +162,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                 player.initialize() # so a probabilistic opponent will always play equal for the same hands and actions
             if Config.USER['reinforcement_parameters']['debug_matches']:
                 debug_file.write("match_state: "+str(match_state)+"\n\n")
-                # print "("+str(player.opponent_id)+") match_state: "+str(match_state)
+                print "("+str(player.opponent_id)+") match_state: "+str(match_state)
             if match_state.is_current_player_to_act() and not match_state.is_showdown():
                 action = player.execute(point_id, match_state.inputs(), match_state.valid_actions(), is_training)
                 if action is None:
@@ -171,13 +173,13 @@ class PokerEnvironment(ReinforcementEnvironment):
                 socket_tmp.send(send_msg)
                 if Config.USER['reinforcement_parameters']['debug_matches']:
                     debug_file.write("send_msg: "+str(send_msg)+"\n\n")
-                    # print "("+str(player.opponent_id)+") send_msg: "+str(send_msg)
+                    print "("+str(player.opponent_id)+") send_msg: "+str(send_msg)
             else:
                 if Config.USER['reinforcement_parameters']['debug_matches']:
                     debug_file.write("nothing to do\n\n")
-                    # print "("+str(player.opponent_id)+") nothing to do\n\n"
+                    print "("+str(player.opponent_id)+") nothing to do\n\n"
         socket_tmp.close()
         if Config.USER['reinforcement_parameters']['debug_matches']:
-            # print "("+str(player.opponent_id)+") The end.\n\n"
+            print "("+str(player.opponent_id)+") The end.\n\n"
             debug_file.write("The end.\n\n")
             debug_file.close()
