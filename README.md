@@ -34,7 +34,7 @@ sudo apt-get install python-pip
 
 Install the dependencies:
 ```
-sudo apt-get install build-essential python-dev pkg-config python-setuptools python-numpy python-scipy  libatlas-dev libatlas3gf-base libfreetype6-dev
+sudo apt-get install build-essential python-dev pkg-config python-setuptools python-numpy python-scipy  libatlas-dev libatlas3gf-base libfreetype6-dev python-pypoker-eval
 ```
 
 Then execute:

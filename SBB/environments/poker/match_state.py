@@ -1,3 +1,4 @@
+from pokereval import PokerEval
 from ...config import Config
 
 class MatchState():
@@ -13,6 +14,7 @@ class MatchState():
         self.opponent_hole_cards = None
         self.board_cards = None
         self._decode_message(message)
+        self.pokereval = PokerEval()
 
     def _decode_message(self, message):
         splitted = message.split(":")
@@ -68,30 +70,14 @@ class MatchState():
         from_the_point_of_view_of the current player
 
         (Andy)
-        The most immediate exists in the ACPC distribution under the rankHand function in the game.c file.  The way 
-        how this works is that it loads a large lookup table into memory via the evalHandTables file (conspicuously 
-        lacking a file extension and then oddly included with the preprocessor in game.c) and returns the hand rank.  
-        The upside is that it seems the evalHandTables file can likely be used as-is without too much fussing with other 
-        components of the server. The downside is that it relies on a specific data structure that isn't apparent to me 
-        how it works but can probably be inferred from a few little tests.  
-
-        (Andy)
-        A backup option for this would be to go to a more generic, 'stand-alone' evaluator; the so-called cactus Kev evaluator 
-        (http://www.suffecool.net/poker/evaluator.html) is one that is written in C and has been used as the basis for some 
-        commercial software, an improved version that uses perfect hashing is also available 
-        (http://www.paulsenzee.com/2006/06/some-perfect-hash.html) but I'm not so sure how thoroughly this has been tested.  
-        Since a 5, 6 and 7-card evaluation is eventually required one can either write their own wrapper for the above 5-card 
-        evaluators or there is a good looking 7-card evaluator by Moritz Hammer (http://www.pst.ifi.lmu.de/~hammer/poker/handeval.html) 
-        and the code is provided in both C and java, though his timings appear to show a pretty clear advantage for the former. 
-        ---
-
-        (Andy)
         For item 7, I might suggest that we use two separate factors, the first being aggressiveness, per Nicolai / Hilderman (both (a) 
         short-term, as measured only with respect to the last 10 hands and (b) overall, which has complete history in mind).  
         The second factor that we might consider is volatility which would measure relative frequency of proceeding with a hand (call), 
         initiating bets, and folding in both the pre-flop and post-flop stages.  So a total of six values for each opponent (or eight if 
         you include the two proposed aggressiveness features).  If we wanted to go a little further it might be handy to do the volatility 
         features with respect to short-term and overall as well.
+
+        pokereval.evaln(['As', 'Qd', 'Qh', 'Ks', 'Qc', '4c', '4d', 'Kc'])
         """
         inputs = [0] * len(MatchState.INPUTS)
         inputs[0] = self._calculate_pot()
@@ -101,6 +87,7 @@ class MatchState():
         else:
             inputs[2] = 0
         inputs[3] = self._betting_position()
+        # print "POKER TEST"+str(self.pokereval.evaln(['As', 'Qd', 'Qh', 'Ks', 'Qc', '4c', '4d', 'Kc']))
         return inputs
 
     def _calculate_pot(self):
