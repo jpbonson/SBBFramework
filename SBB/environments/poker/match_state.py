@@ -1,4 +1,6 @@
-from pokereval import PokerEval
+import os
+if os.name == 'posix':
+    from pokereval import PokerEval
 from ...config import Config
 
 class MatchState():
