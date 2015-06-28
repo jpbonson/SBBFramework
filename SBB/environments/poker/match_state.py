@@ -1,17 +1,18 @@
 import os
+import re
+import itertools
 if os.name == 'posix':
     from pokereval import PokerEval
 from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'chips', 'hand strength']
 
     def __init__(self, message):
         self.position = None
         self.hand_id = None
         self.rounds = None
-        self.hole_cards = None
         self.current_hole_cards = None
         self.opponent_hole_cards = None
         self.board_cards = None
@@ -24,14 +25,18 @@ class MatchState():
         self.hand_id = int(splitted[2])
         self.rounds = splitted[3].split("/")
         cards = splitted[4].split("/")
-        self.hole_cards = cards[0].split("|")
+        hole_cards = cards[0].split("|")
         if self.position == 0:
-            self.current_hole_cards = self.hole_cards[0]
-            self.opponent_hole_cards = self.hole_cards[1]
+            self.current_hole_cards = re.findall('..', hole_cards[0])
+            self.opponent_hole_cards = re.findall('..', hole_cards[1])
         else:
-            self.current_hole_cards = self.hole_cards[1]
-            self.opponent_hole_cards = self.hole_cards[0]
-        self.board_cards = cards[1:-1]
+            self.current_hole_cards = re.findall('..', hole_cards[1])
+            self.opponent_hole_cards = re.findall('..', hole_cards[0])
+        board_cards = cards[1:-1]
+        cards = []
+        for turn in board_cards:
+            cards += re.findall('..', turn)
+        self.board_cards = cards
 
     def is_current_player_to_act(self):
         if len(self.rounds) == 1: # since the game uses reverse blinds
@@ -64,6 +69,8 @@ class MatchState():
         inputs[1] = bet
         inputs[2] = pot odds
         inputs[3] = betting position (0: firt betting, 1: last betting)
+        inputs[4] = chips
+        inputs[5] = hand_strength
 
         Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
         Card evaluator (hand strenght, hand potential, effective hand strength (EHS));
@@ -91,7 +98,8 @@ class MatchState():
         else:
             inputs[2] = 0
         inputs[3] = self._betting_position()
-        # print "POKER TEST"+str(self.pokereval.evaln(['As', 'Qd', 'Qh', 'Ks', 'Qc', '4c', '4d', 'Kc']))
+        inputs[4] = 0 # TODO
+        inputs[5] = self._calculate_hand_strength()
         return inputs
 
     def _calculate_pot(self):
@@ -119,6 +127,42 @@ class MatchState():
                 else:
                     bet = Config.RESTRICTIONS['poker']['big_bet']
         return bet
+
+    def _calculate_hand_strength(self):
+        """
+        Implemented as described in the page 21 of the thesis in: http://poker.cs.ualberta.ca/publications/davidson.msc.pdf
+        """
+        ahead = 0.0
+        tied = 0.0
+        behind = 0.0
+        our_rank = self.pokereval.evaln(self.current_hole_cards + self.board_cards)
+        # considers all two card combinations of the remaining cards
+        opponent_cards_combinations = self._cards_combinations(without_cards = self.current_hole_cards + self.board_cards)
+        for opponent_card1, opponent_card2 in opponent_cards_combinations:
+            opponent_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + self.board_cards)
+            if our_rank > opponent_rank:
+                ahead += 1.0
+            elif our_rank == opponent_rank:
+                tied += 1.0
+            else:
+                behind += 1.0
+        hand_strength = (ahead + tied/2) / (ahead + tied + behind)
+        return hand_strength
+
+    def _cards_combinations(self, without_cards):
+        deck = self._initialize_deck()
+        for card in without_cards:
+            deck.remove(card)
+        return itertools.combinations(deck, 2)
+
+    def _initialize_deck(self):
+        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+        suits = ['s', 'd', 'h', 'c']
+        deck = []
+        for rank in ranks:
+            for suit in suits:
+                deck.append(rank+suit)
+        return deck
 
     def _betting_position(self):
         if len(self.rounds) == 1: # reverse blinds
@@ -153,7 +197,6 @@ class MatchState():
         msg += "position: "+str(self.position)+"\n"
         msg += "hand_id: "+str(self.hand_id)+"\n"
         msg += "rounds: "+str(self.rounds)+"\n"
-        msg += "hole_cards: "+str(self.hole_cards)+"\n"
         msg += "current_hole_cards: "+str(self.current_hole_cards)+"\n"
         msg += "opponent_hole_cards: "+str(self.opponent_hole_cards)+"\n"
         msg += "board_cards: "+str(self.board_cards)+"\n"

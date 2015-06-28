@@ -55,7 +55,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         point = self.instantiate_point_for_coded_opponent_class(PokerRandomOpponent)
         # point.opponent.seed_ = 1
         point.opponent.opponent_id = "opponent"
-        # point.seed_ = 100
+        point.seed_ = 1608870226
         # print str(team.seed_ )
         # print str(point.opponent.seed_)
         print str(point.seed_)
