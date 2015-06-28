@@ -163,8 +163,8 @@ class PokerEnvironment(ReinforcementEnvironment):
                 player.initialize() # so a probabilistic opponent will always play equal for the same hands and actions
             if Config.USER['reinforcement_parameters']['debug_matches']:
                 debug_file.write("match_state: "+str(match_state)+"\n\n")
-                print "("+str(player.opponent_id)+") match_state: "+str(match_state)
             if match_state.is_current_player_to_act() and not match_state.is_showdown():
+                print "("+str(player.opponent_id)+") match_state: "+str(match_state)
                 action = player.execute(point_id, match_state.inputs(), match_state.valid_actions(), is_training)
                 if action is None:
                     action = "c"

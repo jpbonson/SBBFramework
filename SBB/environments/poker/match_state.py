@@ -7,9 +7,10 @@ from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'chips', 'hand strength']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'chips', 'hand strength', 'hand potential']
 
     def __init__(self, message):
+        self.message = message
         self.position = None
         self.hand_id = None
         self.rounds = None
@@ -32,11 +33,9 @@ class MatchState():
         else:
             self.current_hole_cards = re.findall('..', hole_cards[1])
             self.opponent_hole_cards = re.findall('..', hole_cards[0])
-        board_cards = cards[1:-1]
-        cards = []
-        for turn in board_cards:
-            cards += re.findall('..', turn)
-        self.board_cards = cards
+        self.board_cards = []
+        for turn in cards[1:]:
+            self.board_cards += re.findall('..', turn)
 
     def is_current_player_to_act(self):
         if len(self.rounds) == 1: # since the game uses reverse blinds
@@ -71,6 +70,7 @@ class MatchState():
         inputs[3] = betting position (0: firt betting, 1: last betting)
         inputs[4] = chips
         inputs[5] = hand_strength
+        inputs[6] = hand_potential
 
         Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
         Card evaluator (hand strenght, hand potential, effective hand strength (EHS));
@@ -100,6 +100,10 @@ class MatchState():
         inputs[3] = self._betting_position()
         inputs[4] = 0 # TODO
         inputs[5] = self._calculate_hand_strength()
+        if len(self.rounds) > 1:
+            inputs[6] = self._calculate_hand_potential()
+        else:
+            inputs[6] = 0 # ?
         return inputs
 
     def _calculate_pot(self):
@@ -127,6 +131,15 @@ class MatchState():
                 else:
                     bet = Config.RESTRICTIONS['poker']['big_bet']
         return bet
+
+    def _betting_position(self):
+        if len(self.rounds) == 1: # reverse blinds
+            if self.position == 0:
+                return 1
+            else:
+                return 0
+        else:
+            return self.position
 
     def _calculate_hand_strength(self):
         """
@@ -164,14 +177,13 @@ class MatchState():
                 deck.append(rank+suit)
         return deck
 
-    def _betting_position(self):
-        if len(self.rounds) == 1: # reverse blinds
-            if self.position == 0:
-                return 1
-            else:
-                return 0
-        else:
-            return self.position
+    def _calculate_hand_potential(self):
+        # hand potential array, each index represents ahead, tied, and behind
+        hp = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+        hp_total = [0.0, 0.0, 0.0]
+        our_rank = self.pokereval.evaln(self.current_hole_cards + self.board_cards)
+        # considers all two card combinations of the remaining cards for the opponent
+        return 0 # TODO
 
     def valid_actions(self):
         """
