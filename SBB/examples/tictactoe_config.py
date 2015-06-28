@@ -54,9 +54,14 @@ paretos to try to improve results.
 
 ### COMPARISON REGARDING MORE REGISTERS
 
+TICTACTOE_DEFAULT == TICTACTOE_MORE_REGISTERS2
+Got the exact same results.
 
 ### COMPARISON REGARDING GENOTYPE DIVERSITY
 
+TICTACTOE_WITH_PARETOS > TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03
+The U-value is 113.5. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is 3.8515. The p-value is 0.00012. The result is significant at p <= 0.05.
 
 ### COMPARISON REGARDING FITNESS SHARING DIVERSITY
 
@@ -154,7 +159,22 @@ std. deviation: [0.01183, 0.01776, 0.01979, 0.02299, 0.01989, 0.02239, 0.0218, 0
 
 Finished execution, total elapsed time: 73960.5714 secs (20.54 hours) (mean: 2958.42285, std: 764.88837)
 
-32407, nohup1
+#################### OVERALL RESULTS #################### (running in the NIMS server)
+
+Test Score per Run: [0.73975, 0.70775, 0.7075, 0.72975, 0.707, 0.71475, 0.69675, 0.71725, 0.72125, 0.67475, 0.7, 0.6975, 0.69225, 0.7485, 0.6775, 0.6655, 0.71075, 0.69875, 0.70625, 0.70725, 0.7095, 0.716, 0.687, 0.74425, 0.66575]
+mean: 0.70573
+std. deviation: 0.02134
+best run: 14
+
+Train Score per Generation across Runs:
+mean: [0.39883, 0.64133, 0.669, 0.693, 0.69566, 0.69849, 0.70416, 0.70083, 0.70216, 0.71116, 0.712]
+std. deviation: [0.04157, 0.04189, 0.037, 0.03633, 0.03722, 0.02712, 0.02988, 0.03636, 0.02944, 0.0257, 0.03812]
+
+Test Score per Generation across Runs:
+mean: [0.4018, 0.62317, 0.66476, 0.68204, 0.68957, 0.69345, 0.69827, 0.70035, 0.70354, 0.70459, 0.70573]
+std. deviation: [0.01183, 0.01776, 0.01979, 0.02299, 0.01989, 0.02239, 0.0218, 0.02332, 0.02354, 0.0218, 0.02134]
+
+Finished execution, total elapsed time: 168980.20979 secs (mean: 6759.20839, std: 1768.90253)
 """
 
 TICTACTOE_WITH_INIT2 = copy.deepcopy(TICTACTOE_DEFAULT)
@@ -265,17 +285,51 @@ std. deviation: [0.01453, 0.02565, 0.03063, 0.0339, 0.03252, 0.02879, 0.02758, 0
 Finished execution, total elapsed time: 182552.65461 secs (mean: 7302.10618, std: 1520.57008)
 """
 
-TICTACTOE_WITH_PARETO_MORE_REGISTERS2 = copy.deepcopy(TICTACTOE_WITH_PARETOS)
-TICTACTOE_WITH_PARETO_MORE_REGISTERS2['advanced_training_parameters']['extra_registers'] = 2
+TICTACTOE_MORE_REGISTERS2 = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_MORE_REGISTERS2['advanced_training_parameters']['extra_registers'] = 2
 """
-32464, nohu21.out
+#################### OVERALL RESULTS ####################
+
+Test Score per Run: [0.73975, 0.70775, 0.7075, 0.72975, 0.707, 0.71475, 0.69675, 0.71725, 0.72125, 0.67475, 0.7, 0.6975, 0.69225, 0.7485, 0.6775, 0.6655, 0.71075, 0.69875, 0.70625, 0.70725, 0.7095, 0.716, 0.687, 0.74425, 0.66575]
+mean: 0.70573
+std. deviation: 0.02134
+best run: 14
+
+Train Score per Generation across Runs:
+mean: [0.39883, 0.64133, 0.669, 0.693, 0.69566, 0.69849, 0.70416, 0.70083, 0.70216, 0.71116, 0.712]
+std. deviation: [0.04157, 0.04189, 0.037, 0.03633, 0.03722, 0.02712, 0.02988, 0.03636, 0.02944, 0.0257, 0.03812]
+
+Test Score per Generation across Runs:
+mean: [0.4018, 0.62317, 0.66476, 0.68204, 0.68957, 0.69345, 0.69827, 0.70035, 0.70354, 0.70459, 0.70573]
+std. deviation: [0.01183, 0.01776, 0.01979, 0.02299, 0.01989, 0.02239, 0.0218, 0.02332, 0.02354, 0.0218, 0.02134]
+
+Finished execution, total elapsed time: 154101.3175 secs (mean: 6164.0527, std: 1606.06511)
 """
 
 TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03 = copy.deepcopy(TICTACTOE_WITH_PARETOS)
 TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
 TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'] = 0.3
 """
-32467, nohup3.out
+#################### OVERALL RESULTS ####################
+
+Test Score per Run: [0.713, 0.69925, 0.7305, 0.701, 0.718, 0.6945, 0.706, 0.72725, 0.6965, 0.68275, 0.705, 0.6935, 0.69925, 0.71725, 0.68325, 0.694, 0.73875, 0.67925, 0.6005, 0.698, 0.731, 0.70325, 0.686, 0.697, 0.69725]
+mean: 0.69968
+std. deviation: 0.02548
+best run: 17
+
+Train Score per Generation across Runs:
+mean: [0.40466, 0.57716, 0.59933, 0.62483, 0.64233, 0.64516, 0.65499, 0.6565, 0.65766, 0.66733, 0.68149]
+std. deviation: [0.03243, 0.05728, 0.04063, 0.03152, 0.03235, 0.03406, 0.02715, 0.03259, 0.02817, 0.03429, 0.0305]
+
+Test Score per Generation across Runs:
+mean: [0.40141, 0.60236, 0.61795, 0.63972, 0.65726, 0.67632, 0.67794, 0.68878, 0.69205, 0.69821, 0.69968]
+std. deviation: [0.01445, 0.01948, 0.02377, 0.0258, 0.02487, 0.02444, 0.0329, 0.0263, 0.01713, 0.02446, 0.02548]
+
+Mean Diversity per Generation across Runs (genotype_diversity):
+mean: [1.0, 0.8451, 0.82691, 0.80471, 0.79436, 0.7787, 0.76995, 0.7594, 0.7628, 0.75722, 0.76222]
+std. deviation: [0.0, 0.0245, 0.02647, 0.02743, 0.02443, 0.01782, 0.03221, 0.02059, 0.01944, 0.021, 0.01494]
+
+Finished execution, total elapsed time: 166426.18607 secs (mean: 6657.04744, std: 1545.1153)
 """
 
 TICTACTOE_WITH_PARETO_SHARING_DIVERSITY03 = copy.deepcopy(TICTACTOE_WITH_PARETOS)

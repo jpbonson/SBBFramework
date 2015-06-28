@@ -65,7 +65,7 @@ class MatchState():
 
         Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
         Card evaluator (hand strenght, hand potential, effective hand strength (EHS));
-        Opponent model (percentage of actions, shot-term agressiveness, long-term agressiveness)
+        Opponent model (percentage of actions?, shot-term agressiveness, long-term agressiveness)
 
         from_the_point_of_view_of the current player
 
@@ -78,6 +78,8 @@ class MatchState():
         features with respect to short-term and overall as well.
 
         pokereval.evaln(['As', 'Qd', 'Qh', 'Ks', 'Qc', '4c', '4d', 'Kc'])
+
+        http://poker.cs.ualberta.ca/publications/davidson.msc.pdf, pages 21 and 23
         """
         inputs = [0] * len(MatchState.INPUTS)
         inputs[0] = self._calculate_pot()

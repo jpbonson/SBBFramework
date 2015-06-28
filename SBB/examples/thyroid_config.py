@@ -144,9 +144,24 @@ differences, so it seems fitness sharing (as it is implemented here) is useless 
 
 ### COMPARISON REGARDING PROGRAM SIZE (with and without pareto)
 
+THYROID_DEFAULT == THYROID_MAX_INSTRUCTIONS40
+The U-value is 308.5. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is -0.0679. The p-value is 0.9442. The result is not significant at p <= 0.05.
+
+THYROID_WITH_PARETOS == THYROID_WITH_PARETOS_MAX_INSTRUCTIONS40
+The U-value is 294. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is 0.3493. The p-value is 0.72634. The result is not significant at p <= 0.05.
+
+Result: For this dataset a max instruction of 20 seems to be obtaining good enough results in less 
+runtime.
 
 ### COMPARISON REGARDING MORE REGISTERS (with and without pareto)
 
+THYROID_DEFAULT ? THYROID_REGISTERS2
+...
+
+THYROID_WITH_PARETOS ? THYROID_WITH_PARETOS_REGISTERS2
+...
 
 ### COMPARISON REGARDING DIVERSITY FOR MORE GENERATIONS (WITH PARETO)
 
@@ -847,9 +862,53 @@ Finished execution, total elapsed time: 6979.74256 secs (mean: 279.1897, std: 78
 THYROID_MAX_INSTRUCTIONS40 = copy.deepcopy(THYROID_DEFAULT)
 THYROID_MAX_INSTRUCTIONS40['training_parameters']['program_size']['max'] = 40
 """
+#################### OVERALL RESULTS ####################
+
+Test Score per Run: [0.97661, 0.89466, 0.89455, 0.88542, 0.65366, 0.90831, 0.85835, 0.88786, 0.87316, 0.88919, 0.7122, 0.97808, 0.93718, 0.87244, 0.92218, 0.91411, 0.85571, 0.87191, 0.86986, 0.93752, 0.86839, 0.93777, 0.86616, 0.88222, 0.89392]
+mean: 0.88165
+std. deviation: 0.06764
+best run: 12
+
+Train Score per Generation across Runs:
+mean: [0.54233, 0.82433, 0.843, 0.89166, 0.88366, 0.89566, 0.89766]
+std. deviation: [0.07256, 0.11537, 0.11052, 0.0667, 0.08132, 0.06464, 0.06902]
+
+Test Score per Generation across Runs:
+mean: [0.53451, 0.79538, 0.82735, 0.86887, 0.87145, 0.87983, 0.88166]
+std. deviation: [0.07021, 0.11419, 0.10156, 0.0679, 0.07048, 0.06889, 0.06764]
+
+Finished execution, total elapsed time: 16533.10621 secs (mean: 661.32424, std: 174.642)
 """
 
 THYROID_WITH_PARETOS_MAX_INSTRUCTIONS40 = copy.deepcopy(THYROID_WITH_PARETOS)
 THYROID_WITH_PARETOS_MAX_INSTRUCTIONS40['training_parameters']['program_size']['max'] = 40
 """
+#################### OVERALL RESULTS ####################
+
+Test Score per Run: [0.98223, 0.96887, 0.90371, 0.98232, 0.97226, 0.95214, 0.94654, 0.98593, 0.96368, 0.76645, 0.96187, 0.90572, 0.9165, 0.74196, 0.85634, 0.95395, 0.97335, 0.9754, 0.95854, 0.95506, 0.93794, 0.94148, 0.91306, 0.91946, 0.84695]
+mean: 0.92726
+std. deviation: 0.0623
+best run: 8
+
+Train Score per Generation across Runs:
+mean: [0.54233, 0.78233, 0.836, 0.85033, 0.868, 0.87733, 0.88233]
+std. deviation: [0.07256, 0.07361, 0.0634, 0.06597, 0.06353, 0.05965, 0.05973]
+
+Test Score per Generation across Runs:
+mean: [0.53451, 0.81498, 0.87786, 0.89318, 0.91023, 0.91964, 0.92727]
+std. deviation: [0.07021, 0.08698, 0.0854, 0.07631, 0.07172, 0.06288, 0.0623]
+
+Finished execution, total elapsed time: 27447.74921 secs (mean: 1097.90996, std: 137.78078)
+"""
+
+THYROID_REGISTERS2 = copy.deepcopy(THYROID_DEFAULT)
+THYROID_REGISTERS2['advanced_training_parameters']['extra_registers'] = 2
+"""
+
+"""
+
+THYROID_WITH_PARETOS_REGISTERS2 = copy.deepcopy(THYROID_WITH_PARETOS)
+THYROID_WITH_PARETOS_REGISTERS2['advanced_training_parameters']['extra_registers'] = 2
+"""
+
 """
