@@ -7,7 +7,7 @@ from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'chips', 'hand strength', 'hand potential']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'chips', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS']
 
     def __init__(self, message):
         self.message = message
@@ -70,10 +70,11 @@ class MatchState():
         inputs[3] = betting position (0: firt betting, 1: last betting)
         inputs[4] = chips
         inputs[5] = hand_strength
-        inputs[6] = hand_potential
+        inputs[6] = hand_potential (positive)
+        inputs[7] = hand_potential (negative)
+        inputs[8] = EHS
 
         Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
-        Card evaluator (hand strenght, hand potential, effective hand strength (EHS));
         Opponent model (percentage of actions?, shot-term agressiveness, long-term agressiveness)
 
         from_the_point_of_view_of the current player
@@ -85,8 +86,6 @@ class MatchState():
         initiating bets, and folding in both the pre-flop and post-flop stages.  So a total of six values for each opponent (or eight if 
         you include the two proposed aggressiveness features).  If we wanted to go a little further it might be handy to do the volatility 
         features with respect to short-term and overall as well.
-
-        pokereval.evaln(['As', 'Qd', 'Qh', 'Ks', 'Qc', '4c', '4d', 'Kc'])
 
         http://poker.cs.ualberta.ca/publications/davidson.msc.pdf, pages 21 and 23
         """
@@ -100,10 +99,15 @@ class MatchState():
         inputs[3] = self._betting_position()
         inputs[4] = 0 # TODO
         inputs[5] = self._calculate_hand_strength()
-        if len(self.rounds) > 1:
-            inputs[6] = self._calculate_hand_potential()
-        else:
-            inputs[6] = 0 # ?
+        if len(self.rounds) == 2 or len(self.rounds) == 3:
+            ppot, npot = self._calculate_hand_potential()
+            inputs[6] = ppot
+            inputs[7] = npot
+            inputs[8] = inputs[5] + (1 - inputs[5]) * ppot
+        else: # too expensive if calculated for the pre-flop, useless if calculated for the river
+            inputs[6] = 0
+            inputs[7] = 0
+            inputs[8] = 0
         return inputs
 
     def _calculate_pot(self):
@@ -150,7 +154,10 @@ class MatchState():
         behind = 0.0
         our_rank = self.pokereval.evaln(self.current_hole_cards + self.board_cards)
         # considers all two card combinations of the remaining cards
-        opponent_cards_combinations = self._cards_combinations(without_cards = self.current_hole_cards + self.board_cards)
+        deck = self._initialize_deck()
+        for card in (self.current_hole_cards + self.board_cards):
+            deck.remove(card)
+        opponent_cards_combinations = itertools.combinations(deck, 2)
         for opponent_card1, opponent_card2 in opponent_cards_combinations:
             opponent_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + self.board_cards)
             if our_rank > opponent_rank:
@@ -162,28 +169,93 @@ class MatchState():
         hand_strength = (ahead + tied/2) / (ahead + tied + behind)
         return hand_strength
 
-    def _cards_combinations(self, without_cards):
-        deck = self._initialize_deck()
-        for card in without_cards:
-            deck.remove(card)
-        return itertools.combinations(deck, 2)
+    def _calculate_hand_potential(self):
+        """
+        Implemented as described in the page 23 of the thesis in: http://poker.cs.ualberta.ca/publications/davidson.msc.pdf
+        """
+        # hand potential array, each index represents ahead, tied, and behind
+        ahead = 0
+        tied = 1
+        behind = 2
+        hp = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+        hp_total = [0.0, 0.0, 0.0]
+        total = 0.0
+        our_rank = self.pokereval.evaln(self.current_hole_cards + self.board_cards)
+        # considers all two card combinations of the remaining cards for the opponent
+        deck = self._initialize_deck(without_weak_ranks = True)
+        for card in (self.current_hole_cards + self.board_cards):
+            if card in deck:
+                deck.remove(card)
+        opponent_cards_combinations = itertools.combinations(deck, 2)
+        for opponent_card1, opponent_card2 in opponent_cards_combinations:
+            opponent_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + self.board_cards)
+            if our_rank > opponent_rank:
+                index = ahead
+            elif our_rank == opponent_rank:
+                index = tied
+            else:
+                index = behind
+            hp_total[index] += 1.0
 
-    def _initialize_deck(self):
-        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+            # all possible board cards to come
+            if len(self.rounds) == 2: # flop
+                deck = self._initialize_deck(without_weak_ranks = True)
+                for card in (self.current_hole_cards + self.board_cards + [opponent_card1] + [opponent_card2]):
+                    if card in deck:
+                        deck.remove(card)
+                new_cards_combinations = itertools.combinations(deck, 2)
+                for turn, river in new_cards_combinations:
+                    # final 5-card board
+                    board = self.board_cards + [turn] + [river]
+                    our_future_rank = self.pokereval.evaln(self.current_hole_cards + board)
+                    opponent_future_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + board)
+                    if our_future_rank > opponent_future_rank:
+                        hp[index][ahead] += 1.0
+                    elif our_future_rank == opponent_future_rank:
+                        hp[index][tied] += 1.0
+                    else:
+                        hp[index][behind] += 1.0
+                    total += 1.0
+            else: # turn
+                deck = self._initialize_deck(without_weak_ranks = True)
+                for card in (self.current_hole_cards + self.board_cards + [opponent_card1] + [opponent_card2]):
+                    if card in deck:
+                        deck.remove(card)
+                for river in deck:
+                    # final 5-card board
+                    board = self.board_cards + [river]
+                    our_future_rank = self.pokereval.evaln(self.current_hole_cards + board)
+                    opponent_future_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + board)
+                    if our_future_rank > opponent_future_rank:
+                        hp[index][ahead] += 1.0
+                    elif our_future_rank == opponent_future_rank:
+                        hp[index][tied] += 1.0
+                    else:
+                        hp[index][behind] += 1.0
+                    total += 1.0
+
+        # the original formula:
+        # ppot = (hp[behind][ahead] + hp[behind][tied]/2.0 + hp[tied][ahead]/2.0) / (hp_total[behind] + hp_total[tied]/2.0)
+        # npot = (hp[ahead][behind] + hp[tied][behind]/2.0 + hp[ahead][tied]/2.0) / (hp_total[ahead] + hp_total[tied]/2.0)
+
+        # ppot: were behind but moved ahead
+        ppot = ((hp[behind][ahead]/total)*2.0 + (hp[behind][tied]/total)*1.0 + (hp[tied][ahead]/total)*1.0)/4.0
+
+        # npot: were ahead but fell behind
+        npot = ((hp[ahead][behind]/total)*2.0 + (hp[ahead][tied]/total)*1.0 + (hp[tied][behind]/total)*1.0)/4.0
+        return ppot, npot
+
+    def _initialize_deck(self, without_weak_ranks = False):
+        if without_weak_ranks:
+            ranks = ['7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+        else:
+            ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
         suits = ['s', 'd', 'h', 'c']
         deck = []
         for rank in ranks:
             for suit in suits:
                 deck.append(rank+suit)
         return deck
-
-    def _calculate_hand_potential(self):
-        # hand potential array, each index represents ahead, tied, and behind
-        hp = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
-        hp_total = [0.0, 0.0, 0.0]
-        our_rank = self.pokereval.evaln(self.current_hole_cards + self.board_cards)
-        # considers all two card combinations of the remaining cards for the opponent
-        return 0 # TODO
 
     def valid_actions(self):
         """
