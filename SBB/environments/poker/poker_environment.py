@@ -16,6 +16,11 @@ from ...config import Config
 
 class OpponentModel():
     """
+    ATTENTION: If you change the order, add or remove inputs the SBB teams that were already trained will 
+    behave unexpectedly!
+
+    All inputs are normalized, so they influence the SBB player potentially equal,
+
     inputs[0] = self shot-term agressiveness (last 10 hands)
     inputs[1] = self long-term agressiveness
     inputs[2] = opponent shot-term agressiveness (last 10 hands)
@@ -30,15 +35,26 @@ class OpponentModel():
         self.self_agressiveness = []
         self.opponent_agressiveness = []
 
-    def update_agressiveness(self, match_state, self_folded, opponent_folded):
-        self_actions = match_state.self_actions()
-        opponent_actions = match_state.opponent_actions()
-        if self_folded and self_actions[-1] != 'f':
-            self_actions.append('f')
-        if opponent_folded and opponent_actions[-1] != 'f':
-            opponent_actions.append('f')
-        self.self_agressiveness.append(self._calculate_points(self_actions)/float(len(self_actions)))
-        self.opponent_agressiveness.append(self._calculate_points(opponent_actions)/float(len(opponent_actions)))
+    def update_agressiveness(self, match_state, self_folded, opponent_folded, previous_action, hand_id):
+        self_actions, opponent_actions = match_state.actions_per_player()
+        if self_folded:
+            if self_actions:
+                if self_actions[-1] != 'f':
+                    self_actions.append('f')
+            else:
+                self_actions.append('f')
+        if opponent_folded:
+            if opponent_actions:
+                if opponent_actions[-1] != 'f':
+                    opponent_actions.append('f')
+            else:
+                opponent_actions.append('f')
+            if previous_action:
+                self_actions.append(previous_action)
+        if len(self_actions) > 0:
+            self.self_agressiveness.append(self._calculate_points(self_actions)/float(len(self_actions)))
+        if len(opponent_actions) > 0:
+            self.opponent_agressiveness.append(self._calculate_points(opponent_actions)/float(len(opponent_actions)))
 
     def _calculate_points(self, actions):
         points = 0.0
@@ -95,14 +111,14 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
         # TODO temp, for debug
         team = PokerRandomOpponent()
-        # team.seed_ = 3
         team.opponent_id = "team"
         point = self.instantiate_point_for_coded_opponent_class(PokerRandomOpponent)
-        # point.opponent.seed_ = 1
         point.opponent.opponent_id = "opponent"
-        # point.seed_ = 1608870226
-        # print str(team.seed_ )
-        # print str(point.opponent.seed_)
+        # team.seed_ = 2228737510
+        # point.opponent.seed_ = 1174407484
+        # point.seed_ = 1403127522
+        print str(team.seed_ )
+        print str(point.opponent.seed_)
         print str(point.seed_)
         #
 
@@ -209,30 +225,28 @@ class PokerEnvironment(ReinforcementEnvironment):
             if match_state.hand_id != last_hand_id:
                 player.initialize() # so a probabilistic opponent will always play equal for the same hands and actions
                 if last_hand_id != -1:
-                    for partial_msg in reversed(previous_messages):
+                    messages = previous_messages
+                    for partial_msg in reversed(messages):
                         if partial_msg:
                             partial_match_state = MatchState(partial_msg)
                             if partial_match_state.hand_id == match_state.hand_id-1: # get the last message of the last hand
                                 if partial_match_state.is_showdown():
                                     if Config.USER['reinforcement_parameters']['debug_matches']:
                                         debug_file.write("partial_msg: "+str(partial_msg)+", previous_action: "+str(previous_action)+"\n\n")
-                                        print "("+str(player.opponent_id)+" partial_msg: "+str(partial_msg)+", previous_action: "+str(previous_action)
                                     self_folded = False
                                     opponent_folded = False
                                 else:
                                     if previous_action == 'f':
                                         if Config.USER['reinforcement_parameters']['debug_matches']:
                                             debug_file.write("partial_msg: "+str(partial_msg)+", I folded\n\n")
-                                            print "("+str(player.opponent_id)+" partial_msg: "+str(partial_msg)+", I folded"
                                         self_folded = True
                                         opponent_folded = False
                                     else:
                                         if Config.USER['reinforcement_parameters']['debug_matches']:
                                             debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded\n\n")
-                                            print "("+str(player.opponent_id)+" partial_msg: "+str(partial_msg)+", opponent folded"
                                         self_folded = False
                                         opponent_folded = True
-                                opponent_model.update_agressiveness(partial_match_state, self_folded, opponent_folded)
+                                opponent_model.update_agressiveness(partial_match_state, self_folded, opponent_folded, previous_action, partial_match_state.hand_id)
                                 break
                 last_hand_id = match_state.hand_id
             previous_messages = partial_messages
@@ -240,13 +254,11 @@ class PokerEnvironment(ReinforcementEnvironment):
                 previous_action = None
                 if Config.USER['reinforcement_parameters']['debug_matches']:
                     debug_file.write("showdown\n\n")
-                    print "("+str(player.opponent_id)+") showdown"
             elif match_state.is_current_player_to_act():
                 if match_state.has_opponent_folded():
                     previous_action = None
                     if Config.USER['reinforcement_parameters']['debug_matches']:
                         debug_file.write("opponent folded\n\n")
-                        print "("+str(player.opponent_id)+") opponent folded\n\n"
                 else:
                     inputs = match_state.inputs() + opponent_model.inputs()
                     action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
@@ -263,17 +275,14 @@ class PokerEnvironment(ReinforcementEnvironment):
                             break
                     if Config.USER['reinforcement_parameters']['debug_matches']:
                         debug_file.write("match_state: "+str(match_state)+"\n\n")
+                        debug_file.write("inputs: "+str(inputs)+"\n\n")
                         debug_file.write("send_msg: "+str(send_msg)+"\n\n")
-                        print "("+str(player.opponent_id)+") match_state: "+str(match_state)
-                        print "("+str(player.opponent_id)+") inputs: "+str(inputs)
-                        print "("+str(player.opponent_id)+") send_msg: "+str(send_msg)
             else:
-                previous_action = None
+                if not previous_action == 'f':
+                    previous_action = None
                 if Config.USER['reinforcement_parameters']['debug_matches']:
                     debug_file.write("nothing to do\n\n")
-                    print "("+str(player.opponent_id)+") nothing to do\n\n"
         socket_tmp.close()
         if Config.USER['reinforcement_parameters']['debug_matches']:
-            print "("+str(player.opponent_id)+") The end.\n\n"
             debug_file.write("The end.\n\n")
             debug_file.close()

@@ -66,16 +66,41 @@ class MatchState():
         else:
             return False
 
-    def self_actions(self):
-        return ['c', 'r'] # TODO
-
-    def opponent_actions(self):
-        return ['r', 'c','f'] # TODO
+    def actions_per_player(self):
+        self_actions = []
+        opponent_actions = []
+        for round_index, actions in enumerate(self.rounds):
+            for action_index, action in enumerate(actions):
+                if round_index == 0:
+                    if self.position == 0:
+                        if action_index % 2 == 0:
+                            opponent_actions.append(action)
+                        else:
+                            self_actions.append(action)
+                    else:
+                        if action_index % 2 == 0:
+                            self_actions.append(action)
+                        else:
+                            opponent_actions.append(action)
+                else:
+                    if self.position == 0:
+                        if action_index % 2 == 0:
+                            self_actions.append(action)
+                        else:
+                            opponent_actions.append(action)
+                    else:
+                        if action_index % 2 == 0:
+                            opponent_actions.append(action)
+                        else:
+                            self_actions.append(action)
+        return self_actions, opponent_actions
 
     def inputs(self):
         """
-        ATTENTION: If you change the order or remove inputs the SBB teams that were already trained will 
-        behave unexpectedly! The only safe modification is to add new inputs at the end of the list.
+        ATTENTION: If you change the order, add or remove inputs the SBB teams that were already trained will 
+        behave unexpectedly!
+
+        All inputs are normalized, so they influence the SBB player potentially equal,
 
         inputs[0] = pot
         inputs[1] = bet
