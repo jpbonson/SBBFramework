@@ -2,6 +2,7 @@
 TODO:
 
 - poker
+    - normalizar todos os inputs?
     - implementar poker + testar + fazer system tests
     - metrica para saber quais inputs estao sendo usados
     - implementar novos oponentes (opcao de agrupar oponentes por tipo?)

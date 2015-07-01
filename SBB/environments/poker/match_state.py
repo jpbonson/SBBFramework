@@ -73,11 +73,9 @@ class MatchState():
         inputs[6] = hand_potential (positive)
         inputs[7] = hand_potential (negative)
         inputs[8] = EHS
+        + opponent model
 
         Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
-        Opponent model (percentage of actions?, shot-term agressiveness, long-term agressiveness)
-
-        from_the_point_of_view_of the current player
 
         (Andy)
         For item 7, I might suggest that we use two separate factors, the first being aggressiveness, per Nicolai / Hilderman (both (a) 
@@ -284,5 +282,4 @@ class MatchState():
         msg += "current_hole_cards: "+str(self.current_hole_cards)+"\n"
         msg += "opponent_hole_cards: "+str(self.opponent_hole_cards)+"\n"
         msg += "board_cards: "+str(self.board_cards)+"\n"
-        msg += "inputs: "+str(self.inputs())+"\n"
         return msg

@@ -14,6 +14,56 @@ from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerA
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
 from ...config import Config
 
+class OpponentModel():
+    """
+    inputs[0] = self shot-term agressiveness (last 10 hands)
+    inputs[1] = self long-term agressiveness
+    inputs[2] = opponent shot-term agressiveness (last 10 hands)
+    inputs[3] = opponent long-term agressiveness
+    reference: "Countering Evolutionary Forgetting in No-Limit Texas Hold'em Poker Agents"
+    """
+
+    INPUTS = ['self short-term agressiveness', 'self long-term agressiveness', 'opponent short-term agressiveness', 
+        'opponent long-term agressiveness']
+
+    def __init__(self):
+        self.self_agressiveness = []
+        self.opponent_agressiveness = []
+
+    def initialize_hand(self):
+        self.self_actions = 0.0
+        self.self_total = 0.0
+        self.opponent_actions = 0.0
+        self.opponent_total = 0.0
+
+    def update_hand_for_self(self, action):
+        self.self_total += 1.0
+        if action == 'c':
+            self.self_actions += 0.5
+        if action == 'r':
+            self.self_actions += 1.0
+
+    def update_hand_for_opponent(self, action): # TODO
+        self.opponent_total += 1.0
+        if action == 'c':
+            self.opponent_actions += 0.5
+        if action == 'r':
+            self.opponent_actions += 1.0
+
+    def finish_hand(self):
+        self.self_agressiveness.append(self.self_actions/self.self_total)
+        # self.opponent_agressiveness.append(self.opponent_actions/self.opponent_total)
+
+    def inputs(self):
+        inputs = [0] * len(OpponentModel.INPUTS)
+        if len(self.self_agressiveness) > 0:
+            inputs[0] = numpy.mean(self.self_agressiveness[:10])
+            inputs[1] = numpy.mean(self.self_agressiveness)
+        if len(self.opponent_agressiveness) > 0:
+            inputs[2] = numpy.mean(self.opponent_agressiveness[:10])
+            inputs[3] = numpy.mean(self.opponent_agressiveness)
+        return inputs
+
 class PokerPoint(ReinforcementPoint):
     """
     Encapsulates a poker opponent as a point.
@@ -32,7 +82,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
-        total_inputs = len(MatchState.INPUTS)
+        total_inputs = len(MatchState.INPUTS)+len(OpponentModel.INPUTS)
         coded_opponents = [PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents)
         self.total_positions_ = 2
@@ -116,7 +166,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg = ""
         msg += "\n### Environment Info:"
         msg += "\ntotal inputs: "+str(self.total_inputs_)
-        msg += "\ninputs: "+str(MatchState.INPUTS)
+        msg += "\ninputs: "+str(MatchState.INPUTS+OpponentModel.INPUTS)
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(PokerEnvironment.ACTION_MAPPING)
         msg += "\npositions: "+str(self.total_positions_)
@@ -144,6 +194,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             debug_file = open(Config.RESTRICTIONS['poker']['acpc_path']+'outputs/player'+str(port)+'.log','w')
         socket_tmp.send("VERSION:2.0.0\r\n")
         last_hand_id = -1
+        opponent_model = OpponentModel()
         while True:
             try:
                 message = socket_tmp.recv(1000)
@@ -159,21 +210,26 @@ class PokerEnvironment(ReinforcementEnvironment):
             last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
             match_state = MatchState(last_message)
             if match_state.hand_id != last_hand_id:
-                last_hand_id = match_state.hand_id
                 player.initialize() # so a probabilistic opponent will always play equal for the same hands and actions
-            if Config.USER['reinforcement_parameters']['debug_matches']:
-                debug_file.write("match_state: "+str(match_state)+"\n\n")
+                if last_hand_id != -1:
+                    opponent_model.finish_hand()
+                opponent_model.initialize_hand()
+                last_hand_id = match_state.hand_id
             if match_state.is_current_player_to_act() and not match_state.is_showdown():
-                print "("+str(player.opponent_id)+") match_state: "+str(match_state)
-                action = player.execute(point_id, match_state.inputs(), match_state.valid_actions(), is_training)
+                inputs = match_state.inputs() + opponent_model.inputs()
+                action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
                 if action is None:
                     action = "c"
                 else:
                     action = PokerEnvironment.ACTION_MAPPING[action]
+                opponent_model.update_hand_for_self(action)
                 send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
                 socket_tmp.send(send_msg)
                 if Config.USER['reinforcement_parameters']['debug_matches']:
+                    debug_file.write("match_state: "+str(match_state)+"\n\n")
                     debug_file.write("send_msg: "+str(send_msg)+"\n\n")
+                    print "("+str(player.opponent_id)+") match_state: "+str(match_state)
+                    print "("+str(player.opponent_id)+") inputs: "+str(inputs)
                     print "("+str(player.opponent_id)+") send_msg: "+str(send_msg)
             else:
                 if Config.USER['reinforcement_parameters']['debug_matches']:
