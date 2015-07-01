@@ -59,6 +59,19 @@ class MatchState():
         else:
             return False
 
+    def has_opponent_folded(self):
+        actions = self.rounds[-1]
+        if len(actions) > 0 and actions[-1] == 'f':
+            return True
+        else:
+            return False
+
+    def self_actions(self):
+        return ['c', 'r'] # TODO
+
+    def opponent_actions(self):
+        return ['r', 'c','f'] # TODO
+
     def inputs(self):
         """
         ATTENTION: If you change the order or remove inputs the SBB teams that were already trained will 
@@ -259,8 +272,17 @@ class MatchState():
         """
         
         """
-        # valid = [0, 1]
         valid = [1]
+        # check if can fold
+        if len(self.rounds) > 1:
+            current_round = self.rounds[-1]
+            if 'r' in current_round:
+                valid.append(0)
+        else:
+            current_round = self.rounds[-1]
+            if len(current_round) == 0 or 'r' in current_round:
+                valid.append(0)
+
         # check if can raise
         if len(self.rounds) == 1:
             max_raises = 3
