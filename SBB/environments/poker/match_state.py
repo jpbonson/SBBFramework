@@ -100,7 +100,7 @@ class MatchState():
         ATTENTION: If you change the order, add or remove inputs the SBB teams that were already trained will 
         behave unexpectedly!
 
-        All inputs are normalized, so they influence the SBB player potentially equal,
+        All inputs are normalized, so they influence the SBB player potentially equal.
 
         inputs[0] = pot
         inputs[1] = bet
@@ -156,6 +156,7 @@ class MatchState():
             for action in r:
                 if action == 'r':
                     pot += bet
+        pot = pot/float(MatchState.maximum_winning())
         return pot
 
     def _calculate_bet(self):
@@ -166,10 +167,7 @@ class MatchState():
         if current_round: # if there is previous actions
             last_action = current_round[-1]
             if last_action == 'r':
-                if current_round_index == 1 or current_round_index == 2:
-                    bet = Config.RESTRICTIONS['poker']['small_bet']
-                else:
-                    bet = Config.RESTRICTIONS['poker']['big_bet']
+                bet = 1 # since the value is normalized and the poker is limited, 1 means the maximum bet
         return bet
 
     def _betting_position(self):
@@ -330,3 +328,15 @@ class MatchState():
         msg += "opponent_hole_cards: "+str(self.opponent_hole_cards)+"\n"
         msg += "board_cards: "+str(self.board_cards)+"\n"
         return msg
+
+    @staticmethod
+    def normalize_winning(value):
+        max_winning = MatchState.maximum_winning()
+        max_losing = -max_winning
+        return (value - max_losing)/float(max_winning - max_losing)
+
+    @staticmethod
+    def maximum_winning():
+        max_small_bet_turn_winning = Config.RESTRICTIONS['poker']['small_bet']*4
+        max_big_bet_turn_winning = Config.RESTRICTIONS['poker']['big_bet']*4
+        return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2

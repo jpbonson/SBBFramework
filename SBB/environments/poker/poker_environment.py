@@ -155,23 +155,13 @@ class PokerEnvironment(ReinforcementEnvironment):
             print "\nbug!\n"
             raise SystemExit
         avg_score = float(scores[0])/float(Config.USER['reinforcement_parameters']['poker']['total_hands'])
-        normalized_value = self._normalize_winning(avg_score)
+        normalized_value = MatchState.normalize_winning(avg_score)
         if Config.USER['reinforcement_parameters']['debug_matches']:
             print "scores: "+str(scores)
             print "players: "+str(players)
             print "avg score: "+str(avg_score)
             print "normalized_value: "+str(normalized_value)
         return normalized_value
-
-    def _normalize_winning(self, value):
-        max_winning = self._get_maximum_winning()
-        max_losing = -max_winning
-        return (value - max_losing)/(max_winning - max_losing)
-
-    def _get_maximum_winning(self):
-        max_small_bet_turn_winning = Config.RESTRICTIONS['poker']['small_bet']*4
-        max_big_bet_turn_winning = Config.RESTRICTIONS['poker']['big_bet']*4
-        return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
 
     def metrics(self):
         msg = ""
