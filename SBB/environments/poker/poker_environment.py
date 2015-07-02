@@ -110,13 +110,13 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         """
         # TODO temp, for debug
-        team = PokerAlwaysRaiseOpponent()
+        team = PokerRandomOpponent()
         team.opponent_id = "team"
-        point = self.instantiate_point_for_coded_opponent_class(PokerAlwaysRaiseOpponent)
+        point = self.instantiate_point_for_coded_opponent_class(PokerRandomOpponent)
         point.opponent.opponent_id = "opponent"
-        team.seed_ = 2363931385
-        point.opponent.seed_ = 1550424471
-        point.seed_ = 3660868348
+        # team.seed_ = 2363931385
+        # point.opponent.seed_ = 1550424471
+        # point.seed_ = 3660868348
         print str(team.seed_ )
         print str(point.opponent.seed_)
         print str(point.seed_)
@@ -221,7 +221,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                         if partial_msg:
                             partial_match_state = MatchState(partial_msg)
                             if partial_match_state.hand_id == match_state.hand_id-1: # get the last message of the last hand
-                                print partial_msg+" : "+str(partial_match_state.calculate_pot())
+                                self_actions, opponent_actions = partial_match_state.actions_per_player()
                                 if partial_match_state.is_showdown():
                                     if Config.USER['reinforcement_parameters']['debug_matches']:
                                         debug_file.write("partial_msg: "+str(partial_msg)+", previous_action: "+str(previous_action)+"\n\n")
@@ -238,41 +238,32 @@ class PokerEnvironment(ReinforcementEnvironment):
                                             total_chips = total_chips - partial_match_state.calculate_pot()
                                             debug_file.write("showdown, I lost\n\n")
                                 else:
-                                    if previous_action == 'f':
+                                    last_player = partial_match_state.last_player_to_act()
+                                    if last_player == partial_match_state.position:
+                                        if self_actions and self_actions[-1] == 'f':
+                                            if Config.USER['reinforcement_parameters']['debug_matches']:
+                                                debug_file.write("partial_msg: "+str(partial_msg)+", I folded (1)\n\n")
+                                            self_folded = True
+                                            opponent_folded = False
+                                            total_chips = total_chips - partial_match_state.calculate_pot()
+                                    elif opponent_actions and opponent_actions[-1] == 'f':
                                         if Config.USER['reinforcement_parameters']['debug_matches']:
-                                            debug_file.write("partial_msg: "+str(partial_msg)+", I folded\n\n")
-                                        self_folded = True
-                                        opponent_folded = False
-                                    else:
-                                        if Config.USER['reinforcement_parameters']['debug_matches']:
-                                            debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded\n\n")
+                                            debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (1)\n\n")
                                         self_folded = False
                                         opponent_folded = True
-                                    # if partial_match_state.is_current_player_to_act() and partial_match_state.is_last_action_a_fold():
-                                    #     if Config.USER['reinforcement_parameters']['debug_matches']:
-                                    #         debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (1)\n\n")
-                                    #     self_folded = False
-                                    #     opponent_folded = True
-                                    #     total_chips = total_chips + partial_match_state.calculate_pot()
-                                    # elif not partial_match_state.is_current_player_to_act() and partial_match_state.is_last_action_a_fold():
-                                    #     if Config.USER['reinforcement_parameters']['debug_matches']:
-                                    #         debug_file.write("partial_msg: "+str(partial_msg)+", I folded (1)\n\n")
-                                    #     self_folded = True
-                                    #     opponent_folded = False
-                                    #     total_chips = total_chips - partial_match_state.calculate_pot()
-                                    # elif previous_action == 'f':
-                                    #     if Config.USER['reinforcement_parameters']['debug_matches']:
-                                    #         debug_file.write("partial_msg: "+str(partial_msg)+", I folded (2)\n\n")
-                                    #     self_folded = True
-                                    #     opponent_folded = False
-                                    #     total_chips = total_chips - partial_match_state.calculate_pot()
-                                    # else:
-                                    #     if Config.USER['reinforcement_parameters']['debug_matches']:
-                                    #         debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (2)\n\n")
-                                    #     self_folded = False
-                                    #     opponent_folded = True
-                                    #     total_chips = total_chips + partial_match_state.calculate_pot()
-                                self_actions, opponent_actions = partial_match_state.actions_per_player()
+                                        total_chips = total_chips + partial_match_state.calculate_pot()
+                                    elif previous_action == 'f':
+                                        if Config.USER['reinforcement_parameters']['debug_matches']:
+                                            debug_file.write("partial_msg: "+str(partial_msg)+", I folded (2)\n\n")
+                                        self_folded = True
+                                        opponent_folded = False
+                                        total_chips = total_chips - partial_match_state.calculate_pot()
+                                    else:
+                                        if Config.USER['reinforcement_parameters']['debug_matches']:
+                                            debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (2)\n\n")
+                                        self_folded = False
+                                        opponent_folded = True
+                                        total_chips = total_chips + partial_match_state.calculate_pot()
                                 opponent_model.update_agressiveness(self_actions, opponent_actions, self_folded, opponent_folded, previous_action)
                                 break
                 last_hand_id = match_state.hand_id
@@ -291,7 +282,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                         chips = 0.5
                     else:
                         chips = MatchState.normalize_winning(total_chips/float(match_state.hand_id))
-                    inputs = [total_chips, chips] + match_state.inputs() + opponent_model.inputs()
+                    inputs = [chips] + match_state.inputs() + opponent_model.inputs()
                     action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = "c"

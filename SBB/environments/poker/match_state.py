@@ -58,6 +58,23 @@ class MatchState():
         else:
             return False
 
+    def last_player_to_act(self):
+        if len(self.rounds[-1]) == 0:
+            acted_round = self.rounds[-2]
+        else:
+            acted_round = self.rounds[-1]
+        if acted_round == self.rounds[0]: # since the game uses reverse blinds
+            if len(acted_round) % 2 == 0:
+                last_player = 0
+            else:
+                last_player = 1
+        else: # cc/cr/rr 10/01/01
+            if len(acted_round) % 2 == 0:
+                last_player = 1
+            else:
+                last_player = 0
+        return last_player
+
     def is_showdown(self):
         if self.opponent_hole_cards:
             return True
