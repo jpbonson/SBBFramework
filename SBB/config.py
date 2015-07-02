@@ -27,7 +27,7 @@ class Config():
             },
             'debug_matches': True, # use this option to debug
             'poker': {
-                'total_hands': 12,
+                'total_hands': 4,
             }
         },
 

@@ -7,11 +7,12 @@ from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'chips', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS']
 
     def __init__(self, message):
         self.message = message
         self.position = None
+        self.opponent_position = None
         self.hand_id = None
         self.rounds = None
         self.current_hole_cards = None
@@ -23,6 +24,10 @@ class MatchState():
     def _decode_message(self, message):
         splitted = message.split(":")
         self.position = int(splitted[1])
+        if self.position == 0:
+            self.opponent_position = 1
+        else:
+            self.opponent_position = 0
         self.hand_id = int(splitted[2])
         self.rounds = splitted[3].split("/")
         cards = splitted[4].split("/")
@@ -59,7 +64,16 @@ class MatchState():
         else:
             return False
 
-    def has_opponent_folded(self):
+    def get_winner_of_showdown(self):
+        our_rank = self.pokereval.evaln(self.current_hole_cards + self.board_cards)
+        opponent_rank = self.pokereval.evaln(self.opponent_hole_cards + self.board_cards)
+        if our_rank > opponent_rank:
+            return self.position
+        if our_rank < opponent_rank:
+            return self.opponent_position
+        return None # draw
+
+    def is_last_action_a_fold(self):
         actions = self.rounds[-1]
         if len(actions) > 0 and actions[-1] == 'f':
             return True
@@ -67,9 +81,14 @@ class MatchState():
             return False
 
     def actions_per_player(self):
+        # check the other cases
         self_actions = []
         opponent_actions = []
         for round_index, actions in enumerate(self.rounds):
+            if round_index == 0 or round_index == 1:
+                bet = Config.RESTRICTIONS['poker']['small_bet']
+            else:
+                bet = Config.RESTRICTIONS['poker']['big_bet']
             for action_index, action in enumerate(actions):
                 if round_index == 0:
                     if self.position == 0:
@@ -106,14 +125,10 @@ class MatchState():
         inputs[1] = bet
         inputs[2] = pot odds
         inputs[3] = betting position (0: firt betting, 1: last betting)
-        inputs[4] = chips
-        inputs[5] = hand_strength
-        inputs[6] = hand_potential (positive)
-        inputs[7] = hand_potential (negative)
-        inputs[8] = EHS
-        + opponent model
-
-        Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
+        inputs[4] = hand_strength
+        inputs[5] = hand_potential (positive)
+        inputs[6] = hand_potential (negative)
+        inputs[7] = EHS
 
         (Andy)
         For item 7, I might suggest that we use two separate factors, the first being aggressiveness, per Nicolai / Hilderman (both (a) 
@@ -126,27 +141,32 @@ class MatchState():
         http://poker.cs.ualberta.ca/publications/davidson.msc.pdf, pages 21 and 23
         """
         inputs = [0] * len(MatchState.INPUTS)
-        inputs[0] = self._calculate_pot()
+        inputs[0] = self.calculate_pot()/float(MatchState.maximum_winning())
         inputs[1] = self._calculate_bet()
         if inputs[0] + inputs[1] > 0:
             inputs[2] = inputs[1] / float(inputs[0] + inputs[1])
         else:
             inputs[2] = 0
         inputs[3] = self._betting_position()
-        inputs[4] = 0 # TODO
-        inputs[5] = self._calculate_hand_strength()
+        inputs[4] = self._calculate_hand_strength()
         if len(self.rounds) == 2 or len(self.rounds) == 3:
             ppot, npot = self._calculate_hand_potential()
-            inputs[6] = ppot
-            inputs[7] = npot
-            inputs[8] = inputs[5] + (1 - inputs[5]) * ppot
+            inputs[5] = ppot
+            inputs[6] = npot
+            inputs[7] = inputs[5] + (1 - inputs[5]) * ppot
         else: # too expensive if calculated for the pre-flop, useless if calculated for the river
+            inputs[5] = 0
             inputs[6] = 0
             inputs[7] = 0
-            inputs[8] = 0
         return inputs
 
-    def _calculate_pot(self):
+    def calculate_pot(self):
+        # check if is the small blind
+        if len(self.rounds) == 1:
+            if len(self.rounds[0]) == 0 or (len(self.rounds[0]) == 1 and self.rounds[0][0] == 'f'):
+                return Config.RESTRICTIONS['poker']['small_bet']/2.0
+
+        # check if someone raised
         pot = Config.RESTRICTIONS['poker']['small_bet']
         for i, r in enumerate(self.rounds):
             if i == 0 or i == 1:
@@ -156,14 +176,16 @@ class MatchState():
             for action in r:
                 if action == 'r':
                     pot += bet
-        pot = pot/float(MatchState.maximum_winning())
         return pot
 
     def _calculate_bet(self):
-        bet = 0
+        # check if is the small blind
+        if len(self.rounds) == 1 and len(self.rounds[0]) == 0:
+            return 0.5
+        
         # check if the opponent raised
+        bet = 0
         current_round = self.rounds[-1]
-        current_round_index = len(self.rounds)
         if current_round: # if there is previous actions
             last_action = current_round[-1]
             if last_action == 'r':
@@ -322,6 +344,7 @@ class MatchState():
     def __str__(self):
         msg = "\n"
         msg += "position: "+str(self.position)+"\n"
+        msg += "opponent_position: "+str(self.opponent_position)+"\n"
         msg += "hand_id: "+str(self.hand_id)+"\n"
         msg += "rounds: "+str(self.rounds)+"\n"
         msg += "current_hole_cards: "+str(self.current_hole_cards)+"\n"
