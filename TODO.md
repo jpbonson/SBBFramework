@@ -2,14 +2,26 @@
 TODO:
 
 - poker
-    - normalizar todos os inputs?
-    - implementar poker + testar + fazer system tests
+    - validation e chamption population: aumentar opponents e hands? aumentar com outros valores?
+    - implementar mais um input para opponent model
+        The second factor that we might consider is volatility which would measure relative frequency of proceeding with a hand (call), 
+        initiating bets, and folding in both the pre-flop and post-flop stages.  So a total of six values for each opponent.  If we wanted 
+        to go a little further it might be handy to do the volatility features with respect to short-term and overall as well.
+    - implementar poker + testar
+    - mandar email para andrew com os inputs e falar que SBB esta funcionando para poker
+    - instalar r + testar script
+    - pareto na diversity
+    - nova metrica de diversity
+    - conferir paper do malcolm sobre point population
+    - garantir que todos os outputs necessarios para o final do summer term estao sendo produzidos
+    - fazer system tests
     - metrica para saber quais inputs estao sendo usados
     - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
     - permitir rodar point populations agrupando opponents for grupo, e sem agrupamento
-    - nos testar, cehcar se os teams sabem blefar
-    - calcultar diversity mesmo quando ela nao esta sendo usada
-    - only import the poker package in SBB if in windows
+    - nos testes, checar se os teams sabem blefar
+    - calcular diversity mesmo quando ela nao esta sendo usada
+    - conferir email com as notes da ultima reuniao
+    - refatorar codigo
 
 - ir testando enquanto implementa:
     - fazer example para tictactoe (fazer sets de 10 runs separadas?)
@@ -22,6 +34,7 @@ TODO:
         - deve ser possivel usa-lo para testar um time no ambiente
         - deve ser possivel usa-lo para treinar mais um conjunto de teams
             - se o pop_size nao for o suficiente, deve preencher o pop_gap com random ou children
+    - implementar o second layer do SBB
 
 - quando der tempo:
     - experimentar violin plot na R language (our usar http://matplotlib.org/examples/statistics/violinplot_demo.html e integrar no pSBB?)
@@ -32,7 +45,7 @@ TODO:
     - adicionar mais documentacao no codigo
     - remover comentarios em portugues
 
-===
+========
 Observacoes:
 - cada dimensao da point population eh uma das dimensoes q vai ser maximizada no pareto, gerando as poker behaviors
 - tomar cuidado com: cycling. disingagement, overspecialization, forgetting
