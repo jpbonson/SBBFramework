@@ -117,8 +117,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         # team.seed_ = 2363931385
         # point.opponent.seed_ = 1550424471
         # point.seed_ = 3660868348
-        print str(team.seed_ )
-        print str(point.opponent.seed_)
+        # print str(team.seed_ )
+        # print str(point.opponent.seed_)
         print str(point.seed_)
         #
 

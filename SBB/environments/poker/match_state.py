@@ -1,14 +1,19 @@
 import os
 import re
+import random
 import itertools
+import numpy
 if os.name == 'posix':
     from pokereval import PokerEval
-from equity_table import EQUITY_TABLE
+from equity_table import EQUITY_TABLE, UNIQUE_EQUITY_TABLE
 from ...config import Config
 
 class MatchState():
 
     INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS', 'equity']
+
+    RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+    SUITS = ['s', 'd', 'h', 'c']
 
     def __init__(self, message):
         self.message = message
@@ -252,15 +257,11 @@ class MatchState():
         tied = 1
         behind = 2
         hp = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
-        hp_total = [0.0, 0.0, 0.0]
+        # hp_total = [0.0, 0.0, 0.0]
         total = 0.0
         our_rank = self.pokereval.evaln(self.current_hole_cards + self.board_cards)
         # considers all two card combinations of the remaining cards for the opponent
-        deck = self._initialize_deck(without_weak_ranks = True)
-        for card in (self.current_hole_cards + self.board_cards):
-            if card in deck:
-                deck.remove(card)
-        opponent_cards_combinations = itertools.combinations(deck, 2)
+        opponent_cards_combinations = self._initialize_hole_cards_based_on_equity()
         for opponent_card1, opponent_card2 in opponent_cards_combinations:
             opponent_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + self.board_cards)
             if our_rank > opponent_rank:
@@ -269,16 +270,16 @@ class MatchState():
                 index = tied
             else:
                 index = behind
-            hp_total[index] += 1.0
+            # hp_total[index] += 1.0
 
             # all possible board cards to come
+            deck = self._initialize_deck()
+            dealt_card = self.current_hole_cards + self.board_cards + [opponent_card1] + [opponent_card2]
+            deck_without_dealt_cards = [card for card in deck if card not in dealt_card]
             if len(self.rounds) == 2: # flop
-                deck = self._initialize_deck(without_weak_ranks = True)
-                for card in (self.current_hole_cards + self.board_cards + [opponent_card1] + [opponent_card2]):
-                    if card in deck:
-                        deck.remove(card)
-                new_cards_combinations = itertools.combinations(deck, 2)
-                for turn, river in new_cards_combinations:
+                cards_combinations = list(itertools.combinations(deck_without_dealt_cards, 2))
+                cards_combinations = random.sample(cards_combinations, len(cards_combinations)/12)
+                for turn, river in cards_combinations:
                     # final 5-card board
                     board = self.board_cards + [turn] + [river]
                     our_future_rank = self.pokereval.evaln(self.current_hole_cards + board)
@@ -291,11 +292,8 @@ class MatchState():
                         hp[index][behind] += 1.0
                     total += 1.0
             else: # turn
-                deck = self._initialize_deck(without_weak_ranks = True)
-                for card in (self.current_hole_cards + self.board_cards + [opponent_card1] + [opponent_card2]):
-                    if card in deck:
-                        deck.remove(card)
-                for river in deck:
+                cards = random.sample(deck_without_dealt_cards, len(deck_without_dealt_cards))
+                for river in cards:
                     # final 5-card board
                     board = self.board_cards + [river]
                     our_future_rank = self.pokereval.evaln(self.current_hole_cards + board)
@@ -319,17 +317,36 @@ class MatchState():
         npot = ((hp[ahead][behind]/total)*2.0 + (hp[ahead][tied]/total)*1.0 + (hp[tied][behind]/total)*1.0)/4.0
         return ppot, npot
 
-    def _initialize_deck(self, without_weak_ranks = False):
-        if without_weak_ranks:
-            ranks = ['7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-        else:
-            ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-        suits = ['s', 'd', 'h', 'c']
+    def _initialize_deck(self):
         deck = []
-        for rank in ranks:
-            for suit in suits:
+        for rank in MatchState.RANKS:
+            for suit in MatchState.SUITS:
                 deck.append(rank+suit)
         return deck
+
+    def _initialize_hole_cards_based_on_equity(self):
+        hole_cards = UNIQUE_EQUITY_TABLE.keys()
+        equities = [x[0] for x in UNIQUE_EQUITY_TABLE.values()]
+        total_equities = sum(equities)
+        probabilities = [e/total_equities for e in equities]
+        hole_cards = numpy.random.choice(hole_cards, size = len(hole_cards)/2, replace = False, p = probabilities)
+        unpacked_hole_cards = []
+        for cards in hole_cards:
+            card1 = cards[0]
+            card2 = cards[1]
+            if cards[2] == 's':
+                suit = random.choice(MatchState.SUITS)
+                card1 += suit
+                card2 += suit
+            else:
+                suit = random.choice(MatchState.SUITS)
+                card1 += suit
+                temp = list(MatchState.SUITS)
+                temp.remove(suit)
+                suit = random.choice(temp)
+                card2 += suit
+            unpacked_hole_cards.append((card1, card2))
+        return unpacked_hole_cards
 
     def _calculate_equity(self, hole_cards):
         if hole_cards[0][1] == hole_cards[1][1]:
