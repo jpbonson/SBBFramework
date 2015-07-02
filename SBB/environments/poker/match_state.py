@@ -3,11 +3,12 @@ import re
 import itertools
 if os.name == 'posix':
     from pokereval import PokerEval
+from equity_table import EQUITY_TABLE
 from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS', 'equity']
 
     def __init__(self, message):
         self.message = message
@@ -146,6 +147,7 @@ class MatchState():
         inputs[5] = hand_potential (positive)
         inputs[6] = hand_potential (negative)
         inputs[7] = EHS
+        inputs[8] = equity
 
         (Andy)
         For item 7, I might suggest that we use two separate factors, the first being aggressiveness, per Nicolai / Hilderman (both (a) 
@@ -154,8 +156,6 @@ class MatchState():
         initiating bets, and folding in both the pre-flop and post-flop stages.  So a total of six values for each opponent (or eight if 
         you include the two proposed aggressiveness features).  If we wanted to go a little further it might be handy to do the volatility 
         features with respect to short-term and overall as well.
-
-        http://poker.cs.ualberta.ca/publications/davidson.msc.pdf, pages 21 and 23
         """
         inputs = [0] * len(MatchState.INPUTS)
         inputs[0] = self.calculate_pot()/float(MatchState.maximum_winning())
@@ -171,10 +171,11 @@ class MatchState():
             inputs[5] = ppot
             inputs[6] = npot
             inputs[7] = inputs[5] + (1 - inputs[5]) * ppot
-        else: # too expensive if calculated for the pre-flop, useless if calculated for the river
+        else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
             inputs[5] = 0
             inputs[6] = 0
             inputs[7] = 0
+        inputs[8] = self._calculate_equity(self.current_hole_cards)
         return inputs
 
     def calculate_pot(self):
@@ -329,6 +330,15 @@ class MatchState():
             for suit in suits:
                 deck.append(rank+suit)
         return deck
+
+    def _calculate_equity(self, hole_cards):
+        if hole_cards[0][1] == hole_cards[1][1]:
+            suit = 's'
+        else:
+            suit = 'o'
+        key = hole_cards[0][0]+hole_cards[1][0]+suit
+        result = EQUITY_TABLE[key][0]
+        return result
 
     def valid_actions(self):
         """
