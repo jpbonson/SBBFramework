@@ -2,6 +2,21 @@
 TODO:
 
 - poker
+
+- velocidade:
+    - com hand potential, sem hand potential, sem inputs
+    - testar a velocidade sem rodar nenhum input
+    - ir adicionalment eos inputs individualmente?
+    - simulacoes monte carlo para hand strenght e hand potential?
+    - futuro: usar cpython ou similar?
+    - ahcar algum framework que calcula o tempo gasto em partes do codigo?
+
+    - usar mais map, reduce, e filter / list comprehension
+    - armazenar function calls do lado de fora do loop quando possivel
+    - range => xrange
+
+    - volatility?
+    - testar se esta aprendendo com o tempo
     - atualziar unit tests por cause do repalce = False (testar com nosetests)
     - alwayscall e alwaysraise valem a pena? eles levam tempo demais para rodar. Agrupar eles com o always fold?
     - validation e chamption population: aumentar opponents e hands? aumentar com outros valores?

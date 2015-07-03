@@ -17,10 +17,10 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 20, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 40, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 18, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 60, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'opponents_pool': 'only_coded',
-            'balanced_opponent_populations': False, # if false, the opponent populations will be swapped instead of mixed
+            'balanced_opponent_populations': True, # if false, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
                 'enabled': False,
                 'use_genotype_diversity': True, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
@@ -32,12 +32,12 @@ class Config():
         },
 
         'training_parameters': {
-            'runs_total': 2,
-            'generations_total': 80,
+            'runs_total': 1,
+            'generations_total': 20,
             'validate_after_each_generation': 20,
             'populations': {
                 'teams': 20,
-                'points': 10,
+                'points': 9,
             },
             'replacement_rate': {
                 'teams': 0.5,
@@ -59,7 +59,7 @@ class Config():
             },
             'team_size': { # the min and initial size are the total number of actions
                 'min': 2,
-                'max': 18,
+                'max': 9,
             },
             'program_size': {
                 'min': 2,
@@ -68,7 +68,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': None, # default = None, it can be a single seed for all runs, or an array of seeds per run
+            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
             'use_pareto_for_team_population_selection': False, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
