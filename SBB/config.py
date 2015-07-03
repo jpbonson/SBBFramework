@@ -16,16 +16,16 @@ class Config():
             'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
-            'environment': 'tictactoe', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 100, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
-            'opponents_pool': 'hybrid',
+            'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
+            'validation_population': 20, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 40, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'opponents_pool': 'only_coded',
             'balanced_opponent_populations': False, # if false, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
-                'enabled': True,
+                'enabled': False,
                 'use_genotype_diversity': True, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
-            'debug_matches': True, # use this option to debug
+            'debug_matches': False, # use this option to debug
             'poker': {
                 'total_hands': 10,
             }
@@ -33,14 +33,14 @@ class Config():
 
         'training_parameters': {
             'runs_total': 2,
-            'generations_total': 20,
+            'generations_total': 80,
             'validate_after_each_generation': 20,
             'populations': {
-                'teams': 30,
-                'points': 50,
+                'teams': 20,
+                'points': 10,
             },
             'replacement_rate': {
-                'teams': 0.6,
+                'teams': 0.5,
                 'points': 0.2,
             },
             'mutation': {
@@ -69,13 +69,13 @@ class Config():
 
         'advanced_training_parameters': {
             'seed': None, # default = None, it can be a single seed for all runs, or an array of seeds per run
-            'use_pareto_for_team_population_selection': True, # if False, will select solutions by best fitness
-            'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
+            'use_pareto_for_team_population_selection': False, # if False, will select solutions by best fitness
+            'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {
-                'genotype_fitness_maintanance': True,
-                'fitness_sharing': True,
+                'genotype_fitness_maintanance': False,
+                'fitness_sharing': False,
             },
             'diversity_configs': { # p_value is with how much strenght this diversity metric will be applied to the fitness
                 'genotype_fitness_maintanance': {

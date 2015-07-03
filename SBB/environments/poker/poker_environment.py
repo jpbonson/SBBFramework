@@ -80,8 +80,9 @@ class PokerPoint(ReinforcementPoint):
     """
 
     def __init__(self, point_id, opponent):
-        super(PokerPoint, self).__init__(point_id, opponent)
         self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
+        point_id = "("+str(point_id)+","+str(self.seed_)+")"
+        super(PokerPoint, self).__init__(point_id, opponent)
 
 class PokerEnvironment(ReinforcementEnvironment):
     """
@@ -94,7 +95,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def __init__(self):
         total_actions = 3 # fold, call, raise
         total_inputs = len(PokerEnvironment.INPUTS)
-        coded_opponents = [PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        coded_opponents = [PokerRandomOpponent] #[PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents)
         self.total_positions_ = 2
 
@@ -109,34 +110,35 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
 
         """
-        # TODO temp, for debug
-        team = PokerRandomOpponent()
-        team.opponent_id = "team"
-        point = self.instantiate_point_for_coded_opponent_class(PokerRandomOpponent)
-        point.opponent.opponent_id = "opponent"
-        # team.seed_ = 2363931385
-        # point.opponent.seed_ = 1550424471
-        # point.seed_ = 3660868348
-        # print str(team.seed_ )
-        # print str(point.opponent.seed_)
-        print str(point.seed_)
-        #
+        # print "playing match between "+str(team.__repr__())+" and "+str(point.__repr__())+"..."
+        # # TODO temp, for debug
+        # team = PokerRandomOpponent()
+        # team.opponent_id = "team"
+        # point = self.instantiate_point_for_coded_opponent_class(PokerRandomOpponent)
+        # point.opponent.opponent_id = "opponent"
+        # # team.seed_ = 2363931385
+        # # point.opponent.seed_ = 1550424471
+        # # point.seed_ = 3660868348
+        # # print str(team.seed_ )
+        # # print str(point.opponent.seed_)
+        # print str(point.seed_)
+        # #
 
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/"):
             os.makedirs(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/")
 
         t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, Config.RESTRICTIONS['poker']['available_ports'][0], point.point_id, is_training])
         t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, Config.RESTRICTIONS['poker']['available_ports'][1], point.point_id, False])
-        p = subprocess.Popen([
-                                Config.RESTRICTIONS['poker']['acpc_path']+'dealer', 
-                                Config.RESTRICTIONS['poker']['acpc_path']+'outputs/match_output', 
-                                Config.RESTRICTIONS['poker']['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
-                                str(Config.USER['reinforcement_parameters']['poker']['total_hands']), 
-                                str(point.seed_),
-                                'sbb', 'opponent', 
-                                '-p', str(Config.RESTRICTIONS['poker']['available_ports'][0])+","+str(Config.RESTRICTIONS['poker']['available_ports'][1])
-                                # '-l'
-                            ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        args = [Config.RESTRICTIONS['poker']['acpc_path']+'dealer', 
+                Config.RESTRICTIONS['poker']['acpc_path']+'outputs/match_output', 
+                Config.RESTRICTIONS['poker']['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
+                str(Config.USER['reinforcement_parameters']['poker']['total_hands']), 
+                str(point.seed_),
+                'sbb', 'opponent', 
+                '-p', str(Config.RESTRICTIONS['poker']['available_ports'][0])+","+str(Config.RESTRICTIONS['poker']['available_ports'][1])]
+        if not Config.USER['reinforcement_parameters']['debug_matches']:
+            args.append('-l')
+        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         t1.start()
         t2.start()
         out, err = p.communicate()
@@ -161,6 +163,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             print "players: "+str(players)
             print "avg score: "+str(avg_score)
             print "normalized_value: "+str(normalized_value)
+        # print "result: "+str(normalized_value)
         return normalized_value
 
     def metrics(self):
@@ -189,7 +192,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                 if e.errno == errno.ECONNREFUSED:
                     time.sleep(1)
                 if attempt > total:
-                    raise ValueError(player.opponent_id+" could not connect to port "+str(port))
+                    raise ValueError("Could not connect to port "+str(port))
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file = open(Config.RESTRICTIONS['poker']['acpc_path']+'outputs/player'+str(port)+'.log','w')
@@ -228,15 +231,17 @@ class PokerEnvironment(ReinforcementEnvironment):
                                     self_folded = False
                                     opponent_folded = False
                                     winner = partial_match_state.get_winner_of_showdown()
-                                    if winner is None:
+                                    if Config.USER['reinforcement_parameters']['debug_matches'] and winner is None:
                                         debug_file.write("showdown, draw\n\n")
                                     else:
                                         if winner == partial_match_state.position:
-                                            debug_file.write("showdown, I won\n\n")
+                                            if Config.USER['reinforcement_parameters']['debug_matches']:
+                                                debug_file.write("showdown, I won\n\n")
                                             total_chips = total_chips + partial_match_state.calculate_pot()
                                         else:
+                                            if Config.USER['reinforcement_parameters']['debug_matches']:
+                                                debug_file.write("showdown, I lost\n\n")
                                             total_chips = total_chips - partial_match_state.calculate_pot()
-                                            debug_file.write("showdown, I lost\n\n")
                                 else:
                                     last_player = partial_match_state.last_player_to_act()
                                     if last_player == partial_match_state.position:

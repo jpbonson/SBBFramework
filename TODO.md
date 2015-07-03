@@ -2,13 +2,15 @@
 TODO:
 
 - poker
+    - atualziar unit tests por cause do repalce = False (testar com nosetests)
+    - alwayscall e alwaysraise valem a pena? eles levam tempo demais para rodar. Agrupar eles com o always fold?
     - validation e chamption population: aumentar opponents e hands? aumentar com outros valores?
+    - analsiar tempo com e sem hand potential
     - implementar mais um input para opponent model
         The second factor that we might consider is volatility which would measure relative frequency of proceeding with a hand (call), 
         initiating bets, and folding in both the pre-flop and post-flop stages.  So a total of six values for each opponent.  If we wanted 
         to go a little further it might be handy to do the volatility features with respect to short-term and overall as well.
-    - implementar poker + testar
-    - mandar email para andrew com os inputs e falar que SBB esta funcionando para poker
+    - mandar email para andrew com os inputs e falar que SBB esta funcionando para poker (comentar que esta meio slow, e que seria uma boa remover alguns dos inputs depois de analisa-los melhor. Um paper com comapracoes entre os inputs seria relevante?)
     - instalar r + testar script
     - pareto na diversity
     - nova metrica de diversity

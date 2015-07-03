@@ -153,14 +153,6 @@ class MatchState():
         inputs[6] = hand_potential (negative)
         inputs[7] = EHS
         inputs[8] = equity
-
-        (Andy)
-        For item 7, I might suggest that we use two separate factors, the first being aggressiveness, per Nicolai / Hilderman (both (a) 
-        short-term, as measured only with respect to the last 10 hands and (b) overall, which has complete history in mind).  
-        The second factor that we might consider is volatility which would measure relative frequency of proceeding with a hand (call), 
-        initiating bets, and folding in both the pre-flop and post-flop stages.  So a total of six values for each opponent (or eight if 
-        you include the two proposed aggressiveness features).  If we wanted to go a little further it might be handy to do the volatility 
-        features with respect to short-term and overall as well.
         """
         inputs = [0] * len(MatchState.INPUTS)
         inputs[0] = self.calculate_pot()/float(MatchState.maximum_winning())
