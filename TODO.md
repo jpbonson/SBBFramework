@@ -5,34 +5,26 @@ TODO:
 
 - velocidade:
     - gerar lookup table para hand strenght com 2 cards?
-    - o paper de G. Nicolai and R. Hilderman usa lookup tables jah construidas!
     - fornecer apenas hand equity, e ver se o aprendizado acontece?
     - testar com e sem hand potential
-
-    - futuro: usar cpython, cython ou similar?
-    - usar mais map, reduce, e filter / list comprehension
-    - armazenar function calls do lado de fora do loop quando possivel
-    - range => xrange
 
     - consertar unit test de ttt (bug with swap?)
 
     - volatility?
     - testar se esta aprendendo com o tempo
+
     - alwayscall e alwaysraise valem a pena? eles levam tempo demais para rodar. Agrupar eles com o always fold?
     - validation e chamption population: aumentar opponents e hands? aumentar com outros valores?
-    - analsiar tempo com e sem hand potential
-    - implementar mais um input para opponent model
-        The second factor that we might consider is volatility which would measure relative frequency of proceeding with a hand (call), 
-        initiating bets, and folding in both the pre-flop and post-flop stages.  So a total of six values for each opponent.  If we wanted 
-        to go a little further it might be handy to do the volatility features with respect to short-term and overall as well.
     - mandar email para andrew com os inputs e falar que SBB esta funcionando para poker (comentar que esta meio slow, e que seria uma boa remover alguns dos inputs depois de analisa-los melhor. Um paper com comapracoes entre os inputs seria relevante?)
+    - metrica para saber quais inputs estao sendo usados
+
     - instalar r + testar script
     - pareto na diversity
     - nova metrica de diversity
     - conferir paper do malcolm sobre point population
     - garantir que todos os outputs necessarios para o final do summer term estao sendo produzidos
     - fazer system tests
-    - metrica para saber quais inputs estao sendo usados
+    
     - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
     - permitir rodar point populations agrupando opponents for grupo, e sem agrupamento
     - nos testes, checar se os teams sabem blefar
@@ -62,6 +54,12 @@ TODO:
     - fazer mais testes unitarios (pareto, diversity, selection, matches, operations, program execution)
     - adicionar mais documentacao no codigo
     - remover comentarios em portugues
+
+- performance:
+    - futuro: usar cpython, cython ou similar?
+    - usar mais map, reduce, e filter / list comprehension
+    - armazenar function calls do lado de fora do loop quando possivel
+    - range => xrange
 
 ========
 Observacoes:

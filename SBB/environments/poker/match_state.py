@@ -242,7 +242,7 @@ class MatchState():
                     tied += 1.0
                 else:
                     behind += 1.0
-            hand_strength = (ahead + tied/2) / (ahead + tied + behind)
+            hand_strength = (ahead + tied/2.0) / (ahead + tied + behind)
             hand_strength_memmory[out_cards_set] = hand_strength
             return hand_strength
 
@@ -321,7 +321,7 @@ class MatchState():
 
             hand_ppotential_memmory[out_cards_set] = ppot
             hand_npotential_memmory[out_cards_set] = npot
-            
+
             return ppot, npot
 
     def _initialize_deck(self):

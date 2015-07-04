@@ -1,4 +1,5 @@
 import sys
+import math
 import errno
 import socket
 import time
@@ -21,21 +22,36 @@ class OpponentModel():
 
     All inputs are normalized, so they influence the SBB player potentially equal,
 
-    inputs[0] = self shot-term agressiveness (last 10 hands)
+    inputs[0] = self short-term agressiveness (last 10 hands)
     inputs[1] = self long-term agressiveness
-    inputs[2] = opponent shot-term agressiveness (last 10 hands)
+    inputs[2] = opponent short-term agressiveness (last 10 hands)
     inputs[3] = opponent long-term agressiveness
-    reference: "Countering Evolutionary Forgetting in No-Limit Texas Hold'em Poker Agents"
+    inputs[4] = self short-term volatility (last 10 hands)
+    inputs[5] = self long-term volatility
+    inputs[6] = opponent short-term volatility (last 10 hands)
+    inputs[7] = opponent long-term volatility
+    reference for agressiveness: "Countering Evolutionary Forgetting in No-Limit Texas Hold'em Poker Agents"
+
+    volatility: how frequently the opponent changes its behaviors between pre-flop and post-flop
+    formula: (agressiveness pos-flop)-(agressiveness pre-flop) (normalized between 0.0 and 1.0, 
+        where 0.5: no volatility, 0.0: get less agressive, 1.0: get more agressive)
+    question: isn't expected that most opponents will be less agressive pre-flop and more agressive post-flop? 
+    (since they probably got better hands?) may this metric be usefull to identify bluffing?
     """
 
     INPUTS = ['self short-term agressiveness', 'self long-term agressiveness', 'opponent short-term agressiveness', 
-        'opponent long-term agressiveness']
+        'opponent long-term agressiveness', 'self short-term volatility', 'self long-term volatility', 
+        'opponent short-term volatility', 'opponent long-term volatility']
 
     def __init__(self):
         self.self_agressiveness = []
         self.opponent_agressiveness = []
+        self.self_agressiveness_preflop = []
+        self.self_agressiveness_postflop = []
+        self.opponent_agressiveness_preflop = []
+        self.opponent_agressiveness_postflop = []
 
-    def update_agressiveness(self, self_actions, opponent_actions, self_folded, opponent_folded, previous_action):
+    def update_agressiveness(self, total_rounds, self_actions, opponent_actions, self_folded, opponent_folded, previous_action):
         if self_folded:
             if self_actions:
                 if self_actions[-1] != 'f':
@@ -51,9 +67,19 @@ class OpponentModel():
             if previous_action:
                 self_actions.append(previous_action)
         if len(self_actions) > 0:
-            self.self_agressiveness.append(self._calculate_points(self_actions)/float(len(self_actions)))
+            agressiveness = self._calculate_points(self_actions)/float(len(self_actions))
+            self.self_agressiveness.append(agressiveness)
+            if total_rounds == 1:
+                self.self_agressiveness_preflop.append(agressiveness)
+            else:
+                self.self_agressiveness_postflop.append(agressiveness)
         if len(opponent_actions) > 0:
-            self.opponent_agressiveness.append(self._calculate_points(opponent_actions)/float(len(opponent_actions)))
+            agressiveness = self._calculate_points(opponent_actions)/float(len(opponent_actions))
+            self.opponent_agressiveness.append(agressiveness)
+            if total_rounds == 1:
+                self.opponent_agressiveness_preflop.append(agressiveness)
+            else:
+                self.opponent_agressiveness_postflop.append(agressiveness)
 
     def _calculate_points(self, actions):
         points = 0.0
@@ -66,13 +92,26 @@ class OpponentModel():
 
     def inputs(self):
         inputs = [0] * len(OpponentModel.INPUTS)
+        inputs[4] = 0.5
+        inputs[5] = 0.5
+        inputs[6] = 0.5
+        inputs[7] = 0.5
         if len(self.self_agressiveness) > 0:
             inputs[0] = numpy.mean(self.self_agressiveness[:10])
             inputs[1] = numpy.mean(self.self_agressiveness)
         if len(self.opponent_agressiveness) > 0:
             inputs[2] = numpy.mean(self.opponent_agressiveness[:10])
             inputs[3] = numpy.mean(self.opponent_agressiveness)
+        if len(self.self_agressiveness_postflop) > 0 and len(self.self_agressiveness_preflop) > 0:
+            inputs[4] = self.normalize_volatility(numpy.mean(self.self_agressiveness_postflop[:10])-numpy.mean(self.self_agressiveness_preflop[:10]))
+            inputs[5] = self.normalize_volatility(numpy.mean(self.self_agressiveness_postflop)-numpy.mean(self.self_agressiveness_preflop))
+        if len(self.opponent_agressiveness_postflop) > 0 and len(self.opponent_agressiveness_preflop) > 0:
+            inputs[6] = self.normalize_volatility(numpy.mean(self.opponent_agressiveness_postflop[:10])-numpy.mean(self.opponent_agressiveness_preflop[:10]))
+            inputs[7] = self.normalize_volatility(numpy.mean(self.opponent_agressiveness_postflop)-numpy.mean(self.opponent_agressiveness_preflop))
         return inputs
+
+    def normalize_volatility(self, value):
+        return (value+1.0)/2.0
 
 class PokerPoint(ReinforcementPoint):
     """
@@ -323,6 +362,6 @@ class PokerEnvironment(ReinforcementEnvironment):
                             self_folded = False
                             opponent_folded = True
                             total_chips = total_chips + partial_match_state.calculate_pot()
-                    opponent_model.update_agressiveness(self_actions, opponent_actions, self_folded, opponent_folded, previous_action)
+                    opponent_model.update_agressiveness(len(partial_match_state.rounds), self_actions, opponent_actions, self_folded, opponent_folded, previous_action)
                     break
         return total_chips
