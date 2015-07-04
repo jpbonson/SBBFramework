@@ -4,6 +4,8 @@ TODO:
 - poker
 
 - velocidade:
+    - melhorar consumo de memoria = salvar por ponto, e deletar info do ponto qd ele for deletado
+
     - gerar lookup table para hand strenght com 2 cards?
     - fornecer apenas hand equity, e ver se o aprendizado acontece?
     - testar com e sem hand potential

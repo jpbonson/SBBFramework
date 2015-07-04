@@ -48,10 +48,10 @@ def lookup_table_for_2cards():
         the_file.write(str(lookup_table))
 
 def lookup_table_for_5cards():
-    lookup_table = {}
     deck = initialize_deck()
     all_hole_cards = itertools.combinations(deck, 2)
     cont = 0
+    open('lookup_table_for_5cards', 'w').close()
     for card1, card2 in all_hole_cards:
         cont += 1
         print str(cont)
@@ -64,10 +64,9 @@ def lookup_table_for_5cards():
             deck3.remove(card3)
             deck3.remove(card4)
             deck3.remove(card5)
-            hand_strength = calculate_hand_strength(deck3, [card1, card2, card3, card4, card5], [card3, card4, card5])
-            lookup_table[frozenset([card1, card2, card3, card4, card5])] = hand_strength
-    with open('lookup_table_for_5cards', 'w') as the_file:
-        the_file.write(str(lookup_table))
+            hand_strength = calculate_hand_strength(deck3, [card1, card2], [card3, card4, card5])
+            with open('lookup_table_for_5cards', 'a') as the_file:
+                the_file.write(str(frozenset([card1, card2, card3, card4, card5]))+": "+str(hand_strength)+", ")
 
 if __name__ == "__main__":
     # lookup_table_for_2cards()

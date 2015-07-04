@@ -122,6 +122,9 @@ class PokerPoint(ReinforcementPoint):
         self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
         point_id = "("+str(point_id)+","+str(self.seed_)+")"
         super(PokerPoint, self).__init__(point_id, opponent)
+        self.HAND_STRENGHT_MEMMORY = {}
+        self.HAND_PPOTENTIAL_MEMMORY = {}
+        self.HAND_NPOTENTIAL_MEMMORY = {}
 
 class PokerEnvironment(ReinforcementEnvironment):
     """
@@ -130,9 +133,6 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     ACTION_MAPPING = {0: 'f', 1: 'c', 2: 'r'}
     INPUTS = ['chips']+MatchState.INPUTS+OpponentModel.INPUTS
-    HAND_STRENGHT_MEMMORY = {}
-    HAND_PPOTENTIAL_MEMMORY = {}
-    HAND_NPOTENTIAL_MEMMORY = {}
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
@@ -140,12 +140,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         coded_opponents = [PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents)
         self.total_positions_ = 2
-
-    def reset(self):
-        super(PokerEnvironment, self).reset()
-        HAND_STRENGHT_MEMMORY = {}
-        HAND_PPOTENTIAL_MEMMORY = {}
-        HAND_NPOTENTIAL_MEMMORY = {}
 
     def instantiate_point_for_coded_opponent_class(self, opponent_class):
         instance = opponent_class()
@@ -174,8 +168,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/"):
             os.makedirs(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/")
 
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, Config.RESTRICTIONS['poker']['available_ports'][0], point.point_id, is_training])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, Config.RESTRICTIONS['poker']['available_ports'][1], point.point_id, False])
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, Config.RESTRICTIONS['poker']['available_ports'][0], point.point_id, is_training, point])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, Config.RESTRICTIONS['poker']['available_ports'][1], point.point_id, False, point])
         args = [Config.RESTRICTIONS['poker']['acpc_path']+'dealer', 
                 Config.RESTRICTIONS['poker']['acpc_path']+'outputs/match_output', 
                 Config.RESTRICTIONS['poker']['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
@@ -224,7 +218,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         return msg
 
     @staticmethod
-    def execute_player(player, port, point_id, is_training):
+    def execute_player(player, port, point_id, is_training, point):
         socket_tmp = socket.socket()
 
         total = 10
@@ -284,7 +278,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                         chips = 0.5
                     else:
                         chips = MatchState.normalize_winning(total_chips/float(match_state.hand_id))
-                    inputs = [chips] + match_state.inputs(PokerEnvironment.HAND_STRENGHT_MEMMORY, PokerEnvironment.HAND_PPOTENTIAL_MEMMORY, PokerEnvironment.HAND_NPOTENTIAL_MEMMORY) + opponent_model.inputs()
+                    inputs = [chips] + match_state.inputs(point.HAND_STRENGHT_MEMMORY, point.HAND_PPOTENTIAL_MEMMORY, point.HAND_NPOTENTIAL_MEMMORY) + opponent_model.inputs()
                     action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = "c"

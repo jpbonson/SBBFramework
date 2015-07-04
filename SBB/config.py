@@ -17,27 +17,27 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 18, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 60, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 60, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 120, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'opponents_pool': 'only_coded',
-            'balanced_opponent_populations': True, # if false, the opponent populations will be swapped instead of mixed
+            'balanced_opponent_populations': True, # if False, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
                 'enabled': False,
                 'use_genotype_diversity': True, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
             'poker': {
-                'total_hands': 10,
+                'total_hands': 20,
             }
         },
 
         'training_parameters': {
-            'runs_total': 1,
-            'generations_total': 20,
+            'runs_total': 2,
+            'generations_total': 100,
             'validate_after_each_generation': 20,
             'populations': {
-                'teams': 20,
-                'points': 9,
+                'teams': 50,
+                'points': 30,
             },
             'replacement_rate': {
                 'teams': 0.5,
