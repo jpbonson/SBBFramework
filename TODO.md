@@ -4,16 +4,28 @@ TODO:
 - poker
 
 - velocidade:
+    implementar memoria em poker_environment para conjunto de cartas por hand strenght e hand potential
+    - no inicio nao ligar para ordem (depois tentar usar sets?)
+    - conferir se as threads conseguem atualizar o dict
+    - resetar o dict no reset do environment
+
+    - threads apenas leem o dict, e retornam os valores que produziram?
+
+    - algum input para o hand_rank atual, incluindo as cartas no board? hand strenght deveria fazer/faz isso? eh essa a diferenca entre hand strenght e hand equity? procurar tabelas de lookup prontas! (ou ir gerando elas enquanto programo outras coisas)
+    - o paper de G. Nicolai and R. Hilderman usa lookup tables jah construidas!
+    - fornecer apenas hand equity, e ver se o aprendizado acontece?
     - com hand potential, sem hand potential, sem inputs
     - testar a velocidade sem rodar nenhum input
-    - ir adicionalment eos inputs individualmente?
+    - ir adicionando os inputs individualmente?
     - simulacoes monte carlo para hand strenght e hand potential?
-    - futuro: usar cpython ou similar?
+    - futuro: usar cpython, cython ou similar?
     - ahcar algum framework que calcula o tempo gasto em partes do codigo?
 
     - usar mais map, reduce, e filter / list comprehension
     - armazenar function calls do lado de fora do loop quando possivel
     - range => xrange
+
+    - consertar unit test de ttt
 
     - volatility?
     - testar se esta aprendendo com o tempo
@@ -41,6 +53,7 @@ TODO:
     - refatorar codigo
 
 - ir testando enquanto implementa:
+    - rerodar defualt de TTT para replace = False
     - fazer example para tictactoe (fazer sets de 10 runs separadas?)
     - fazer example para thyroid (mas nao focar muito nisso)
     - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector, e Bluenose(?))
