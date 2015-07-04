@@ -4,32 +4,20 @@ TODO:
 - poker
 
 - velocidade:
-    implementar memoria em poker_environment para conjunto de cartas por hand strenght e hand potential
-    - no inicio nao ligar para ordem (depois tentar usar sets?)
-    - conferir se as threads conseguem atualizar o dict
-    - resetar o dict no reset do environment
-
-    - threads apenas leem o dict, e retornam os valores que produziram?
-
-    - algum input para o hand_rank atual, incluindo as cartas no board? hand strenght deveria fazer/faz isso? eh essa a diferenca entre hand strenght e hand equity? procurar tabelas de lookup prontas! (ou ir gerando elas enquanto programo outras coisas)
+    - gerar lookup table para hand strenght com 2 cards?
     - o paper de G. Nicolai and R. Hilderman usa lookup tables jah construidas!
     - fornecer apenas hand equity, e ver se o aprendizado acontece?
-    - com hand potential, sem hand potential, sem inputs
-    - testar a velocidade sem rodar nenhum input
-    - ir adicionando os inputs individualmente?
-    - simulacoes monte carlo para hand strenght e hand potential?
-    - futuro: usar cpython, cython ou similar?
-    - ahcar algum framework que calcula o tempo gasto em partes do codigo?
+    - testar com e sem hand potential
 
+    - futuro: usar cpython, cython ou similar?
     - usar mais map, reduce, e filter / list comprehension
     - armazenar function calls do lado de fora do loop quando possivel
     - range => xrange
 
-    - consertar unit test de ttt
+    - consertar unit test de ttt (bug with swap?)
 
     - volatility?
     - testar se esta aprendendo com o tempo
-    - atualziar unit tests por cause do repalce = False (testar com nosetests)
     - alwayscall e alwaysraise valem a pena? eles levam tempo demais para rodar. Agrupar eles com o always fold?
     - validation e chamption population: aumentar opponents e hands? aumentar com outros valores?
     - analsiar tempo com e sem hand potential

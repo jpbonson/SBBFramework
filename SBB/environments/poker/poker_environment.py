@@ -91,6 +91,9 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     ACTION_MAPPING = {0: 'f', 1: 'c', 2: 'r'}
     INPUTS = ['chips']+MatchState.INPUTS+OpponentModel.INPUTS
+    HAND_STRENGHT_MEMMORY = {}
+    HAND_PPOTENTIAL_MEMMORY = {}
+    HAND_NPOTENTIAL_MEMMORY = {}
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
@@ -98,6 +101,12 @@ class PokerEnvironment(ReinforcementEnvironment):
         coded_opponents = [PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents)
         self.total_positions_ = 2
+
+    def reset(self):
+        super(PokerEnvironment, self).reset()
+        HAND_STRENGHT_MEMMORY = {}
+        HAND_PPOTENTIAL_MEMMORY = {}
+        HAND_NPOTENTIAL_MEMMORY = {}
 
     def instantiate_point_for_coded_opponent_class(self, opponent_class):
         instance = opponent_class()
@@ -236,7 +245,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                         chips = 0.5
                     else:
                         chips = MatchState.normalize_winning(total_chips/float(match_state.hand_id))
-                    inputs = [chips] + match_state.inputs() + opponent_model.inputs()
+                    inputs = [chips] + match_state.inputs(PokerEnvironment.HAND_STRENGHT_MEMMORY, PokerEnvironment.HAND_PPOTENTIAL_MEMMORY, PokerEnvironment.HAND_NPOTENTIAL_MEMMORY) + opponent_model.inputs()
                     action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = "c"
