@@ -68,6 +68,53 @@ def lookup_table_for_5cards():
             with open('lookup_table_for_5cards', 'a') as the_file:
                 the_file.write(str(frozenset([card1, card2, card3, card4, card5]))+": "+str(hand_strength)+", ")
 
+def lookup_table_for_6cards():
+    deck = initialize_deck()
+    all_hole_cards = itertools.combinations(deck, 2)
+    cont = 0
+    open('lookup_table_for_6cards', 'w').close()
+    for card1, card2 in all_hole_cards:
+        cont += 1
+        print str(cont)
+        deck2 = list(deck)
+        deck2.remove(card1)
+        deck2.remove(card2)
+        all_flop_cards = itertools.combinations(deck2, 4)
+        for card3, card4, card5, card6 in all_flop_cards:
+            deck3 = list(deck2)
+            deck3.remove(card3)
+            deck3.remove(card4)
+            deck3.remove(card5)
+            deck3.remove(card6)
+            hand_strength = calculate_hand_strength(deck3, [card1, card2], [card3, card4, card5, card6])
+            with open('lookup_table_for_6cards', 'a') as the_file:
+                the_file.write(str(frozenset([card1, card2, card3, card4, card5, card6]))+": "+str(hand_strength)+", ")
+
+def lookup_table_for_7cards():
+    deck = initialize_deck()
+    all_hole_cards = itertools.combinations(deck, 2)
+    cont = 0
+    open('lookup_table_for_7cards', 'w').close()
+    for card1, card2 in all_hole_cards:
+        cont += 1
+        print str(cont)
+        deck2 = list(deck)
+        deck2.remove(card1)
+        deck2.remove(card2)
+        all_flop_cards = itertools.combinations(deck2, 5)
+        for card3, card4, card5, card6, card7 in all_flop_cards:
+            deck3 = list(deck2)
+            deck3.remove(card3)
+            deck3.remove(card4)
+            deck3.remove(card5)
+            deck3.remove(card6)
+            deck3.remove(card7)
+            hand_strength = calculate_hand_strength(deck3, [card1, card2], [card3, card4, card5, card6, card7])
+            with open('lookup_table_for_7cards', 'a') as the_file:
+                the_file.write(str(frozenset([card1, card2, card3, card4, card5, card6, card7]))+": "+str(hand_strength)+", ")
+
 if __name__ == "__main__":
     # lookup_table_for_2cards()
-    lookup_table_for_5cards()
+    # lookup_table_for_5cards()
+    # lookup_table_for_6cards()
+    lookup_table_for_7cards()
