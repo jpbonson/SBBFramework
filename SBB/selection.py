@@ -83,7 +83,7 @@ class Selection:
         fitness = [team.fitness_ for team in teams_population]
         total_fitness = sum(fitness)
         probabilities = [f/total_fitness for f in fitness]
-        return numpy.random.choice(teams_population, size = new_teams_to_create, replace = True, p = probabilities)
+        return numpy.random.choice(teams_population, size = new_teams_to_create, replace = False, p = probabilities)
 
     def _remove_programs_with_no_teams(self, programs_population):
         to_remove = []
