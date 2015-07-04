@@ -10,7 +10,6 @@ TODO:
 
     - consertar unit test de ttt (bug with swap?)
 
-    - volatility?
     - testar se esta aprendendo com o tempo
 
     - alwayscall e alwaysraise valem a pena? eles levam tempo demais para rodar. Agrupar eles com o always fold?

@@ -5,7 +5,8 @@ import itertools
 import numpy
 if os.name == 'posix':
     from pokereval import PokerEval
-from equity_table import EQUITY_TABLE, UNIQUE_EQUITY_TABLE
+from tables.equity_table import EQUITY_TABLE, UNIQUE_EQUITY_TABLE
+from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
 from ...config import Config
 
 class MatchState():
@@ -222,6 +223,8 @@ class MatchState():
         """
         our_cards = self.current_hole_cards + self.board_cards
         out_cards_set = frozenset(our_cards)
+        if len(out_cards_set) == 2:
+            return STRENGTH_TABLE_FOR_2_CARDS[out_cards_set]
         if out_cards_set in hand_strength_memmory:
             return hand_strength_memmory[out_cards_set]
         else:
