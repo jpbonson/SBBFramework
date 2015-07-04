@@ -4,7 +4,7 @@ from pokereval import PokerEval
 RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 SUITS = ['s', 'd', 'h', 'c']
 
-def calculate_hand_strength(deck, current_hole_cards):
+def calculate_hand_strength(deck, current_hole_cards, board = []):
     """
     Implemented as described in the page 21 of the thesis in: http://poker.cs.ualberta.ca/publications/davidson.msc.pdf
     """
@@ -13,11 +13,11 @@ def calculate_hand_strength(deck, current_hole_cards):
     ahead = 0.0
     tied = 0.0
     behind = 0.0
-    our_rank = pokereval.evaln(our_cards)
+    our_rank = pokereval.evaln(our_cards + board)
     # considers all two card combinations of the remaining cards
     opponent_cards_combinations = itertools.combinations(deck, 2)
     for opponent_card1, opponent_card2 in opponent_cards_combinations:
-        opponent_rank = pokereval.evaln([opponent_card1] + [opponent_card2])
+        opponent_rank = pokereval.evaln([opponent_card1] + [opponent_card2] + board)
         if our_rank > opponent_rank:
             ahead += 1.0
         elif our_rank == opponent_rank:
@@ -64,7 +64,7 @@ def lookup_table_for_5cards():
             deck3.remove(card3)
             deck3.remove(card4)
             deck3.remove(card5)
-            hand_strength = calculate_hand_strength(deck3, [card1, card2, card3, card4, card5])
+            hand_strength = calculate_hand_strength(deck3, [card1, card2, card3, card4, card5], [card3, card4, card5])
             lookup_table[frozenset([card1, card2, card3, card4, card5])] = hand_strength
     with open('lookup_table_for_5cards', 'w') as the_file:
         the_file.write(str(lookup_table))
