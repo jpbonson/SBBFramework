@@ -4,6 +4,10 @@ from pokereval import PokerEval
 RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 SUITS = ['s', 'd', 'h', 'c']
 
+def round_value(value, round_decimals_to = 3):
+    number = float(10**round_decimals_to)
+    return int(value * number) / number
+
 def calculate_hand_strength(deck, current_hole_cards, board = []):
     """
     Implemented as described in the page 21 of the thesis in: http://poker.cs.ualberta.ca/publications/davidson.msc.pdf
@@ -51,22 +55,24 @@ def lookup_table_for_5cards():
     deck = initialize_deck()
     all_hole_cards = itertools.combinations(deck, 2)
     cont = 0
-    open('lookup_table_for_5cards', 'w').close()
-    for card1, card2 in all_hole_cards:
-        cont += 1
-        print str(cont)
-        deck2 = list(deck)
-        deck2.remove(card1)
-        deck2.remove(card2)
-        all_flop_cards = itertools.combinations(deck2, 3)
-        for card3, card4, card5 in all_flop_cards:
-            deck3 = list(deck2)
-            deck3.remove(card3)
-            deck3.remove(card4)
-            deck3.remove(card5)
-            hand_strength = calculate_hand_strength(deck3, [card1, card2], [card3, card4, card5])
-            with open('lookup_table_for_5cards', 'a') as the_file:
+    open('lookup_table_for_5cards.py', 'w').close()
+    with open('lookup_table_for_5cards.py', 'a') as the_file:
+        the_file.write('STRENGTH_TABLE_FOR_5_CARDS = {')
+        for card1, card2 in all_hole_cards:
+            cont += 1
+            print str(cont)
+            deck2 = list(deck)
+            deck2.remove(card1)
+            deck2.remove(card2)
+            all_flop_cards = itertools.combinations(deck2, 3)
+            for card3, card4, card5 in all_flop_cards:
+                deck3 = list(deck2)
+                deck3.remove(card3)
+                deck3.remove(card4)
+                deck3.remove(card5)
+                hand_strength = round_value(calculate_hand_strength(deck3, [card1, card2], [card3, card4, card5]))
                 the_file.write(str(frozenset([card1, card2, card3, card4, card5]))+": "+str(hand_strength)+", ")
+        the_file.write('}')
 
 def lookup_table_for_6cards():
     deck = initialize_deck()
@@ -115,6 +121,6 @@ def lookup_table_for_7cards():
 
 if __name__ == "__main__":
     # lookup_table_for_2cards()
-    # lookup_table_for_5cards()
-    # lookup_table_for_6cards()
-    lookup_table_for_7cards()
+    lookup_table_for_5cards()
+    # lookup_table_for_6cards() # the table is too big
+    # lookup_table_for_7cards() # the table is too big
