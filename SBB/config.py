@@ -18,8 +18,8 @@ class Config():
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
             'validation_population': 60, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 120, # at a validated generation, these are the points the champion team will play against to obtain the metrics
-            'opponents_pool': 'only_coded',
+            'champion_population': 150, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'opponents_pool': 'only_sbb',
             'balanced_opponent_populations': True, # if False, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
                 'enabled': False,
@@ -32,11 +32,11 @@ class Config():
         },
 
         'training_parameters': {
-            'runs_total': 2,
+            'runs_total': 1,
             'generations_total': 100,
             'validate_after_each_generation': 20,
             'populations': {
-                'teams': 50,
+                'teams': 100,
                 'points': 30,
             },
             'replacement_rate': {
@@ -79,7 +79,7 @@ class Config():
             },
             'diversity_configs': { # p_value is with how much strenght this diversity metric will be applied to the fitness
                 'genotype_fitness_maintanance': {
-                    'p_value': 0.1,
+                    'p_value': 0.4,
                     'k': 8,
                 },
                 'fitness_sharing': {

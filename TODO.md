@@ -4,10 +4,10 @@ TODO:
 - poker
 
 - velocidade:
-    - melhorar consumo de memoria = salvar por ponto, e deletar info do ponto qd ele for deletado
+    - provavel problema do learning: apenas a action raise esta vencendo. Incentivar diversity?
 
-    - gerar lookup table para hand strenght com 2 cards?
-    - fornecer apenas hand equity, e ver se o aprendizado acontece?
+    - mandar rodar ttt default (para comparar com e sem replace, 5713), e testar para hall of fame e opponents (sem diversity!)
+
     - testar com e sem hand potential
 
     - consertar unit test de ttt (bug with swap?)

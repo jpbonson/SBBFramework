@@ -1,4 +1,5 @@
 import sys
+import gc
 import math
 import errno
 import socket
@@ -152,19 +153,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
 
         """
-        # # TODO temp, for debug
-        # team = PokerRandomOpponent()
-        # team.opponent_id = "team"
-        # point = self.instantiate_point_for_coded_opponent_class(PokerRandomOpponent)
-        # point.opponent.opponent_id = "opponent"
-        # # team.seed_ = 2363931385
-        # # point.opponent.seed_ = 1550424471
-        # # point.seed_ = 3660868348
-        # # print str(team.seed_ )
-        # # print str(point.opponent.seed_)
-        # print str(point.seed_)
-        # #
-
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/"):
             os.makedirs(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/")
 
@@ -205,6 +193,14 @@ class PokerEnvironment(ReinforcementEnvironment):
             print "avg score: "+str(avg_score)
             print "normalized_value: "+str(normalized_value)
         return normalized_value
+
+    def reset(self):
+        super(PokerEnvironment, self).reset()
+        gc.collect()
+
+    def setup(self, teams_population):
+        super(PokerEnvironment, self).setup(teams_population)
+        gc.collect()
 
     def metrics(self):
         msg = ""

@@ -11,7 +11,7 @@ from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS', 'equity']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'equity', 'hand strength'] #, 'hand potential (positive)', 'hand potential (negative)', 'EHS']
 
     RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
     SUITS = ['s', 'd', 'h', 'c']
@@ -149,11 +149,11 @@ class MatchState():
         inputs[1] = bet
         inputs[2] = pot odds
         inputs[3] = betting position (0: firt betting, 1: last betting)
-        inputs[4] = hand_strength
-        inputs[5] = hand_potential (positive)
-        inputs[6] = hand_potential (negative)
-        inputs[7] = EHS
-        inputs[8] = equity
+        inputs[4] = equity
+        inputs[5] = hand_strength
+        inputs[6] = hand_potential (positive)
+        inputs[7] = hand_potential (negative)
+        inputs[8] = EHS
         """
         inputs = [0] * len(MatchState.INPUTS)
         inputs[0] = self.calculate_pot()/float(MatchState.maximum_winning())
@@ -163,17 +163,17 @@ class MatchState():
         else:
             inputs[2] = 0
         inputs[3] = self._betting_position()
-        inputs[4] = self._calculate_hand_strength(hand_strength_memmory)
-        if len(self.rounds) == 2 or len(self.rounds) == 3:
-            ppot, npot = self._calculate_hand_potential(hand_ppotential_memmory, hand_npotential_memmory)
-            inputs[5] = ppot
-            inputs[6] = npot
-            inputs[7] = inputs[5] + (1 - inputs[5]) * ppot
-        else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
-            inputs[5] = 0
-            inputs[6] = 0
-            inputs[7] = 0
-        inputs[8] = self._calculate_equity(self.current_hole_cards)
+        inputs[4] = self._calculate_equity(self.current_hole_cards)
+        inputs[5] = self._calculate_hand_strength(hand_strength_memmory)
+        # if len(self.rounds) == 2 or len(self.rounds) == 3:
+        #     ppot, npot = self._calculate_hand_potential(hand_ppotential_memmory, hand_npotential_memmory)
+        #     inputs[6] = ppot
+        #     inputs[7] = npot
+        #     inputs[8] = inputs[5] + (1 - inputs[5]) * ppot
+        # else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
+        #     inputs[6] = 0
+        #     inputs[7] = 0
+        #     inputs[8] = 0
         return inputs
 
     def calculate_pot(self):
