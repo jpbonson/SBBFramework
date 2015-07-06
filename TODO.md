@@ -4,6 +4,14 @@ TODO:
 - poker
 
 - velocidade:
+    - conferir se script funciona, garantir inputs para o fim do termo, ir rodando ttt e poker sem diversity, implementar pareto, implementar compression
+
+    - se TTT melhorar, poker deve melhorar?
+
+    - usar nao mais que 100 hands total? (opponents x hands)
+
+    - analisar quais inputs estao sendo usados
+
     - provavel problema do learning: apenas a action raise esta vencendo. Incentivar diversity?
 
     - mandar rodar ttt default (para comparar com e sem replace, 5713), e testar para hall of fame e opponents (sem diversity!)
@@ -14,9 +22,14 @@ TODO:
 
     - testar se esta aprendendo com o tempo
 
+    - conferir email de notes da ultima reuniao
+
     - alwayscall e alwaysraise valem a pena? eles levam tempo demais para rodar. Agrupar eles com o always fold?
     - validation e chamption population: aumentar opponents e hands? aumentar com outros valores?
+
     - mandar email para andrew com os inputs e falar que SBB esta funcionando para poker (comentar que esta meio slow, e que seria uma boa remover alguns dos inputs depois de analisa-los melhor. Um paper com comapracoes entre os inputs seria relevante?)
+    - falar dos resultados iniciais
+
     - metrica para saber quais inputs estao sendo usados
 
     - instalar r + testar script

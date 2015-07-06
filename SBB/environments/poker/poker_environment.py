@@ -226,7 +226,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             except socket_error as e:
                 attempt += 1
                 if e.errno == errno.ECONNREFUSED:
-                    time.sleep(1)
+                    time.sleep(10)
                 if attempt > total:
                     raise ValueError("Could not connect to port "+str(port))
 
