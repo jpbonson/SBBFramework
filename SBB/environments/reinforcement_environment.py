@@ -149,6 +149,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 super(ReinforcementEnvironment, self)._remove_points(flatten(self.samples_per_opponent_to_remove_.values()), teams_population)
                 if Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
                     if not self.current_population_ or (self.current_population_ and self.current_population_ == 'sbb'):
+                        if len(self.point_population_per_opponent_['sbb']) > 0:
+                            super(ReinforcementEnvironment, self)._remove_points(self.point_population_per_opponent_['sbb'], teams_population)
                         self.point_population_per_opponent_['sbb'] = self._initialize_point_population_of_sbb_opponents(teams_population)
                 for key, values in self.samples_per_opponent_to_keep_.iteritems():
                     self.point_population_per_opponent_[key] = values
