@@ -11,7 +11,6 @@ import threading
 import random
 import numpy
 from match_state import MatchState
-from poker_match import PokerMatch
 from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
 from ...config import Config
