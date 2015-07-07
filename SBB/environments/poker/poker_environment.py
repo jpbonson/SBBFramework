@@ -195,6 +195,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         return normalized_value
 
     def reset(self):
+        for point in self.point_population():
+            del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
         super(PokerEnvironment, self).reset()
         PokerEnvironment.full_deck = self._initialize_deck()
         gc.collect()

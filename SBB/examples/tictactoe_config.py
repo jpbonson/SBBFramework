@@ -182,7 +182,7 @@ std. deviation: [0.01166, 0.02193, 0.02467, 0.02226, 0.02028, 0.02224, 0.01922, 
 
 Finished execution, total elapsed time: 161772.73992 secs (mean: 6470.90959, std: 1935.6262)
 
-The Z-Score is -2.3089. The p-value is 0.02088. The result is significant at p≤ 0.05. (so the one with replace = False is better)
+The Z-Score is -2.3089. The p-value is 0.02088. The result is significant at p <= 0.05. (so the one with replace = False is better)
 
 #################### OVERALL RESULTS #################### (running in the NIMS server)
 
