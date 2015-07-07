@@ -2,6 +2,7 @@ import sys
 import gc
 import math
 import errno
+import yappi
 import socket
 import time
 from socket import error as socket_error
@@ -200,10 +201,12 @@ class PokerEnvironment(ReinforcementEnvironment):
         super(PokerEnvironment, self).reset()
         PokerEnvironment.full_deck = self._initialize_deck()
         gc.collect()
+        yappi.clear_stats()
 
     def setup(self, teams_population):
         super(PokerEnvironment, self).setup(teams_population)
         gc.collect()
+        yappi.clear_stats()
 
     def metrics(self):
         msg = ""
