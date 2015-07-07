@@ -3,6 +3,8 @@ import copy
 """
 ##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
+(results for replace = True)
+
 ### COMPARISON REGARDING STEP2 IN INITIALIZATION
 
 TICTACTOE_DEFAULT == TICTACTOE_WITH_INIT2
@@ -65,6 +67,10 @@ The Z-Score is 3.8515. The p-value is 0.00012. The result is significant at p <=
 
 ### COMPARISON REGARDING FITNESS SHARING DIVERSITY
 
+
+
+
+(results for replace = False)
 
 """
 
@@ -142,7 +148,7 @@ TICTACTOE_DEFAULT = {
     },
 }
 """
-#################### OVERALL RESULTS #################### (rerun, to get the runtime)
+#################### OVERALL RESULTS ####################
 
 Test Score per Run: [0.73975, 0.70775, 0.7075, 0.72975, 0.707, 0.71475, 0.69675, 0.71725, 0.72125, 0.67475, 0.7, 0.6975, 0.69225, 0.7485, 0.6775, 0.6655, 0.71075, 0.69875, 0.70625, 0.70725, 0.7095, 0.716, 0.687, 0.74425, 0.66575]
 mean: 0.70573
@@ -158,6 +164,25 @@ mean: [0.4018, 0.62317, 0.66476, 0.68204, 0.68957, 0.69345, 0.69827, 0.70035, 0.
 std. deviation: [0.01183, 0.01776, 0.01979, 0.02299, 0.01989, 0.02239, 0.0218, 0.02332, 0.02354, 0.0218, 0.02134]
 
 Finished execution, total elapsed time: 73960.5714 secs (20.54 hours) (mean: 2958.42285, std: 764.88837)
+
+#################### OVERALL RESULTS #################### (after replace = False)
+
+Test Score per Run: [0.717, 0.74, 0.72225, 0.73025, 0.72425, 0.72125, 0.718, 0.71725, 0.72825, 0.69525, 0.7165, 0.712, 0.66275, 0.73675, 0.7075, 0.71925, 0.72625, 0.7355, 0.7155, 0.71025, 0.7115, 0.67675, 0.70575, 0.72625, 0.71725]
+mean: 0.71574
+std. deviation: 0.01691
+best run: 2
+
+Train Score per Generation across Runs:
+mean: [0.39766, 0.634, 0.67266, 0.67116, 0.70083, 0.71516, 0.71983, 0.71733, 0.714, 0.71449, 0.718]
+std. deviation: [0.04419, 0.0389, 0.04026, 0.04176, 0.04331, 0.03715, 0.03596, 0.02919, 0.03493, 0.03348, 0.03254]
+
+Test Score per Generation across Runs:
+mean: [0.40038, 0.62842, 0.66834, 0.67909, 0.69026, 0.69919, 0.70341, 0.70534, 0.70884, 0.71092, 0.71574]
+std. deviation: [0.01166, 0.02193, 0.02467, 0.02226, 0.02028, 0.02224, 0.01922, 0.01912, 0.01885, 0.01641, 0.01691]
+
+Finished execution, total elapsed time: 161772.73992 secs (mean: 6470.90959, std: 1935.6262)
+
+The Z-Score is -2.3089. The p-value is 0.02088. The result is significant at p≤ 0.05. (so the one with replace = False is better)
 
 #################### OVERALL RESULTS #################### (running in the NIMS server)
 
@@ -330,11 +355,4 @@ mean: [1.0, 0.8451, 0.82691, 0.80471, 0.79436, 0.7787, 0.76995, 0.7594, 0.7628, 
 std. deviation: [0.0, 0.0245, 0.02647, 0.02743, 0.02443, 0.01782, 0.03221, 0.02059, 0.01944, 0.021, 0.01494]
 
 Finished execution, total elapsed time: 166426.18607 secs (mean: 6657.04744, std: 1545.1153)
-"""
-
-TICTACTOE_WITH_PARETO_SHARING_DIVERSITY03 = copy.deepcopy(TICTACTOE_WITH_PARETOS)
-TICTACTOE_WITH_PARETO_SHARING_DIVERSITY03['advanced_training_parameters']['diversity']['fitness_sharing'] = True
-TICTACTOE_WITH_PARETO_SHARING_DIVERSITY03['advanced_training_parameters']['diversity_configs']['fitness_sharing']['p_value'] = 0.3
-"""
-32469, nohup4.out
 """
