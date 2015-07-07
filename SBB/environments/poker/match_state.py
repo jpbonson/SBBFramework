@@ -5,7 +5,7 @@ import itertools
 import numpy
 if os.name == 'posix':
     from pokereval import PokerEval
-from tables.equity_table import EQUITY_TABLE, UNIQUE_EQUITY_TABLE
+from tables.equity_table import EQUITY_TABLE
 from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
 from ...config import Config
 
@@ -13,11 +13,9 @@ class MatchState():
 
     INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'equity', 'hand strength'] #, 'hand potential (positive)', 'hand potential (negative)', 'EHS']
 
-    RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-    SUITS = ['s', 'd', 'h', 'c']
-
-    def __init__(self, message):
+    def __init__(self, message, full_deck):
         self.message = message
+        self.full_deck = full_deck
         self.position = None
         self.opponent_position = None
         self.hand_id = None
@@ -233,7 +231,7 @@ class MatchState():
             behind = 0.0
             our_rank = self.pokereval.evaln(our_cards)
             # considers all two card combinations of the remaining cards
-            deck = self._initialize_deck()
+            deck = list(self.full_deck)
             for card in our_cards:
                 deck.remove(card)
             opponent_cards_combinations = itertools.combinations(deck, 2)
@@ -326,37 +324,6 @@ class MatchState():
             hand_npotential_memmory[out_cards_set] = npot
 
             return ppot, npot
-
-    def _initialize_deck(self):
-        deck = []
-        for rank in MatchState.RANKS:
-            for suit in MatchState.SUITS:
-                deck.append(rank+suit)
-        return deck
-
-    def _initialize_hole_cards_based_on_equity(self):
-        hole_cards = UNIQUE_EQUITY_TABLE.keys()
-        equities = [x[0] for x in UNIQUE_EQUITY_TABLE.values()]
-        total_equities = sum(equities)
-        probabilities = [e/total_equities for e in equities]
-        hole_cards = numpy.random.choice(hole_cards, size = len(hole_cards)/2, replace = False, p = probabilities)
-        unpacked_hole_cards = []
-        for cards in hole_cards:
-            card1 = cards[0]
-            card2 = cards[1]
-            if cards[2] == 's':
-                suit = random.choice(MatchState.SUITS)
-                card1 += suit
-                card2 += suit
-            else:
-                suit = random.choice(MatchState.SUITS)
-                card1 += suit
-                temp = list(MatchState.SUITS)
-                temp.remove(suit)
-                suit = random.choice(temp)
-                card2 += suit
-            unpacked_hole_cards.append((card1, card2))
-        return unpacked_hole_cards
 
     def _calculate_equity(self, hole_cards):
         if hole_cards[0][1] == hole_cards[1][1]:
