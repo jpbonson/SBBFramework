@@ -10,6 +10,7 @@ import subprocess
 import threading
 import random
 import numpy
+from collections import defaultdict
 from match_state import MatchState
 from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
@@ -122,9 +123,6 @@ class PokerPoint(ReinforcementPoint):
         self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
         point_id = "("+str(point_id)+","+str(self.seed_)+")"
         super(PokerPoint, self).__init__(point_id, opponent)
-        self.HAND_STRENGHT_MEMMORY = {}
-        self.HAND_PPOTENTIAL_MEMMORY = {}
-        self.HAND_NPOTENTIAL_MEMMORY = {}
 
 class PokerEnvironment(ReinforcementEnvironment):
     """
@@ -135,6 +133,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     INPUTS = ['chips']+MatchState.INPUTS+OpponentModel.INPUTS
     RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
     SUITS = ['s', 'd', 'h', 'c']
+    HAND_STRENGHT_MEMORY = defaultdict(dict)
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
@@ -243,6 +242,11 @@ class PokerEnvironment(ReinforcementEnvironment):
                     unpacked_hole_cards.append((card1 + suit1, card2 + suit2))
         return unpacked_hole_cards
 
+    def _remove_points(self, points_to_remove, teams_population):
+        super(PokerEnvironment, self)._remove_points(points_to_remove, teams_population)
+        for point in points_to_remove:
+            del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
+
     @staticmethod
     def execute_player(player, port, point_id, is_training, point):
         socket_tmp = socket.socket()
@@ -304,7 +308,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                         chips = 0.5
                     else:
                         chips = MatchState.normalize_winning(total_chips/float(match_state.hand_id))
-                    inputs = [chips] + match_state.inputs(point.HAND_STRENGHT_MEMMORY, point.HAND_PPOTENTIAL_MEMMORY, point.HAND_NPOTENTIAL_MEMMORY) + opponent_model.inputs()
+                    inputs = [chips] + match_state.inputs(PokerEnvironment.HAND_STRENGHT_MEMORY[point_id]) + opponent_model.inputs()
                     action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = "c"

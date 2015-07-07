@@ -136,7 +136,7 @@ class MatchState():
                             self_actions.append(action)
         return self_actions, opponent_actions
 
-    def inputs(self, hand_strength_memmory, hand_ppotential_memmory, hand_npotential_memmory):
+    def inputs(self, hand_strength_memmory):
         """
         ATTENTION: If you change the order, add or remove inputs the SBB teams that were already trained will 
         behave unexpectedly!
