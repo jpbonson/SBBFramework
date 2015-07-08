@@ -1,56 +1,69 @@
 ===
 TODO:
 
-- poker
+runs:
+- only coded, only sbb, hybrid, hybrid/hall of fame, only coded+equity, only coded+equity+potential
+- only coded+equity+potential+hall of fame
+- com a melhor combinacao, testar apenas fold, call e raise, e testar random?
+- initial results:
+    - only_sbb is too slow and produced below average results
+    - hybrid is also slower and worse
+    - best option: only_coded + hall_of_fame?
 
-- velocidade:
-    - conferir se script funciona, garantir inputs para o fim do termo, ir rodando ttt e poker sem diversity, implementar pareto, implementar compression
+    - usar equity_deck seems to provide faster results withotu decreasing the quality
+    - hand_potential seems to decrease to quality, but should be tested more
 
-    - se TTT melhorar, poker deve melhorar?
+quick things:
+- consertar swap de oponentes (e consertar o unit test)
+- calcular diversity mesmo quando ela nao esta sendo usada
+- deck por hand strenght?
+- fazer main especifico para poker, com yappi?
+- printar nome do arquivo que salvou os resultados no final do run
 
-    - usar nao mais que 100 hands total? (opponents x hands)
+implementar:
+- diveristy pareto
+- compression diversity
+- opcao de randomly swap between diversity metrics
 
-    - analisar quais inputs estao sendo usados
+garantir outputs (for tictactoe and poker):
+- analisar quais inputs estao sendo usados
+- accumulative performance curve for the population (tutorial, page 27)
+- diversity x fitness x generations (for both diversities)
+- how the point population evolved over time (check the paper Malcolm talked about)
 
+ler papers:
+- paper sobre compression
+- paper com os plots relevantes para a point population
+
+extra:
+- conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)
+- ir rodando ttt e poker sem diveristy assim que garantir os outputs
+- hand potential piora muito a velocidade?
+
+email de update para andrew/malcolm:
+- SBB funcionando para poker
+- quais inputs estao sendo usados
+- quick results:
     - provavel problema do learning: apenas a action raise esta vencendo. Incentivar diversity?
+    - comentar que esta meio slow, e que seria uma boa remover alguns dos inputs depois de analisa-los melhor. Um paper com comparacoes entre os inputs seria relevante?
+- proximas etapas
 
-    - mandar rodar ttt default (para comparar com e sem replace, 5713), e testar para hall of fame e opponents (sem diversity!)
+---
 
-    - testar com e sem hand potential
-
-    - consertar unit test de ttt (bug with swap?)
-
-    - testar se esta aprendendo com o tempo
-
-    - conferir email de notes da ultima reuniao
-
-    - alwayscall e alwaysraise valem a pena? eles levam tempo demais para rodar. Agrupar eles com o always fold?
-    - validation e chamption population: aumentar opponents e hands? aumentar com outros valores?
-
-    - mandar email para andrew com os inputs e falar que SBB esta funcionando para poker (comentar que esta meio slow, e que seria uma boa remover alguns dos inputs depois de analisa-los melhor. Um paper com comapracoes entre os inputs seria relevante?)
-    - falar dos resultados iniciais
-
-    - metrica para saber quais inputs estao sendo usados
-
-    - instalar r + testar script
-    - pareto na diversity
-    - nova metrica de diversity
-    - conferir paper do malcolm sobre point population
-    - garantir que todos os outputs necessarios para o final do summer term estao sendo produzidos
-    - fazer system tests
-    
-    - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
-    - permitir rodar point populations agrupando opponents for grupo, e sem agrupamento
-    - nos testes, checar se os teams sabem blefar
-    - calcular diversity mesmo quando ela nao esta sendo usada
-    - conferir email com as notes da ultima reuniao
-    - refatorar codigo
-
+future work:
+- instalar r + testar script
+- fazer system tests
+- implementar novos oponentes (opcao de agrupar oponentes por tipo?)
+- permitir rodar point populations agrupando opponents for grupo, e sem agrupamento
+- nos testes, checar se os teams sabem blefar
+- refatorar codigo
 - ir testando enquanto implementa:
-    - rerodar defualt de TTT para replace = False
-    - fazer example para tictactoe (fazer sets de 10 runs separadas?)
-    - fazer example para thyroid (mas nao focar muito nisso)
     - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector, e Bluenose(?))
+- steps:
+    3. better opponents
+    4. opponent model
+    5. second layer
+    6. more player? unlimited bets?
 
 - extra:
     - fazer reinforcement learning para Othello?
@@ -59,12 +72,18 @@ TODO:
         - deve ser possivel usa-lo para treinar mais um conjunto de teams
             - se o pop_size nao for o suficiente, deve preencher o pop_gap com random ou children
     - implementar o second layer do SBB
+        - no layer 2 do SBB os teams do layer 1 ficam frozen e sao usados pelo layer 2 como se fossem 'programs'
+        - objetivo do layer 1: produzir uma population de team com alta diversidade
+        - objetivo do layer 2: obter o melhor jogador de poker
+
+- papers:
+    - nos papers: se possivel, comprar SBB com outros poker players (alem de comparar o SBB entre si para diferentes configuracoes)
+    - paper deadlines: january and march
 
 - quando der tempo:
     - experimentar violin plot na R language (our usar http://matplotlib.org/examples/statistics/violinplot_demo.html e integrar no pSBB?)
     - usar import logging para nao floodar a tela com prints qd um test falhar
     - melhorar README.md
-    - velocidade de rodar? (pypy, cpython, or c)
     - fazer mais testes unitarios (pareto, diversity, selection, matches, operations, program execution)
     - adicionar mais documentacao no codigo
     - remover comentarios em portugues

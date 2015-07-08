@@ -22,8 +22,8 @@ class Config():
             'opponents_pool': 'only_coded',
             'balanced_opponent_populations': True, # if False, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
-                'enabled': False,
-                'use_genotype_diversity': True, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
+                'enabled': True,
+                'use_genotype_diversity': False, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
             'poker': {
@@ -32,7 +32,7 @@ class Config():
         },
 
         'training_parameters': {
-            'runs_total': 2,
+            'runs_total': 1,
             'generations_total': 200,
             'validate_after_each_generation': 20,
             'populations': {
@@ -122,7 +122,7 @@ class Config():
         },
         'poker': {
             'acpc_path': "SBB/environments/poker/ACPC/",
-            'available_ports': range(18790, 18800),
+            'available_ports': range(18786, 18800),
             'small_bet': 10,
             'big_bet': 20,
         }
