@@ -15,6 +15,7 @@ import numpy
 from collections import defaultdict
 from match_state import MatchState
 from tables.equity_table import UNIQUE_EQUITY_TABLE
+from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
 from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
 from ...config import Config
@@ -207,6 +208,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         super(PokerEnvironment, self).reset()
         PokerEnvironment.full_deck = self._initialize_deck()
         PokerEnvironment.equity_hole_cards = self._initialize_hole_cards_based_on_equity()
+        PokerEnvironment.hand_strength_hole_cards = self._initialize_hole_cards_based_on_hand_strength()
         gc.collect()
         yappi.clear_stats()
 
@@ -238,7 +240,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         equities = [x[0] for x in UNIQUE_EQUITY_TABLE.values()]
         total_equities = sum(equities)
         probabilities = [e/total_equities for e in equities]
-        hole_cards = numpy.random.choice(hole_cards, size = len(hole_cards)*2/3, replace = False, p = probabilities)
+        hole_cards = numpy.random.choice(hole_cards, size = len(hole_cards)*17/18, replace = False, p = probabilities)
         unpacked_hole_cards = []
         suites_permutations = list(itertools.permutations(PokerEnvironment.SUITS, 2))
         for cards in hole_cards:
@@ -253,6 +255,17 @@ class PokerEnvironment(ReinforcementEnvironment):
                 for suit1, suit2 in suites:
                     unpacked_hole_cards.append((card1 + suit1, card2 + suit2))
         return unpacked_hole_cards
+
+    def _initialize_hole_cards_based_on_hand_strength(self):
+        hole_cards = STRENGTH_TABLE_FOR_2_CARDS.keys()
+        strengths = [x for x in STRENGTH_TABLE_FOR_2_CARDS.values()]
+        total_strengths = sum(strengths)
+        probabilities = [e/total_strengths for e in strengths]
+        hole_cards = numpy.random.choice(hole_cards, size = len(hole_cards)*1/2, replace = False, p = probabilities)
+        final_cards = []
+        for cards in hole_cards:
+            final_cards.append(list(cards))
+        return final_cards
 
     def _remove_points(self, points_to_remove, teams_population):
         super(PokerEnvironment, self)._remove_points(points_to_remove, teams_population)
@@ -300,7 +313,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             message = message.replace("\r\n", "")
             partial_messages = message.split("MATCHSTATE")
             last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-            match_state = MatchState(last_message, PokerEnvironment.full_deck, PokerEnvironment.equity_hole_cards)
+            match_state = MatchState(last_message, PokerEnvironment.full_deck, PokerEnvironment.equity_hole_cards, PokerEnvironment.hand_strength_hole_cards)
             if match_state.hand_id != last_hand_id:
                 player.initialize() # so a probabilistic opponent will always play equal for the same hands and actions
                 if last_hand_id != -1:
@@ -353,7 +366,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def update_opponent_model_and_chips(opponent_model, messages, total_chips, last_hand_id, debug_file, previous_action):
         for partial_msg in reversed(messages):
             if partial_msg:
-                partial_match_state = MatchState(partial_msg, PokerEnvironment.full_deck, PokerEnvironment.equity_hole_cards)
+                partial_match_state = MatchState(partial_msg, PokerEnvironment.full_deck, PokerEnvironment.equity_hole_cards, PokerEnvironment.hand_strength_hole_cards)
                 if partial_match_state.hand_id == last_hand_id: # get the last message of the last hand
                     self_actions, opponent_actions = partial_match_state.actions_per_player()
                     if partial_match_state.is_showdown():

@@ -13,10 +13,11 @@ class MatchState():
 
     INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'equity', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS']
 
-    def __init__(self, message, full_deck, equity_hole_cards):
+    def __init__(self, message, full_deck, equity_hole_cards, hand_strength_hole_cards):
         self.message = message
         self.full_deck = full_deck
         self.equity_hole_cards = equity_hole_cards
+        self.hand_strength_hole_cards = hand_strength_hole_cards
         self.position = None
         self.opponent_position = None
         self.hand_id = None
@@ -232,12 +233,13 @@ class MatchState():
             behind = 0.0
             our_rank = self.pokereval.evaln(our_cards)
             # considers all two card combinations of the remaining cards
+
             # deck = list(self.full_deck)
             # for card in our_cards:
             #     deck.remove(card)
             # opponent_cards_combinations = itertools.combinations(deck, 2)
 
-            opponent_cards_combinations = list(self.equity_hole_cards)
+            opponent_cards_combinations = list(self.hand_strength_hole_cards)
             indices = []
             for index, cards in enumerate(opponent_cards_combinations):
                 card1, card2 = cards
@@ -276,7 +278,13 @@ class MatchState():
             total = 0.0
             our_rank = self.pokereval.evaln(our_cards)
             # considers all two card combinations of the remaining cards for the opponent
-            opponent_cards_combinations = list(self.equity_hole_cards)
+
+            # deck = list(self.full_deck)
+            # for card in our_cards:
+            #     deck.remove(card)
+            # opponent_cards_combinations = itertools.combinations(deck, 2)
+
+            opponent_cards_combinations = list(self.hand_strength_hole_cards)
             indices = []
             for index, cards in enumerate(opponent_cards_combinations):
                 card1, card2 = cards

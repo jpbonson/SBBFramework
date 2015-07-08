@@ -3,6 +3,7 @@ TODO:
 
 runs:
 - initial results:
+    results1
     - only_coded x2 (from test: [0.5139 to 0.534, very stable], train: [0.51602 to 0.56009, quite unstable], time: 43600 secs)
     - only_sbb x2 (from test: [0.50984 to 0.52742, mostly stable], train: [0.50032 to 0.49283, very unstable], time: 63406 secs)
         - is too slow (at least 50% more than only_coded, since it dont use memory) and produced below average results
@@ -19,6 +20,10 @@ runs:
         - usar equity_deck seems to provide faster results without decreasing the quality
         - hand_potential seems to decrease to quality, but should be tested more
         - com a melhor combinacao, testar apenas fold, call e raise, e testar random?
+    results2
+    - full_deck
+    - equity
+    - hand strength
 
 quick things:
 - deck por hand strenght? (para comparar, conferir se estao gerando o mesmo numero de pares de cartas, e comrpar com o numero normal)
@@ -30,6 +35,8 @@ quick things:
 - Definir as ports no inicio da execucao
 - no codigo dos teams, printar se era ativo ou nao
 - separar opponent model em outro arquivo
+- conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)
+- refatorar hand strength e hand potential (deck)
 
 implementar:
 - diveristy pareto
@@ -48,9 +55,7 @@ ler papers:
 - paper com os plots relevantes para a point population
 
 extra:
-- conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)
 - ir rodando ttt e poker sem diveristy assim que garantir os outputs
-- hand potential piora muito a velocidade?
 
 ---
 
