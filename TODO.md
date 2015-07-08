@@ -10,22 +10,26 @@ runs:
         - very similar results for test, but for train the scoe is much lower than only_coded, just a bit slower
     - hybrid+hall of fame x2 (from test: [0.5139 to 0.53469, mostly stable], train: [0.53002 to 0.52838, very unstable], time: 42392 secs)
         - hall of fame seems to have improved the test results, but the train results are more unstable, similar runtime
-    - only coded+equity+hall of fame (ver para x1 e x2)
+    - only coded+equity+hall of fame x2 (from test: [0.50992 to 0.51701, very unstable], train: [0.52013 to 0.52337, very unstable], time: 37316 secs)
+    - only coded+equity+hall of fame x1 (from test: [0.51677 to 0.53499, mostly stable], train: [0.54409 to 0.50364, very unstable], time: 37316 secs)
     - only_coded+equity+potential x1 (from test: [0.50656 to 0.53591, very stable], train: [0.50173 to 0.54714, very unstable], time: 48677 secs)
         - it took more generations to improve, but improved more than just only_coded
     others:
-        - best option: only_coded + hall_of_fame?
+        - best option: only_coded + hall_of_fame? not sure if hall_of_fame is helping or not
         - usar equity_deck seems to provide faster results without decreasing the quality
         - hand_potential seems to decrease to quality, but should be tested more
         - com a melhor combinacao, testar apenas fold, call e raise, e testar random?
 
 quick things:
+- deck por hand strenght? (para comparar, conferir se estao gerando o mesmo numero de pares de cartas, e comrpar com o numero normal)
+- run atual x swap x random opponent
 - consertar swap de oponentes (e consertar o unit test)
 - calcular diversity mesmo quando ela nao esta sendo usada
-- deck por hand strenght? (para comprar, conferir se estao gerando o mesmo numero de pares de cartas, e comrpar com o numero normal)
 - fazer main especifico para poker, com yappi?
 - printar nome do arquivo que salvou os resultados no final do run
 - Definir as ports no inicio da execucao
+- no codigo dos teams, printar se era ativo ou nao
+- separar opponent model em outro arquivo
 
 implementar:
 - diveristy pareto
@@ -33,10 +37,11 @@ implementar:
 - opcao de randomly swap between diversity metrics
 
 garantir outputs (for tictactoe and poker):
-- analisar quais inputs estao sendo usados
+- analisar quais inputs estao sendo usados (apenas dos programs ativos no team)
 - accumulative performance curve for the population (tutorial, page 27)
 - diversity x fitness x generations (for both diversities, violin plot? line plot?)
 - how the point population evolved over time (check the paper Malcolm talked about)
+- outputs para R plot
 
 ler papers:
 - paper sobre compression
@@ -46,14 +51,6 @@ extra:
 - conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)
 - ir rodando ttt e poker sem diveristy assim que garantir os outputs
 - hand potential piora muito a velocidade?
-
-email de update para andrew/malcolm:
-- SBB funcionando para poker
-- quais inputs estao sendo usados
-- quick results:
-    - provavel problema do learning: apenas a action raise esta vencendo. Incentivar diversity?
-    - comentar que esta meio slow, e que seria uma boa remover alguns dos inputs depois de analisa-los melhor. Um paper com comparacoes entre os inputs seria relevante?
-- proximas etapas
 
 ---
 
