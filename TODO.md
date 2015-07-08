@@ -2,23 +2,30 @@
 TODO:
 
 runs:
-- only coded, only sbb, hybrid, hybrid/hall of fame, only coded+equity, only coded+equity+potential
-- only coded+equity+potential+hall of fame
-- com a melhor combinacao, testar apenas fold, call e raise, e testar random?
 - initial results:
-    - only_sbb is too slow and produced below average results
-    - hybrid is also slower and worse
-    - best option: only_coded + hall_of_fame?
-
-    - usar equity_deck seems to provide faster results withotu decreasing the quality
-    - hand_potential seems to decrease to quality, but should be tested more
+    - only_coded x2 (from test: [0.5139 to 0.534, very stable], train: [0.51602 to 0.56009, quite unstable], time: 43600 secs)
+    - only_sbb x2 (from test: [0.50984 to 0.52742, mostly stable], train: [0.50032 to 0.49283, very unstable], time: 63406 secs)
+        - is too slow (at least 50% more than only_coded, since it dont use memory) and produced below average results
+    - hybrid x2 (from test: [0.5139 to 0.53163, very stable], train: [0.51901 to 0.52942, more quite unstable], time: 49318 secs)
+        - very similar results for test, but for train the scoe is much lower than only_coded, just a bit slower
+    - hybrid+hall of fame x2 (from test: [0.5139 to 0.53469, mostly stable], train: [0.53002 to 0.52838, very unstable], time: 42392 secs)
+        - hall of fame seems to have improved the test results, but the train results are more unstable, similar runtime
+    - only coded+equity+hall of fame (ver para x1 e x2)
+    - only_coded+equity+potential x1 (from test: [0.50656 to 0.53591, very stable], train: [0.50173 to 0.54714, very unstable], time: 48677 secs)
+        - it took more generations to improve, but improved more than just only_coded
+    others:
+        - best option: only_coded + hall_of_fame?
+        - usar equity_deck seems to provide faster results without decreasing the quality
+        - hand_potential seems to decrease to quality, but should be tested more
+        - com a melhor combinacao, testar apenas fold, call e raise, e testar random?
 
 quick things:
 - consertar swap de oponentes (e consertar o unit test)
 - calcular diversity mesmo quando ela nao esta sendo usada
-- deck por hand strenght?
+- deck por hand strenght? (para comprar, conferir se estao gerando o mesmo numero de pares de cartas, e comrpar com o numero normal)
 - fazer main especifico para poker, com yappi?
 - printar nome do arquivo que salvou os resultados no final do run
+- Definir as ports no inicio da execucao
 
 implementar:
 - diveristy pareto
@@ -28,7 +35,7 @@ implementar:
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados
 - accumulative performance curve for the population (tutorial, page 27)
-- diversity x fitness x generations (for both diversities)
+- diversity x fitness x generations (for both diversities, violin plot? line plot?)
 - how the point population evolved over time (check the paper Malcolm talked about)
 
 ler papers:
