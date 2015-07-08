@@ -240,7 +240,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         equities = [x[0] for x in UNIQUE_EQUITY_TABLE.values()]
         total_equities = sum(equities)
         probabilities = [e/total_equities for e in equities]
-        hole_cards = numpy.random.choice(hole_cards, size = len(hole_cards)*17/18, replace = False, p = probabilities)
+        hole_cards = numpy.random.choice(hole_cards, size = len(hole_cards)*4/6, replace = False, p = probabilities)
         unpacked_hole_cards = []
         suites_permutations = list(itertools.permutations(PokerEnvironment.SUITS, 2))
         for cards in hole_cards:
@@ -261,7 +261,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         strengths = [x for x in STRENGTH_TABLE_FOR_2_CARDS.values()]
         total_strengths = sum(strengths)
         probabilities = [e/total_strengths for e in strengths]
-        hole_cards = numpy.random.choice(hole_cards, size = len(hole_cards)*1/2, replace = False, p = probabilities)
+        hole_cards = numpy.random.choice(hole_cards, size = len(hole_cards)*1/3, replace = False, p = probabilities)
         final_cards = []
         for cards in hole_cards:
             final_cards.append(list(cards))

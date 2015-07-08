@@ -234,19 +234,19 @@ class MatchState():
             our_rank = self.pokereval.evaln(our_cards)
             # considers all two card combinations of the remaining cards
 
-            # deck = list(self.full_deck)
-            # for card in our_cards:
-            #     deck.remove(card)
-            # opponent_cards_combinations = itertools.combinations(deck, 2)
+            deck = list(self.full_deck)
+            for card in our_cards:
+                deck.remove(card)
+            opponent_cards_combinations = itertools.combinations(deck, 2)
 
-            opponent_cards_combinations = list(self.hand_strength_hole_cards)
-            indices = []
-            for index, cards in enumerate(opponent_cards_combinations):
-                card1, card2 = cards
-                if card1 in our_cards or card2 in our_cards:
-                    indices.append(index)
-            for index in reversed(indices):
-                opponent_cards_combinations.pop(index)
+            # opponent_cards_combinations = list(self.hand_strength_hole_cards)
+            # indices = []
+            # for index, cards in enumerate(opponent_cards_combinations):
+            #     card1, card2 = cards
+            #     if card1 in our_cards or card2 in our_cards:
+            #         indices.append(index)
+            # for index in reversed(indices):
+            #     opponent_cards_combinations.pop(index)
 
             for opponent_card1, opponent_card2 in opponent_cards_combinations:
                 opponent_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + self.board_cards)
@@ -284,7 +284,7 @@ class MatchState():
             #     deck.remove(card)
             # opponent_cards_combinations = itertools.combinations(deck, 2)
 
-            opponent_cards_combinations = list(self.hand_strength_hole_cards)
+            opponent_cards_combinations = list(self.equity_hole_cards)
             indices = []
             for index, cards in enumerate(opponent_cards_combinations):
                 card1, card2 = cards

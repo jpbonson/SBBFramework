@@ -22,8 +22,11 @@ runs:
         - com a melhor combinacao, testar apenas fold, call e raise, e testar random?
     results2
     - full_deck
-    - equity
-    - hand strength
+    - equity 1/2
+    - hand strength 1/2
+    - equity 1/3
+    - hand strength 1/3
+    - full_deck for hand_strength and equity 1/3 for hand potential
 
 quick things:
 - deck por hand strenght? (para comparar, conferir se estao gerando o mesmo numero de pares de cartas, e comrpar com o numero normal)

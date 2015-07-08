@@ -122,7 +122,7 @@ class Config():
         },
         'poker': {
             'acpc_path': "SBB/environments/poker/ACPC/",
-            'available_ports': range(18792, 18800),
+            'available_ports': range(18798, 18800),
             'small_bet': 10,
             'big_bet': 20,
         }
