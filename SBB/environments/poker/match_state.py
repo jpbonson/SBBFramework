@@ -7,14 +7,15 @@ if os.name == 'posix':
     from pokereval import PokerEval
 from tables.equity_table import EQUITY_TABLE
 from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
-from ...config import Config
 
 class MatchState():
 
     INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'equity', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS']
 
-    def __init__(self, message, full_deck, equity_hole_cards, hand_strength_hole_cards):
+    def __init__(self, message, small_bet, big_bet, full_deck, equity_hole_cards, hand_strength_hole_cards):
         self.message = message
+        self.small_bet = small_bet
+        self.big_bet = big_bet
         self.full_deck = full_deck
         self.equity_hole_cards = equity_hole_cards
         self.hand_strength_hole_cards = hand_strength_hole_cards
@@ -110,9 +111,9 @@ class MatchState():
         opponent_actions = []
         for round_index, actions in enumerate(self.rounds):
             if round_index == 0 or round_index == 1:
-                bet = Config.RESTRICTIONS['poker']['small_bet']
+                bet = self.small_bet
             else:
-                bet = Config.RESTRICTIONS['poker']['big_bet']
+                bet = self.big_bet
             for action_index, action in enumerate(actions):
                 if round_index == 0:
                     if self.position == 0:
@@ -156,7 +157,7 @@ class MatchState():
         inputs[8] = EHS
         """
         inputs = [0] * len(MatchState.INPUTS)
-        inputs[0] = self.calculate_pot()/float(MatchState.maximum_winning())
+        inputs[0] = self.calculate_pot()/float(self.maximum_winning())
         inputs[1] = self._calculate_bet()
         if inputs[0] + inputs[1] > 0:
             inputs[2] = inputs[1] / float(inputs[0] + inputs[1])
@@ -180,19 +181,24 @@ class MatchState():
         # check if is the small blind
         if len(self.rounds) == 1:
             if len(self.rounds[0]) == 0 or (len(self.rounds[0]) == 1 and self.rounds[0][0] == 'f'):
-                return Config.RESTRICTIONS['poker']['small_bet']/2.0
+                return self.small_bet/2.0
 
         # check if someone raised
-        pot = Config.RESTRICTIONS['poker']['small_bet']
+        pot = self.small_bet
         for i, r in enumerate(self.rounds):
             if i == 0 or i == 1:
-                bet = Config.RESTRICTIONS['poker']['small_bet']
+                bet = self.small_bet
             else:
-                bet = Config.RESTRICTIONS['poker']['big_bet']
+                bet = self.big_bet
             for action in r:
                 if action == 'r':
                     pot += bet
         return pot
+
+    def maximum_winning(self):
+        max_small_bet_turn_winning = self.small_bet*4
+        max_big_bet_turn_winning = self.big_bet*4
+        return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
 
     def _calculate_bet(self):
         # check if is the small blind
@@ -399,15 +405,3 @@ class MatchState():
         msg += "opponent_hole_cards: "+str(self.opponent_hole_cards)+"\n"
         msg += "board_cards: "+str(self.board_cards)+"\n"
         return msg
-
-    @staticmethod
-    def normalize_winning(value):
-        max_winning = MatchState.maximum_winning()
-        max_losing = -max_winning
-        return (value - max_losing)/float(max_winning - max_losing)
-
-    @staticmethod
-    def maximum_winning():
-        max_small_bet_turn_winning = Config.RESTRICTIONS['poker']['small_bet']*4
-        max_big_bet_turn_winning = Config.RESTRICTIONS['poker']['big_bet']*4
-        return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2

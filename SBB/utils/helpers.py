@@ -1,3 +1,4 @@
+import socket
 from ..config import Config
 
 """
@@ -21,3 +22,14 @@ def is_nearly_equal_to(value1, value2):
     if abs(value1 - value2) < Config.RESTRICTIONS['is_nearly_equal_threshold']:
         return True
     return False
+
+def avaliable_ports():
+    socket_tmp1 = socket.socket()
+    socket_tmp1.bind(('', 0))
+    socket_tmp2 = socket.socket()
+    socket_tmp2.bind(('', 0))
+    port1 = socket_tmp1.getsockname()[1]
+    port2 = socket_tmp2.getsockname()[1]
+    socket_tmp1.close()
+    socket_tmp2.close()
+    return port1, port2

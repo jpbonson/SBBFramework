@@ -35,7 +35,6 @@ quick things:
 - calcular diversity mesmo quando ela nao esta sendo usada
 - fazer main especifico para poker, com yappi?
 - printar nome do arquivo que salvou os resultados no final do run
-- Definir as ports no inicio da execucao
 - no codigo dos teams, printar se era ativo ou nao
 - separar opponent model em outro arquivo
 - conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)

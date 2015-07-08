@@ -18,6 +18,7 @@ from tables.equity_table import UNIQUE_EQUITY_TABLE
 from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
 from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
+from ...utils.helpers import avaliable_ports
 from ...config import Config
 
 class OpponentModel():
@@ -140,6 +141,12 @@ class PokerEnvironment(ReinforcementEnvironment):
     HAND_STRENGHT_MEMORY = defaultdict(dict)
     HAND_PPOTENTIAL_MEMORY = defaultdict(dict)
     HAND_NPOTENTIAL_MEMORY = defaultdict(dict)
+    CONFIG = {
+        'acpc_path': "SBB/environments/poker/ACPC/",
+        'available_ports': [],
+        'small_bet': 10,
+        'big_bet': 20,
+    }
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
@@ -147,6 +154,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         coded_opponents = [PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents)
         self.total_positions_ = 2
+        port1, port2 = avaliable_ports()
+        PokerEnvironment.CONFIG['available_ports'] = [port1, port2]
 
     def instantiate_point_for_coded_opponent_class(self, opponent_class):
         instance = opponent_class()
@@ -159,18 +168,18 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
 
         """
-        if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/"):
-            os.makedirs(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/")
+        if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerEnvironment.CONFIG['acpc_path']+"outputs/"):
+            os.makedirs(PokerEnvironment.CONFIG['acpc_path']+"outputs/")
 
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, Config.RESTRICTIONS['poker']['available_ports'][0], point.point_id, is_training, point])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, Config.RESTRICTIONS['poker']['available_ports'][1], point.point_id, False, point])
-        args = [Config.RESTRICTIONS['poker']['acpc_path']+'dealer', 
-                Config.RESTRICTIONS['poker']['acpc_path']+'outputs/match_output', 
-                Config.RESTRICTIONS['poker']['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, PokerEnvironment.CONFIG['available_ports'][0], point.point_id, is_training, point])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, PokerEnvironment.CONFIG['available_ports'][1], point.point_id, False, point])
+        args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
+                PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
+                PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
                 str(Config.USER['reinforcement_parameters']['poker']['total_hands']), 
                 str(point.seed_),
                 'sbb', 'opponent', 
-                '-p', str(Config.RESTRICTIONS['poker']['available_ports'][0])+","+str(Config.RESTRICTIONS['poker']['available_ports'][1])]
+                '-p', str(PokerEnvironment.CONFIG['available_ports'][0])+","+str(PokerEnvironment.CONFIG['available_ports'][1])]
         if not Config.USER['reinforcement_parameters']['debug_matches']:
             args.append('-l')
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -181,7 +190,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         t2.join()
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
-            with open(Config.RESTRICTIONS['poker']['acpc_path']+"outputs/match.log", "w") as text_file:
+            with open(PokerEnvironment.CONFIG['acpc_path']+"outputs/match.log", "w") as text_file:
                 text_file.write(str(err))
         score = out.split("\n")[1]
         score = score.replace("SCORE:", "")
@@ -192,7 +201,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             print "\nbug!\n"
             raise SystemExit
         avg_score = float(scores[0])/float(Config.USER['reinforcement_parameters']['poker']['total_hands'])
-        normalized_value = MatchState.normalize_winning(avg_score)
+        normalized_value = PokerEnvironment.normalize_winning(avg_score)
         if Config.USER['reinforcement_parameters']['debug_matches']:
             print "scores: "+str(scores)
             print "players: "+str(players)
@@ -220,6 +229,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def metrics(self):
         msg = ""
         msg += "\n### Environment Info:"
+        msg += "\nports: "+str(PokerEnvironment.CONFIG['available_ports'])
         msg += "\ntotal inputs: "+str(self.total_inputs_)
         msg += "\ninputs: "+str(PokerEnvironment.INPUTS)
         msg += "\ntotal actions: "+str(self.total_actions_)
@@ -275,6 +285,14 @@ class PokerEnvironment(ReinforcementEnvironment):
             del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
 
     @staticmethod
+    def normalize_winning(value):
+        max_small_bet_turn_winning = PokerEnvironment.CONFIG['small_bet']*4
+        max_big_bet_turn_winning = PokerEnvironment.CONFIG['big_bet']*4
+        max_winning = max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
+        max_losing = -max_winning
+        return (value - max_losing)/float(max_winning - max_losing)
+
+    @staticmethod
     def execute_player(player, port, point_id, is_training, point):
         socket_tmp = socket.socket()
 
@@ -293,7 +311,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         debug_file = None
         if Config.USER['reinforcement_parameters']['debug_matches']:
-            debug_file = open(Config.RESTRICTIONS['poker']['acpc_path']+'outputs/player'+str(port)+'.log','w')
+            debug_file = open(PokerEnvironment.CONFIG['acpc_path']+'outputs/player'+str(port)+'.log','w')
         socket_tmp.send("VERSION:2.0.0\r\n")
         last_hand_id = -1
         opponent_model = OpponentModel()
@@ -313,7 +331,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             message = message.replace("\r\n", "")
             partial_messages = message.split("MATCHSTATE")
             last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-            match_state = MatchState(last_message, PokerEnvironment.full_deck, PokerEnvironment.equity_hole_cards, PokerEnvironment.hand_strength_hole_cards)
+            match_state = MatchState(last_message, PokerEnvironment.CONFIG['small_bet'], PokerEnvironment.CONFIG['big_bet'], PokerEnvironment.full_deck, PokerEnvironment.equity_hole_cards, PokerEnvironment.hand_strength_hole_cards)
             if match_state.hand_id != last_hand_id:
                 player.initialize() # so a probabilistic opponent will always play equal for the same hands and actions
                 if last_hand_id != -1:
@@ -334,7 +352,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                     if match_state.hand_id == 0:
                         chips = 0.5
                     else:
-                        chips = MatchState.normalize_winning(total_chips/float(match_state.hand_id))
+                        chips = PokerEnvironment.normalize_winning(total_chips/float(match_state.hand_id))
                     inputs = [chips] + match_state.inputs(PokerEnvironment.HAND_STRENGHT_MEMORY[point_id], PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point_id], PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point_id]) + opponent_model.inputs()
                     action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
@@ -366,7 +384,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def update_opponent_model_and_chips(opponent_model, messages, total_chips, last_hand_id, debug_file, previous_action):
         for partial_msg in reversed(messages):
             if partial_msg:
-                partial_match_state = MatchState(partial_msg, PokerEnvironment.full_deck, PokerEnvironment.equity_hole_cards, PokerEnvironment.hand_strength_hole_cards)
+                partial_match_state = MatchState(partial_msg, PokerEnvironment.CONFIG['small_bet'], PokerEnvironment.CONFIG['big_bet'], PokerEnvironment.full_deck, PokerEnvironment.equity_hole_cards, PokerEnvironment.hand_strength_hole_cards)
                 if partial_match_state.hand_id == last_hand_id: # get the last message of the last hand
                     self_actions, opponent_actions = partial_match_state.actions_per_player()
                     if partial_match_state.is_showdown():
