@@ -4,6 +4,7 @@ import math
 import errno
 import yappi
 import socket
+import itertools
 import time
 from socket import error as socket_error
 import os
@@ -13,6 +14,7 @@ import random
 import numpy
 from collections import defaultdict
 from match_state import MatchState
+from tables.equity_table import UNIQUE_EQUITY_TABLE
 from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
 from ...config import Config
@@ -135,6 +137,8 @@ class PokerEnvironment(ReinforcementEnvironment):
     RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
     SUITS = ['s', 'd', 'h', 'c']
     HAND_STRENGHT_MEMORY = defaultdict(dict)
+    HAND_PPOTENTIAL_MEMORY = defaultdict(dict)
+    HAND_NPOTENTIAL_MEMORY = defaultdict(dict)
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
@@ -198,8 +202,11 @@ class PokerEnvironment(ReinforcementEnvironment):
     def reset(self):
         for point in self.point_population():
             del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
+            del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id]
+            del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
         super(PokerEnvironment, self).reset()
         PokerEnvironment.full_deck = self._initialize_deck()
+        PokerEnvironment.equity_hole_cards = self._initialize_hole_cards_based_on_equity()
         gc.collect()
         yappi.clear_stats()
 
@@ -251,6 +258,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         super(PokerEnvironment, self)._remove_points(points_to_remove, teams_population)
         for point in points_to_remove:
             del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
+            del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id]
+            del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
 
     @staticmethod
     def execute_player(player, port, point_id, is_training, point):
@@ -291,7 +300,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             message = message.replace("\r\n", "")
             partial_messages = message.split("MATCHSTATE")
             last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-            match_state = MatchState(last_message, PokerEnvironment.full_deck)
+            match_state = MatchState(last_message, PokerEnvironment.full_deck, PokerEnvironment.equity_hole_cards)
             if match_state.hand_id != last_hand_id:
                 player.initialize() # so a probabilistic opponent will always play equal for the same hands and actions
                 if last_hand_id != -1:
@@ -313,7 +322,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                         chips = 0.5
                     else:
                         chips = MatchState.normalize_winning(total_chips/float(match_state.hand_id))
-                    inputs = [chips] + match_state.inputs(PokerEnvironment.HAND_STRENGHT_MEMORY[point_id]) + opponent_model.inputs()
+                    inputs = [chips] + match_state.inputs(PokerEnvironment.HAND_STRENGHT_MEMORY[point_id], PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point_id], PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point_id]) + opponent_model.inputs()
                     action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = "c"
@@ -344,7 +353,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def update_opponent_model_and_chips(opponent_model, messages, total_chips, last_hand_id, debug_file, previous_action):
         for partial_msg in reversed(messages):
             if partial_msg:
-                partial_match_state = MatchState(partial_msg, PokerEnvironment.full_deck)
+                partial_match_state = MatchState(partial_msg, PokerEnvironment.full_deck, PokerEnvironment.equity_hole_cards)
                 if partial_match_state.hand_id == last_hand_id: # get the last message of the last hand
                     self_actions, opponent_actions = partial_match_state.actions_per_player()
                     if partial_match_state.is_showdown():

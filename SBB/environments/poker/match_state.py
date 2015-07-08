@@ -11,11 +11,12 @@ from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'equity', 'hand strength'] #, 'hand potential (positive)', 'hand potential (negative)', 'EHS']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'equity', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS']
 
-    def __init__(self, message, full_deck):
+    def __init__(self, message, full_deck, equity_hole_cards):
         self.message = message
         self.full_deck = full_deck
+        self.equity_hole_cards = equity_hole_cards
         self.position = None
         self.opponent_position = None
         self.hand_id = None
@@ -136,7 +137,7 @@ class MatchState():
                             self_actions.append(action)
         return self_actions, opponent_actions
 
-    def inputs(self, hand_strength_memmory):
+    def inputs(self, hand_strength_memory, hand_ppotential_memory, hand_npotential_memory):
         """
         ATTENTION: If you change the order, add or remove inputs the SBB teams that were already trained will 
         behave unexpectedly!
@@ -162,16 +163,16 @@ class MatchState():
             inputs[2] = 0
         inputs[3] = self._betting_position()
         inputs[4] = self._calculate_equity(self.current_hole_cards)
-        inputs[5] = self._calculate_hand_strength(hand_strength_memmory)
-        # if len(self.rounds) == 2 or len(self.rounds) == 3:
-        #     ppot, npot = self._calculate_hand_potential(hand_ppotential_memmory, hand_npotential_memmory)
-        #     inputs[6] = ppot
-        #     inputs[7] = npot
-        #     inputs[8] = inputs[5] + (1 - inputs[5]) * ppot
-        # else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
-        #     inputs[6] = 0
-        #     inputs[7] = 0
-        #     inputs[8] = 0
+        inputs[5] = self._calculate_hand_strength(hand_strength_memory)
+        if len(self.rounds) == 2 or len(self.rounds) == 3:
+            ppot, npot = self._calculate_hand_potential(hand_ppotential_memory, hand_npotential_memory)
+            inputs[6] = ppot
+            inputs[7] = npot
+            inputs[8] = inputs[5] + (1 - inputs[5]) * ppot
+        else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
+            inputs[6] = 0
+            inputs[7] = 0
+            inputs[8] = 0
         return inputs
 
     def calculate_pot(self):
@@ -231,10 +232,20 @@ class MatchState():
             behind = 0.0
             our_rank = self.pokereval.evaln(our_cards)
             # considers all two card combinations of the remaining cards
-            deck = list(self.full_deck)
-            for card in our_cards:
-                deck.remove(card)
-            opponent_cards_combinations = itertools.combinations(deck, 2)
+            # deck = list(self.full_deck)
+            # for card in our_cards:
+            #     deck.remove(card)
+            # opponent_cards_combinations = itertools.combinations(deck, 2)
+
+            opponent_cards_combinations = list(self.equity_hole_cards)
+            indices = []
+            for index, cards in enumerate(opponent_cards_combinations):
+                card1, card2 = cards
+                if card1 in our_cards or card2 in our_cards:
+                    indices.append(index)
+            for index in reversed(indices):
+                opponent_cards_combinations.pop(index)
+
             for opponent_card1, opponent_card2 in opponent_cards_combinations:
                 opponent_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + self.board_cards)
                 if our_rank > opponent_rank:
@@ -247,14 +258,14 @@ class MatchState():
             hand_strength_memmory[out_cards_set] = hand_strength
             return hand_strength
 
-    def _calculate_hand_potential(self, hand_ppotential_memmory, hand_npotential_memmory):
+    def _calculate_hand_potential(self, hand_ppotential_memory, hand_npotential_memory):
         """
         Implemented as described in the page 23 of the thesis in: http://poker.cs.ualberta.ca/publications/davidson.msc.pdf
         """
         our_cards = self.current_hole_cards + self.board_cards
         out_cards_set = frozenset(our_cards)
-        if out_cards_set in hand_ppotential_memmory:
-            return hand_ppotential_memmory[out_cards_set], hand_npotential_memmory[out_cards_set]
+        if out_cards_set in hand_ppotential_memory:
+            return hand_ppotential_memory[out_cards_set], hand_npotential_memory[out_cards_set]
         else:
             # hand potential array, each index represents ahead, tied, and behind
             ahead = 0
@@ -265,7 +276,15 @@ class MatchState():
             total = 0.0
             our_rank = self.pokereval.evaln(our_cards)
             # considers all two card combinations of the remaining cards for the opponent
-            opponent_cards_combinations = self._initialize_hole_cards_based_on_equity()
+            opponent_cards_combinations = list(self.equity_hole_cards)
+            indices = []
+            for index, cards in enumerate(opponent_cards_combinations):
+                card1, card2 = cards
+                if card1 in our_cards or card2 in our_cards:
+                    indices.append(index)
+            for index in reversed(indices):
+                opponent_cards_combinations.pop(index)
+
             for opponent_card1, opponent_card2 in opponent_cards_combinations:
                 opponent_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + self.board_cards)
                 if our_rank > opponent_rank:
@@ -277,7 +296,7 @@ class MatchState():
                 # hp_total[index] += 1.0
 
                 # all possible board cards to come
-                deck = self._initialize_deck()
+                deck = list(self.full_deck)
                 dealt_card = self.current_hole_cards + self.board_cards + [opponent_card1] + [opponent_card2]
                 deck_without_dealt_cards = [card for card in deck if card not in dealt_card]
                 if len(self.rounds) == 2: # flop
@@ -320,8 +339,8 @@ class MatchState():
             # npot: were ahead but fell behind
             npot = ((hp[ahead][behind]/total)*2.0 + (hp[ahead][tied]/total)*1.0 + (hp[tied][behind]/total)*1.0)/4.0
 
-            hand_ppotential_memmory[out_cards_set] = ppot
-            hand_npotential_memmory[out_cards_set] = npot
+            hand_ppotential_memory[out_cards_set] = ppot
+            hand_npotential_memory[out_cards_set] = npot
 
             return ppot, npot
 
