@@ -43,12 +43,13 @@ class ReinforcementEnvironment(DefaultEnvironment):
         
         """
 
-    def __init__(self, total_actions, total_inputs, coded_opponents):
+    def __init__(self, total_actions, total_inputs, coded_opponents_for_training, coded_opponents_for_validation):
         self.total_actions_ = total_actions
         self.total_inputs_ = total_inputs
-        self.coded_opponents_ = coded_opponents
+        self.coded_opponents_for_training_ = coded_opponents_for_training
+        self.coded_opponents_for_validation_ = coded_opponents_for_validation
         self.opponent_class_mapping_ = {}
-        for opponent in self.coded_opponents_:
+        for opponent in self.coded_opponents_for_training_:
             self.opponent_class_mapping_[str(opponent)] = opponent
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
@@ -83,12 +84,12 @@ class ReinforcementEnvironment(DefaultEnvironment):
             total_opponents += 1
             point_population_per_opponent['sbb'] = []
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded':
-            total_opponents += len(self.coded_opponents_)
-            for opponent_class in self.coded_opponents_:
+            total_opponents += len(self.coded_opponents_for_training_)
+            for opponent_class in self.coded_opponents_for_training_:
                 point_population_per_opponent[str(opponent_class)] = []
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
-            total_opponents += len(self.coded_opponents_)
-            for opponent_class in self.coded_opponents_:
+            total_opponents += len(self.coded_opponents_for_training_)
+            for opponent_class in self.coded_opponents_for_training_:
                 point_population_per_opponent[str(opponent_class)] = []
             total_opponents += 1
             point_population_per_opponent['sbb'] = []
@@ -119,8 +120,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def _initialize_random_balanced_population_of_coded_opponents_for_validation(self, population_size):
         population = []
-        total_per_opponent = population_size/len(self.coded_opponents_)
-        for opponent_class in self.coded_opponents_:
+        total_per_opponent = population_size/len(self.coded_opponents_for_validation_)
+        for opponent_class in self.coded_opponents_for_validation_:
             for index in range(total_per_opponent):
                 population.append(self._instantiate_point_for_coded_opponent_class(opponent_class))
         return population
@@ -197,7 +198,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         return population
 
     def _initialize_point_population_per_opponent_for_coded_opponents(self):
-        for opponent_class in self.coded_opponents_:
+        for opponent_class in self.coded_opponents_for_training_:
             for index in range(self.population_size_):
                 self.point_population_per_opponent_[str(opponent_class)].append(self._instantiate_point_for_coded_opponent_class(opponent_class))
 

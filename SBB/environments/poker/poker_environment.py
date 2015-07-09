@@ -53,8 +53,9 @@ class PokerEnvironment(ReinforcementEnvironment):
     def __init__(self):
         total_actions = 3 # fold, call, raise
         total_inputs = len(PokerEnvironment.INPUTS)
-        coded_opponents = [PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents)
+        coded_opponents_for_training = [PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        coded_opponents_for_validation = [PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents_for_training, coded_opponents_for_validation)
         self.total_positions_ = 2
         port1, port2 = avaliable_ports()
         PokerEnvironment.CONFIG['available_ports'] = [port1, port2]
@@ -160,6 +161,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\nactions mapping: "+str(PokerEnvironment.ACTION_MAPPING)
         msg += "\npositions: "+str(self.total_positions_)
         msg += "\nmatches per opponents (for each position): "+str(self.population_size_)
+        msg += "\ntraining opponents: "+str([c.__name__ for c in self.coded_opponents_for_training_])
+        msg += "\nvalidation opponents: "+str([c.__name__ for c in self.coded_opponents_for_validation_])
         return msg
 
     def _initialize_deck(self):

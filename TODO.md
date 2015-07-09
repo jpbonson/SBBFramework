@@ -26,9 +26,9 @@ runs:
         - training a bit more balanced
         - seems to be a bit more faster
         - sightly less stable test
+        - inconclusive: would need to test for more runs
 
 quick things:
-- run atual x swap x random opponent
 - calcular diversity mesmo quando ela nao esta sendo usada
 - printar nome do arquivo que salvou os resultados no final do run
 - no codigo dos teams, printar se era ativo ou nao
