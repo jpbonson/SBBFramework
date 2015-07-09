@@ -252,6 +252,7 @@ class SBB:
             self._save_teams(run.teams_in_last_generation, path+"last_generation_teams/")
             self._save_teams(run.pareto_front_in_last_generation, path+"pareto_front/")
             self._save_teams(run.hall_of_fame_in_last_generation, path+"hall_of_fame/")
+        print "\n### Files saved at "+filepath+"\n"
 
     def _save_teams(self, teams, path):
         if len(teams) > 0:
