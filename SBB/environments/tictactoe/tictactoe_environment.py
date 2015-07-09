@@ -28,14 +28,14 @@ class TictactoeEnvironment(ReinforcementEnvironment):
             '[2,0]': 6, '[2,1]': 7, '[2,2]': 8,
         }
 
-    def instantiate_point_for_coded_opponent_class(self, opponent_class):
+    def _instantiate_point_for_coded_opponent_class(self, opponent_class):
         instance = opponent_class()
         return TictactoePoint(str(instance), instance)
 
-    def instantiate_point_for_sbb_opponent(self, team):
+    def _instantiate_point_for_sbb_opponent(self, team):
         return TictactoePoint(team.__repr__(), team)
 
-    def play_match(self, team, point, is_training):
+    def _play_match(self, team, point, is_training):
         """
 
         """

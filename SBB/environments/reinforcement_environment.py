@@ -26,19 +26,19 @@ class ReinforcementEnvironment(DefaultEnvironment):
     __metaclass__  = abc.ABCMeta
 
     @abc.abstractmethod
-    def instantiate_point_for_coded_opponent_class(self, opponent_class):
+    def _instantiate_point_for_coded_opponent_class(self, opponent_class):
         """
         
         """
 
     @abc.abstractmethod
-    def instantiate_point_for_sbb_opponent(self, team):
+    def _instantiate_point_for_sbb_opponent(self, team):
         """
         
         """
 
     @abc.abstractmethod
-    def play_match(self, team, point, is_training):
+    def _play_match(self, team, point, is_training):
         """
         
         """
@@ -120,7 +120,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         total_per_opponent = population_size/len(self.coded_opponents_)
         for opponent_class in self.coded_opponents_:
             for index in range(total_per_opponent):
-                population.append(self.instantiate_point_for_coded_opponent_class(opponent_class))
+                population.append(self._instantiate_point_for_coded_opponent_class(opponent_class))
         return population
 
     def setup(self, teams_population):
@@ -190,13 +190,13 @@ class ReinforcementEnvironment(DefaultEnvironment):
                     sbb_opponents += random.sample(new_opponents, opponents_to_add)
         population = []
         for opponent in sbb_opponents:
-            population.append(self.instantiate_point_for_sbb_opponent(opponent))
+            population.append(self._instantiate_point_for_sbb_opponent(opponent))
         return population
 
     def _initialize_point_population_per_opponent_for_coded_opponents(self):
         for opponent_class in self.coded_opponents_:
             for index in range(self.population_size_):
-                self.point_population_per_opponent_[str(opponent_class)].append(self.instantiate_point_for_coded_opponent_class(opponent_class))
+                self.point_population_per_opponent_[str(opponent_class)].append(self._instantiate_point_for_coded_opponent_class(opponent_class))
 
     def _remove_points(self, points_to_remove, teams_population):
         super(ReinforcementEnvironment, self)._remove_points(points_to_remove, teams_population)
@@ -238,14 +238,14 @@ class ReinforcementEnvironment(DefaultEnvironment):
             for subset, opponent_class_name in zip(kept_subsets_per_opponent, opponents):
                 samples_per_opponent_to_add = self.population_size_ - len(subset)
                 for x in range(samples_per_opponent_to_add):
-                    subset.append(self.instantiate_point_for_coded_opponent_class(self.opponent_class_mapping_[opponent_class_name]))
+                    subset.append(self._instantiate_point_for_coded_opponent_class(self.opponent_class_mapping_[opponent_class_name]))
         else:
             # obtain the data points that will be kept and that will be removed for each subset using uniform probability
             total_samples_per_opponent_to_add = self.population_size_ - samples_per_opponent_to_keep
             for subset, opponent_class_name in zip(current_subsets_per_opponent, opponents):
                 kept_subsets = random.sample(subset, samples_per_opponent_to_keep) # get points that will be kept
                 for x in range(total_samples_per_opponent_to_add):
-                    kept_subsets.append(self.instantiate_point_for_coded_opponent_class(self.opponent_class_mapping_[opponent_class_name])) # add new points
+                    kept_subsets.append(self._instantiate_point_for_coded_opponent_class(self.opponent_class_mapping_[opponent_class_name])) # add new points
                 kept_subsets_per_opponent.append(kept_subsets)
                 removed_subsets_per_opponent.append(list(set(subset) - set(kept_subsets))) # find the remvoed points
         
@@ -264,7 +264,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             team_ids = [p.opponent.team_id_ for p in self.point_population_per_opponent_['hall_of_fame']]
             for team in sorted_teams:
                 if team.team_id_ not in team_ids:
-                    self.team_to_add_to_hall_of_fame_ = self.instantiate_point_for_sbb_opponent(team)
+                    self.team_to_add_to_hall_of_fame_ = self._instantiate_point_for_sbb_opponent(team)
                     self.team_to_add_to_hall_of_fame_.opponent.opponent_id = "hall_of_fame"
                     break
 
@@ -300,7 +300,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             if is_training and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id in team.results_per_points_:
                 results.append(team.results_per_points_[point.point_id])
             else:
-                result = self.play_match(team, point, is_training)
+                result = self._play_match(team, point, is_training)
                 if is_training:
                     team.results_per_points_[point.point_id] = result
                 else:
