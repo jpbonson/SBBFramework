@@ -41,9 +41,9 @@ class PokerEnvironment(ReinforcementEnvironment):
     INPUTS = ['chips']+MatchState.INPUTS+OpponentModel.INPUTS
     RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
     SUITS = ['s', 'd', 'h', 'c']
-    HAND_STRENGHT_MEMORY = defaultdict(dict)
-    HAND_PPOTENTIAL_MEMORY = defaultdict(dict)
-    HAND_NPOTENTIAL_MEMORY = defaultdict(dict)
+    HAND_STRENGHT_MEMORY = None
+    HAND_PPOTENTIAL_MEMORY = None
+    HAND_NPOTENTIAL_MEMORY = None
     CONFIG = {
         'acpc_path': "SBB/environments/poker/ACPC/",
         'available_ports': [],
@@ -74,8 +74,24 @@ class PokerEnvironment(ReinforcementEnvironment):
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerEnvironment.CONFIG['acpc_path']+"outputs/"):
             os.makedirs(PokerEnvironment.CONFIG['acpc_path']+"outputs/")
 
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, PokerEnvironment.CONFIG['available_ports'][0], point.point_id, is_training, point])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, PokerEnvironment.CONFIG['available_ports'][1], point.point_id, False, point])
+        if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id], 
+                PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id], 
+                PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id])
+        else:
+            if is_training:
+                if self.current_population_ != 'sbb':
+                    memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[self.current_population_][point.point_id], 
+                        PokerEnvironment.HAND_PPOTENTIAL_MEMORY[self.current_population_][point.point_id], 
+                        PokerEnvironment.HAND_NPOTENTIAL_MEMORY[self.current_population_][point.point_id])
+                else:
+                    memories = ({}, {}, {})
+            else:
+                memories = (PokerEnvironment.HAND_STRENGHT_MEMORY['validation'][point.point_id], 
+                    PokerEnvironment.HAND_PPOTENTIAL_MEMORY['validation'][point.point_id], 
+                    PokerEnvironment.HAND_NPOTENTIAL_MEMORY['validation'][point.point_id])
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, PokerEnvironment.CONFIG['available_ports'][0], point.point_id, is_training, memories])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, PokerEnvironment.CONFIG['available_ports'][1], point.point_id, False, memories])
         args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
                 PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
                 PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
@@ -113,10 +129,17 @@ class PokerEnvironment(ReinforcementEnvironment):
         return normalized_value
 
     def reset(self):
-        for point in self.point_population():
-            del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
-            del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id]
-            del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
+        PokerEnvironment.HAND_STRENGHT_MEMORY = defaultdict(dict)
+        PokerEnvironment.HAND_PPOTENTIAL_MEMORY = defaultdict(dict)
+        PokerEnvironment.HAND_NPOTENTIAL_MEMORY = defaultdict(dict)
+        if not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            for key in self.point_population_per_opponent_.keys():
+                PokerEnvironment.HAND_STRENGHT_MEMORY[key] = defaultdict(dict)
+                PokerEnvironment.HAND_PPOTENTIAL_MEMORY[key] = defaultdict(dict)
+                PokerEnvironment.HAND_NPOTENTIAL_MEMORY[key] = defaultdict(dict)
+            PokerEnvironment.HAND_STRENGHT_MEMORY['validation'] = defaultdict(dict)
+            PokerEnvironment.HAND_PPOTENTIAL_MEMORY['validation'] = defaultdict(dict)
+            PokerEnvironment.HAND_NPOTENTIAL_MEMORY['validation'] = defaultdict(dict)
         super(PokerEnvironment, self).reset()
         PokerEnvironment.full_deck = self._initialize_deck()
         PokerEnvironment.equity_hole_cards = self._initialize_hole_cards_based_on_equity()
@@ -182,10 +205,30 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def _remove_points(self, points_to_remove, teams_population):
         super(PokerEnvironment, self)._remove_points(points_to_remove, teams_population)
-        for point in points_to_remove:
-            del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
-            del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id]
-            del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
+        if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            for point in points_to_remove:
+                del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
+                del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id]
+                del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
+        else:
+            if self.last_population_ != 'hall_of_fame' and self.last_population_ != 'sbb':
+                for point in points_to_remove:
+                    del PokerEnvironment.HAND_STRENGHT_MEMORY[self.last_population_][point.point_id]
+                    del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[self.last_population_][point.point_id]
+                    del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[self.last_population_][point.point_id]
+
+    def _remove_point_from_hall_of_fame(self, point):
+        super(PokerEnvironment, self)._remove_point_from_hall_of_fame(point)
+        if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            if point.point_id in PokerEnvironment.HAND_STRENGHT_MEMORY:
+                del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
+                del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id]
+                del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
+        else:
+            if point.point_id in PokerEnvironment.HAND_STRENGHT_MEMORY['hall_of_fame']:
+                del PokerEnvironment.HAND_STRENGHT_MEMORY['hall_of_fame'][point.point_id]
+                del PokerEnvironment.HAND_PPOTENTIAL_MEMORY['hall_of_fame'][point.point_id]
+                del PokerEnvironment.HAND_NPOTENTIAL_MEMORY['hall_of_fame'][point.point_id]
 
     @staticmethod
     def normalize_winning(value):
@@ -196,7 +239,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         return (value - max_losing)/float(max_winning - max_losing)
 
     @staticmethod
-    def execute_player(player, port, point_id, is_training, point):
+    def execute_player(player, port, point_id, is_training, memories):
         socket_tmp = socket.socket()
 
         total = 10
@@ -256,7 +299,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                         chips = 0.5
                     else:
                         chips = PokerEnvironment.normalize_winning(total_chips/float(match_state.hand_id))
-                    inputs = [chips] + match_state.inputs(PokerEnvironment.HAND_STRENGHT_MEMORY[point_id], PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point_id], PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point_id]) + opponent_model.inputs()
+                    inputs = [chips] + match_state.inputs(memories) + opponent_model.inputs()
                     action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = "c"

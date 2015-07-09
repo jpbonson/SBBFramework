@@ -28,10 +28,12 @@ runs:
     - hand strength 1/3
     - full_deck for hand_strength and equity 1/3 for hand potential
 
+    - balanced: True (check memory!)
+    - balanced: False (check memory!)
+
 quick things:
 - deck por hand strenght? (para comparar, conferir se estao gerando o mesmo numero de pares de cartas, e comrpar com o numero normal)
 - run atual x swap x random opponent
-- consertar swap de oponentes (e consertar o unit test)
 - calcular diversity mesmo quando ela nao esta sendo usada
 - printar nome do arquivo que salvou os resultados no final do run
 - no codigo dos teams, printar se era ativo ou nao

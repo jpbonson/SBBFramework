@@ -139,7 +139,7 @@ class MatchState():
                             self_actions.append(action)
         return self_actions, opponent_actions
 
-    def inputs(self, hand_strength_memory, hand_ppotential_memory, hand_npotential_memory):
+    def inputs(self, memories):
         """
         ATTENTION: If you change the order, add or remove inputs the SBB teams that were already trained will 
         behave unexpectedly!
@@ -156,6 +156,7 @@ class MatchState():
         inputs[7] = hand_potential (negative)
         inputs[8] = EHS
         """
+        hand_strength_memory, hand_ppotential_memory, hand_npotential_memory = memories
         inputs = [0] * len(MatchState.INPUTS)
         inputs[0] = self.calculate_pot()/float(self.maximum_winning())
         inputs[1] = self._calculate_bet()

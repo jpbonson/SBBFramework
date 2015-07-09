@@ -56,6 +56,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.test_population_ = None
         self.champion_population_ = None
         self.first_sampling_ = True
+        self.last_population_ = None
         self.current_population_ = None
         self.samples_per_opponent_to_keep_ = {}
         self.samples_per_opponent_to_remove_ = {}
@@ -113,6 +114,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.test_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
+        self.last_population_ = None
         self.current_population_ = None
 
     def _initialize_random_balanced_population_of_coded_opponents_for_validation(self, population_size):
@@ -131,6 +133,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             options = self.point_population_per_opponent_.keys()
             if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.point_population_per_opponent_['hall_of_fame']) == 0:
                 options.remove('hall_of_fame')
+            self.last_population_ = self.current_population_
             self.current_population_ = random.choice(options)
 
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_sbb':
@@ -148,7 +151,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             else: # uses attributes defined in evaluate_point_population() to update the point population
                 self._remove_points(flatten(self.samples_per_opponent_to_remove_.values()), teams_population)
                 if Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
-                    if not self.current_population_ or (self.current_population_ and self.current_population_ == 'sbb'):
+                    if not self.last_population_ or (self.last_population_ and self.last_population_ == 'sbb'):
                         if len(self.point_population_per_opponent_['sbb']) > 0:
                             self._remove_points(self.point_population_per_opponent_['sbb'], teams_population)
                         self.point_population_per_opponent_['sbb'] = self._initialize_point_population_of_sbb_opponents(teams_population)
@@ -165,7 +168,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
                         DiversityMaintenance.genotype_diversity(teams, p = 0.8, k = self.population_size_)
                     score = [p.opponent.fitness_ for p in hall_of_fame]
                     worst_team = hall_of_fame[score.index(min(score))]
-                    hall_of_fame.remove(worst_team)
+                    self._remove_point_from_hall_of_fame(worst_team)
 
         self._check_for_bugs()
 
@@ -200,6 +203,9 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def _remove_points(self, points_to_remove, teams_population):
         super(ReinforcementEnvironment, self)._remove_points(points_to_remove, teams_population)
+
+    def _remove_point_from_hall_of_fame(self, point):
+        self.point_population_per_opponent_['hall_of_fame'].remove(point)
 
     def _check_for_bugs(self):
         for key, values in self.point_population_per_opponent_.iteritems():
