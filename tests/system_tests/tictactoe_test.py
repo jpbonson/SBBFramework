@@ -119,25 +119,25 @@ class ClassificationTests(unittest.TestCase):
         expected = [0.59166]
         self.assertEqual(expected, result)
 
-    # def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_hybrid_opponents_with_swap(self):
-    #     """ Checking if everything for classification is still working and producing the same result. """
-    #     config = dict(TEST_CONFIG)
-    #     config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
-    #     config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-    #     config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
-    #     config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
-    #     config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
-    #     config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-    #     config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
-    #     config['training_parameters']['runs_total'] = 1
-    #     config['reinforcement_parameters']['balanced_opponent_populations'] = False
-    #     config['advanced_training_parameters']['seed'] = [1]
-    #     Config.USER = config
-    #     sbb = SBB()
-    #     sbb.run()
-    #     result = sbb.best_scores_per_runs_
-    #     expected = [0.64166]
-    #     self.assertEqual(expected, result)
+    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_hybrid_opponents_with_swap(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['training_parameters']['runs_total'] = 1
+        config['reinforcement_parameters']['balanced_opponent_populations'] = False
+        config['advanced_training_parameters']['seed'] = [1]
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = sbb.best_scores_per_runs_
+        expected = [0.64166]
+        self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_hybrid_opponents(self):
         """ Checking if everything for classification is still working and producing the same result. """
