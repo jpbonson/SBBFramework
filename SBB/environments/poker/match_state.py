@@ -12,12 +12,11 @@ class MatchState():
 
     INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'equity', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS']
 
-    def __init__(self, message, small_bet, big_bet, full_deck, equity_hole_cards, hand_strength_hole_cards):
+    def __init__(self, message, small_bet, big_bet, full_deck, hand_strength_hole_cards):
         self.message = message
         self.small_bet = small_bet
         self.big_bet = big_bet
         self.full_deck = full_deck
-        self.equity_hole_cards = equity_hole_cards
         self.hand_strength_hole_cards = hand_strength_hole_cards
         self.position = None
         self.opponent_position = None
@@ -246,15 +245,6 @@ class MatchState():
                 deck.remove(card)
             opponent_cards_combinations = itertools.combinations(deck, 2)
 
-            # opponent_cards_combinations = list(self.hand_strength_hole_cards)
-            # indices = []
-            # for index, cards in enumerate(opponent_cards_combinations):
-            #     card1, card2 = cards
-            #     if card1 in our_cards or card2 in our_cards:
-            #         indices.append(index)
-            # for index in reversed(indices):
-            #     opponent_cards_combinations.pop(index)
-
             for opponent_card1, opponent_card2 in opponent_cards_combinations:
                 opponent_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + self.board_cards)
                 if our_rank > opponent_rank:
@@ -286,12 +276,7 @@ class MatchState():
             our_rank = self.pokereval.evaln(our_cards)
             # considers all two card combinations of the remaining cards for the opponent
 
-            # deck = list(self.full_deck)
-            # for card in our_cards:
-            #     deck.remove(card)
-            # opponent_cards_combinations = itertools.combinations(deck, 2)
-
-            opponent_cards_combinations = list(self.equity_hole_cards)
+            opponent_cards_combinations = list(self.hand_strength_hole_cards)
             indices = []
             for index, cards in enumerate(opponent_cards_combinations):
                 card1, card2 = cards
@@ -316,7 +301,7 @@ class MatchState():
                 deck_without_dealt_cards = [card for card in deck if card not in dealt_card]
                 if len(self.rounds) == 2: # flop
                     cards_combinations = list(itertools.combinations(deck_without_dealt_cards, 2))
-                    cards_combinations = random.sample(cards_combinations, len(cards_combinations)/12)
+                    cards_combinations = random.sample(cards_combinations, len(cards_combinations)/4)
                     for turn, river in cards_combinations:
                         # final 5-card board
                         board = self.board_cards + [turn] + [river]

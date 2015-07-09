@@ -21,24 +21,18 @@ runs:
         - hand_potential seems to decrease to quality, but should be tested more
         - com a melhor combinacao, testar apenas fold, call e raise, e testar random?
     results2
-    - full_deck
-    - equity 1/2
-    - hand strength 1/2
-    - equity 1/3
-    - hand strength 1/3
-    - full_deck for hand_strength and equity 1/3 for hand potential
-
-    - balanced: True (check memory!)
+    - full_deck for hand_strength (ok) and equity 1/3 for hand potential (fazer testes rapidos?), balanced: True
     - balanced: False (check memory!)
+        - training a bit more balanced
+        - seems to be a bit more faster
+        - sightly less stable test
 
 quick things:
-- deck por hand strenght? (para comparar, conferir se estao gerando o mesmo numero de pares de cartas, e comrpar com o numero normal)
 - run atual x swap x random opponent
 - calcular diversity mesmo quando ela nao esta sendo usada
 - printar nome do arquivo que salvou os resultados no final do run
 - no codigo dos teams, printar se era ativo ou nao
 - conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)
-- refatorar hand strength e hand potential (deck)
 
 implementar:
 - diveristy pareto
