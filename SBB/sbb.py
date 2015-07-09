@@ -103,9 +103,11 @@ class SBB:
             run_info.elapsed_time = time.time() - start_time
             run_info.best_team = best_team
             run_info.actions_distribution_in_last_generation = actions_distribution
+            run_info.inputs_distribution_in_last_generation = Counter()
             for team in teams_population:
                 if team.generation != self.current_generation_:
                     run_info.teams_in_last_generation.append(team)
+                    run_info.inputs_distribution_in_last_generation.update(team._inputs_distribution())
             run_info.pareto_front_in_last_generation = pareto_front
             run_info.hall_of_fame_in_last_generation = environment.hall_of_fame()
             print("\nFinished run "+str(run_info.run_id)+", elapsed time: "+str(run_info.elapsed_time)+" secs")

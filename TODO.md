@@ -30,7 +30,6 @@ runs:
 
 quick things:
 - calcular diversity mesmo quando ela nao esta sendo usada
-- no codigo dos teams, printar se era ativo ou nao
 - conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)
 
 implementar:
@@ -39,11 +38,11 @@ implementar:
 - opcao de randomly swap between diversity metrics
 
 garantir outputs (for tictactoe and poker):
-- analisar quais inputs estao sendo usados (apenas dos programs ativos no team)
-- accumulative performance curve for the population (tutorial, page 27)
-- diversity x fitness x generations (for both diversities, violin plot? line plot?)
-- how the point population evolved over time (check the paper Malcolm talked about)
-- outputs para R plot
+- analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK
+- accumulative performance curve for the population (tutorial, page 27): TODO
+- diversity x fitness x generations (for both diversities, violin plot? line plot?): TODO
+- how the point population evolved over time (check the paper Malcolm talked about): TODO
+- outputs para R plot: TODO
 
 ler papers:
 - paper sobre compression

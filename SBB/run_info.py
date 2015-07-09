@@ -11,7 +11,8 @@ class RunInfo:
         self.seed = seed
         self.elapsed_time = None
         self.best_team = None
-        self.actions_distribution_in_last_generation = []
+        self.actions_distribution_in_last_generation = {}
+        self.inputs_distribution_in_last_generation = {}
         self.teams_in_last_generation = []
         self.hall_of_fame_in_last_generation = []
         self.pareto_front_in_last_generation = []
@@ -32,5 +33,6 @@ class RunInfo:
         if Config.USER['task'] == 'classification':
             msg += "\n\nRecall per Action per Generation: "+str(self.recall_per_generation)
         msg += "\n\n##### METRICS FOR THE LAST GENERATION"
-        msg += "\n\nActions Distribution in the Last Generation: "+str(self.actions_distribution_in_last_generation)        
+        msg += "\n\nActions Distribution in the Last Generation: "+str(self.actions_distribution_in_last_generation)
+        msg += "\n\nInputs Distribution in the Last Generation: "+str(self.inputs_distribution_in_last_generation) 
         return msg

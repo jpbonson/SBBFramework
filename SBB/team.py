@@ -148,10 +148,13 @@ class Team(DefaultOpponent):
             p.remove_team(self)
 
     def metrics(self, full_version = False):
-        teams_members_ids = [p.__repr__() for p in self.programs]
+        active_teams_members_ids = [p.__repr__() for p in self.active_programs_]
+        inactive_programs = list(set(self.programs) - set(self.active_programs_))
+        inactive_teams_members_ids = [p.__repr__() for p in inactive_programs]
         msg = self.__repr__()
-        msg += "\nteam members ("+str(len(self.programs))+"): "+str(teams_members_ids)
+        msg += "\nteam members ("+str(len(self.programs))+"), A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids)
         msg += "\nfitness (train): "+str(round_value(self.fitness_))+", score (train): "+str(round_value(self.score_trainingset_))+", score (test): "+str(round_value(self.score_testset_))
+        msg += "\ninputs distribution: "+str(self._inputs_distribution())
         if Config.USER['task'] == 'classification' and self.extra_metrics_:
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
         if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
@@ -172,6 +175,13 @@ class Team(DefaultOpponent):
                     msg += "\nvalidation score against opponent ("+key+"): "+str(self.extra_metrics_['validation_opponents'][key])
         return msg
 
+    def _inputs_distribution(self):
+        inputs = []
+        for program in self.active_programs_:
+            inputs += program.inputs_list_
+        inputs_distribution = Counter(inputs)
+        return inputs_distribution
+
     def json(self):
         programs_json = []
         for program in self.programs:
@@ -185,7 +195,14 @@ class Team(DefaultOpponent):
         text = "TEAM "+self.__repr__()
         text += "\n\n#### METRICS\n"
         text += self.metrics(full_version = True)
-        text += "\n\n#### PROGRAMS"
-        for p in self.programs:
+        text += "\n\n######## PROGRAMS (ACTIVE)"
+        for p in self.active_programs_:
             text += "\n"+str(p)
+        text += "\n\n######## PROGRAMS (INACTIVE)"
+        inactive_programs = list(set(self.programs) - set(self.active_programs_))
+        if inactive_programs:
+            for p in inactive_programs:
+                text += "\n"+str(p)
+        else:
+            text += "\n[No inactive programs]"
         return text

@@ -21,6 +21,7 @@ class Program:
         self.program_id_ = get_program_id()     
         self.teams_ = []
         self.instructions_without_introns_ = None
+        self.inputs_list_ = None
 
     def execute(self, input_registers):
         """
@@ -28,6 +29,7 @@ class Program:
         """
         if not self.instructions_without_introns_:
             self.instructions_without_introns_ = Program.remove_introns(self.instructions)
+            self.inputs_list_ = self._inputs_list()
         instructions = self.instructions_without_introns_
         
         general_registers = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
@@ -57,6 +59,14 @@ class Program:
         output = general_registers[0] # get action output
         membership_outputs = expit(output) # apply sigmoid function before getting the output action
         return membership_outputs
+
+    def _inputs_list(self):
+        inputs = []
+        for instruction in self.instructions_without_introns_:
+            if instruction.mode == 'read-input' and instruction.op not in Config.RESTRICTIONS['genotype_options']['one-operand-instructions']:
+                if instruction.source not in inputs:
+                    inputs.append(instruction.source)
+        return inputs
 
     def mutate(self):
         mutation_chance = random.random()
@@ -110,13 +120,15 @@ class Program:
         text = "\n#### Program "+self.__repr__()
         teams_ids = [t.__repr__() for t in self.teams_]
         text += "\nParticipate in the teams ("+str(len(teams_ids))+"): "+str(teams_ids)
+        text += "\n================\n"
+        text += "\nTotal instructions (without introns): "+str(len(self.instructions_without_introns_))
+        text += "\nInputs used: "+str(self.inputs_list_)
+        text += "\n----------------\n"
+        text += "\n"+Program.print_indented_instructions(self.instructions_without_introns_)
+        text += "\n================\n"
         text += "\nTotal instructions: "+str(len(self.instructions))
         text += "\n----------------\n"
         text += "\n"+Program.print_indented_instructions(self.instructions)
-        text += "\n================\n"
-        text += "\nTotal instructions (without introns): "+str(len(self.instructions_without_introns_))
-        text += "\n----------------\n"
-        text += "\n"+Program.print_indented_instructions(self.instructions_without_introns_)
         text += "\n################"
         return text
 
