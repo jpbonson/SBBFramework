@@ -9,15 +9,18 @@ class DiversityMaintenance():
     """
 
     @staticmethod
-    def apply_diversity_maintenance_to_teams(teams_population, point_population):
-        if Config.USER['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
+    def apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation):
+        if (Config.USER['advanced_training_parameters']['diversity']['genotype']['use'] or 
+            (is_validation and Config.USER['advanced_training_parameters']['diversity']['genotype']['show'])):
             DiversityMaintenance.genotype_diversity(teams_population)
-        if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']:
+        if (Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['use'] or 
+            (is_validation and Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['show'])):
             DiversityMaintenance._fitness_sharing(teams_population, point_population)
 
     @staticmethod
-    def genotype_diversity(population, p = Config.USER['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'],
-            k = Config.USER['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['k']):
+    def genotype_diversity(population, p = Config.USER['advanced_training_parameters']['diversity']['genotype']['p_value'],
+            k = Config.USER['advanced_training_parameters']['diversity']['genotype']['k'],
+            use = Config.USER['advanced_training_parameters']['diversity']['genotype']['use']):
         """
         Calculate the distance between pairs of teams, where the distance is the intersection of active 
         programs divided by the union of active programs. Active programs are the ones who the output 
@@ -47,8 +50,10 @@ class DiversityMaintenance():
             min_values = sorted_list[:k]
             diversity = numpy.mean(min_values)
             # calculate fitness
-            team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
-            team.diversity_['genotype_diversity'] = round_value(diversity)
+            if use:
+                team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
+            if Config.USER['advanced_training_parameters']['diversity']['genotype']['show']:
+                team.diversity_['genotype_diversity'] = round_value(diversity)
 
     @staticmethod
     def _fitness_sharing(population, point_population):
@@ -64,14 +69,16 @@ class DiversityMaintenance():
                 denominators[index] += float(team.results_per_points_[point.point_id])
 
         # calculate fitness
-        p = Config.USER['advanced_training_parameters']['diversity_configs']['fitness_sharing']['p_value']
+        p = Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['p_value']
         for team in population:
             score = 0.0
             for index, point in enumerate(point_population):
                 score += float(team.results_per_points_[point.point_id]) / denominators[index]
             diversity = score/float(len(point_population))
-            team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
-            team.diversity_['fitness_sharing_diversity'] = round_value(diversity)
+            if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['use']:
+                team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
+            if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['show']:
+                team.diversity_['fitness_sharing_diversity'] = round_value(diversity)
 
     @staticmethod
     def fitness_sharing_for_points(population, results_map):

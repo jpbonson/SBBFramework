@@ -29,7 +29,6 @@ runs:
         - inconclusive: would need to test for more runs
 
 quick things:
-- calcular diversity mesmo quando ela nao esta sendo usada
 - conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)
 
 implementar:

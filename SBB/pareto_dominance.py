@@ -9,7 +9,7 @@ class ParetoDominance():
     """
 
     @staticmethod
-    def pareto_front_for_teams(teams_population, point_population, to_keep):
+    def pareto_front_for_teams(teams_population, point_population, to_keep, is_validation):
         """
         Finds the pareto front, i.e. the pareto dominant teams.
         """
@@ -20,13 +20,13 @@ class ParetoDominance():
         keep_solutions = front
         remove_solutions = dominateds
         if len(keep_solutions) < to_keep:  # must include some teams from dominateds
-            DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, point_population)
+            DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation)
             keep_solutions, remove_solutions = ParetoDominance._balance_pareto_front_to_up(teams_population, keep_solutions, remove_solutions, to_keep)
         if len(keep_solutions) > to_keep: # must discard some teams from front
-            DiversityMaintenance.apply_diversity_maintenance_to_teams(front, point_population)
+            DiversityMaintenance.apply_diversity_maintenance_to_teams(front, point_population, is_validation)
             keep_solutions, remove_solutions = ParetoDominance._balance_pareto_front_to_down(front, keep_solutions, remove_solutions, to_keep)
         if len(keep_solutions) == to_keep:
-            DiversityMaintenance.apply_diversity_maintenance_to_teams(keep_solutions, point_population) # in order to calculate fitness to obtain the teams to clone
+            DiversityMaintenance.apply_diversity_maintenance_to_teams(keep_solutions, point_population, is_validation) # in order to calculate fitness to obtain the teams to clone
         return keep_solutions, remove_solutions, pareto_front
 
     @staticmethod

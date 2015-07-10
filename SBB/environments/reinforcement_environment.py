@@ -166,7 +166,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 if len(hall_of_fame) > self.population_size_:
                     if Config.USER['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity']:
                         teams = [p.opponent for p in hall_of_fame]
-                        DiversityMaintenance.genotype_diversity(teams, p = 0.8, k = self.population_size_)
+                        DiversityMaintenance.genotype_diversity(teams, p = 0.8, k = self.population_size_, use = True)
                     score = [p.opponent.fitness_ for p in hall_of_fame]
                     worst_team = hall_of_fame[score.index(min(score))]
                     self._remove_point_from_hall_of_fame(worst_team)

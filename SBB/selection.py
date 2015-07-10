@@ -18,7 +18,7 @@ class Selection:
 
     def run(self, current_generation, teams_population, programs_population, validation = False):
         teams_population = self._evaluate_teams(teams_population)
-        keep_teams, remove_teams, pareto_front = self._select_teams_to_keep_and_remove(teams_population)
+        keep_teams, remove_teams, pareto_front = self._select_teams_to_keep_and_remove(teams_population, validation)
         teams_to_clone = self._select_teams_to_clone(keep_teams)
 
         if validation:
@@ -42,14 +42,14 @@ class Selection:
         self.environment.evaluate_point_population(teams_population)
         return teams_population
 
-    def _select_teams_to_keep_and_remove(self, teams_population):
+    def _select_teams_to_keep_and_remove(self, teams_population, validation):
         teams_to_remove = int(Config.USER['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
         teams_to_keep = len(teams_population) - teams_to_remove
 
         if Config.USER['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-            keep_teams, remove_teams, pareto_front = ParetoDominance.pareto_front_for_teams(teams_population, self.environment.point_population(), teams_to_keep)
+            keep_teams, remove_teams, pareto_front = ParetoDominance.pareto_front_for_teams(teams_population, self.environment.point_population(), teams_to_keep, is_validation = validation)
         else:
-            DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, self.environment.point_population())
+            DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, self.environment.point_population(), is_validation = validation)
             sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
             keep_teams = sorted_solutions[0:teams_to_keep]
             remove_teams = sorted_solutions[teams_to_keep:]
@@ -64,11 +64,11 @@ class Selection:
         _select_teams_to_clone(), in order to don't modify the fitness value of the teams. But it also never should be after 
         _remove_teams(), or this method will not be able to compute the global diversity.
         """
-        DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, point_population)
+        DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation = True)
         diversity_means = {}
-        if Config.USER['advanced_training_parameters']['diversity']['genotype_fitness_maintanance']:
+        if Config.USER['advanced_training_parameters']['diversity']['genotype']['show']:
             diversity_means['genotype_diversity'] = round_value(numpy.mean([t.diversity_['genotype_diversity'] for t in teams_population]))
-        if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']:
+        if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['show']:
             diversity_means['fitness_sharing_diversity'] = round_value(numpy.mean([t.diversity_['fitness_sharing_diversity'] for t in teams_population]))
         return diversity_means
 

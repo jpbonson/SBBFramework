@@ -132,11 +132,11 @@ TICTACTOE_DEFAULT = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
-            'genotype_fitness_maintanance': False,
+            'genotype': False,
             'fitness_sharing': False,
         },
         'diversity_configs': { # p_value is with how much strenght this diversity metric will be applied to the fitness
-            'genotype_fitness_maintanance': {
+            'genotype': {
                 'p_value': 0.3,
                 'k': 8,
             },
@@ -332,8 +332,8 @@ Finished execution, total elapsed time: 154101.3175 secs (mean: 6164.0527, std: 
 """
 
 TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03 = copy.deepcopy(TICTACTOE_WITH_PARETOS)
-TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
-TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'] = 0.3
+TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity']['genotype'] = True
+TICTACTOE_WITH_PARETO_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity_configs']['genotype']['p_value'] = 0.3
 """
 #################### OVERALL RESULTS ####################
 

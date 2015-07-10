@@ -59,17 +59,17 @@ TEST_CONFIG = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
-            'genotype_fitness_maintanance': False,
-            'fitness_sharing': False,
-        },
-        'diversity_configs': { # p_value is with how much strenght this diversity metric will be applied to the fitness
-            'genotype_fitness_maintanance': {
+            'genotype': {
+                'use': False,
+                'show': False,
                 'p_value': 0.1,
                 'k': 8,
             },
             'fitness_sharing': {
+                'use': False,
+                'show': False,
                 'p_value': 0.1,
-            },       
+            },
         },
         'run_initialization_step2': True,
     },
@@ -84,8 +84,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
@@ -104,8 +104,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
@@ -124,8 +124,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
@@ -144,8 +144,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
@@ -164,8 +164,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'only_sbb'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
@@ -184,8 +184,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
-        config['advanced_training_parameters']['diversity']['fitness_sharing'] = True
+        config['advanced_training_parameters']['diversity']['genotype']['use'] = True
+        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = True
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
@@ -196,7 +196,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.61666]
+        expected = [0.40833]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_with_pareto_and_without_diversity_maintenance(self):
@@ -204,8 +204,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
-        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
@@ -224,8 +224,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = True
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
@@ -244,8 +244,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing'] = False
+        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
+        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
         config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = True
         config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = True

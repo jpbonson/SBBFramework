@@ -74,17 +74,17 @@ class Config():
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {
-                'genotype_fitness_maintanance': False,
-                'fitness_sharing': False,
-            },
-            'diversity_configs': { # p_value is with how much strenght this diversity metric will be applied to the fitness
-                'genotype_fitness_maintanance': {
-                    'p_value': 0.4,
+                'genotype': {
+                    'use': False,
+                    'show': True,
+                    'p_value': 0.3,
                     'k': 8,
                 },
                 'fitness_sharing': {
+                    'use': False,
+                    'show': False,
                     'p_value': 0.1,
-                },       
+                },
             },
             'run_initialization_step2': False,
         },

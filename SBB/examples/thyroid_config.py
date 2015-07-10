@@ -222,11 +222,11 @@ THYROID_DEFAULT = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
-            'genotype_fitness_maintanance': False,
+            'genotype': False,
             'fitness_sharing': False,
         },
         'diversity_configs': { # p_value is with how much strenght this diversity metric will be applied to the fitness
-            'genotype_fitness_maintanance': {
+            'genotype': {
                 'p_value': 0.3,
                 'k': 8,
             },
@@ -344,7 +344,7 @@ Finished execution, total elapsed time: 17909.92512 secs (mean: 716.397, std: 59
 """
 
 THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY03 = copy.deepcopy(THYROID_WITH_PARETOS)
-THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
+THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity']['genotype'] = True
 """
 #################### OVERALL RESULTS ####################
 
@@ -369,8 +369,8 @@ Finished execution, total elapsed time: 16888.77011 secs (mean: 675.5508, std: 7
 """
 
 THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY05 = copy.deepcopy(THYROID_WITH_PARETOS)
-THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY05['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
-THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY05['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'] = 0.5
+THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY05['advanced_training_parameters']['diversity']['genotype'] = True
+THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY05['advanced_training_parameters']['diversity_configs']['genotype']['p_value'] = 0.5
 """
 #################### OVERALL RESULTS ####################
 
@@ -395,8 +395,8 @@ Finished execution, total elapsed time: 16413.5297 secs (mean: 656.54118, std: 4
 """
 
 THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY02 = copy.deepcopy(THYROID_WITH_PARETOS)
-THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY02['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
-THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY02['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'] = 0.2
+THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY02['advanced_training_parameters']['diversity']['genotype'] = True
+THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY02['advanced_training_parameters']['diversity_configs']['genotype']['p_value'] = 0.2
 """
 #################### OVERALL RESULTS ####################
 
@@ -421,8 +421,8 @@ Finished execution, total elapsed time: 17602.50801 secs (mean: 704.10032, std: 
 """
 
 THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY01 = copy.deepcopy(THYROID_WITH_PARETOS)
-THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY01['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
-THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY01['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'] = 0.1
+THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY01['advanced_training_parameters']['diversity']['genotype'] = True
+THYROID_WITH_PARETOS_GENOTYPE_DIVERSITY01['advanced_training_parameters']['diversity_configs']['genotype']['p_value'] = 0.1
 """
 #################### OVERALL RESULTS ####################
 
@@ -550,7 +550,7 @@ Finished execution, total elapsed time: 17322.42747 secs (mean: 692.89709, std: 
 """
 
 THYROID_GENOTYPE_DIVERSITY03 = copy.deepcopy(THYROID_DEFAULT)
-THYROID_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
+THYROID_GENOTYPE_DIVERSITY03['advanced_training_parameters']['diversity']['genotype'] = True
 """
 #################### OVERALL RESULTS ####################
 
@@ -575,8 +575,8 @@ Finished execution, total elapsed time: 7440.26044 secs (mean: 297.61041, std: 5
 """
 
 THYROID_GENOTYPE_DIVERSITY04 = copy.deepcopy(THYROID_DEFAULT)
-THYROID_GENOTYPE_DIVERSITY04['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
-THYROID_GENOTYPE_DIVERSITY04['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'] = 0.4
+THYROID_GENOTYPE_DIVERSITY04['advanced_training_parameters']['diversity']['genotype'] = True
+THYROID_GENOTYPE_DIVERSITY04['advanced_training_parameters']['diversity_configs']['genotype']['p_value'] = 0.4
 """
 #################### OVERALL RESULTS ####################
 
@@ -652,8 +652,8 @@ Finished execution, total elapsed time: 6811.79699 secs (mean: 272.47187, std: 8
 """
 
 THYROID_GENOTYPE_DIVERSITY05 = copy.deepcopy(THYROID_DEFAULT)
-THYROID_GENOTYPE_DIVERSITY05['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
-THYROID_GENOTYPE_DIVERSITY05['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'] = 0.5
+THYROID_GENOTYPE_DIVERSITY05['advanced_training_parameters']['diversity']['genotype'] = True
+THYROID_GENOTYPE_DIVERSITY05['advanced_training_parameters']['diversity_configs']['genotype']['p_value'] = 0.5
 """
 #################### OVERALL RESULTS ####################
 
@@ -704,8 +704,8 @@ Finished execution, total elapsed time: 7530.66866 secs (mean: 301.22674, std: 8
 """
 
 THYROID_GENOTYPE_DIVERSITY06 = copy.deepcopy(THYROID_DEFAULT)
-THYROID_GENOTYPE_DIVERSITY06['advanced_training_parameters']['diversity']['genotype_fitness_maintanance'] = True
-THYROID_GENOTYPE_DIVERSITY06['advanced_training_parameters']['diversity_configs']['genotype_fitness_maintanance']['p_value'] = 0.6
+THYROID_GENOTYPE_DIVERSITY06['advanced_training_parameters']['diversity']['genotype'] = True
+THYROID_GENOTYPE_DIVERSITY06['advanced_training_parameters']['diversity_configs']['genotype']['p_value'] = 0.6
 """
 #################### OVERALL RESULTS ####################
 
