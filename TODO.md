@@ -29,7 +29,12 @@ runs:
         - inconclusive: would need to test for more runs
 
 quick things:
-- conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)
+- pensar sobre:
+    - conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)
+    - com apenas 2 hands, nao ha diferenca entre long e short agressiveness e volatility!
+    - avg hand played e avg hands won (das hands played)?
+    - "100 hands against each opponent/type of opponent"
+    - 10 hands por 10 opponents eh mais rapido que 2 hands por 50 opponents? muda a performance? (considerar memory per point e tempo geral de processamento)
 
 implementar:
 - diveristy pareto
