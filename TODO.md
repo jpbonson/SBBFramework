@@ -53,8 +53,8 @@ quick things:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- diveristy pareto
 - compression diversity
+- diveristy pareto (seprar entre tipos de apply e calculate?)
 - opcao de randomly swap between diversity metrics
 
 garantir outputs (for tictactoe and poker):
@@ -74,6 +74,7 @@ extra:
 ---
 
 future work:
+- implementar mais diversity: entropy
 - instalar r + testar script
 - fazer system tests
 - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
