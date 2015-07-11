@@ -29,8 +29,9 @@ runs:
         - inconclusive: would need to test for more runs
 
 quick things:
-- avg hand played e avg hands won (das hands played)?
+- avg hand played e avg hands won (das hands played)? (salvar isso na extra_metrics)
 - pensar sobre:
+    - salvar opponent model dentre dos objetos team?
     - fazer com que a segunda hand use a mesma seed, mas na outra position?
     - com apenas 2 hands, nao ha diferenca entre long e short agressiveness e volatility!
     - gerar uma seed diferente para cada hand do oponente?
