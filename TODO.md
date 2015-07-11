@@ -29,12 +29,25 @@ runs:
         - inconclusive: would need to test for more runs
 
 quick things:
+- avg hand played e avg hands won (das hands played)?
 - pensar sobre:
-    - conferir papers de poker quantas hands cada player jogava contra (no meu caso, esse valor eh point population x hands)
+    - fazer com que a segunda hand use a mesma seed, mas na outra position?
     - com apenas 2 hands, nao ha diferenca entre long e short agressiveness e volatility!
-    - avg hand played e avg hands won (das hands played)?
+    - gerar uma seed diferente para cada hand do oponente?
+    - agressiveness e volatility por tipo de oponente? opponent model modelar por tipos de oponentes (e ser aprte da classe Team? resetar quando mudar de generation?)?
+    - se apenas 2 hands com mesma seed mas diferente positions, a segunda hand nao pode suar a info de agressiviness e volatility na primeira
+    - e os chips? acumula entre hands?
     - "100 hands against each opponent/type of opponent"
     - 10 hands por 10 opponents eh mais rapido que 2 hands por 50 opponents? muda a performance? (considerar memory per point e tempo geral de processamento)
+    - se usar swap, a point population poderia ser apenas as seeds das hands?
+
+    So I was thinking a bit more about the point population... It seems to me that a point should contain a seeded opponent, a seeded hand, and a position, so that a point is able to differentiate a team from other teams, and between themselves, consistently. Another option would be a seeded opponent and a seeded hand, but played two times, one for each position.
+    The problem is that, this way the inputs chips, agressiveness and volatility are mostly useless, since they are reseted when the team plays against new points.
+
+    A further option, so that these three inputs can be useful, would be to store and update them during the generation, per opponent type. So if the point population is composed of 20 TypeA and 20 TypeB opponents, when a team went against the last TypeA opponent it would have a memory of how many chips it lost/won to the other 19 TypeA opponents, and a track of its agressiveness and volatility. Similar to a tournament, per opponent type. But I wonder if this sort of approach would be a problem since it would bias the teams actions for the last points of a same type of opponent (ie. the point order would be relevant to how well they differentiate teams, so it would impact the point selection). All teams play against the points in the same order, so there wouldn't be a problem regarding different teams seeing the 'tournament' differently.
+
+    Right now the implementation has each point storing a seeded opponent, and two different seeded hands (one for each position), and has the problem with chips, agressiveness and volatility being useless. I would like to discuss more about the point population with you two before modifying the system 
+    to one of the ideas I said above, so I will wait for feedback. While I wait I will keep implementing the things we discussed in the last meeting (the diversity and run outputs).
 
 implementar:
 - diveristy pareto
