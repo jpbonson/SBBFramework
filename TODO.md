@@ -50,6 +50,8 @@ quick things:
     Right now the implementation has each point storing a seeded opponent, and two different seeded hands (one for each position), and has the problem with chips, agressiveness and volatility being useless. I would like to discuss more about the point population with you two before modifying the system 
     to one of the ideas I said above, so I will wait for feedback. While I wait I will keep implementing the things we discussed in the last meeting (the diversity and run outputs).
 
+    (e resetar os inputs no comeco de uma nova generation)
+
 implementar:
 - diveristy pareto
 - compression diversity
