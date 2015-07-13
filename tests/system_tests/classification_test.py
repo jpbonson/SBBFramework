@@ -50,16 +50,9 @@ TEST_CONFIG = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
-            'genotype': {
-                'use': False,
-                'show': False,
-                'p_value': 0.1,
-            },
-            'fitness_sharing': {
-                'use': False,
-                'show': False,
-                'p_value': 0.1,
-            },
+            'use_and_show': [], # will be applied to fitness and show in the outputs
+            'only_show': [], # will be only show in the outputs
+            'p_value': 0.1,
             'k': 8,
         },
         'run_initialization_step2': False,
@@ -75,8 +68,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 3
         config['advanced_training_parameters']['run_initialization_step2'] = False
@@ -92,8 +85,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
@@ -109,8 +102,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = True
@@ -126,8 +119,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype']['use'] = True
-        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = True
+        config['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype_distance', 'fitness_sharing']
+        config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
@@ -143,8 +136,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
-        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
@@ -160,8 +153,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
@@ -177,8 +170,8 @@ class ClassificationTests(unittest.TestCase):
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['genotype']['use'] = False
-        config['advanced_training_parameters']['diversity']['fitness_sharing']['use'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'thyroid'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False

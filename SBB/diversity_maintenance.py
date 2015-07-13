@@ -1,3 +1,4 @@
+import bz2
 import numpy
 from collections import defaultdict
 from utils.helpers import round_value
@@ -11,36 +12,23 @@ class DiversityMaintenance():
 
     @staticmethod
     def apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation):
-        DiversityMaintenance._apply_diversity_based_on_distances(teams_population, is_validation)
-        if (Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['use'] or 
-            (is_validation and Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['show'])):
+        diversities_to_calculate = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
+        if is_validation:
+            diversities_to_calculate += Config.USER['advanced_training_parameters']['diversity']['only_show']
+        diversities_to_calculate = set(diversities_to_calculate)
+
+        if "fitness_sharing" in diversities_to_calculate:
             DiversityMaintenance._fitness_sharing(teams_population, point_population)
+            diversities_to_calculate.remove("fitness_sharing")
+        if len(diversities_to_calculate) > 0:
+            DiversityMaintenance.calculate_diversities_based_on_distances(teams_population, 
+                Config.USER['advanced_training_parameters']['diversity']['k'], diversities_to_calculate)
 
-    @staticmethod
-    def _apply_diversity_based_on_distances(population, is_validation, 
-            p = Config.USER['advanced_training_parameters']['diversity']['genotype']['p_value']):
-        """
-        
-        """
-        distances = []
-        if (Config.USER['advanced_training_parameters']['diversity']['genotype']['use'] or 
-            (is_validation and Config.USER['advanced_training_parameters']['diversity']['genotype']['show'])):
-            distances.append("genotype_distance")
-
-        if len(distances) == 0:
-            print "Warning! 'apply_diversity_based_on_distances' was called but no diversity could be calculated"
-            return
-
-        DiversityMaintenance.calculate_diversities_based_on_distances(population, 
-            Config.USER['advanced_training_parameters']['diversity']['k'], distances)
-
-        distances_to_apply = []
-        if (Config.USER['advanced_training_parameters']['diversity']['genotype']['use']):
-            distances_to_apply.append("genotype_distance")
-
-        for team in population:
-            for distance in distances_to_apply:
-                team.fitness_ = (1.0-p)*(team.fitness_) + p*team.diversity_[distance]
+        diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
+        p = Config.USER['advanced_training_parameters']['diversity']['p_value']
+        for team in teams_population:
+            for diversity in diversities_to_apply:
+                team.fitness_ = (1.0-p)*(team.fitness_) + p*team.diversity_[diversity]
 
     @staticmethod
     def calculate_diversities_based_on_distances(population, k, distances):
@@ -104,15 +92,12 @@ class DiversityMaintenance():
                 denominators[index] += float(team.results_per_points_[point.point_id])
 
         # calculate fitness
-        p = Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['p_value']
         for team in population:
             score = 0.0
             for index, point in enumerate(point_population):
                 score += float(team.results_per_points_[point.point_id]) / denominators[index]
             diversity = score/float(len(point_population))
-            team.diversity_['fitness_sharing_diversity'] = round_value(diversity)
-            if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['use']:
-                team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
+            team.diversity_['fitness_sharing'] = round_value(diversity)
 
     @staticmethod
     def fitness_sharing_for_points(population, results_map):

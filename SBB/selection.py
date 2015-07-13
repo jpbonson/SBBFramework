@@ -64,12 +64,11 @@ class Selection:
         _select_teams_to_clone(), in order to don't modify the fitness value of the teams. But it also never should be after 
         _remove_teams(), or this method will not be able to compute the global diversity.
         """
-        DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation = True)
+        DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation = True) # ?
+        diversities = Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show']
         diversity_means = {}
-        if Config.USER['advanced_training_parameters']['diversity']['genotype']['show'] or Config.USER['advanced_training_parameters']['diversity']['genotype']['use']:
-            diversity_means['genotype_distance'] = round_value(numpy.mean([t.diversity_['genotype_distance'] for t in teams_population]))
-        if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['show'] or Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['use']:
-            diversity_means['fitness_sharing_diversity'] = round_value(numpy.mean([t.diversity_['fitness_sharing_diversity'] for t in teams_population]))
+        for diversity in set(diversities):
+            diversity_means[diversity] = round_value(numpy.mean([t.diversity_[diversity] for t in teams_population]))
         return diversity_means
 
     def _remove_teams(self, teams_population, remove_teams):
