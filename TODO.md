@@ -70,6 +70,7 @@ ler papers:
 
 extra:
 - ir rodando ttt e poker sem diveristy assim que garantir os outputs
+- no hall of fame, opcao para usar ncd?
 
 ---
 
