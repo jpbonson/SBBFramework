@@ -74,8 +74,8 @@ class Config():
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {
-                'use_and_show': ['genotype_distance'], # will be applied to fitness and show in the outputs
-                'only_show': ['fitness_sharing'], # will be only show in the outputs
+                'use_and_show': [], # will be applied to fitness and show in the outputs
+                'only_show': ['genotype_distance'], # will be only show in the outputs
                 'p_value': 0.1,
                 'k': 8,
             },
