@@ -66,9 +66,9 @@ class Selection:
         """
         DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation = True)
         diversity_means = {}
-        if Config.USER['advanced_training_parameters']['diversity']['genotype']['show']:
-            diversity_means['genotype_diversity'] = round_value(numpy.mean([t.diversity_['genotype_diversity'] for t in teams_population]))
-        if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['show']:
+        if Config.USER['advanced_training_parameters']['diversity']['genotype']['show'] or Config.USER['advanced_training_parameters']['diversity']['genotype']['use']:
+            diversity_means['genotype_distance'] = round_value(numpy.mean([t.diversity_['genotype_distance'] for t in teams_population]))
+        if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['show'] or Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['use']:
             diversity_means['fitness_sharing_diversity'] = round_value(numpy.mean([t.diversity_['fitness_sharing_diversity'] for t in teams_population]))
         return diversity_means
 

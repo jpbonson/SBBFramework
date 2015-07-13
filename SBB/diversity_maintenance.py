@@ -1,4 +1,5 @@
 import numpy
+from collections import defaultdict
 from utils.helpers import round_value
 from config import Config
 
@@ -10,50 +11,84 @@ class DiversityMaintenance():
 
     @staticmethod
     def apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation):
-        if (Config.USER['advanced_training_parameters']['diversity']['genotype']['use'] or 
-            (is_validation and Config.USER['advanced_training_parameters']['diversity']['genotype']['show'])):
-            DiversityMaintenance.genotype_diversity(teams_population)
+        DiversityMaintenance._apply_diversity_based_on_distances(teams_population, is_validation)
         if (Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['use'] or 
             (is_validation and Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['show'])):
             DiversityMaintenance._fitness_sharing(teams_population, point_population)
 
     @staticmethod
-    def genotype_diversity(population, p = Config.USER['advanced_training_parameters']['diversity']['genotype']['p_value'],
-            k = Config.USER['advanced_training_parameters']['diversity']['genotype']['k'],
-            use = Config.USER['advanced_training_parameters']['diversity']['genotype']['use']):
+    def _apply_diversity_based_on_distances(population, is_validation, 
+            p = Config.USER['advanced_training_parameters']['diversity']['genotype']['p_value']):
+        """
+        
+        """
+        distances = []
+        if (Config.USER['advanced_training_parameters']['diversity']['genotype']['use'] or 
+            (is_validation and Config.USER['advanced_training_parameters']['diversity']['genotype']['show'])):
+            distances.append("genotype_distance")
+
+        if len(distances) == 0:
+            print "Warning! 'apply_diversity_based_on_distances' was called but no diversity could be calculated"
+            return
+
+        DiversityMaintenance.calculate_diversities_based_on_distances(population, 
+            Config.USER['advanced_training_parameters']['diversity']['k'], distances)
+
+        distances_to_apply = []
+        if (Config.USER['advanced_training_parameters']['diversity']['genotype']['use']):
+            distances_to_apply.append("genotype_distance")
+
+        for team in population:
+            for distance in distances_to_apply:
+                team.fitness_ = (1.0-p)*(team.fitness_) + p*team.diversity_[distance]
+
+    @staticmethod
+    def calculate_diversities_based_on_distances(population, k, distances):
+        """
+        The kNN algorithm is applied to the list of 
+        distances, to get the k most similar teams. The diversity is average distance of the k teams.
+        In the end, teams with more uncommon program sets will obtain higher diversity scores.
+        """
+        for team in population:
+            # create array of distances to other teams
+            results = defaultdict(list)
+            for other_team in population:
+                if team != other_team:
+                    for distance in distances:
+                        result = getattr(DiversityMaintenance, "_"+distance)(team, other_team)
+                        results[distance].append(result)
+            # get mean of the k nearest neighbours
+            for distance in distances:
+                sorted_list = sorted(results[distance])
+                min_values = sorted_list[:k]
+                diversity = numpy.mean(min_values)
+                team.diversity_[distance] = round_value(diversity)
+
+    @staticmethod
+    def _genotype_distance(team, other_team):
         """
         Calculate the distance between pairs of teams, where the distance is the intersection of active 
         programs divided by the union of active programs. Active programs are the ones who the output 
-        was selected at least once during the run. The kNN algorithm is then applied to the list of 
-        distances, to get the k most similar teams. The diversity is average distance of the k teams.
-        In the end, teams with more uncommon program sets will obtain higher diversity scores.
+        was selected at least once during the run.
 
         More details in: 
             "Kelly, Stephen, and Malcolm I. Heywood. "Genotypic versus Behavioural Diversity for Teams 
             of Programs Under the 4-v-3 Keepaway Soccer Task." Twenty-Eighth AAAI Conference on 
             Artificial Intelligence. 2014."
+
+        Examples:
+        1) 1 2 e 2 3 (mid ground) => 1 - 1/3 = 0.66
+        2) 1 2 e 1 2 (least distant) => 1 - 2/2 = 0.0
+        3) 1 2 e 3 4 (most distant) => 1 - 0/4 = 1.0
         """
-        for team in population:
-            # create array of distances to other teams
-            distances = []
-            for other_team in population:
-                if team != other_team:
-                    num_programs_intersection = len(set(team.active_programs_).intersection(other_team.active_programs_))
-                    num_programs_union = len(set(team.active_programs_).union(other_team.active_programs_))
-                    if num_programs_union > 0:
-                        distance = 1.0 - (float(num_programs_intersection)/float(num_programs_union))
-                    else:
-                        distance = 1.0
-                    distances.append(distance)
-            # get mean of the k nearest neighbours
-            sorted_list = sorted(distances)
-            min_values = sorted_list[:k]
-            diversity = numpy.mean(min_values)
-            # calculate fitness
-            if use:
-                team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
-            if Config.USER['advanced_training_parameters']['diversity']['genotype']['show']:
-                team.diversity_['genotype_diversity'] = round_value(diversity)
+        num_programs_intersection = len(set(team.active_programs_).intersection(other_team.active_programs_))
+        num_programs_union = len(set(team.active_programs_).union(other_team.active_programs_))
+        if num_programs_union > 0:
+            distance = 1.0 - (float(num_programs_intersection)/float(num_programs_union))
+        else:
+            distance = 1.0
+            print "Warning! No union between teams!"
+        return distance
 
     @staticmethod
     def _fitness_sharing(population, point_population):
@@ -75,10 +110,9 @@ class DiversityMaintenance():
             for index, point in enumerate(point_population):
                 score += float(team.results_per_points_[point.point_id]) / denominators[index]
             diversity = score/float(len(point_population))
+            team.diversity_['fitness_sharing_diversity'] = round_value(diversity)
             if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['use']:
                 team.fitness_ = (1.0-p)*(team.fitness_) + p*diversity
-            if Config.USER['advanced_training_parameters']['diversity']['fitness_sharing']['show']:
-                team.diversity_['fitness_sharing_diversity'] = round_value(diversity)
 
     @staticmethod
     def fitness_sharing_for_points(population, results_map):

@@ -71,6 +71,9 @@ ler papers:
 extra:
 - ir rodando ttt e poker sem diveristy assim que garantir os outputs
 - no hall of fame, opcao para usar ncd?
+- se usar kNN no fitness sharing, vou obter resultados que facam mais sentido? (para teams e para points?)
+- conferir se "Warning! No union between teams!" ativa
+- no hall of fame, tb usar pareto entre fitness e ncd
 
 ---
 
