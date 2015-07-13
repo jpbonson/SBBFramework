@@ -28,8 +28,6 @@ runs:
         - sightly less stable test
         - inconclusive: would need to test for more runs
 
-quick things:
-- avg hand played e avg hands won (das hands played)? (salvar isso na extra_metrics)
 - pensar sobre:
     - salvar opponent model dentre dos objetos team?
     - fazer com que a segunda hand use a mesma seed, mas na outra position?
@@ -58,6 +56,7 @@ implementar:
 - opcao de randomly swap between diversity metrics
 - no hall of fame, opcao para usar ncd?
 - no hall of fame, tb usar pareto entre fitness e ncd
+- avg hand played e avg hands won (das hands played)? (salvar isso na extra_metrics)
 
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK
@@ -68,7 +67,7 @@ garantir outputs (for tictactoe and poker):
 
 ler papers:
 - paper sobre compression
-- paper com os plots relevantes para a point population
+- paper com os plots relevantes para a point population (esperar resposta do email?)
 
 extra:
 - ir rodando ttt e poker sem diveristy assim que garantir os outputs
