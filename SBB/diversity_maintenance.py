@@ -100,6 +100,21 @@ class DiversityMaintenance():
             team.diversity_['fitness_sharing'] = round_value(diversity)
 
     @staticmethod
+    def _normalized_compression_distance(team, other_team):
+        """
+        More details in: 
+            Gomez, Faustino J. "Sustaining diversity using behavioral information distance." Proceedings of the 
+            11th Annual conference on Genetic and evolutionary computation. ACM, 2009.
+        """
+        x_len = len(bz2.compress("".join(team.action_sequence_)))
+        y_len = len(bz2.compress("".join(other_team.action_sequence_)))
+        xy_len = len(bz2.compress("".join(team.action_sequence_+other_team.action_sequence_)))
+        distance = (xy_len - min(x_len, y_len))/float(max(x_len, y_len))
+        if distance > 1.0 or distance < 0.0: # TODO: refactor it if it don't show any problems
+            raise ValueError("Error! Value higher than 1.0 for NCD! Value: "+str(distance))
+        return distance
+
+    @staticmethod
     def fitness_sharing_for_points(population, results_map):
         """
         Equal to fitness_sharing, but works specifically for points (ie. dont have previous fitness values and uses 'results_map').

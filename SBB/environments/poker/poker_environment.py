@@ -48,6 +48,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         'available_ports': [],
         'small_bet': 10,
         'big_bet': 20,
+        'total_hands': 2,
     }
 
     def __init__(self):
@@ -95,7 +96,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
                 PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
                 PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
-                str(Config.USER['reinforcement_parameters']['poker']['total_hands']), 
+                str(PokerEnvironment.CONFIG['total_hands']), 
                 str(point.seed_),
                 'sbb', 'opponent', 
                 '-p', str(PokerEnvironment.CONFIG['available_ports'][0])+","+str(PokerEnvironment.CONFIG['available_ports'][1])]
@@ -119,7 +120,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         if players[0] != 'sbb':
             print "\nbug!\n"
             raise SystemExit
-        avg_score = float(scores[0])/float(Config.USER['reinforcement_parameters']['poker']['total_hands'])
+        avg_score = float(scores[0])/float(PokerEnvironment.CONFIG['total_hands'])
         normalized_value = PokerEnvironment.normalize_winning(avg_score)
         if Config.USER['reinforcement_parameters']['debug_matches']:
             print "scores: "+str(scores)
@@ -160,7 +161,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(PokerEnvironment.ACTION_MAPPING)
         msg += "\npositions: "+str(self.total_positions_)
-        msg += "\nmatches per opponents (for each position): "+str(self.population_size_)
+        msg += "\ntotal hands: "+str(PokerEnvironment.CONFIG['total_hands'])
+        msg += "\nmatches per opponents (for each hand): "+str(self.population_size_)
         msg += "\ntraining opponents: "+str([c.__name__ for c in self.coded_opponents_for_training_])
         msg += "\nvalidation opponents: "+str([c.__name__ for c in self.coded_opponents_for_validation_])
         return msg
@@ -282,9 +284,10 @@ class PokerEnvironment(ReinforcementEnvironment):
                     inputs = [chips] + match_state.inputs(memories) + opponent_model.inputs()
                     action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
-                        action = "c"
-                    else:
-                        action = PokerEnvironment.ACTION_MAPPING[action]
+                        action = 1
+                    if is_training:
+                        player.action_sequence_.append(str(action))
+                    action = PokerEnvironment.ACTION_MAPPING[action]
                     previous_action = action
                     send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
                     try:

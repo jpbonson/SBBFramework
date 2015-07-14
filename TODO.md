@@ -51,8 +51,7 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- compression diversity
-- diveristy pareto (seprar entre tipos de apply e calculate?)
+- diveristy usando pareto
 - opcao de randomly swap between diversity metrics
 - no hall of fame, opcao para usar ncd?
 - no hall of fame, tb usar pareto entre fitness e ncd
@@ -66,7 +65,6 @@ garantir outputs (for tictactoe and poker):
 - outputs para R plot: TODO
 
 ler papers:
-- paper sobre compression
 - paper com os plots relevantes para a point population (esperar resposta do email?)
 
 extra:

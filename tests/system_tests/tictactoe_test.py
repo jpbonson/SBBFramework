@@ -232,6 +232,26 @@ class ClassificationTests(unittest.TestCase):
         expected = [0.40833]
         self.assertEqual(expected, result)
 
+    def test_reinforcement_for_ttt_without_pareto_and_with_ncd_diversity_maintenance(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = ['normalized_compression_distance']
+        config['advanced_training_parameters']['diversity']['only_show'] = []
+        config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['training_parameters']['runs_total'] = 1
+        config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = [1]
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = sbb.best_scores_per_runs_
+        expected = [0.54166]
+        self.assertEqual(expected, result)
+
     def test_reinforcement_for_ttt_without_pareto_and_with_all_diversity_maintenance(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)

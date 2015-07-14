@@ -26,9 +26,6 @@ class Config():
                 'use_genotype_diversity': False, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
-            'poker': {
-                'total_hands': 2,
-            }
         },
 
         'training_parameters': {
@@ -74,7 +71,7 @@ class Config():
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {
-                'use_and_show': [], # will be applied to fitness and show in the outputs
+                'use_and_show': ['normalized_compression_distance'], # will be applied to fitness and show in the outputs
                 'only_show': ['genotype_distance'], # will be only show in the outputs
                 'p_value': 0.1,
                 'k': 8,
@@ -88,7 +85,7 @@ class Config():
         'task_types': ['classification', 'reinforcement'],
         'environment_types': ['tictactoe', 'poker'],
         'opponents_pool_options': ['only_sbb', 'only_coded', 'hybrid'],
-        'diversity_options': ['genotype_distance', 'fitness_sharing'], #must have the same name as the methods in DiversityMaintenance
+        'diversity_options': ['genotype_distance', 'fitness_sharing', 'normalized_compression_distance'], #must have the same name as the methods in DiversityMaintenance
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
@@ -129,6 +126,10 @@ class Config():
         for diversity in diversities:
             if diversity not in Config.RESTRICTIONS['diversity_options']:
                 sys.stderr.write("Error: Invalid '"+diversity+"' diversity in CONFIG! The valid values are "+str(Config.RESTRICTIONS['diversity_options'])+"\n")
+                raise SystemExit
+        if Config.USER['task'] == 'classification':
+            if 'normalized_compression_distance' in diversities:
+                sys.stderr.write("Error: Can't calculate 'normalized_compression_distance' for a classification task!\n")
                 raise SystemExit
 
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] not in Config.RESTRICTIONS['environment_types']:

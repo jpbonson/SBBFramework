@@ -32,6 +32,7 @@ class Team(DefaultOpponent):
         self.actions_per_points_ = {}
         self.results_per_points_ = {}
         self.diversity_ = {}
+        self.action_sequence_ = [] # only used by reinforcement learning, contains the action sequence for the last generation
 
     def _add_program(self, program):
         self.programs.append(program)
