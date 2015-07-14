@@ -2,7 +2,7 @@ import random
 import numpy
 from team import Team
 from diversity_maintenance import DiversityMaintenance
-from pareto_dominance import ParetoDominance
+from pareto_dominance_for_teams import ParetoDominanceForTeams
 from environments.default_environment import DefaultEnvironment
 from utils.helpers import round_value
 from config import Config
@@ -47,7 +47,7 @@ class Selection:
         teams_to_keep = len(teams_population) - teams_to_remove
 
         if Config.USER['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-            keep_teams, remove_teams, pareto_front = ParetoDominance.pareto_front_for_teams(teams_population, self.environment.point_population(), teams_to_keep, is_validation = validation)
+            keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.pareto_front_for_teams(teams_population, self.environment.point_population(), teams_to_keep, is_validation = validation)
         else:
             DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, self.environment.point_population(), is_validation = validation)
             sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)

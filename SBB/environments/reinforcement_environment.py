@@ -5,7 +5,7 @@ import numpy
 from collections import defaultdict
 from default_environment import DefaultEnvironment, DefaultPoint
 from ..diversity_maintenance import DiversityMaintenance
-from ..pareto_dominance import ParetoDominance
+from ..pareto_dominance_for_points import ParetoDominanceForPoints
 from ..utils.helpers import round_value, flatten
 from ..config import Config
 
@@ -239,7 +239,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         if Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection']:
             # obtain the pareto front for each subset
             for subset in current_subsets_per_opponent:
-                keep_solutions, remove_solutions = ParetoDominance.pareto_front_for_points(subset, teams_population, samples_per_opponent_to_keep)
+                keep_solutions, remove_solutions = ParetoDominanceForPoints.pareto_front_for_points(subset, teams_population, samples_per_opponent_to_keep)
                 kept_subsets_per_opponent.append(keep_solutions)
                 removed_subsets_per_opponent.append(remove_solutions)
             
