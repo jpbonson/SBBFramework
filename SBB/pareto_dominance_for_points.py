@@ -1,4 +1,3 @@
-from diversity_maintenance import DiversityMaintenance
 from utils.helpers import is_nearly_equal_to
 
 class ParetoDominanceForPoints():
@@ -22,10 +21,10 @@ class ParetoDominanceForPoints():
         keep_solutions = front
         remove_solutions = dominateds
         if len(keep_solutions) < to_keep:  # must include some teams from dominateds
-            DiversityMaintenance.fitness_sharing_for_points(point_population, results_map)
+            ParetoDominanceForPoints._fitness_sharing_for_points(point_population, results_map)
             keep_solutions, remove_solutions = ParetoDominanceForPoints._balance_pareto_front_to_up(point_population, keep_solutions, remove_solutions, to_keep)
         if len(keep_solutions) > to_keep: # must discard some teams from front
-            DiversityMaintenance.fitness_sharing_for_points(front, results_map)
+            ParetoDominanceForPoints._fitness_sharing_for_points(front, results_map)
             keep_solutions, remove_solutions = ParetoDominanceForPoints._balance_pareto_front_to_down(front, keep_solutions, remove_solutions, to_keep)
         return keep_solutions, remove_solutions
 
@@ -93,6 +92,24 @@ class ParetoDominanceForPoints():
             return False, equal
         else:
             return True, equal
+
+    @staticmethod
+    def _fitness_sharing_for_points(population, results_map):
+        """
+        Equal to fitness_sharing, but works specifically for points (ie. dont have previous fitness values and uses 'results_map').
+        """
+        # calculate denominators in each dimension
+        denominators = [1.0] * len(results_map[0]) # initialized to 1 so we don't divide by zero
+        for individual, results in zip(population, results_map):
+            for index, value in enumerate(results):
+                denominators[index] += float(value)
+
+        # calculate fitness
+        for individual, results in zip(population, results_map):
+            score = 0.0
+            for index, value in enumerate(results):
+                score += float(value) / denominators[index]
+            individual.fitness_ = score/float(len(results_map[0]))
 
     @staticmethod
     def _balance_pareto_front_to_up(population, keep_solutions, remove_solutions, to_keep):

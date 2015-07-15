@@ -189,7 +189,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.50833]
+        expected = [0.31666]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_genotype_diversity_maintenance(self):

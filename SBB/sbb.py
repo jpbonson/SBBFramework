@@ -16,7 +16,6 @@ from environments.classification_environment import ClassificationEnvironment
 from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
 if os.name == 'posix':
     from environments.poker.poker_environment import PokerEnvironment
-from diversity_maintenance import DiversityMaintenance
 from selection import Selection
 from utils.helpers import round_value
 from config import Config

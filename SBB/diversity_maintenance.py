@@ -6,12 +6,11 @@ from config import Config
 
 class DiversityMaintenance():
     """
-    This class contains all the diversity maintenance methods. These methods should only 
-    modify the fitness_ attribute, nothing else.
+    This class contains all the diversity maintenance methods for teams.
     """
 
     @staticmethod
-    def apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation):
+    def calculate_diversities(teams_population, point_population, is_validation):
         diversities_to_calculate = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
         if is_validation:
             diversities_to_calculate += Config.USER['advanced_training_parameters']['diversity']['only_show']
@@ -21,17 +20,11 @@ class DiversityMaintenance():
             DiversityMaintenance._fitness_sharing(teams_population, point_population)
             diversities_to_calculate.remove("fitness_sharing")
         if len(diversities_to_calculate) > 0:
-            DiversityMaintenance.calculate_diversities_based_on_distances(teams_population, 
+            DiversityMaintenance._calculate_diversities_based_on_distances(teams_population, 
                 Config.USER['advanced_training_parameters']['diversity']['k'], diversities_to_calculate)
 
-        diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
-        p = Config.USER['advanced_training_parameters']['diversity']['p_value']
-        for team in teams_population:
-            for diversity in diversities_to_apply:
-                team.fitness_ = (1.0-p)*(team.fitness_) + p*team.diversity_[diversity]
-
     @staticmethod
-    def calculate_diversities_based_on_distances(population, k, distances):
+    def _calculate_diversities_based_on_distances(population, k, distances):
         """
         The kNN algorithm is applied to the list of 
         distances, to get the k most similar teams. The diversity is average distance of the k teams.
@@ -51,6 +44,27 @@ class DiversityMaintenance():
                 min_values = sorted_list[:k]
                 diversity = numpy.mean(min_values)
                 team.diversity_[distance] = round_value(diversity)
+
+    @staticmethod
+    def _fitness_sharing(population, point_population):
+        """
+        Uses the fitness sharing algorithm, so that individuals obtains more fitness by being able to solve
+        points that other individuals can't. It assumes that all dimension have the same weight (if it is not
+        true, normalize the dimensions before applying fitness sharing).
+        """
+        # calculate denominators in each dimension
+        denominators = [1.0] * len(point_population) # initialized to 1 so we don't divide by zero
+        for index, point in enumerate(point_population):
+            for team in population:
+                denominators[index] += float(team.results_per_points_[point.point_id])
+
+        # calculate fitness
+        for team in population:
+            score = 0.0
+            for index, point in enumerate(point_population):
+                score += float(team.results_per_points_[point.point_id]) / denominators[index]
+            diversity = score/float(len(point_population))
+            team.diversity_['fitness_sharing'] = round_value(diversity)
 
     @staticmethod
     def _genotype_distance(team, other_team):
@@ -79,27 +93,6 @@ class DiversityMaintenance():
         return distance
 
     @staticmethod
-    def _fitness_sharing(population, point_population):
-        """
-        Uses the fitness sharing algorithm, so that individuals obtains more fitness by being able to solve
-        points that other individuals can't. It assumes that all dimension have the same weight (if it is not
-        true, normalize the dimensions before applying fitness sharing).
-        """
-        # calculate denominators in each dimension
-        denominators = [1.0] * len(point_population) # initialized to 1 so we don't divide by zero
-        for index, point in enumerate(point_population):
-            for team in population:
-                denominators[index] += float(team.results_per_points_[point.point_id])
-
-        # calculate fitness
-        for team in population:
-            score = 0.0
-            for index, point in enumerate(point_population):
-                score += float(team.results_per_points_[point.point_id]) / denominators[index]
-            diversity = score/float(len(point_population))
-            team.diversity_['fitness_sharing'] = round_value(diversity)
-
-    @staticmethod
     def _normalized_compression_distance(team, other_team):
         """
         More details in: 
@@ -113,21 +106,3 @@ class DiversityMaintenance():
         if distance > 1.0 or distance < 0.0: # TODO: refactor it if it don't show any problems
             raise ValueError("Error! Value higher than 1.0 for NCD! Value: "+str(distance))
         return distance
-
-    @staticmethod
-    def fitness_sharing_for_points(population, results_map):
-        """
-        Equal to fitness_sharing, but works specifically for points (ie. dont have previous fitness values and uses 'results_map').
-        """
-        # calculate denominators in each dimension
-        denominators = [1.0] * len(results_map[0]) # initialized to 1 so we don't divide by zero
-        for individual, results in zip(population, results_map):
-            for index, value in enumerate(results):
-                denominators[index] += float(value)
-
-        # calculate fitness
-        for individual, results in zip(population, results_map):
-            score = 0.0
-            for index, value in enumerate(results):
-                score += float(value) / denominators[index]
-            individual.fitness_ = score/float(len(results_map[0]))

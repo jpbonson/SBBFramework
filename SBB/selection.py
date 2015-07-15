@@ -46,10 +46,18 @@ class Selection:
         teams_to_remove = int(Config.USER['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
         teams_to_keep = len(teams_population) - teams_to_remove
 
+        # TODO: se usar diversity, usa pareto
         if Config.USER['advanced_training_parameters']['use_pareto_for_team_population_selection']:
             keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.pareto_front_for_teams(teams_population, self.environment.point_population(), teams_to_keep, is_validation = validation)
         else:
-            DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, self.environment.point_population(), is_validation = validation)
+            DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population(), is_validation = validation)
+
+            diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
+            p = Config.USER['advanced_training_parameters']['diversity']['p_value']
+            for team in teams_population:
+                for diversity in diversities_to_apply:
+                    team.fitness_ = (1.0-p)*(team.fitness_) + p*team.diversity_[diversity]
+
             sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
             keep_teams = sorted_solutions[0:teams_to_keep]
             remove_teams = sorted_solutions[teams_to_keep:]
@@ -58,13 +66,8 @@ class Selection:
 
     def _calculate_global_diversity_means(self, teams_population, point_population):
         """
-        Apply diversity maintenance to obtain the global and individual diversity values for all teams, that are useful metrics 
-        when validating.
-        If you are going to modify this method, ATTENTION: This method always must occur after _select_teams_to_keep_and_remove() and 
-        _select_teams_to_clone(), in order to don't modify the fitness value of the teams. But it also never should be after 
-        _remove_teams(), or this method will not be able to compute the global diversity.
+
         """
-        DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation = True) # ?
         diversities = Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show']
         diversity_means = {}
         for diversity in set(diversities):

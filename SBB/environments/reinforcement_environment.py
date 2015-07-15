@@ -165,8 +165,9 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 hall_of_fame.append(copy.deepcopy(self.team_to_add_to_hall_of_fame_))
                 if len(hall_of_fame) > self.population_size_:
                     if Config.USER['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity']:
+                        # TODO
                         teams = [p.opponent for p in hall_of_fame]
-                        DiversityMaintenance.calculate_diversities_based_on_distances(teams, k = self.population_size_, distances = ["genotype_distance"])
+                        DiversityMaintenance._calculate_diversities_based_on_distances(teams, k = self.population_size_, distances = ["genotype_distance"])
                         score = [p.opponent.diversity_["genotype_distance"] for p in hall_of_fame]
                     else:
                         score = [p.opponent.fitness_ for p in hall_of_fame]

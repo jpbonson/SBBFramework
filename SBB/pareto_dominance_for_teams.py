@@ -1,5 +1,6 @@
 from diversity_maintenance import DiversityMaintenance
 from utils.helpers import is_nearly_equal_to
+from config import Config 
 
 class ParetoDominanceForTeams():
     """
@@ -14,8 +15,8 @@ class ParetoDominanceForTeams():
     @staticmethod
     def sketch():
         for team in teams:
-            team.domBy = 0
-            team.domOf = 0
+            team.domBy_ = 0
+            team.domOf_ = 0
 
         dominatedTeams = []
         nonDominatedTeams = []
@@ -26,20 +27,24 @@ class ParetoDominanceForTeams():
                 if (teamB.fitness >= teamA.fitness and teamB.novelty >= teamA.novelty and 
                     ((teamB.fitness > teamA.fitness and not is_nearly_equal_to(teamA.fitness, teamB.fitness)) or
                       (teamB.novelty > teamA.novelty and not is_nearly_equal_to(teamA.novelty, teamB.novelty)))):
-                    teamA.domBy += 1
-                    teamB.domOf += 1
+                    teamA.domBy_ += 1
+                    teamB.domOf_ += 1
                     if teamA not in dominatedTeams:
                         dominatedTeams.append(teamA)
-            if teamA.domBy == 0:
+            if teamA.domBy_ == 0:
                 nonDominatedTeams.append(teamA)
 
         # use this score to balance the teams between rmeove and keep
         for team in teams:
-            team.submission_score = team.domBy/float(len(teams))
-            team.dominance_score = team.domOf/float(len(teams))
+            team.submission_score = team.domBy_/float(len(teams))
+            team.dominance_score = team.domOf_/float(len(teams))
         
+        # marcar atributos internos com_
         # conferir se separa as teams em grupos sem interseccao
         # conferir se ambas as metricas crescem ao longo das geracoes
+
+        # definir onde a diversity da genration vai ser setada se houver mais de uma em 'use_and_show'
+
         # return keep_solutions, remove_solutions, pareto_front
 
     @staticmethod
@@ -54,13 +59,34 @@ class ParetoDominanceForTeams():
         keep_solutions = front
         remove_solutions = dominateds
         if len(keep_solutions) < to_keep:  # must include some teams from dominateds
-            DiversityMaintenance.apply_diversity_maintenance_to_teams(teams_population, point_population, is_validation)
+            DiversityMaintenance.calculate_diversities(teams_population, point_population, is_validation)
+
+            diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
+            p = Config.USER['advanced_training_parameters']['diversity']['p_value']
+            for team in teams_population:
+                for diversity in diversities_to_apply:
+                    team.fitness_ = (1.0-p)*(team.fitness_) + p*team.diversity_[diversity]
+
             keep_solutions, remove_solutions = ParetoDominanceForTeams._balance_pareto_front_to_up(teams_population, keep_solutions, remove_solutions, to_keep)
         if len(keep_solutions) > to_keep: # must discard some teams from front
-            DiversityMaintenance.apply_diversity_maintenance_to_teams(front, point_population, is_validation)
+            DiversityMaintenance.calculate_diversities(front, point_population, is_validation)
+
+            diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
+            p = Config.USER['advanced_training_parameters']['diversity']['p_value']
+            for team in teams_population:
+                for diversity in diversities_to_apply:
+                    team.fitness_ = (1.0-p)*(team.fitness_) + p*team.diversity_[diversity]
+
             keep_solutions, remove_solutions = ParetoDominanceForTeams._balance_pareto_front_to_down(front, keep_solutions, remove_solutions, to_keep)
         if len(keep_solutions) == to_keep:
-            DiversityMaintenance.apply_diversity_maintenance_to_teams(keep_solutions, point_population, is_validation) # in order to calculate fitness to obtain the teams to clone
+            DiversityMaintenance.calculate_diversities(keep_solutions, point_population, is_validation) # in order to calculate fitness to obtain the teams to clone
+        
+            diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
+            p = Config.USER['advanced_training_parameters']['diversity']['p_value']
+            for team in teams_population:
+                for diversity in diversities_to_apply:
+                    team.fitness_ = (1.0-p)*(team.fitness_) + p*team.diversity_[diversity]
+
         return keep_solutions, remove_solutions, pareto_front
 
     @staticmethod
