@@ -70,9 +70,8 @@ class Config():
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {
-                'use_and_show': ['normalized_compression_distance'], # will be applied to fitness and show in the outputs
+                'use_and_show': ['normalized_compression_distance', 'genotype_distance'], # will be applied to fitness and show in the outputs
                 'only_show': ['genotype_distance'], # will be only show in the outputs
-                'p_value': 0.1,
                 'k': 8,
             },
             'run_initialization_step2': False,
@@ -88,7 +87,7 @@ class Config():
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
-        'is_nearly_equal_threshold': 0.1,
+        'is_nearly_equal_threshold': 0.01,
         'genotype_options': {
             'modes': ['read-register', 'read-input'],
             'simple_operations': ['+', '-', '*', '/'],

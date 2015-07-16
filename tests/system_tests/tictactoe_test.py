@@ -60,7 +60,6 @@ TEST_CONFIG = {
         'diversity': {
             'use_and_show': [], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
-            'p_value': 0.1,
             'k': 8,
         },
         'run_initialization_step2': True,

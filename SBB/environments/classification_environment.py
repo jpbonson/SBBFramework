@@ -4,7 +4,7 @@ import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from default_environment import DefaultEnvironment, DefaultPoint
 from ..pareto_dominance_for_points import ParetoDominanceForPoints
-from ..utils.helpers import round_array, flatten, is_nearly_equal_to
+from ..utils.helpers import round_array, flatten
 from ..config import Config
 
 class ClassificationPoint(DefaultPoint):
