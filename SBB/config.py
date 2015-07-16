@@ -23,7 +23,7 @@ class Config():
             'balanced_opponent_populations': True, # if False, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
                 'enabled': True,
-                'use_genotype_diversity': False, # if False, use the fitness as the criteria to remove teams when the Hall of Fame is full
+                'diversity': 'normalized_compression_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
         },
@@ -66,7 +66,6 @@ class Config():
 
         'advanced_training_parameters': {
             'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
-            'use_pareto_for_team_population_selection': False, # if False, will select solutions by best fitness
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
@@ -130,6 +129,11 @@ class Config():
         if Config.USER['task'] == 'classification':
             if 'normalized_compression_distance' in diversities:
                 sys.stderr.write("Error: Can't calculate 'normalized_compression_distance' for a classification task!\n")
+                raise SystemExit
+
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:
+            if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity'] not in Config.RESTRICTIONS['diversity_options']:
+                sys.stderr.write("Error: Invalid 'diversity' for 'hall_of_fame' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['diversity_options'])+"\n")
                 raise SystemExit
 
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] not in Config.RESTRICTIONS['environment_types']:

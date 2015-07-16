@@ -42,26 +42,22 @@ class Selection:
         self.environment.evaluate_point_population(teams_population)
         return teams_population
 
-    def _select_teams_to_keep_and_remove(self, teams_population, validation):
+    def _select_teams_to_keep_and_remove(self, teams_population, is_validation):
         teams_to_remove = int(Config.USER['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
         teams_to_keep = len(teams_population) - teams_to_remove
 
-        # TODO: se usar diversity, usa pareto
-        if Config.USER['advanced_training_parameters']['use_pareto_for_team_population_selection']:
-            keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.pareto_front_for_teams(teams_population, self.environment.point_population(), teams_to_keep, is_validation = validation)
-        else:
-            DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population(), is_validation = validation)
-
-            diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
-            p = Config.USER['advanced_training_parameters']['diversity']['p_value']
-            for team in teams_population:
-                for diversity in diversities_to_apply:
-                    team.fitness_ = (1.0-p)*(team.fitness_) + p*team.diversity_[diversity]
-
+        diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
+        if len(diversities_to_apply) == 0:
+            if is_validation and len(Config.USER['advanced_training_parameters']['diversity']['only_show']) > 1:
+                DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population(), is_validation = is_validation)
             sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
             keep_teams = sorted_solutions[0:teams_to_keep]
             remove_teams = sorted_solutions[teams_to_keep:]
             pareto_front = []
+        else:
+            DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population(), is_validation = is_validation)
+            novelty = random.choice(Config.USER['advanced_training_parameters']['diversity']['use_and_show'])
+            keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams_population, novelty, teams_to_keep)
         return keep_teams, remove_teams, pareto_front
 
     def _calculate_global_diversity_means(self, teams_population, point_population):

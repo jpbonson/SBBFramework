@@ -18,8 +18,8 @@ def round_array(array, round_decimals_to = Config.RESTRICTIONS['round_to_decimal
 def flatten(list_of_lists):
     return sum(list_of_lists, [])
 
-def is_nearly_equal_to(value1, value2):
-    if abs(value1 - value2) < Config.RESTRICTIONS['is_nearly_equal_threshold']:
+def is_nearly_equal_to(value1, value2, threshold = Config.RESTRICTIONS['is_nearly_equal_threshold']):
+    if abs(value1 - value2) < threshold:
         return True
     return False
 

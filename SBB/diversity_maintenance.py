@@ -11,20 +11,20 @@ class DiversityMaintenance():
 
     @staticmethod
     def calculate_diversities(teams_population, point_population, is_validation):
-        diversities_to_calculate = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
+        diversities_to_calculate = list(Config.USER['advanced_training_parameters']['diversity']['use_and_show'])
         if is_validation:
-            diversities_to_calculate += Config.USER['advanced_training_parameters']['diversity']['only_show']
+            diversities_to_calculate += list(Config.USER['advanced_training_parameters']['diversity']['only_show'])
         diversities_to_calculate = set(diversities_to_calculate)
 
         if "fitness_sharing" in diversities_to_calculate:
             DiversityMaintenance._fitness_sharing(teams_population, point_population)
             diversities_to_calculate.remove("fitness_sharing")
         if len(diversities_to_calculate) > 0:
-            DiversityMaintenance._calculate_diversities_based_on_distances(teams_population, 
+            DiversityMaintenance.calculate_diversities_based_on_distances(teams_population, 
                 Config.USER['advanced_training_parameters']['diversity']['k'], diversities_to_calculate)
 
     @staticmethod
-    def _calculate_diversities_based_on_distances(population, k, distances):
+    def calculate_diversities_based_on_distances(population, k, distances):
         """
         The kNN algorithm is applied to the list of 
         distances, to get the k most similar teams. The diversity is average distance of the k teams.

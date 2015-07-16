@@ -51,10 +51,6 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- diveristy usando pareto
-- opcao de randomly swap between diversity metrics
-- no hall of fame, opcao para usar ncd?
-- no hall of fame, tb usar pareto entre fitness e ncd
 - avg hand played e avg hands won (das hands played)? (salvar isso na extra_metrics)
 
 garantir outputs (for tictactoe and poker):
@@ -64,18 +60,17 @@ garantir outputs (for tictactoe and poker):
 - how the point population evolved over time (check the paper Malcolm talked about): TODO
 - outputs para R plot: TODO
 
+implementar:
+- implementar mudancas na point population
+
 ler papers:
 - paper com os plots relevantes para a point population (esperar resposta do email?)
-
-extra:
-- ir rodando ttt e poker sem diveristy assim que garantir os outputs
 
 ---
 
 future work:
 - implementar mais diversity: entropy
-- instalar r + testar script
-- fazer system tests
+- fazer system tests para poker?
 - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
 - permitir rodar point populations agrupando opponents for grupo, e sem agrupamento
 - nos testes, checar se os teams sabem blefar

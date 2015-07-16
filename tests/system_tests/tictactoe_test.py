@@ -12,7 +12,7 @@ TEST_CONFIG = {
         'balanced_opponent_populations': True,
         'hall_of_fame': {
             'enabled': False,
-            'use_genotype_diversity': False,
+            'diversity': None,
         },
         'debug_matches': False, # use this option to debug
     },
@@ -54,7 +54,6 @@ TEST_CONFIG = {
 
     'advanced_training_parameters': {
         'seed': 1, # default = None
-        'use_pareto_for_team_population_selection': False, # if False, will select solutions by best fitness
         'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
@@ -75,13 +74,12 @@ class ClassificationTests(unittest.TestCase):
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_for_two_runs(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 2
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
         config['advanced_training_parameters']['seed'] = 1
@@ -95,13 +93,12 @@ class ClassificationTests(unittest.TestCase):
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
         config['advanced_training_parameters']['seed'] = [1]
@@ -115,13 +112,12 @@ class ClassificationTests(unittest.TestCase):
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_hybrid_opponents_with_swap(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = False
         config['advanced_training_parameters']['seed'] = [1]
@@ -135,13 +131,12 @@ class ClassificationTests(unittest.TestCase):
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_hybrid_opponents(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
         config['advanced_training_parameters']['seed'] = [1]
@@ -155,13 +150,12 @@ class ClassificationTests(unittest.TestCase):
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_sbb_opponents(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['opponents_pool'] = 'only_sbb'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
         config['advanced_training_parameters']['seed'] = [1]
@@ -175,13 +169,12 @@ class ClassificationTests(unittest.TestCase):
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_sbb_opponents_showing_diversity(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = ['genotype_distance', 'fitness_sharing']
         config['reinforcement_parameters']['opponents_pool'] = 'only_sbb'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
         config['advanced_training_parameters']['seed'] = [1]
@@ -189,79 +182,18 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.31666]
+        expected = [0.35833]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_genotype_diversity_maintenance(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype_distance']
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
-        config['training_parameters']['runs_total'] = 1
-        config['reinforcement_parameters']['balanced_opponent_populations'] = True
-        config['advanced_training_parameters']['seed'] = [1]
-        Config.USER = config
-        sbb = SBB()
-        sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.66666]
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_sharing_diversity_maintenance(self):
-        """ Checking if everything for classification is still working and producing the same result. """
-        config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = ['fitness_sharing']
-        config['advanced_training_parameters']['diversity']['only_show'] = []
-        config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
-        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
-        config['training_parameters']['runs_total'] = 1
-        config['reinforcement_parameters']['balanced_opponent_populations'] = True
-        config['advanced_training_parameters']['seed'] = [1]
-        Config.USER = config
-        sbb = SBB()
-        sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.40833]
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_ncd_diversity_maintenance(self):
-        """ Checking if everything for classification is still working and producing the same result. """
-        config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = ['normalized_compression_distance']
-        config['advanced_training_parameters']['diversity']['only_show'] = []
-        config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
-        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
-        config['training_parameters']['runs_total'] = 1
-        config['reinforcement_parameters']['balanced_opponent_populations'] = True
-        config['advanced_training_parameters']['seed'] = [1]
-        Config.USER = config
-        sbb = SBB()
-        sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.54166]
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_all_diversity_maintenance(self):
-        """ Checking if everything for classification is still working and producing the same result. """
-        config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype_distance', 'fitness_sharing']
-        config['advanced_training_parameters']['diversity']['only_show'] = []
-        config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
-        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
         config['advanced_training_parameters']['seed'] = [1]
@@ -272,16 +204,15 @@ class ClassificationTests(unittest.TestCase):
         expected = [0.41666]
         self.assertEqual(expected, result)
 
-    def test_reinforcement_for_ttt_with_pareto_and_without_diversity_maintenance(self):
+    def test_reinforcement_for_ttt_without_pareto_and_with_sharing_diversity_maintenance(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = True
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
-        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = ['fitness_sharing']
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
         config['advanced_training_parameters']['seed'] = [1]
@@ -289,19 +220,56 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.65]
+        expected = [0.475]
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_ttt_without_pareto_and_with_ncd_diversity_maintenance(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = ['normalized_compression_distance']
+        config['advanced_training_parameters']['diversity']['only_show'] = []
+        config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
+        config['training_parameters']['runs_total'] = 1
+        config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = [1]
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = sbb.best_scores_per_runs_
+        expected = [0.63333]
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_ttt_without_pareto_and_with_all_diversity_maintenance(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype_distance', 'fitness_sharing']
+        config['advanced_training_parameters']['diversity']['only_show'] = []
+        config['reinforcement_parameters']['opponents_pool'] = 'hybrid'
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
+        config['training_parameters']['runs_total'] = 1
+        config['reinforcement_parameters']['balanced_opponent_populations'] = True
+        config['advanced_training_parameters']['seed'] = [1]
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = sbb.best_scores_per_runs_
+        expected = [0.51666]
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = True
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
         config['advanced_training_parameters']['seed'] = [1]
@@ -315,13 +283,12 @@ class ClassificationTests(unittest.TestCase):
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame_with_diversity(self):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_team_population_selection'] = False
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['opponents_pool'] = 'only_coded'
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = True
-        config['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity'] = True
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = 'normalized_compression_distance'
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['balanced_opponent_populations'] = True
         config['advanced_training_parameters']['seed'] = [1]
@@ -329,7 +296,7 @@ class ClassificationTests(unittest.TestCase):
         sbb = SBB()
         sbb.run()
         result = sbb.best_scores_per_runs_
-        expected = [0.625]
+        expected = [0.50833]
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':

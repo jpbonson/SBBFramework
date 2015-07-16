@@ -6,6 +6,7 @@ from collections import defaultdict
 from default_environment import DefaultEnvironment, DefaultPoint
 from ..diversity_maintenance import DiversityMaintenance
 from ..pareto_dominance_for_points import ParetoDominanceForPoints
+from ..pareto_dominance_for_teams import ParetoDominanceForTeams
 from ..utils.helpers import round_value, flatten
 from ..config import Config
 
@@ -164,15 +165,17 @@ class ReinforcementEnvironment(DefaultEnvironment):
             if self.team_to_add_to_hall_of_fame_ and self.team_to_add_to_hall_of_fame_ not in hall_of_fame:
                 hall_of_fame.append(copy.deepcopy(self.team_to_add_to_hall_of_fame_))
                 if len(hall_of_fame) > self.population_size_:
-                    if Config.USER['reinforcement_parameters']['hall_of_fame']['use_genotype_diversity']:
-                        # TODO
+                    if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:
+                        novelty = Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']
                         teams = [p.opponent for p in hall_of_fame]
-                        DiversityMaintenance._calculate_diversities_based_on_distances(teams, k = self.population_size_, distances = ["genotype_distance"])
-                        score = [p.opponent.diversity_["genotype_distance"] for p in hall_of_fame]
+                        DiversityMaintenance.calculate_diversities_based_on_distances(teams, k = self.population_size_, distances = [novelty])
+                        keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams, novelty, self.population_size_)
+                        removed_point = [p for p in hall_of_fame if p.opponent == remove_teams[0]]
+                        worst_point = removed_point[0]
                     else:
                         score = [p.opponent.fitness_ for p in hall_of_fame]
-                    worst_team = hall_of_fame[score.index(min(score))]
-                    self._remove_point_from_hall_of_fame(worst_team)
+                        worst_point = hall_of_fame[score.index(min(score))]
+                    self._remove_point_from_hall_of_fame(worst_point)
 
         self._check_for_bugs()
 
@@ -240,7 +243,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         if Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection']:
             # obtain the pareto front for each subset
             for subset in current_subsets_per_opponent:
-                keep_solutions, remove_solutions = ParetoDominanceForPoints.pareto_front_for_points(subset, teams_population, samples_per_opponent_to_keep)
+                keep_solutions, remove_solutions = ParetoDominanceForPoints.run(subset, teams_population, samples_per_opponent_to_keep)
                 kept_subsets_per_opponent.append(keep_solutions)
                 removed_subsets_per_opponent.append(remove_solutions)
             

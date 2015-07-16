@@ -180,7 +180,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         if Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection']:
             # obtain the pareto front for each subset
             for subset in current_subsets_per_class:
-                keep_solutions, remove_solutions = ParetoDominanceForPoints.pareto_front_for_points(subset, teams_population, samples_per_class_to_keep)
+                keep_solutions, remove_solutions = ParetoDominanceForPoints.run(subset, teams_population, samples_per_class_to_keep)
                 kept_subsets_per_class.append(keep_solutions)
                 removed_subsets_per_class.append(remove_solutions)
 

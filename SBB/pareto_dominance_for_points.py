@@ -11,7 +11,7 @@ class ParetoDominanceForPoints():
     """
 
     @staticmethod
-    def pareto_front_for_points(point_population, teams_population, to_keep):
+    def run(point_population, teams_population, to_keep):
         """
         Finds the pareto front, i.e. the pareto dominant points.
         """
