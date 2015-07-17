@@ -17,8 +17,8 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 100, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 500, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 160, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'opponents_pool': 'only_coded',
             'balanced_opponent_populations': True, # if False, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
@@ -34,7 +34,7 @@ class Config():
             'validate_after_each_generation': 20,
             'populations': {
                 'teams': 60,
-                'points': 40,
+                'points': 80,
             },
             'replacement_rate': {
                 'teams': 0.5,
@@ -71,7 +71,7 @@ class Config():
             'extra_registers': 1,
             'diversity': {
                 'use_and_show': ['normalized_compression_distance', 'genotype_distance'], # will be applied to fitness and show in the outputs
-                'only_show': ['genotype_distance'], # will be only show in the outputs
+                'only_show': [], # will be only show in the outputs
                 'k': 8,
             },
             'run_initialization_step2': False,
@@ -87,7 +87,7 @@ class Config():
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
-        'is_nearly_equal_threshold': 0.01,
+        'is_nearly_equal_threshold': 0.001,
         'genotype_options': {
             'modes': ['read-register', 'read-input'],
             'simple_operations': ['+', '-', '*', '/'],

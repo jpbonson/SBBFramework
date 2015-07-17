@@ -52,7 +52,6 @@ runs:
 
 implementar:
 - assim que criar um point, fazer um play_match entre oponents always call? (dai soh chamar o update_metrics nesse play_match)
-- calcular max ncd baseado no numero de hands no training (e normalizar ncd)
 
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK
