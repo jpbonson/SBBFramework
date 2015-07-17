@@ -10,12 +10,15 @@ class DiversityMaintenance():
     """
 
     @staticmethod
-    def calculate_diversities(teams_population, point_population, is_validation):
-        diversities_to_calculate = list(Config.USER['advanced_training_parameters']['diversity']['use_and_show'])
+    def calculate_diversities(teams_population, point_population, must_calculate, is_validation):
+        diversities_to_calculate = []
+        if must_calculate:
+            diversities_to_calculate.append(must_calculate)
         if is_validation:
-            diversities_to_calculate += list(Config.USER['advanced_training_parameters']['diversity']['only_show'])
-        diversities_to_calculate = set(diversities_to_calculate)
+            diversities_to_calculate += Config.USER['advanced_training_parameters']['diversity']['use_and_show']
+            diversities_to_calculate += Config.USER['advanced_training_parameters']['diversity']['only_show']
 
+        diversities_to_calculate = set(diversities_to_calculate)
         if "fitness_sharing" in diversities_to_calculate:
             DiversityMaintenance._fitness_sharing(teams_population, point_population)
             diversities_to_calculate.remove("fitness_sharing")

@@ -51,7 +51,6 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- dah para melhorar o calculo de diversity, quando se usa mais de uma diversity (soh calcular a daquela generation)
 - avg hand played e avg hands won (das hands played)? (salvar isso na extra_metrics)
 
 garantir outputs (for tictactoe and poker):
