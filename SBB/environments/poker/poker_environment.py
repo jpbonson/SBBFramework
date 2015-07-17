@@ -48,7 +48,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         'available_ports': [],
         'small_bet': 10,
         'big_bet': 20,
-        'total_hands': 2,
     }
 
     def __init__(self):
@@ -68,10 +67,15 @@ class PokerEnvironment(ReinforcementEnvironment):
     def _instantiate_point_for_sbb_opponent(self, team):
         return PokerPoint(team.__repr__(), team)
 
-    def _play_match(self, team, point, is_training):
+    def _play_match(self, team, point, mode):
         """
 
         """
+        if mode == Config.RESTRICTIONS['mode']['training']:
+            is_training = True
+        else:
+            is_training = False
+
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerEnvironment.CONFIG['acpc_path']+"outputs/"):
             os.makedirs(PokerEnvironment.CONFIG['acpc_path']+"outputs/")
 
@@ -91,12 +95,12 @@ class PokerEnvironment(ReinforcementEnvironment):
                 memories = (PokerEnvironment.HAND_STRENGHT_MEMORY['validation'][point.point_id], 
                     PokerEnvironment.HAND_PPOTENTIAL_MEMORY['validation'][point.point_id], 
                     PokerEnvironment.HAND_NPOTENTIAL_MEMORY['validation'][point.point_id])
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, PokerEnvironment.CONFIG['available_ports'][0], point.point_id, is_training, memories])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, PokerEnvironment.CONFIG['available_ports'][1], point.point_id, False, memories])
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, PokerEnvironment.CONFIG['available_ports'][0], point.point_id, is_training, True, memories])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, PokerEnvironment.CONFIG['available_ports'][1], point.point_id, False, False, memories])
         args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
                 PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
                 PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
-                str(PokerEnvironment.CONFIG['total_hands']), 
+                "1", # total hands 
                 str(point.seed_),
                 'sbb', 'opponent', 
                 '-p', str(PokerEnvironment.CONFIG['available_ports'][0])+","+str(PokerEnvironment.CONFIG['available_ports'][1])]
@@ -120,8 +124,22 @@ class PokerEnvironment(ReinforcementEnvironment):
         if players[0] != 'sbb':
             print "\nbug!\n"
             raise SystemExit
-        avg_score = float(scores[0])/float(PokerEnvironment.CONFIG['total_hands'])
-        normalized_value = PokerEnvironment.normalize_winning(avg_score)
+        normalized_value = PokerEnvironment.normalize_winning(float(scores[0]))
+        if not is_training:
+            if mode == Config.RESTRICTIONS['mode']['validation']:
+                team.extra_metrics_['total_hands_validation'] += 1
+            else:
+                team.extra_metrics_['total_hands_champion'] += 1
+            if team.extra_metrics_['played_last_hand']:
+                if mode == Config.RESTRICTIONS['mode']['validation']:
+                    team.extra_metrics_['hand_played_validation'] += 1
+                else:
+                    team.extra_metrics_['hand_played_champion'] += 1
+            if team.extra_metrics_['played_last_hand'] and normalized_value > 0.5:
+                if mode == Config.RESTRICTIONS['mode']['validation']:
+                    team.extra_metrics_['won_hands_validation'] += 1
+                else:
+                    team.extra_metrics_['won_hands_champion'] += 1
         if Config.USER['reinforcement_parameters']['debug_matches']:
             print "scores: "+str(scores)
             print "players: "+str(players)
@@ -152,6 +170,18 @@ class PokerEnvironment(ReinforcementEnvironment):
         gc.collect()
         yappi.clear_stats()
 
+    def validate(self, current_generation, teams_population):
+        for team in teams_population:
+            if team.generation != current_generation:
+                team.extra_metrics_['total_hands_validation'] = 0
+                team.extra_metrics_['total_hands_champion'] = 0
+                team.extra_metrics_['hand_played_validation'] = 0
+                team.extra_metrics_['hand_played_champion'] = 0
+                team.extra_metrics_['won_hands_validation'] = 0
+                team.extra_metrics_['won_hands_champion'] = 0
+        best_team = super(PokerEnvironment, self).validate(current_generation, teams_population)
+        return best_team
+
     def metrics(self):
         msg = ""
         msg += "\n### Environment Info:"
@@ -161,8 +191,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(PokerEnvironment.ACTION_MAPPING)
         msg += "\npositions: "+str(self.total_positions_)
-        msg += "\ntotal hands: "+str(PokerEnvironment.CONFIG['total_hands'])
-        msg += "\nmatches per opponents (for each hand): "+str(self.population_size_)
+        msg += "\nmatches per opponents: "+str(self.population_size_)
         msg += "\ntraining opponents: "+str([c.__name__ for c in self.coded_opponents_for_training_])
         msg += "\nvalidation opponents: "+str([c.__name__ for c in self.coded_opponents_for_validation_])
         return msg
@@ -221,7 +250,10 @@ class PokerEnvironment(ReinforcementEnvironment):
         return (value - max_losing)/float(max_winning - max_losing)
 
     @staticmethod
-    def execute_player(player, port, point_id, is_training, memories):
+    def execute_player(player, port, point_id, is_training, is_sbb, memories):
+        if is_sbb and not is_training:
+            player.extra_metrics_['played_last_hand'] = False
+
         socket_tmp = socket.socket()
 
         total = 10
@@ -285,8 +317,11 @@ class PokerEnvironment(ReinforcementEnvironment):
                     action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = 1
-                    if is_training:
+                    if is_sbb and is_training:
                         player.action_sequence_.append(str(action))
+                    if is_sbb and not is_training:
+                        if len(match_state.rounds) == 1 and len(match_state.rounds[0]) < 2 and action != 0: # first action of first round wasnt a fold
+                            player.extra_metrics_['played_last_hand'] = True
                     action = PokerEnvironment.ACTION_MAPPING[action]
                     previous_action = action
                     send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"

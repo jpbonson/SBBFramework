@@ -51,7 +51,8 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- avg hand played e avg hands won (das hands played)? (salvar isso na extra_metrics)
+- alterar points para tambem terem position
+- gerar metrics de validation para hall of fame antes de salvar
 
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK

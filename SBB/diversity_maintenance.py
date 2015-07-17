@@ -102,10 +102,12 @@ class DiversityMaintenance():
             Gomez, Faustino J. "Sustaining diversity using behavioral information distance." Proceedings of the 
             11th Annual conference on Genetic and evolutionary computation. ACM, 2009.
         """
+        if team.action_sequence_ == other_team.action_sequence_:
+            return 0.0
         x_len = len(bz2.compress("".join(team.action_sequence_)))
         y_len = len(bz2.compress("".join(other_team.action_sequence_)))
         xy_len = len(bz2.compress("".join(team.action_sequence_+other_team.action_sequence_)))
         distance = (xy_len - min(x_len, y_len))/float(max(x_len, y_len))
         if distance > 1.0 or distance < 0.0: # TODO: refactor it if it don't show any problems
-            raise ValueError("Error! Value higher than 1.0 for NCD! Value: "+str(distance))
+            raise ValueError("Error! Value higher than 1.0 or lower than 0.0 for NCD! Value: "+str(distance))
         return distance

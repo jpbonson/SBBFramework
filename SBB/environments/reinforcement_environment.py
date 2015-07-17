@@ -302,8 +302,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 point_population = self.champion_population_
 
         results = []
-        extra_metrics = {}
-        extra_metrics['opponents'] = defaultdict(list)
+        extra_metrics_opponents = defaultdict(list)
 
         # use hall of fame as a criteria during training, and only used as a metric during validation
         dont_use_results_for_hall_of_fame = False
@@ -314,11 +313,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
             if is_training and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id in team.results_per_points_:
                 results.append(team.results_per_points_[point.point_id])
             else:
-                result = self._play_match(team, point, is_training)
+                result = self._play_match(team, point, mode)
                 if is_training:
                     team.results_per_points_[point.point_id] = result
                 else:
-                    extra_metrics['opponents'][point.opponent.opponent_id].append(result)
+                    extra_metrics_opponents[point.opponent.opponent_id].append(result)
                 if not (point.opponent.opponent_id == "hall_of_fame" and dont_use_results_for_hall_of_fame):
                     results.append(result)
 
@@ -328,10 +327,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
             team.fitness_ = score
             team.score_trainingset_ = score
         else:
-            for key in extra_metrics['opponents']:
-                extra_metrics['opponents'][key] = round_value(numpy.mean(extra_metrics['opponents'][key]))
+            for key in extra_metrics_opponents:
+                extra_metrics_opponents[key] = round_value(numpy.mean(extra_metrics_opponents[key]))
             team.score_testset_ = score
-            team.extra_metrics_ = extra_metrics
+            team.extra_metrics_['opponents'] = extra_metrics_opponents
 
     def validate(self, current_generation, teams_population):
         for team in teams_population:

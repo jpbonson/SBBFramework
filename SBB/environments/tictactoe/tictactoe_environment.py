@@ -3,6 +3,7 @@ import numpy
 from tictactoe_match import TictactoeMatch
 from tictactoe_opponents import TictactoeRandomOpponent, TictactoeSmartOpponent
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
+from ...config import Config
 
 class TictactoePoint(ReinforcementPoint):
     """
@@ -35,10 +36,14 @@ class TictactoeEnvironment(ReinforcementEnvironment):
     def _instantiate_point_for_sbb_opponent(self, team):
         return TictactoePoint(team.__repr__(), team)
 
-    def _play_match(self, team, point, is_training):
+    def _play_match(self, team, point, mode):
         """
 
         """
+        if mode == Config.RESTRICTIONS['mode']['training']:
+            is_training = True
+        else:
+            is_training = False
         outputs = []
         for position in range(1, self.total_positions_+1):
             if position == 1:
