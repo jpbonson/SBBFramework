@@ -51,18 +51,19 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- alterar points para tambem terem position
 - gerar metrics de validation para hall of fame antes de salvar
+- salvar quais cards estao sendo distribuidas por point (e a hand strenght das hole cards?)
 
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK
 - accumulative performance curve for the population (tutorial, page 27): TODO
 - diversity x fitness x generations (for both diversities, violin plot? line plot?): TODO
-- how the point population evolved over time (check the paper Malcolm talked about): TODO
+- how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time): TODO
 - outputs para R plot: TODO
 
 implementar:
-- implementar mudancas na point population
+- implementar mudancas na point population (torneio)
+- implementar mais diversity: entropy
 
 ler papers:
 - paper com os plots relevantes para a point population (esperar resposta do email?)
@@ -70,7 +71,6 @@ ler papers:
 ---
 
 future work:
-- implementar mais diversity: entropy
 - fazer system tests para poker?
 - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
 - permitir rodar point populations agrupando opponents for grupo, e sem agrupamento

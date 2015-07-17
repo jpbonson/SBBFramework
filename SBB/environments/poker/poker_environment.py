@@ -23,13 +23,20 @@ from ...config import Config
 
 class PokerPoint(ReinforcementPoint):
     """
-    Encapsulates a poker opponent as a point.
+    Encapsulates a poker opponent, seeded hand, and position as a point.
     """
 
     def __init__(self, point_id, opponent):
         self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
+        self.position_ = random.randint(0, PokerEnvironment.CONFIG['positions']-1)
         point_id = "("+str(point_id)+","+str(self.seed_)+")"
         super(PokerPoint, self).__init__(point_id, opponent)
+
+    def __str__(self):
+        return "<"+str(opponent)+","+str(self.position_)+","+str(self.seed_)+">"
+
+    def __repr__(self):
+        return "<"+str(opponent)+","+str(self.position_)+","+str(self.seed_)+">"
 
 class PokerEnvironment(ReinforcementEnvironment):
     """
@@ -48,6 +55,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         'available_ports': [],
         'small_bet': 10,
         'big_bet': 20,
+        'positions': 2,
     }
 
     def __init__(self):
@@ -56,7 +64,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         coded_opponents_for_training = [PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         coded_opponents_for_validation = [PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents_for_training, coded_opponents_for_validation)
-        self.total_positions_ = 2
         port1, port2 = avaliable_ports()
         PokerEnvironment.CONFIG['available_ports'] = [port1, port2]
 
@@ -95,8 +102,14 @@ class PokerEnvironment(ReinforcementEnvironment):
                 memories = (PokerEnvironment.HAND_STRENGHT_MEMORY['validation'][point.point_id], 
                     PokerEnvironment.HAND_PPOTENTIAL_MEMORY['validation'][point.point_id], 
                     PokerEnvironment.HAND_NPOTENTIAL_MEMORY['validation'][point.point_id])
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, PokerEnvironment.CONFIG['available_ports'][0], point.point_id, is_training, True, memories])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, PokerEnvironment.CONFIG['available_ports'][1], point.point_id, False, False, memories])
+        if point.position_ == 0:
+            port1 = PokerEnvironment.CONFIG['available_ports'][0]
+            port2 = PokerEnvironment.CONFIG['available_ports'][1]
+        else:
+            port1 = PokerEnvironment.CONFIG['available_ports'][1]
+            port2 = PokerEnvironment.CONFIG['available_ports'][0]
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, port1, point.point_id, is_training, True, memories])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, port2, point.point_id, False, False, memories])
         args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
                 PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
                 PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
@@ -190,7 +203,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\ninputs: "+str(PokerEnvironment.INPUTS)
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(PokerEnvironment.ACTION_MAPPING)
-        msg += "\npositions: "+str(self.total_positions_)
+        msg += "\npositions: "+str(PokerEnvironment.CONFIG['positions'])
         msg += "\nmatches per opponents: "+str(self.population_size_)
         msg += "\ntraining opponents: "+str([c.__name__ for c in self.coded_opponents_for_training_])
         msg += "\nvalidation opponents: "+str([c.__name__ for c in self.coded_opponents_for_validation_])
