@@ -51,14 +51,14 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- gerar metrics de validation para hall of fame antes de salvar
-- salvar quais cards estao sendo distribuidas por point (e a hand strenght das hole cards?)
+- assim que criar um point, fazer um play_match entre oponents always call? (dai soh chamar o update_metrics nesse play_match)
+- calcular max ncd baseado no numero de hands no training (e normalizar ncd)
 
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK
 - accumulative performance curve for the population (tutorial, page 27): TODO
 - diversity x fitness x generations (for both diversities, violin plot? line plot?): TODO
-- how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time): TODO
+- how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time (considerar swap)): TODO
 - outputs para R plot: TODO
 
 implementar:

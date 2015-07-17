@@ -31,12 +31,36 @@ class PokerPoint(ReinforcementPoint):
         self.position_ = random.randint(0, PokerEnvironment.CONFIG['positions']-1)
         point_id = "("+str(point_id)+","+str(self.seed_)+")"
         super(PokerPoint, self).__init__(point_id, opponent)
+        self.sbb_hole_cards = None
+        self.opponent_hole_cards = None
+        self.board_cards = None
+
+    def update_metrics(self):
+        if self.sbb_hole_cards:
+            self.sbb_2card_strength = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.sbb_hole_cards)]
+        if self.opponent_hole_cards:
+            self.opponent_2card_strength = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.opponent_hole_cards)]
+        if self.board_cards:
+            if self.sbb_hole_cards:
+                self.sbb_5card_strength = MatchState.calculate_hand_strength(self.sbb_hole_cards, self.board_cards, PokerEnvironment.full_deck, {})
+            if self.opponent_hole_cards:
+                self.opponent_5card_strength = MatchState.calculate_hand_strength(self.opponent_hole_cards, self.board_cards, PokerEnvironment.full_deck, {})
 
     def __str__(self):
-        return "<"+str(opponent)+","+str(self.position_)+","+str(self.seed_)+">"
+        msg = str(self.opponent)+","+str(self.position_)+","+str(self.seed_)
+        extra = "empty"
+        if self.board_cards:
+            extra = str(self.sbb_hole_cards)+","+str(self.opponent_hole_cards)+","+str(self.board_cards)
+            extra += ": "+str(self.sbb_2card_strength)+","+str(self.opponent_2card_strength)+","+str(self.sbb_5card_strength)+","+str(self.opponent_5card_strength)
+        return "<"+msg+": "+extra+">"
 
     def __repr__(self):
-        return "<"+str(opponent)+","+str(self.position_)+","+str(self.seed_)+">"
+        msg = str(self.opponent)+","+str(self.position_)+","+str(self.seed_)
+        extra = "empty"
+        if self.board_cards:
+            extra = str(self.sbb_hole_cards)+","+str(self.opponent_hole_cards)+","+str(self.board_cards)
+            extra += ": "+str(self.sbb_2card_strength)+","+str(self.opponent_2card_strength)+","+str(self.sbb_5card_strength)+","+str(self.opponent_5card_strength)
+        return "<"+msg+": "+extra+">"
 
 class PokerEnvironment(ReinforcementEnvironment):
     """
@@ -108,8 +132,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         else:
             port1 = PokerEnvironment.CONFIG['available_ports'][1]
             port2 = PokerEnvironment.CONFIG['available_ports'][0]
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, port1, point.point_id, is_training, True, memories])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, port2, point.point_id, False, False, memories])
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, port1, point, is_training, True, memories])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, port2, point, False, False, memories])
         args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
                 PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
                 PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
@@ -263,7 +287,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         return (value - max_losing)/float(max_winning - max_losing)
 
     @staticmethod
-    def execute_player(player, port, point_id, is_training, is_sbb, memories):
+    def execute_player(player, port, point, is_training, is_sbb, memories):
         if is_sbb and not is_training:
             player.extra_metrics_['played_last_hand'] = False
 
@@ -327,7 +351,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                     else:
                         chips = PokerEnvironment.normalize_winning(total_chips/float(match_state.hand_id))
                     inputs = [chips] + match_state.inputs(memories) + opponent_model.inputs()
-                    action = player.execute(point_id, inputs, match_state.valid_actions(), is_training)
+                    action = player.execute(point.point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = 1
                     if is_sbb and is_training:
@@ -356,6 +380,19 @@ class PokerEnvironment(ReinforcementEnvironment):
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file.write("The end.\n\n")
             debug_file.close()
+
+        updated = False
+        if match_state.board_cards and not point.board_cards:
+            point.board_cards = match_state.board_cards
+            updated = True
+        if is_sbb and not point.sbb_hole_cards:
+            point.sbb_hole_cards = match_state.current_hole_cards
+            updated = True
+        if not is_sbb and not point.opponent_hole_cards:
+            point.opponent_hole_cards = match_state.current_hole_cards
+            updated = True
+        if updated:
+            point.update_metrics()
 
     @staticmethod
     def update_opponent_model_and_chips(opponent_model, messages, total_chips, last_hand_id, debug_file, previous_action):

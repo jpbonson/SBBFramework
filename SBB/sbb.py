@@ -115,6 +115,11 @@ class SBB:
         # 4. Finalize execution (get final metrics, print to output, print to file)
         overall_info += self._generate_overall_metrics_output(run_infos)
         print overall_info
+
+        # to ensure validation metrics for all teams in the hall of fame
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            environment.validate(self.current_generation_, run_info.hall_of_fame_in_last_generation)
+
         if Config.RESTRICTIONS['write_output_files']:
             self._write_output_files(run_infos, overall_info)
 

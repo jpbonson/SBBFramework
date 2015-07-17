@@ -161,7 +161,7 @@ class Team(DefaultOpponent):
         if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
             msg += "\n"
             if 'validation_score'in self.extra_metrics_:
-                msg += "results for champion:"
+                msg += "\nresults for champion:"
             for key in self.extra_metrics_['opponents']:
                 msg += "\nscore against opponent ("+key+"): "+str(self.extra_metrics_['opponents'][key])
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':

@@ -165,7 +165,7 @@ class MatchState():
             inputs[2] = 0
         inputs[3] = self._betting_position()
         inputs[4] = self._calculate_equity(self.current_hole_cards)
-        inputs[5] = self._calculate_hand_strength(hand_strength_memory)
+        inputs[5] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
         if len(self.rounds) == 2 or len(self.rounds) == 3:
             ppot, npot = self._calculate_hand_potential(hand_ppotential_memory, hand_npotential_memory)
             inputs[6] = ppot
@@ -223,30 +223,32 @@ class MatchState():
         else:
             return self.position
 
-    def _calculate_hand_strength(self, hand_strength_memmory):
+    @staticmethod
+    def calculate_hand_strength(current_hole_cards, board_cards, full_deck, hand_strength_memmory):
         """
         Implemented as described in the page 21 of the thesis in: http://poker.cs.ualberta.ca/publications/davidson.msc.pdf
         """
-        our_cards = self.current_hole_cards + self.board_cards
-        out_cards_set = frozenset(our_cards)
-        if len(out_cards_set) == 2:
-            return STRENGTH_TABLE_FOR_2_CARDS[out_cards_set]
-        if out_cards_set in hand_strength_memmory:
-            return hand_strength_memmory[out_cards_set]
+        our_cards = current_hole_cards + board_cards
+        our_cards_set = frozenset(our_cards)
+        if len(our_cards_set) == 2:
+            return STRENGTH_TABLE_FOR_2_CARDS[our_cards_set]
+        if our_cards_set in hand_strength_memmory:
+            return hand_strength_memmory[our_cards_set]
         else:
+            pokereval = PokerEval()
             ahead = 0.0
             tied = 0.0
             behind = 0.0
-            our_rank = self.pokereval.evaln(our_cards)
+            our_rank = pokereval.evaln(our_cards)
             # considers all two card combinations of the remaining cards
 
-            deck = list(self.full_deck)
+            deck = list(full_deck)
             for card in our_cards:
                 deck.remove(card)
             opponent_cards_combinations = itertools.combinations(deck, 2)
 
             for opponent_card1, opponent_card2 in opponent_cards_combinations:
-                opponent_rank = self.pokereval.evaln([opponent_card1] + [opponent_card2] + self.board_cards)
+                opponent_rank = pokereval.evaln([opponent_card1] + [opponent_card2] + board_cards)
                 if our_rank > opponent_rank:
                     ahead += 1.0
                 elif our_rank == opponent_rank:
@@ -254,7 +256,7 @@ class MatchState():
                 else:
                     behind += 1.0
             hand_strength = (ahead + tied/2.0) / (ahead + tied + behind)
-            hand_strength_memmory[out_cards_set] = hand_strength
+            hand_strength_memmory[our_cards_set] = hand_strength
             return hand_strength
 
     def _calculate_hand_potential(self, hand_ppotential_memory, hand_npotential_memory):
