@@ -51,7 +51,14 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- assim que criar um point, fazer um play_match entre oponents always call? (dai soh chamar o update_metrics nesse play_match)
+- opponent model per opponent type!
+- conferir se chips e opponent model estao sendo atualizados corretamente
+
+- chips e opponent model do oponent:
+    - apenas eh relevante se o oponente for sbb (self-play ou hall of fame)
+    - atencao: oponentes que sao sbb nao tem acesso aos inputs chips e opponent model (vem sempre vazio)
+    - mesma coisa acontece quando eh um sbb contra outro sbb
+        - possivel solucao: a population de hall of fame ser menor, mas haveram mais hands (achar forma de tanto o oponente no hall of fame como o sbb player atualziar o chips e opponent model)
 
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK
@@ -60,8 +67,7 @@ garantir outputs (for tictactoe and poker):
 - how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time (considerar swap)): TODO
 - outputs para R plot: TODO
 
-implementar:
-- implementar mudancas na point population (torneio)
+extra:
 - implementar mais diversity: entropy
 
 ler papers:
