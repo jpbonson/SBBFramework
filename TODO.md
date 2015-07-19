@@ -42,9 +42,8 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- chips tambem por opponent type!
-- print self agressiveness e volatility nos outputs do team (long-term)
 - conferir se chips estao sendo atualizados corretamente
+- print self agressiveness e volatility nos outputs do team (long-term)
 
 - chips e opponent model do oponent:
     - apenas eh relevante se o oponente for sbb (self-play ou hall of fame)
