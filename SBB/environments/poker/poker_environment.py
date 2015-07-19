@@ -95,8 +95,10 @@ class PokerEnvironment(ReinforcementEnvironment):
         instance = opponent_class()
         return PokerPoint(str(instance), instance)
 
-    def _instantiate_point_for_sbb_opponent(self, team):
-        return PokerPoint(team.__repr__(), team)
+    def _instantiate_point_for_sbb_opponent(self, team, opponent_id):
+        point = PokerPoint(team.__repr__(), team)
+        point.opponent.opponent_id = opponent_id
+        return point
 
     def _play_match(self, team, point, mode):
         """
@@ -133,10 +135,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         else:
             port1 = PokerEnvironment.CONFIG['available_ports'][1]
             port2 = PokerEnvironment.CONFIG['available_ports'][0]
-
-        # the opponent only has this attributes for compatibility, but they cant use them since they are always empty
-        point.opponent.opponent_model = OpponentModel()
-        point.opponent.chips = []
 
         t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, port1, point, is_training, True, memories])
         t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, port2, point, False, False, memories])
@@ -214,11 +212,12 @@ class PokerEnvironment(ReinforcementEnvironment):
         yappi.clear_stats()
 
     def evaluate_team(self, team, mode):
-        team.opponent_model = OpponentModel()
+        team.opponent_model = {}
         team.chips = [] # Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
         super(PokerEnvironment, self).evaluate_team(team, mode)
+
         # to clean memmory
-        team.opponent_model = OpponentModel()
+        team.opponent_model = {}
         team.chips = []
 
     def validate(self, current_generation, teams_population):
@@ -353,11 +352,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                     if Config.USER['reinforcement_parameters']['debug_matches']:
                         debug_file.write("opponent folded\n\n")
                 else:
-                    if len(player.chips) > 0:
-                        chips = PokerEnvironment.normalize_winning(numpy.mean(player.chips))
-                    else:
-                        chips = 0.5
-                    inputs = match_state.inputs(memories) + [chips] + player.opponent_model.inputs()
+                    inputs = match_state.inputs(memories) + [PokerEnvironment.get_chips(player, is_sbb)] + PokerEnvironment.get_opponent_model(player, point, is_sbb).inputs()
                     action = player.execute(point.point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = 1
@@ -389,7 +384,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             debug_file.close()
 
         if is_sbb:
-            PokerEnvironment.update_opponent_model_and_chips(player, previous_messages+partial_messages, debug_file, previous_action)
+            PokerEnvironment.update_opponent_model_and_chips(player, point, previous_messages+partial_messages, debug_file, previous_action)
 
         updated = False
         if match_state.board_cards and not point.board_cards:
@@ -405,7 +400,29 @@ class PokerEnvironment(ReinforcementEnvironment):
             point.update_metrics()
 
     @staticmethod
-    def update_opponent_model_and_chips(player, messages, debug_file, previous_action):
+    def get_chips(player, is_sbb):
+        if not is_sbb:
+            return 0.5
+        if len(player.chips) > 0:
+            chips = PokerEnvironment.normalize_winning(numpy.mean(player.chips))
+        else:
+            chips = 0.5
+        return chips
+
+    @staticmethod
+    def get_opponent_model(player, point, is_sbb):
+        if not is_sbb:
+            return OpponentModel() # empty opponent model
+        if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
+            opponent_id = point.opponent.team_id_
+        else:
+            opponent_id = point.opponent.opponent_id
+        if opponent_id not in player.opponent_model:
+            player.opponent_model[opponent_id] = OpponentModel()
+        return player.opponent_model[opponent_id]
+
+    @staticmethod
+    def update_opponent_model_and_chips(player, point, messages, debug_file, previous_action):
         for partial_msg in reversed(messages):
             if partial_msg:
                 partial_match_state = MatchState(partial_msg, PokerEnvironment.CONFIG['small_bet'], PokerEnvironment.CONFIG['big_bet'], PokerEnvironment.full_deck, PokerEnvironment.hand_strength_hole_cards)
@@ -454,5 +471,5 @@ class PokerEnvironment(ReinforcementEnvironment):
                         self_folded = False
                         opponent_folded = True
                         player.chips.append(+(partial_match_state.calculate_pot()))
-                player.opponent_model.update_agressiveness(len(partial_match_state.rounds), self_actions, opponent_actions, self_folded, opponent_folded, previous_action)
+                PokerEnvironment.get_opponent_model(player, point, True).update_agressiveness(len(partial_match_state.rounds), self_actions, opponent_actions, self_folded, opponent_folded, previous_action)
                 break

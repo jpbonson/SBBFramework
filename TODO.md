@@ -29,16 +29,7 @@ runs:
         - inconclusive: would need to test for more runs
 
 - pensar sobre:
-    - salvar opponent model dentre dos objetos team?
-    - fazer com que a segunda hand use a mesma seed, mas na outra position?
-    - com apenas 2 hands, nao ha diferenca entre long e short agressiveness e volatility!
-    - gerar uma seed diferente para cada hand do oponente?
-    - agressiveness e volatility por tipo de oponente? opponent model modelar por tipos de oponentes (e ser aprte da classe Team? resetar quando mudar de generation?)?
-    - se apenas 2 hands com mesma seed mas diferente positions, a segunda hand nao pode suar a info de agressiviness e volatility na primeira
-    - e os chips? acumula entre hands?
     - "100 hands against each opponent/type of opponent"
-    - 10 hands por 10 opponents eh mais rapido que 2 hands por 50 opponents? muda a performance? (considerar memory per point e tempo geral de processamento)
-    - se usar swap, a point population poderia ser apenas as seeds das hands?
 
     So I was thinking a bit more about the point population... It seems to me that a point should contain a seeded opponent, a seeded hand, and a position, so that a point is able to differentiate a team from other teams, and between themselves, consistently. Another option would be a seeded opponent and a seeded hand, but played two times, one for each position.
     The problem is that, this way the inputs chips, agressiveness and volatility are mostly useless, since they are reseted when the team plays against new points.
@@ -51,8 +42,9 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- opponent model per opponent type!
-- conferir se chips e opponent model estao sendo atualizados corretamente
+- chips tambem por opponent type!
+- print self agressiveness e volatility nos outputs do team (long-term)
+- conferir se chips estao sendo atualizados corretamente
 
 - chips e opponent model do oponent:
     - apenas eh relevante se o oponente for sbb (self-play ou hall of fame)

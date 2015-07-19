@@ -33,8 +33,10 @@ class TictactoeEnvironment(ReinforcementEnvironment):
         instance = opponent_class()
         return TictactoePoint(str(instance), instance)
 
-    def _instantiate_point_for_sbb_opponent(self, team):
-        return TictactoePoint(team.__repr__(), team)
+    def _instantiate_point_for_sbb_opponent(self, team, opponent_id):
+        point = TictactoePoint(team.__repr__(), team)
+        point.opponent.opponent_id = opponent_id
+        return point
 
     def _play_match(self, team, point, mode):
         """

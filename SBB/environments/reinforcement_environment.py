@@ -33,7 +33,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         """
 
     @abc.abstractmethod
-    def _instantiate_point_for_sbb_opponent(self, team):
+    def _instantiate_point_for_sbb_opponent(self, team, opponent_id):
         """
         
         """
@@ -200,7 +200,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
                     sbb_opponents += random.sample(new_opponents, opponents_to_add)
         population = []
         for opponent in sbb_opponents:
-            population.append(self._instantiate_point_for_sbb_opponent(opponent))
+            population.append(self._instantiate_point_for_sbb_opponent(opponent, "sbb"))
         return population
 
     def _initialize_point_population_per_opponent_for_coded_opponents(self):
@@ -278,8 +278,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             team_ids = [p.opponent.team_id_ for p in self.point_population_per_opponent_['hall_of_fame']]
             for team in sorted_teams:
                 if team.team_id_ not in team_ids:
-                    self.team_to_add_to_hall_of_fame_ = self._instantiate_point_for_sbb_opponent(team)
-                    self.team_to_add_to_hall_of_fame_.opponent.opponent_id = "hall_of_fame"
+                    self.team_to_add_to_hall_of_fame_ = self._instantiate_point_for_sbb_opponent(team, "hall_of_fame")
                     break
 
     def evaluate_team(self, team, mode):
