@@ -42,11 +42,6 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- chips e opponent model do oponent:
-    - apenas eh relevante se o oponente for sbb (self-play ou hall of fame)
-    - atencao: oponentes que sao sbb nao tem acesso aos inputs chips e opponent model (vem sempre vazio)
-    - mesma coisa acontece quando eh um sbb contra outro sbb
-        - possivel solucao: a population de hall of fame ser menor, mas haveram mais hands (achar forma de tanto o oponente no hall of fame como o sbb player atualziar o chips e opponent model)
 - rodar com o config default e ver se o resultados parecem ok
 
 garantir outputs (for tictactoe and poker):
