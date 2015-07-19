@@ -88,12 +88,17 @@ class OpponentModel():
             inputs[2] = numpy.mean(self.opponent_agressiveness[:10])
             inputs[3] = numpy.mean(self.opponent_agressiveness)
         if len(self.self_agressiveness_postflop) > 0 and len(self.self_agressiveness_preflop) > 0:
-            inputs[4] = self._normalize_volatility(numpy.mean(self.self_agressiveness_postflop[:10])-numpy.mean(self.self_agressiveness_preflop[:10]))
-            inputs[5] = self._normalize_volatility(numpy.mean(self.self_agressiveness_postflop)-numpy.mean(self.self_agressiveness_preflop))
+            inputs[4] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop[:10], self.self_agressiveness_preflop[:10])
+            inputs[5] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop, self.self_agressiveness_preflop)
         if len(self.opponent_agressiveness_postflop) > 0 and len(self.opponent_agressiveness_preflop) > 0:
-            inputs[6] = self._normalize_volatility(numpy.mean(self.opponent_agressiveness_postflop[:10])-numpy.mean(self.opponent_agressiveness_preflop[:10]))
-            inputs[7] = self._normalize_volatility(numpy.mean(self.opponent_agressiveness_postflop)-numpy.mean(self.opponent_agressiveness_preflop))
+            inputs[6] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop[:10], self.opponent_agressiveness_preflop[:10])
+            inputs[7] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop, self.opponent_agressiveness_preflop)
         return inputs
 
-    def _normalize_volatility(self, value):
+    @staticmethod
+    def calculate_volatility(agressiveness_postflop, agressiveness_preflop):
+        return OpponentModel._normalize_volatility(numpy.mean(agressiveness_postflop)-numpy.mean(agressiveness_preflop))
+
+    @staticmethod
+    def _normalize_volatility(value):
         return (value+1.0)/2.0

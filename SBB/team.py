@@ -168,6 +168,12 @@ class Team(DefaultOpponent):
                 msg += "\n\nhands (validation): played: "+str(self.extra_metrics_['hand_played_validation'])+", won: "+str(self.extra_metrics_['won_hands_validation'])+" (total: "+str(self.extra_metrics_['total_hands_validation'])+")"
                 if self.extra_metrics_['total_hands_champion'] > 0:
                     msg += "\nhands (champion): played: "+str(self.extra_metrics_['hand_played_champion'])+", won: "+str(self.extra_metrics_['won_hands_champion'])+" (total: "+str(self.extra_metrics_['total_hands_champion'])+")"
+                if 'agressiveness' in self.extra_metrics_:
+                    msg += "\n\nagressiveness: "+str(self.extra_metrics_['agressiveness'])
+                    msg += "\nvolatility: "+str(self.extra_metrics_['volatility'])
+                if 'agressiveness_champion' in self.extra_metrics_:
+                    msg += "\nagressiveness (champion): "+str(self.extra_metrics_['agressiveness_champion'])
+                    msg += "\nvolatility (champion): "+str(self.extra_metrics_['volatility_champion'])
         if full_version:
             if Config.USER['task'] == 'classification' and self.extra_metrics_:
                 msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))

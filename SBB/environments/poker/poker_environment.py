@@ -215,6 +215,26 @@ class PokerEnvironment(ReinforcementEnvironment):
         team.opponent_model = {}
         team.chips = {} # Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
         super(PokerEnvironment, self).evaluate_team(team, mode)
+        if mode != Config.RESTRICTIONS['mode']['training']:
+            self_long_term_agressiveness = []
+            self_agressiveness_preflop = []
+            self_agressiveness_postflop = []
+            for key, item in team.opponent_model.iteritems():
+                self_long_term_agressiveness += item.self_agressiveness
+                self_agressiveness_preflop += item.self_agressiveness_preflop
+                self_agressiveness_postflop += item.self_agressiveness_postflop
+            agressiveness = -1
+            volatility = -1
+            if len(self_long_term_agressiveness) > 0:
+                agressiveness = numpy.mean(self_long_term_agressiveness)
+            if len(self_agressiveness_preflop) > 0 and len(self_agressiveness_postflop) > 0:
+                volatility = OpponentModel.calculate_volatility(self_agressiveness_postflop, self_agressiveness_preflop)
+            if mode == Config.RESTRICTIONS['mode']['validation']:
+                team.extra_metrics_['agressiveness'] = agressiveness
+                team.extra_metrics_['volatility'] = volatility
+            if mode == Config.RESTRICTIONS['mode']['champion']:
+                team.extra_metrics_['agressiveness_champion'] = agressiveness
+                team.extra_metrics_['volatility_champion'] = volatility
         # to clean memmory
         team.opponent_model = {}
         team.chips = {}
