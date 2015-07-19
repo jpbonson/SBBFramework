@@ -47,6 +47,7 @@ implementar:
     - atencao: oponentes que sao sbb nao tem acesso aos inputs chips e opponent model (vem sempre vazio)
     - mesma coisa acontece quando eh um sbb contra outro sbb
         - possivel solucao: a population de hall of fame ser menor, mas haveram mais hands (achar forma de tanto o oponente no hall of fame como o sbb player atualziar o chips e opponent model)
+- rodar com o config default e ver se o resultados parecem ok
 
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK

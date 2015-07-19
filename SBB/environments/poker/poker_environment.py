@@ -80,6 +80,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         'small_bet': 10,
         'big_bet': 20,
         'positions': 2,
+        'hands_against_sbb_opponents': Config.USER['training_parameters']['populations']['points']/10
     }
 
     def __init__(self):
@@ -106,9 +107,18 @@ class PokerEnvironment(ReinforcementEnvironment):
         more points for that opponent type). If it is a SBB player, then it is necessary to 
         play more hands in order for it to be able to use effectively all the its inputs.
         """
-        result = self._play_hand(team, point, mode)
-        # TODO: play more hands for sbb opponents (also change de size of the point population for SBB opponents)
-        return result
+        # is_sbb_opponent = point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb"
+        # if not is_sbb_opponent:
+        return self._play_hand(team, point, mode)
+        # else:
+        #     # play more hands for sbb opponents (also change de size of the point population for SBB opponents)
+        #     # because otherwise they wont be able to use the opponent model themselves
+        #     # TODO: generate hand seeds based on the point seeds!
+        #     # + opponent model and chips
+        #     results = []
+        #     for index in range(PokerEnvironment.CONFIG['hands_against_sbb_opponents']):
+        #         results.append(self._play_hand(team, point, mode))
+        #     return numpy.mean(results)
 
     def _play_hand(self, team, point, mode):
         """
@@ -140,24 +150,28 @@ class PokerEnvironment(ReinforcementEnvironment):
                     PokerEnvironment.HAND_NPOTENTIAL_MEMORY['validation'][point.point_id])
 
         if point.position_ == 0:
-            port1 = PokerEnvironment.CONFIG['available_ports'][0]
-            port2 = PokerEnvironment.CONFIG['available_ports'][1]
+            sbb_port = PokerEnvironment.CONFIG['available_ports'][0]
+            opponent_port = PokerEnvironment.CONFIG['available_ports'][1]
+            player1 = 'sbb'
+            player2 = 'opponent'
         else:
-            port1 = PokerEnvironment.CONFIG['available_ports'][1]
-            port2 = PokerEnvironment.CONFIG['available_ports'][0]
+            sbb_port = PokerEnvironment.CONFIG['available_ports'][1]
+            opponent_port = PokerEnvironment.CONFIG['available_ports'][0]
+            player1 = 'opponent'
+            player2 = 'sbb'
 
         opponent_use_inputs = False
         if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
             opponent_use_inputs = True
 
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, port1, point, is_training, True, True, memories])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, port2, point, False, False, opponent_use_inputs, memories])
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, sbb_port, point, is_training, True, True, memories])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, opponent_port, point, False, False, opponent_use_inputs, memories])
         args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
                 PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
                 PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
                 "1", # total hands 
                 str(point.seed_),
-                'sbb', 'opponent', 
+                player1, player2, 
                 '-p', str(PokerEnvironment.CONFIG['available_ports'][0])+","+str(PokerEnvironment.CONFIG['available_ports'][1])]
         if not Config.USER['reinforcement_parameters']['debug_matches']:
             args.append('-l')
@@ -176,10 +190,11 @@ class PokerEnvironment(ReinforcementEnvironment):
         splitted_score = score.split(":")
         scores = splitted_score[0].split("|")
         players = splitted_score[1].split("|")
-        if players[0] != 'sbb':
-            print "\nbug!\n"
-            raise SystemExit
-        normalized_value = PokerEnvironment.normalize_winning(float(scores[0]))
+        if players[0] == 'sbb':
+            sbb_position = 0
+        else:
+            sbb_position = 1
+        normalized_value = PokerEnvironment.normalize_winning(float(scores[sbb_position]))
         if not is_training:
             if mode == Config.RESTRICTIONS['mode']['validation']:
                 team.extra_metrics_['total_hands_validation'] += 1
