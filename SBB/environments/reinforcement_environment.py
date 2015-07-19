@@ -73,6 +73,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 if Config.USER['training_parameters']['populations']['points'] > Config.USER['training_parameters']['populations']['teams']:
                     Config.USER['training_parameters']['populations']['points'] = Config.USER['training_parameters']['populations']['teams']
             self.population_size_ = Config.USER['training_parameters']['populations']['points']
+        self.population_size_for_hall_of_fame = self.population_size_
     
     def _get_balanced_metrics(self):
         """
@@ -164,12 +165,12 @@ class ReinforcementEnvironment(DefaultEnvironment):
             hall_of_fame = self.point_population_per_opponent_['hall_of_fame']
             if self.team_to_add_to_hall_of_fame_ and self.team_to_add_to_hall_of_fame_ not in hall_of_fame:
                 hall_of_fame.append(copy.deepcopy(self.team_to_add_to_hall_of_fame_))
-                if len(hall_of_fame) > self.population_size_:
+                if len(hall_of_fame) > self.population_size_for_hall_of_fame:
                     if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:
                         novelty = Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']
                         teams = [p.opponent for p in hall_of_fame]
-                        DiversityMaintenance.calculate_diversities_based_on_distances(teams, k = self.population_size_, distances = [novelty])
-                        keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams, novelty, self.population_size_)
+                        DiversityMaintenance.calculate_diversities_based_on_distances(teams, k = self.population_size_for_hall_of_fame, distances = [novelty])
+                        keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams, novelty, self.population_size_for_hall_of_fame)
                         removed_point = [p for p in hall_of_fame if p.opponent == remove_teams[0]]
                         worst_point = removed_point[0]
                     else:

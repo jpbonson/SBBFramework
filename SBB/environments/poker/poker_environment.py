@@ -91,6 +91,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents_for_training, coded_opponents_for_validation)
         port1, port2 = avaliable_ports()
         PokerEnvironment.CONFIG['available_ports'] = [port1, port2]
+        self.population_size_for_hall_of_fame = self.population_size_/2 # it is lower, since more hands are played
 
     def _instantiate_point_for_coded_opponent_class(self, opponent_class):
         instance = opponent_class()
@@ -107,20 +108,21 @@ class PokerEnvironment(ReinforcementEnvironment):
         more points for that opponent type). If it is a SBB player, then it is necessary to 
         play more hands in order for it to be able to use effectively all the its inputs.
         """
-        # is_sbb_opponent = point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb"
-        # if not is_sbb_opponent:
-        return self._play_hand(team, point, mode)
-        # else:
-        #     # play more hands for sbb opponents (also change de size of the point population for SBB opponents)
-        #     # because otherwise they wont be able to use the opponent model themselves
-        #     # TODO: generate hand seeds based on the point seeds!
-        #     # + opponent model and chips
-        #     results = []
-        #     for index in range(PokerEnvironment.CONFIG['hands_against_sbb_opponents']):
-        #         results.append(self._play_hand(team, point, mode))
-        #     return numpy.mean(results)
+        is_sbb_opponent = point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb"
+        if not is_sbb_opponent:
+            return self._play_hand(team, point, mode, point.position_, point.seed_)
+        else:
+            # play more hands for sbb opponents (also change de size of the point population for SBB opponents)
+            # because otherwise they wont be able to use the opponent model themselves
+            random_generator = numpy.random.RandomState(seed=point.seed_)
+            results = []
+            for index in range(PokerEnvironment.CONFIG['hands_against_sbb_opponents']):
+                position = index % 2
+                seed = random_generator.randint(0, Config.RESTRICTIONS['max_seed'])
+                results.append(self._play_hand(team, point, mode, position, seed))
+            return numpy.mean(results)
 
-    def _play_hand(self, team, point, mode):
+    def _play_hand(self, team, point, mode, position, seed):
         """
 
         """
@@ -149,7 +151,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                     PokerEnvironment.HAND_PPOTENTIAL_MEMORY['validation'][point.point_id], 
                     PokerEnvironment.HAND_NPOTENTIAL_MEMORY['validation'][point.point_id])
 
-        if point.position_ == 0:
+        if position == 0:
             sbb_port = PokerEnvironment.CONFIG['available_ports'][0]
             opponent_port = PokerEnvironment.CONFIG['available_ports'][1]
             player1 = 'sbb'
@@ -164,13 +166,13 @@ class PokerEnvironment(ReinforcementEnvironment):
         if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
             opponent_use_inputs = True
 
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, sbb_port, point, is_training, True, True, memories])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, opponent_port, point, False, False, opponent_use_inputs, memories])
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, sbb_port, point, team, is_training, True, True, memories])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, opponent_port, point, team, False, False, opponent_use_inputs, memories])
         args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
                 PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
                 PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
                 "1", # total hands 
-                str(point.seed_),
+                str(seed),
                 player1, player2, 
                 '-p', str(PokerEnvironment.CONFIG['available_ports'][0])+","+str(PokerEnvironment.CONFIG['available_ports'][1])]
         if not Config.USER['reinforcement_parameters']['debug_matches']:
@@ -237,6 +239,10 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def setup(self, teams_population):
         super(PokerEnvironment, self).setup(teams_population)
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            for point in self.point_population_per_opponent_['hall_of_fame']:
+                point.opponent.opponent_model = {}
+                point.opponent.chips = {}
         gc.collect()
         yappi.clear_stats()
 
@@ -277,6 +283,10 @@ class PokerEnvironment(ReinforcementEnvironment):
                 team.extra_metrics_['hand_played_champion'] = 0
                 team.extra_metrics_['won_hands_validation'] = 0
                 team.extra_metrics_['won_hands_champion'] = 0
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            for point in self.point_population_per_opponent_['hall_of_fame']:
+                point.opponent.opponent_model = {}
+                point.opponent.chips = {}
         best_team = super(PokerEnvironment, self).validate(current_generation, teams_population)
         return best_team
 
@@ -289,9 +299,12 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(PokerEnvironment.ACTION_MAPPING)
         msg += "\npositions: "+str(PokerEnvironment.CONFIG['positions'])
-        msg += "\nmatches per opponents: "+str(self.population_size_)
+        msg += "\nmatches per opponents (not in hall of fame): "+str(self.population_size_)
         msg += "\ntraining opponents: "+str([c.__name__ for c in self.coded_opponents_for_training_])
         msg += "\nvalidation opponents: "+str([c.__name__ for c in self.coded_opponents_for_validation_])
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            msg += "\nhall of fame size: "+str(self.population_size_for_hall_of_fame)
+            msg += "\nmatches per opponents (in hall of fame): "+str(PokerEnvironment.CONFIG['hands_against_sbb_opponents'])
         return msg
 
     def _initialize_deck(self):
@@ -348,7 +361,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         return (value - max_losing)/float(max_winning - max_losing)
 
     @staticmethod
-    def execute_player(player, port, point, is_training, is_sbb, use_inputs, memories):
+    def execute_player(player, port, point, team, is_training, is_sbb, use_inputs, memories):
         if is_sbb and not is_training:
             player.extra_metrics_['played_last_hand'] = False
 
@@ -401,12 +414,12 @@ class PokerEnvironment(ReinforcementEnvironment):
                         debug_file.write("opponent folded\n\n")
                 else:
                     if use_inputs:
-                        chips = PokerEnvironment.get_chips(player, point, is_sbb)
+                        chips = PokerEnvironment.get_chips(player, point, team, is_sbb)
                         if len(chips) == 0:
                             chips = 0.5
                         else:
                             chips = PokerEnvironment.normalize_winning(numpy.mean(chips))
-                        inputs = match_state.inputs(memories) + [chips] + PokerEnvironment.get_opponent_model(player, point, is_sbb).inputs()
+                        inputs = match_state.inputs(memories) + [chips] + PokerEnvironment.get_opponent_model(player, point, team, is_sbb).inputs()
                     else:
                         inputs = []
                     action = player.execute(point.point_id, inputs, match_state.valid_actions(), is_training)
@@ -439,8 +452,8 @@ class PokerEnvironment(ReinforcementEnvironment):
             debug_file.write("The end.\n\n")
             debug_file.close()
 
-        if is_sbb:
-            PokerEnvironment.update_opponent_model_and_chips(player, point, previous_messages+partial_messages, debug_file, previous_action)
+        if use_inputs:
+            PokerEnvironment.update_opponent_model_and_chips(player, point, team, previous_messages+partial_messages, debug_file, previous_action, is_sbb)
 
         updated = False
         if match_state.board_cards and not point.board_cards:
@@ -456,33 +469,32 @@ class PokerEnvironment(ReinforcementEnvironment):
             point.update_metrics()
 
     @staticmethod
-    def get_chips(player, point, is_sbb):
-        if not is_sbb:
-            return []
-        opponent_id = PokerEnvironment.get_opponent_id(player, point, is_sbb)
+    def get_chips(player, point, team, is_sbb):
+        opponent_id = PokerEnvironment.get_opponent_id(player, point, team, is_sbb)
         if opponent_id not in player.chips:
             player.chips[opponent_id] = []
         return player.chips[opponent_id]
 
     @staticmethod
-    def get_opponent_id(player, point, is_sbb):
-        if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
-            opponent_id = point.opponent.team_id_
+    def get_opponent_id(player, point, team, is_sbb):
+        if is_sbb:
+            if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
+                opponent_id = point.opponent.team_id_
+            else:
+                opponent_id = point.opponent.opponent_id
         else:
-            opponent_id = point.opponent.opponent_id
+            opponent_id = team.team_id_
         return opponent_id
 
     @staticmethod
-    def get_opponent_model(player, point, is_sbb):
-        if not is_sbb:
-            return OpponentModel() # empty opponent model
-        opponent_id = PokerEnvironment.get_opponent_id(player, point, is_sbb)
+    def get_opponent_model(player, point, team, is_sbb):
+        opponent_id = PokerEnvironment.get_opponent_id(player, point, team, is_sbb)
         if opponent_id not in player.opponent_model:
             player.opponent_model[opponent_id] = OpponentModel()
         return player.opponent_model[opponent_id]
 
     @staticmethod
-    def update_opponent_model_and_chips(player, point, messages, debug_file, previous_action):
+    def update_opponent_model_and_chips(player, point, team, messages, debug_file, previous_action, is_sbb):
         for partial_msg in reversed(messages):
             if partial_msg:
                 partial_match_state = MatchState(partial_msg, PokerEnvironment.CONFIG['small_bet'], PokerEnvironment.CONFIG['big_bet'], PokerEnvironment.full_deck, PokerEnvironment.hand_strength_hole_cards)
@@ -499,11 +511,11 @@ class PokerEnvironment(ReinforcementEnvironment):
                         if winner == partial_match_state.position:
                             if Config.USER['reinforcement_parameters']['debug_matches']:
                                 debug_file.write("showdown, I won\n\n")
-                            PokerEnvironment.get_chips(player, point, True).append(+(partial_match_state.calculate_pot()))
+                            PokerEnvironment.get_chips(player, point, team, is_sbb).append(+(partial_match_state.calculate_pot()))
                         else:
                             if Config.USER['reinforcement_parameters']['debug_matches']:
                                 debug_file.write("showdown, I lost\n\n")
-                            PokerEnvironment.get_chips(player, point, True).append(-(partial_match_state.calculate_pot()))
+                            PokerEnvironment.get_chips(player, point, team, is_sbb).append(-(partial_match_state.calculate_pot()))
                 else:
                     last_player = partial_match_state.last_player_to_act()
                     if last_player == partial_match_state.position:
@@ -512,24 +524,24 @@ class PokerEnvironment(ReinforcementEnvironment):
                                 debug_file.write("partial_msg: "+str(partial_msg)+", I folded (1)\n\n")
                             self_folded = True
                             opponent_folded = False
-                            PokerEnvironment.get_chips(player, point, True).append(-(partial_match_state.calculate_pot()))
+                            PokerEnvironment.get_chips(player, point, team, is_sbb).append(-(partial_match_state.calculate_pot()))
                     elif opponent_actions and opponent_actions[-1] == 'f':
                         if Config.USER['reinforcement_parameters']['debug_matches']:
                             debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (1)\n\n")
                         self_folded = False
                         opponent_folded = True
-                        PokerEnvironment.get_chips(player, point, True).append(+(partial_match_state.calculate_pot()))
+                        PokerEnvironment.get_chips(player, point, team, is_sbb).append(+(partial_match_state.calculate_pot()))
                     elif previous_action == 'f':
                         if Config.USER['reinforcement_parameters']['debug_matches']:
                             debug_file.write("partial_msg: "+str(partial_msg)+", I folded (2)\n\n")
                         self_folded = True
                         opponent_folded = False
-                        PokerEnvironment.get_chips(player, point, True).append(-(partial_match_state.calculate_pot()))
+                        PokerEnvironment.get_chips(player, point, team, is_sbb).append(-(partial_match_state.calculate_pot()))
                     else:
                         if Config.USER['reinforcement_parameters']['debug_matches']:
                             debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (2)\n\n")
                         self_folded = False
                         opponent_folded = True
-                        PokerEnvironment.get_chips(player, point, True).append(+(partial_match_state.calculate_pot()))
-                PokerEnvironment.get_opponent_model(player, point, True).update_agressiveness(len(partial_match_state.rounds), self_actions, opponent_actions, self_folded, opponent_folded, previous_action)
+                        PokerEnvironment.get_chips(player, point, team, is_sbb).append(+(partial_match_state.calculate_pot()))
+                PokerEnvironment.get_opponent_model(player, point, team, is_sbb).update_agressiveness(len(partial_match_state.rounds), self_actions, opponent_actions, self_folded, opponent_folded, previous_action)
                 break
