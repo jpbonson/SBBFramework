@@ -102,6 +102,16 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def _play_match(self, team, point, mode):
         """
+        If the opponent is not a SBB player, play just 1 hand per point (since there will be 
+        more points for that opponent type). If it is a SBB player, then it is necessary to 
+        play more hands in order for it to be able to use effectively all the its inputs.
+        """
+        result = self._play_hand(team, point, mode)
+        # TODO: play more hands for sbb opponents (also change de size of the point population for SBB opponents)
+        return result
+
+    def _play_hand(self, team, point, mode):
+        """
 
         """
         if mode == Config.RESTRICTIONS['mode']['training']:
@@ -136,8 +146,12 @@ class PokerEnvironment(ReinforcementEnvironment):
             port1 = PokerEnvironment.CONFIG['available_ports'][1]
             port2 = PokerEnvironment.CONFIG['available_ports'][0]
 
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, port1, point, is_training, True, memories])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, port2, point, False, False, memories])
+        opponent_use_inputs = False
+        if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
+            opponent_use_inputs = True
+
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, port1, point, is_training, True, True, memories])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, port2, point, False, False, opponent_use_inputs, memories])
         args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
                 PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
                 PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
@@ -319,7 +333,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         return (value - max_losing)/float(max_winning - max_losing)
 
     @staticmethod
-    def execute_player(player, port, point, is_training, is_sbb, memories):
+    def execute_player(player, port, point, is_training, is_sbb, use_inputs, memories):
         if is_sbb and not is_training:
             player.extra_metrics_['played_last_hand'] = False
 
@@ -371,12 +385,15 @@ class PokerEnvironment(ReinforcementEnvironment):
                     if Config.USER['reinforcement_parameters']['debug_matches']:
                         debug_file.write("opponent folded\n\n")
                 else:
-                    chips = PokerEnvironment.get_chips(player, point, is_sbb)
-                    if len(chips) == 0:
-                        chips = 0.5
+                    if use_inputs:
+                        chips = PokerEnvironment.get_chips(player, point, is_sbb)
+                        if len(chips) == 0:
+                            chips = 0.5
+                        else:
+                            chips = PokerEnvironment.normalize_winning(numpy.mean(chips))
+                        inputs = match_state.inputs(memories) + [chips] + PokerEnvironment.get_opponent_model(player, point, is_sbb).inputs()
                     else:
-                        chips = PokerEnvironment.normalize_winning(numpy.mean(chips))
-                    inputs = match_state.inputs(memories) + [chips] + PokerEnvironment.get_opponent_model(player, point, is_sbb).inputs()
+                        inputs = []
                     action = player.execute(point.point_id, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = 1

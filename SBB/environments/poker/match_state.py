@@ -303,7 +303,7 @@ class MatchState():
                 deck_without_dealt_cards = [card for card in deck if card not in dealt_card]
                 if len(self.rounds) == 2: # flop
                     cards_combinations = list(itertools.combinations(deck_without_dealt_cards, 2))
-                    cards_combinations = random.sample(cards_combinations, len(cards_combinations)/4)
+                    cards_combinations = random.sample(cards_combinations, len(cards_combinations)/6)
                     for turn, river in cards_combinations:
                         # final 5-card board
                         board = self.board_cards + [turn] + [river]
@@ -317,7 +317,7 @@ class MatchState():
                             hp[index][behind] += 1.0
                         total += 1.0
                 else: # turn
-                    cards = random.sample(deck_without_dealt_cards, len(deck_without_dealt_cards))
+                    cards = random.sample(deck_without_dealt_cards, len(deck_without_dealt_cards)*3/4)
                     for river in cards:
                         # final 5-card board
                         board = self.board_cards + [river]

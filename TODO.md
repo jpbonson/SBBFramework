@@ -42,7 +42,6 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- rodar SBB para ver performance
 - chips e opponent model do oponent:
     - apenas eh relevante se o oponente for sbb (self-play ou hall of fame)
     - atencao: oponentes que sao sbb nao tem acesso aos inputs chips e opponent model (vem sempre vazio)

@@ -332,19 +332,20 @@ class ReinforcementEnvironment(DefaultEnvironment):
             team.extra_metrics_['opponents'] = extra_metrics_opponents
 
     def validate(self, current_generation, teams_population):
+        print "\nvalidating all..."
         for team in teams_population:
             if team.generation != current_generation: # dont evaluate teams that have just being created (to improve performance and to get training metrics)
                 self.evaluate_team(team, Config.RESTRICTIONS['mode']['validation'])
+                team.extra_metrics_['validation_score'] = round_value(team.score_testset_)
+                team.extra_metrics_['validation_opponents'] = team.extra_metrics_['opponents']
+                team.extra_metrics_.pop('champion_score', None)
+                team.extra_metrics_.pop('champion_opponents', None)
         score = [p.score_testset_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]
-        validation_score = round_value(best_team.score_testset_)
-        validation_opponents = best_team.extra_metrics_['opponents']
-        print "\nscore (validation): "+str(validation_score)
-        for key in validation_opponents:
-            print "validation score against opponent ("+key+"): "+str(validation_opponents[key])
+        print "\nvalidating champion..."
         self.evaluate_team(best_team, Config.RESTRICTIONS['mode']['champion'])
-        best_team.extra_metrics_['validation_score'] = validation_score
-        best_team.extra_metrics_['validation_opponents'] = validation_opponents
+        best_team.extra_metrics_['champion_score'] = round_value(best_team.score_testset_)
+        best_team.extra_metrics_['champion_opponents'] = best_team.extra_metrics_['opponents']
         return best_team
 
     def hall_of_fame(self):

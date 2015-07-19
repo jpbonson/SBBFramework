@@ -111,10 +111,12 @@ class SBB:
             run_info.hall_of_fame_in_last_generation = environment.hall_of_fame()
             print("\nFinished run "+str(run_info.run_id)+", elapsed time: "+str(run_info.elapsed_time)+" secs")
             run_infos.append(run_info)
+            sys.stdout.flush()
         
         # 4. Finalize execution (get final metrics, print to output, print to file)
         overall_info += self._generate_overall_metrics_output(run_infos)
         print overall_info
+        sys.stdout.flush()
 
         # to ensure validation metrics for all teams in the hall of fame
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:

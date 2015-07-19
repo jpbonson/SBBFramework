@@ -161,9 +161,15 @@ class Team(DefaultOpponent):
         if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
             msg += "\n"
             if 'validation_score'in self.extra_metrics_:
-                msg += "\nresults for champion:"
-            for key in self.extra_metrics_['opponents']:
-                msg += "\nscore against opponent ("+key+"): "+str(self.extra_metrics_['opponents'][key])
+                msg += "\nresults for validation:"
+                msg += "\nscore (validation): "+str(self.extra_metrics_['validation_score'])
+                for key in self.extra_metrics_['validation_opponents']:
+                    msg += "\nvalidation score against opponent ("+key+"): "+str(self.extra_metrics_['validation_opponents'][key])
+            if 'champion_score'in self.extra_metrics_:
+                msg += "\n\nresults for champion:"
+                msg += "\nscore (champion): "+str(self.extra_metrics_['champion_score'])
+                for key in self.extra_metrics_['opponents']:
+                    msg += "\nchampion score against opponent ("+key+"): "+str(self.extra_metrics_['champion_opponents'][key])
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':
                 msg += "\n\nhands (validation): played: "+str(self.extra_metrics_['hand_played_validation'])+", won: "+str(self.extra_metrics_['won_hands_validation'])+" (total: "+str(self.extra_metrics_['total_hands_validation'])+")"
                 if self.extra_metrics_['total_hands_champion'] > 0:
@@ -181,11 +187,6 @@ class Team(DefaultOpponent):
             msg += "\n"
             for key, value in self.diversity_.iteritems():
                 msg +=  "\n"+str(key)+": "+str(value)
-            if 'validation_score'in self.extra_metrics_:
-                msg += "\n\nresults for validation:"
-                msg += "\nscore (validation): "+str(self.extra_metrics_['validation_score'])
-                for key in self.extra_metrics_['validation_opponents']:
-                    msg += "\nvalidation score against opponent ("+key+"): "+str(self.extra_metrics_['validation_opponents'][key])
         return msg
 
     def _inputs_distribution(self):
