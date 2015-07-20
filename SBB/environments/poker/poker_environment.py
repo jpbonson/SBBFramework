@@ -91,7 +91,11 @@ class PokerEnvironment(ReinforcementEnvironment):
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents_for_training, coded_opponents_for_validation)
         port1, port2 = avaliable_ports()
         PokerEnvironment.CONFIG['available_ports'] = [port1, port2]
-        self.population_size_for_hall_of_fame = self.population_size_/2 # it is lower, since more hands are played
+        self.population_size_for_hall_of_fame = self.population_size_/5 # it is lower, since more hands are played
+        if self.population_size_for_hall_of_fame == 0:
+            self.population_size_for_hall_of_fame = 1
+        if PokerEnvironment.CONFIG['hands_against_sbb_opponents'] == 0:
+            PokerEnvironment.CONFIG['hands_against_sbb_opponents'] = 1
 
     def _instantiate_point_for_coded_opponent_class(self, opponent_class):
         instance = opponent_class()
@@ -110,7 +114,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
         is_sbb_opponent = point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb"
         if not is_sbb_opponent:
-            return self._play_hand(team, point, mode, point.position_, point.seed_)
+            result = self._play_hand(team, point, mode, point.position_, point.seed_)
         else:
             # play more hands for sbb opponents (also change de size of the point population for SBB opponents)
             # because otherwise they wont be able to use the opponent model themselves
@@ -120,16 +124,18 @@ class PokerEnvironment(ReinforcementEnvironment):
                 position = index % 2
                 seed = random_generator.randint(0, Config.RESTRICTIONS['max_seed'])
                 results.append(self._play_hand(team, point, mode, position, seed))
-            return numpy.mean(results)
+            result = numpy.mean(results)
+        return result
 
     def _play_hand(self, team, point, mode, position, seed):
         """
 
         """
+        print str(team.__repr__())+" vs "+str(point.__repr__())
         if mode == Config.RESTRICTIONS['mode']['training']:
-            is_training = True
+            Config.USER['reinforcement_parameters']['debug_matches'] = True
         else:
-            is_training = False
+            Config.USER['reinforcement_parameters']['debug_matches'] = False
 
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerEnvironment.CONFIG['acpc_path']+"outputs/"):
             os.makedirs(PokerEnvironment.CONFIG['acpc_path']+"outputs/")
@@ -215,7 +221,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         if Config.USER['reinforcement_parameters']['debug_matches']:
             print "scores: "+str(scores)
             print "players: "+str(players)
-            print "avg score: "+str(avg_score)
             print "normalized_value: "+str(normalized_value)
         return normalized_value
 
@@ -383,6 +388,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         debug_file = None
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file = open(PokerEnvironment.CONFIG['acpc_path']+'outputs/player'+str(port)+'.log','w')
+            print player.__repr__()+": started"
         socket_tmp.send("VERSION:2.0.0\r\n")
         previous_action = None
         partial_messages = []
@@ -406,12 +412,14 @@ class PokerEnvironment(ReinforcementEnvironment):
             if match_state.is_showdown():
                 previous_action = None
                 if Config.USER['reinforcement_parameters']['debug_matches']:
-                    debug_file.write("showdown\n\n")
+                    debug_file.write("showdown\n")
+                    print player.__repr__()+":showdown\n\n"
             elif match_state.is_current_player_to_act():
                 if match_state.is_last_action_a_fold():
                     previous_action = None
                     if Config.USER['reinforcement_parameters']['debug_matches']:
-                        debug_file.write("opponent folded\n\n")
+                        debug_file.write("opponent folded\n")
+                        print player.__repr__()+":opponent folded\n\n"
                 else:
                     if use_inputs:
                         chips = PokerEnvironment.get_chips(player, point, team, is_sbb)
@@ -442,15 +450,16 @@ class PokerEnvironment(ReinforcementEnvironment):
                         debug_file.write("match_state: "+str(match_state)+"\n\n")
                         debug_file.write("inputs: "+str(inputs)+"\n\n")
                         debug_file.write("send_msg: "+str(send_msg)+"\n\n")
+                        print player.__repr__()+":match_state: "+str(match_state)+"\n"
+                        print player.__repr__()+":inputs: "+str(inputs)+"\n"
+                        print player.__repr__()+":send_msg: "+str(send_msg)+"\n"
             else:
                 if not previous_action == 'f':
                     previous_action = None
                 if Config.USER['reinforcement_parameters']['debug_matches']:
                     debug_file.write("nothing to do\n\n")
+                    print player.__repr__()+":nothing to do\n"
         socket_tmp.close()
-        if Config.USER['reinforcement_parameters']['debug_matches']:
-            debug_file.write("The end.\n\n")
-            debug_file.close()
 
         if use_inputs:
             PokerEnvironment.update_opponent_model_and_chips(player, point, team, previous_messages+partial_messages, debug_file, previous_action, is_sbb)
@@ -467,6 +476,11 @@ class PokerEnvironment(ReinforcementEnvironment):
             updated = True
         if updated:
             point.update_metrics()
+
+        if Config.USER['reinforcement_parameters']['debug_matches']:
+            debug_file.write("The end.\n\n")
+            print player.__repr__()+": The end.\n"
+            debug_file.close()
 
     @staticmethod
     def get_chips(player, point, team, is_sbb):
@@ -502,19 +516,23 @@ class PokerEnvironment(ReinforcementEnvironment):
                 if partial_match_state.is_showdown():
                     if Config.USER['reinforcement_parameters']['debug_matches']:
                         debug_file.write("partial_msg: "+str(partial_msg)+", previous_action: "+str(previous_action)+"\n\n")
+                        print player.__repr__()+": partial_msg: "+str(partial_msg)+", previous_action: "+str(previous_action)+"\n"
                     self_folded = False
                     opponent_folded = False
                     winner = partial_match_state.get_winner_of_showdown()
                     if Config.USER['reinforcement_parameters']['debug_matches'] and winner is None:
                         debug_file.write("showdown, draw\n\n")
+                        print player.__repr__()+": showdown, draw\n"
                     else:
                         if winner == partial_match_state.position:
                             if Config.USER['reinforcement_parameters']['debug_matches']:
                                 debug_file.write("showdown, I won\n\n")
+                                print player.__repr__()+": showdown, I won\n"
                             PokerEnvironment.get_chips(player, point, team, is_sbb).append(+(partial_match_state.calculate_pot()))
                         else:
                             if Config.USER['reinforcement_parameters']['debug_matches']:
                                 debug_file.write("showdown, I lost\n\n")
+                                print player.__repr__()+": showdown, I lost\n"
                             PokerEnvironment.get_chips(player, point, team, is_sbb).append(-(partial_match_state.calculate_pot()))
                 else:
                     last_player = partial_match_state.last_player_to_act()
@@ -522,24 +540,28 @@ class PokerEnvironment(ReinforcementEnvironment):
                         if self_actions and self_actions[-1] == 'f':
                             if Config.USER['reinforcement_parameters']['debug_matches']:
                                 debug_file.write("partial_msg: "+str(partial_msg)+", I folded (1)\n\n")
+                                print player.__repr__()+": partial_msg: "+str(partial_msg)+", I folded (1)\n"
                             self_folded = True
                             opponent_folded = False
                             PokerEnvironment.get_chips(player, point, team, is_sbb).append(-(partial_match_state.calculate_pot()))
                     elif opponent_actions and opponent_actions[-1] == 'f':
                         if Config.USER['reinforcement_parameters']['debug_matches']:
                             debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (1)\n\n")
+                            print player.__repr__()+": partial_msg: "+str(partial_msg)+", opponent folded (1)\n"
                         self_folded = False
                         opponent_folded = True
                         PokerEnvironment.get_chips(player, point, team, is_sbb).append(+(partial_match_state.calculate_pot()))
                     elif previous_action == 'f':
                         if Config.USER['reinforcement_parameters']['debug_matches']:
                             debug_file.write("partial_msg: "+str(partial_msg)+", I folded (2)\n\n")
+                            print player.__repr__()+": partial_msg: "+str(partial_msg)+", I folded (2)\n"
                         self_folded = True
                         opponent_folded = False
                         PokerEnvironment.get_chips(player, point, team, is_sbb).append(-(partial_match_state.calculate_pot()))
                     else:
                         if Config.USER['reinforcement_parameters']['debug_matches']:
                             debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (2)\n\n")
+                            print player.__repr__()+": partial_msg: "+str(partial_msg)+", opponent folded (2)\n"
                         self_folded = False
                         opponent_folded = True
                         PokerEnvironment.get_chips(player, point, team, is_sbb).append(+(partial_match_state.calculate_pot()))

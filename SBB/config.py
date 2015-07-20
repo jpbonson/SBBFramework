@@ -17,10 +17,10 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 160, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'validation_population': 240, # at a validated generation, all the teams with be tested against this population, the best one is the champion
             'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'opponents_pool': 'only_coded',
-            'balanced_opponent_populations': True, # if False, the opponent populations will be swapped instead of mixed
+            'balanced_opponent_populations': False, # if False, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
                 'enabled': True,
                 'diversity': 'normalized_compression_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full

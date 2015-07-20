@@ -109,7 +109,9 @@ class DiversityMaintenance():
         xy_len = len(bz2.compress("".join(team.action_sequence_+other_team.action_sequence_)))
         distance = (xy_len - min(x_len, y_len))/float(max(x_len, y_len))
         if distance < 0.0:
+            # print "Warning! Value lower than 0.0 for NCD! Value: "+str(distance)+" ("+str(x_len)+","+str(y_len)+","+str(xy_len)+")"
             distance = 0.0
         if distance > 1.0:
-            raise ValueError("Error! Value higher than 1.0 for NCD! Value: "+str(distance))
+            # print "Warning! Value higher than 1.0 for NCD! Value: "+str(distance)+" ("+str(x_len)+","+str(y_len)+","+str(xy_len)+")"
+            distance = 1.0
         return distance

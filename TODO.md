@@ -42,7 +42,7 @@ runs:
     (e resetar os inputs no comeco de uma nova generation)
 
 implementar:
-- rodar com o config default e ver se o resultados parecem ok
+- testar se sbb esta aprendendo poker
 
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK

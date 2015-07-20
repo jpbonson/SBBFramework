@@ -16,7 +16,7 @@ class MatchState():
         self.message = message
         self.small_bet = small_bet
         self.big_bet = big_bet
-        self.full_deck = full_deck
+        self.full_deck = list(full_deck)
         self.hand_strength_hole_cards = hand_strength_hole_cards
         self.position = None
         self.opponent_position = None
@@ -162,8 +162,8 @@ class MatchState():
         if inputs[0] + inputs[1] > 0:
             inputs[2] = inputs[1] / float(inputs[0] + inputs[1])
         else:
-            inputs[2] = 0
-        inputs[3] = self._betting_position()
+            inputs[2] = 0.0
+        inputs[3] = float(self._betting_position())
         inputs[4] = self._calculate_equity(self.current_hole_cards)
         inputs[5] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
         if len(self.rounds) == 2 or len(self.rounds) == 3:
@@ -172,9 +172,9 @@ class MatchState():
             inputs[7] = npot
             inputs[8] = inputs[5] + (1 - inputs[5]) * ppot
         else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
-            inputs[6] = 0
-            inputs[7] = 0
-            inputs[8] = 0
+            inputs[6] = 0.0
+            inputs[7] = 0.0
+            inputs[8] = 0.0
         return inputs
 
     def calculate_pot(self):
@@ -206,12 +206,12 @@ class MatchState():
             return 0.5
         
         # check if the opponent raised
-        bet = 0
+        bet = 0.0
         current_round = self.rounds[-1]
         if current_round: # if there is previous actions
             last_action = current_round[-1]
             if last_action == 'r':
-                bet = 1 # since the value is normalized and the poker is limited, 1 means the maximum bet
+                bet = 1.0 # since the value is normalized and the poker is limited, 1 means the maximum bet
         return bet
 
     def _betting_position(self):

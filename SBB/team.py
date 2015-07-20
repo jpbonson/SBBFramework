@@ -28,7 +28,8 @@ class Team(DefaultOpponent):
         self.score_trainingset_ = 0
         self.score_testset_ = 0
         self.extra_metrics_ = {}
-        self.active_programs_ = []
+        self.active_programs_ = [] # only for training, used for genotype diversity
+        self.overall_active_programs_ = [] # for training and validation
         self.actions_per_points_ = {}
         self.results_per_points_ = {}
         self.diversity_ = {}
@@ -66,9 +67,13 @@ class Team(DefaultOpponent):
                     self.actions_per_points_[point_id] = output_class
                 if selected_program not in self.active_programs_:
                     self.active_programs_.append(selected_program)
+                if selected_program not in self.overall_active_programs_:
+                    self.overall_active_programs_.append(selected_program)
                 return output_class
         else: # just run the code without changing the attributes or using memmory
             selected_program = self._select_program(inputs, valid_actions)
+            if selected_program not in self.overall_active_programs_:
+                self.overall_active_programs_.append(selected_program)
             return selected_program.action
 
     def _select_program(self, inputs, valid_actions):
@@ -140,6 +145,8 @@ class Team(DefaultOpponent):
         self.programs.remove(program)
         if program in self.active_programs_:
             self.active_programs_.remove(program)
+        if program in self.overall_active_programs_:
+            self.overall_active_programs_.remove(program)
 
     def remove_references(self):
         """
@@ -149,8 +156,8 @@ class Team(DefaultOpponent):
             p.remove_team(self)
 
     def metrics(self, full_version = False):
-        active_teams_members_ids = [p.__repr__() for p in self.active_programs_]
-        inactive_programs = list(set(self.programs) - set(self.active_programs_))
+        active_teams_members_ids = [p.__repr__() for p in self.overall_active_programs_]
+        inactive_programs = list(set(self.programs) - set(self.overall_active_programs_))
         inactive_teams_members_ids = [p.__repr__() for p in inactive_programs]
         msg = self.__repr__()
         msg += "\nteam members ("+str(len(self.programs))+"), A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids)
@@ -191,7 +198,7 @@ class Team(DefaultOpponent):
 
     def _inputs_distribution(self):
         inputs = []
-        for program in self.active_programs_:
+        for program in self.overall_active_programs_:
             inputs += program.inputs_list_
         inputs_distribution = Counter(inputs)
         return inputs_distribution
@@ -210,10 +217,10 @@ class Team(DefaultOpponent):
         text += "\n\n#### METRICS\n"
         text += self.metrics(full_version = True)
         text += "\n\n######## PROGRAMS (ACTIVE)"
-        for p in self.active_programs_:
+        for p in self.overall_active_programs_:
             text += "\n"+str(p)
         text += "\n\n######## PROGRAMS (INACTIVE)"
-        inactive_programs = list(set(self.programs) - set(self.active_programs_))
+        inactive_programs = list(set(self.programs) - set(self.overall_active_programs_))
         if inactive_programs:
             for p in inactive_programs:
                 text += "\n"+str(p)

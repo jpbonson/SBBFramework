@@ -78,9 +78,14 @@ class Selection:
 
     def _select_teams_to_clone(self, teams_population):
         new_teams_to_create = Config.USER['training_parameters']['populations']['teams'] - len(teams_population)
-        fitness = [team.fitness_ for team in teams_population]
+        fitness = []
+        for team in teams_population:
+            if team.fitness_ == 0.0:
+                fitness.append(0.000001)
+            else:
+                fitness.append(team.fitness_)
         total_fitness = sum(fitness)
-        probabilities = [f/total_fitness for f in fitness]
+        probabilities = [f/float(total_fitness) for f in fitness]
         return numpy.random.choice(teams_population, size = new_teams_to_create, replace = False, p = probabilities)
 
     def _remove_programs_with_no_teams(self, programs_population):
