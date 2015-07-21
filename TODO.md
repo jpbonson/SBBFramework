@@ -28,7 +28,7 @@ runs:
         - sightly less stable test
         - inconclusive: would need to test for more runs
 
-garantir outputs (for tictactoe and poker):
+garantir outputs (for tictactoe and poker, primeiro implementar o que funciona para ambos, para ja ir fazendo as runs de ttt):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK
 
 - accumulative performance curve for the population (tutorial, page 27): TODO
@@ -53,6 +53,8 @@ with the reinforcement learning algorithm. But the poker task is evolving so slo
 to evolve at all. I expected that at least the training score woudl evolve quickly. I looked for bugs but so far I found nothing, so I am 
 not sure if the problem is in the algorithm or in the difficult of the task. I tried to provide equity as the only input against only the allways_raise opponent, but I got no better results. I will continue to implement the last outputs while I run SBB for poker, and then I 
 will analyse the resultant teams' behaviors.
+- the teams are playing all the hands!
+- obrigar teams a sempre terem uma action fold? (sem o extra registers, e com menos instructions?)
 
 ---
 
@@ -63,6 +65,11 @@ future work:
 - refatorar codigo
 - ir testando enquanto implementa:
     - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector, e Bluenose(?))
+- intron
+    if r[1] < r[1]:
+        if r[0] >= i[0]:
+            if r[0] < i[0]:
+                r[0] = cos(r[0])
 - steps:
     3. better opponents
     4. opponent model
