@@ -131,7 +131,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
 
         """
-        print str(team.__repr__())+" vs "+str(point.__repr__())
         if mode == Config.RESTRICTIONS['mode']['training']:
             is_training = True
         else:
