@@ -60,7 +60,7 @@ class Config():
             },
             'program_size': {
                 'min': 2,
-                'max': 20,
+                'max': 10,
             },
         },
 
@@ -68,7 +68,7 @@ class Config():
             'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
-            'extra_registers': 1,
+            'extra_registers': 0,
             'diversity': {
                 'use_and_show': ['normalized_compression_distance', 'genotype_distance'], # will be applied to fitness and show in the outputs
                 'only_show': [], # will be only show in the outputs

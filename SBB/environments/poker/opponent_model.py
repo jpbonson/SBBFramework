@@ -7,10 +7,10 @@ class OpponentModel():
 
     All inputs are normalized, so they influence the SBB player potentially equal,
 
-    inputs[0] = self short-term agressiveness (last 10 hands)
-    inputs[1] = self long-term agressiveness
-    inputs[2] = opponent short-term agressiveness (last 10 hands)
-    inputs[3] = opponent long-term agressiveness
+    inputs[0] = opponent long-term agressiveness
+    inputs[1] = opponent short-term agressiveness (last 10 hands)
+    inputs[2] = self long-term agressiveness
+    inputs[3] = self short-term agressiveness (last 10 hands)
     inputs[4] = self short-term volatility (last 10 hands)
     inputs[5] = self long-term volatility
     inputs[6] = opponent short-term volatility (last 10 hands)
@@ -24,9 +24,10 @@ class OpponentModel():
     (since they probably got better hands?) may this metric be usefull to identify bluffing?
     """
 
-    INPUTS = ['self short-term agressiveness', 'self long-term agressiveness', 'opponent short-term agressiveness', 
-        'opponent long-term agressiveness', 'self short-term volatility', 'self long-term volatility', 
-        'opponent short-term volatility', 'opponent long-term volatility']
+    # INPUTS = ['opponent long-term agressiveness', 'opponent short-term agressiveness', 'self long-term agressiveness',
+    #    'self short-term agressiveness', 'self short-term volatility', 'self long-term volatility', 
+    #    'opponent short-term volatility', 'opponent long-term volatility']
+    INPUTS = ['opponent long-term agressiveness']
 
     def __init__(self):
         self.self_agressiveness = []
@@ -76,23 +77,19 @@ class OpponentModel():
         return points
 
     def inputs(self):
-        inputs = [0] * len(OpponentModel.INPUTS)
-        inputs[4] = 0.5
-        inputs[5] = 0.5
-        inputs[6] = 0.5
-        inputs[7] = 0.5
-        if len(self.self_agressiveness) > 0:
-            inputs[0] = numpy.mean(self.self_agressiveness[:10])
-            inputs[1] = numpy.mean(self.self_agressiveness)
+        inputs = [0.5] * len(OpponentModel.INPUTS)
         if len(self.opponent_agressiveness) > 0:
-            inputs[2] = numpy.mean(self.opponent_agressiveness[:10])
-            inputs[3] = numpy.mean(self.opponent_agressiveness)
-        if len(self.self_agressiveness_postflop) > 0 and len(self.self_agressiveness_preflop) > 0:
-            inputs[4] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop[:10], self.self_agressiveness_preflop[:10])
-            inputs[5] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop, self.self_agressiveness_preflop)
-        if len(self.opponent_agressiveness_postflop) > 0 and len(self.opponent_agressiveness_preflop) > 0:
-            inputs[6] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop[:10], self.opponent_agressiveness_preflop[:10])
-            inputs[7] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop, self.opponent_agressiveness_preflop)
+            inputs[0] = numpy.mean(self.opponent_agressiveness)
+        #     inputs[1] = numpy.mean(self.opponent_agressiveness[:10])
+        # if len(self.self_agressiveness) > 0:
+        #     inputs[2] = numpy.mean(self.self_agressiveness)
+        #     inputs[3] = numpy.mean(self.self_agressiveness[:10])
+        # if len(self.self_agressiveness_postflop) > 0 and len(self.self_agressiveness_preflop) > 0:
+        #     inputs[4] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop[:10], self.self_agressiveness_preflop[:10])
+        #     inputs[5] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop, self.self_agressiveness_preflop)
+        # if len(self.opponent_agressiveness_postflop) > 0 and len(self.opponent_agressiveness_preflop) > 0:
+        #     inputs[6] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop[:10], self.opponent_agressiveness_preflop[:10])
+        #     inputs[7] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop, self.opponent_agressiveness_preflop)
         return inputs
 
     @staticmethod
