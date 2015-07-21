@@ -28,30 +28,24 @@ runs:
         - sightly less stable test
         - inconclusive: would need to test for more runs
 
-- pensar sobre:
-    - "100 hands against each opponent/type of opponent"
-
-    So I was thinking a bit more about the point population... It seems to me that a point should contain a seeded opponent, a seeded hand, and a position, so that a point is able to differentiate a team from other teams, and between themselves, consistently. Another option would be a seeded opponent and a seeded hand, but played two times, one for each position.
-    The problem is that, this way the inputs chips, agressiveness and volatility are mostly useless, since they are reseted when the team plays against new points.
-
-    A further option, so that these three inputs can be useful, would be to store and update them during the generation, per opponent type. So if the point population is composed of 20 TypeA and 20 TypeB opponents, when a team went against the last TypeA opponent it would have a memory of how many chips it lost/won to the other 19 TypeA opponents, and a track of its agressiveness and volatility. Similar to a tournament, per opponent type. But I wonder if this sort of approach would be a problem since it would bias the teams actions for the last points of a same type of opponent (ie. the point order would be relevant to how well they differentiate teams, so it would impact the point selection). All teams play against the points in the same order, so there wouldn't be a problem regarding different teams seeing the 'tournament' differently.
-
-    Right now the implementation has each point storing a seeded opponent, and two different seeded hands (one for each position), and has the problem with chips, agressiveness and volatility being useless. I would like to discuss more about the point population with you two before modifying the system 
-    to one of the ideas I said above, so I will wait for feedback. While I wait I will keep implementing the things we discussed in the last meeting (the diversity and run outputs).
-
-    (e resetar os inputs no comeco de uma nova generation)
-
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK
+
 - accumulative performance curve for the population (tutorial, page 27): TODO
 - diversity x fitness x generations (for both diversities, violin plot? line plot?): TODO
 - how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time (considerar swap)): TODO
 - outputs para R plot: TODO
 
+ler papers:
+- paper com os plots relevantes para a point population (esperar resposta do email?)
+
 extra:
 - implementar mais diversity: entropy
 - implementar equity opponent
 - short-term inputs sao uteis?
+
+pensar sobre:
+- "100 hands against each opponent/type of opponent"
 - no minimo, era esperado que o training score subisse consideravelmente, sera que apenas nao rodou por tempo o suficiente?
 - obs.: removi always_fold dos oponentes, ja que ele estava fazendo com que os resultados das generations com ele fossem basicamente random
 - problems? ttt is able to perform better than random (more than 50%, usually it gets to 70% quickly), so it doesn't seem to be a problem 
@@ -59,9 +53,6 @@ with the reinforcement learning algorithm. But the poker task is evolving so slo
 to evolve at all. I expected that at least the training score woudl evolve quickly. I looked for bugs but so far I found nothing, so I am 
 not sure if the problem is in the algorithm or in the difficult of the task. I tried to provide equity as the only input against only the allways_raise opponent, but I got no better results. I will continue to implement the last outputs while I run SBB for poker, and then I 
 will analyse the resultant teams' behaviors.
-
-ler papers:
-- paper com os plots relevantes para a point population (esperar resposta do email?)
 
 ---
 
