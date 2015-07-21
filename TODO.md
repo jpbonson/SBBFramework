@@ -54,6 +54,11 @@ extra:
 - short-term inputs sao uteis?
 - no minimo, era esperado que o training score subisse consideravelmente, sera que apenas nao rodou por tempo o suficiente?
 - obs.: removi always_fold dos oponentes, ja que ele estava fazendo com que os resultados das generations com ele fossem basicamente random
+- problems? ttt is able to perform better than random (more than 50%, usually it gets to 70% quickly), so it doesn't seem to be a problem 
+with the reinforcement learning algorithm. But the poker task is evolving so slow for more than 50% that I am not sure if it is being able 
+to evolve at all. I expected that at least the training score woudl evolve quickly. I looked for bugs but so far I found nothing, so I am 
+not sure if the problem is in the algorithm or in the difficult of the task. I tried to provide equity as the only input against only the allways_raise opponent, but I got no better results. I will continue to implement the last outputs while I run SBB for poker, and then I 
+will analyse the resultant teams' behaviors.
 
 ler papers:
 - paper com os plots relevantes para a point population (esperar resposta do email?)
@@ -63,7 +68,6 @@ ler papers:
 future work:
 - fazer system tests para poker?
 - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
-- permitir rodar point populations agrupando opponents for grupo, e sem agrupamento
 - nos testes, checar se os teams sabem blefar
 - refatorar codigo
 - ir testando enquanto implementa:
