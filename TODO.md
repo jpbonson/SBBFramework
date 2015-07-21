@@ -55,6 +55,7 @@ not sure if the problem is in the algorithm or in the difficult of the task. I t
 will analyse the resultant teams' behaviors.
 - the teams are playing all the hands!
 - obrigar teams a sempre terem uma action fold? (sem o extra registers, e com menos instructions?)
+- full x simplified program, registers and opponent model x simplified + only fold and call
 
 ---
 
