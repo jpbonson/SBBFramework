@@ -17,7 +17,7 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 240, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'validation_population': 300, # at a validated generation, all the teams with be tested against this population, the best one is the champion
             'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'opponents_pool': 'only_coded',
             'balanced_opponent_populations': False, # if False, the opponent populations will be swapped instead of mixed
@@ -30,11 +30,11 @@ class Config():
 
         'training_parameters': {
             'runs_total': 1,
-            'generations_total': 200,
-            'validate_after_each_generation': 20,
+            'generations_total': 500,
+            'validate_after_each_generation': 50,
             'populations': {
-                'teams': 60,
-                'points': 80,
+                'teams': 100,
+                'points': 100,
             },
             'replacement_rate': {
                 'teams': 0.5,
@@ -66,7 +66,7 @@ class Config():
 
         'advanced_training_parameters': {
             'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
-            'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
+            'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {

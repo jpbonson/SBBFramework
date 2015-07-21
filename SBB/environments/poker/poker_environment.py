@@ -86,8 +86,8 @@ class PokerEnvironment(ReinforcementEnvironment):
     def __init__(self):
         total_actions = 3 # fold, call, raise
         total_inputs = len(PokerEnvironment.INPUTS)
-        coded_opponents_for_training = [PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        coded_opponents_for_validation = [PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent] # PokerAlwaysFoldOpponent
+        coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent] # PokerAlwaysFoldOpponent
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents_for_training, coded_opponents_for_validation)
         port1, port2 = avaliable_ports()
         PokerEnvironment.CONFIG['available_ports'] = [port1, port2]
@@ -133,9 +133,9 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
         print str(team.__repr__())+" vs "+str(point.__repr__())
         if mode == Config.RESTRICTIONS['mode']['training']:
-            Config.USER['reinforcement_parameters']['debug_matches'] = True
+            is_training = True
         else:
-            Config.USER['reinforcement_parameters']['debug_matches'] = False
+            is_training = False
 
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerEnvironment.CONFIG['acpc_path']+"outputs/"):
             os.makedirs(PokerEnvironment.CONFIG['acpc_path']+"outputs/")

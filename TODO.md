@@ -41,9 +41,6 @@ runs:
 
     (e resetar os inputs no comeco de uma nova generation)
 
-implementar:
-- testar se sbb esta aprendendo poker
-
 garantir outputs (for tictactoe and poker):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK
 - accumulative performance curve for the population (tutorial, page 27): TODO
@@ -53,6 +50,10 @@ garantir outputs (for tictactoe and poker):
 
 extra:
 - implementar mais diversity: entropy
+- implementar equity opponent
+- short-term inputs sao uteis?
+- no minimo, era esperado que o training score subisse consideravelmente, sera que apenas nao rodou por tempo o suficiente?
+- obs.: removi always_fold dos oponentes, ja que ele estava fazendo com que os resultados das generations com ele fossem basicamente random
 
 ler papers:
 - paper com os plots relevantes para a point population (esperar resposta do email?)
