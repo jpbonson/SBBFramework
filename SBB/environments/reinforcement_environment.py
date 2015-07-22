@@ -330,7 +330,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
         
         if is_training:
             team.fitness_ = score
-            team.score_trainingset_ = score
         else:
             for key in extra_metrics_opponents:
                 extra_metrics_opponents[key] = round_value(numpy.mean(extra_metrics_opponents[key]))

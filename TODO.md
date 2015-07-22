@@ -29,20 +29,21 @@ runs:
         - inconclusive: would need to test for more runs
 
 garantir outputs (for tictactoe and poker, primeiro implementar o que funciona para ambos, para ja ir fazendo as runs de ttt):
-- analisar quais inputs estao sendo usados (apenas dos programs ativos no team): DONE
-- accumulative performance curve for the population (tutorial, page 21): DONE
+- analisar quais inputs estao sendo usados (apenas dos programs ativos no team) (validation): DONE
+- accumulative performance curve for the population (tutorial, page 21) (validation): DONE
+- diversity x score x fitness x generations (for both diversities, array of values (validation): DONE
 
-- diversity x fitness x generations (for both diversities, violin plot? line plot?): TODO
-- outputs para R plot: TODO
+- outputs para R plot (training) (fitness + diversity x2, per generation): TODO
 
-- metrica para performance por range de hand strenght nas hole cards? confeirr na tabela como organizar os ranges? (e por position?)
-    - overall e por team? + opponent overall? (apenas na validation): TODO
-- how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time (considerar swap)): TODO
+- metrica para performance por range de hand strenght nas hole cards? conferir na tabela como organizar os ranges? (e por position?)
+    - overall e por team? + opponent overall? (validation): TODO
+- how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time (considerar swap)) (validation?): TODO
 
 ler papers:
-- paper com os plots relevantes para a point population (esperar resposta do email?)
+- paper com os plots relevantes para a point population
 
 extra:
+- implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 - implementar mais diversity: entropy
 - implementar equity opponent
 - short-term inputs sao uteis?

@@ -25,7 +25,6 @@ class Team(DefaultOpponent):
             self._add_program(program)
         self.team_id_ = get_team_id()
         self.fitness_ = 0
-        self.score_trainingset_ = 0
         self.score_testset_ = 0
         self.extra_metrics_ = {}
         self.active_programs_ = [] # only for training, used for genotype diversity
@@ -162,7 +161,7 @@ class Team(DefaultOpponent):
         inactive_teams_members_ids = [p.__repr__() for p in inactive_programs]
         msg = self.__repr__()
         msg += "\nteam members ("+str(len(self.programs))+"), A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids)
-        msg += "\nfitness (train): "+str(round_value(self.fitness_))+", score (train): "+str(round_value(self.score_trainingset_))+", score (test): "+str(round_value(self.score_testset_))
+        msg += "\nfitness: "+str(round_value(self.fitness_))+", test score: "+str(round_value(self.score_testset_))
         msg += "\ninputs distribution: "+str(self._inputs_distribution())
         if Config.USER['task'] == 'classification' and self.extra_metrics_:
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])

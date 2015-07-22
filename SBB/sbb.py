@@ -85,7 +85,7 @@ class SBB:
                     best_team = environment.validate(self.current_generation_, teams_population)
 
                     # store metrics
-                    run_info.train_score_per_generation.append(best_team.score_trainingset_)
+                    run_info.train_score_per_generation.append(best_team.fitness_)
                     run_info.test_score_per_generation.append(best_team.score_testset_)
                     run_info.diversity_per_generation.append(diversity_means)
                     if Config.USER['task'] == 'classification':

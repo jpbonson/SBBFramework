@@ -28,7 +28,7 @@ class RunInfo:
         msg = "RUN "+str(self.run_id)+"\n"
         msg += "seed: "+str(self.seed)
         msg += "\n\n##### METRICS PER GENERATION"
-        msg += "\n\nTrain Score per Generation: "+str(round_array(self.train_score_per_generation))
+        msg += "\n\nFitness per Generation: "+str(round_array(self.train_score_per_generation))
         msg += "\n\nTest Score per Generation: "+str(round_array(self.test_score_per_generation))
         for key in self.diversity_per_generation[0]:
             array = [item[key] for item in self.diversity_per_generation]

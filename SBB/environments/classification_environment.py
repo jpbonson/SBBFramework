@@ -230,7 +230,6 @@ class ClassificationEnvironment(DefaultEnvironment):
         
         if is_training:
             team.fitness_ = score
-            team.score_trainingset_ = score
         else:
             team.score_testset_ = score
             team.extra_metrics_ = extra_metrics
