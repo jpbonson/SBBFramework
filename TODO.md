@@ -29,9 +29,11 @@ runs:
         - inconclusive: would need to test for more runs
 
 garantir outputs (for tictactoe and poker, primeiro implementar o que funciona para ambos, para ja ir fazendo as runs de ttt):
-- analisar quais inputs estao sendo usados (apenas dos programs ativos no team): OK
+- analisar quais inputs estao sendo usados (apenas dos programs ativos no team): DONE
+- accumulative performance curve for the population (tutorial, page 21): DONE
 
-- accumulative performance curve for the population (tutorial, page 27): TODO
+- metrica para performance por range de hand strenght nas hole cards? confeirr na tabela como organizar os ranges? (e por position?)
+    - overall e por team? + opponent overall? (apenas na validation): TODO
 - diversity x fitness x generations (for both diversities, violin plot? line plot?): TODO
 - how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time (considerar swap)): TODO
 - outputs para R plot: TODO

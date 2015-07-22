@@ -245,7 +245,7 @@ class MatchState():
             deck = list(full_deck)
             for card in our_cards:
                 if card not in deck:
-                    print "Warning! Card not in deck: "+str(card)+", deck: "+str(full_deck)
+                    print "Warning! Card not in deck: "+str(card)+", current_hole_cards: "+str(current_hole_cards)+", board_cards: "+str(board_cards)
                 deck.remove(card)
             opponent_cards_combinations = itertools.combinations(deck, 2)
 

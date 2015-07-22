@@ -39,7 +39,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         """
 
     @abc.abstractmethod
-    def _play_match(self, team, point, is_training):
+    def _play_match(self, team, point, mode):
         """
         
         """
@@ -109,6 +109,9 @@ class ReinforcementEnvironment(DefaultEnvironment):
             return flatten(self.point_population_per_opponent_.values())
         else:
             return self.point_population_per_opponent_[self.current_population_]
+
+    def validation_population(self):
+        return self.test_population_
 
     def reset(self):
         for key in self.point_population_per_opponent_:
@@ -317,6 +320,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 if is_training:
                     team.results_per_points_[point.point_id] = result
                 else:
+                    if mode == Config.RESTRICTIONS['mode']['validation']:
+                        team.results_per_points_for_validation_[point.point_id] = result
                     extra_metrics_opponents[point.opponent.opponent_id].append(result)
                 if not (point.opponent.opponent_id == "hall_of_fame" and dont_use_results_for_hall_of_fame):
                     results.append(result)
