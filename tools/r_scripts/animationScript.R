@@ -42,8 +42,8 @@ saveGIF({
         axis(1)
 
         #main 2D plot
-        #read the scores-i.rslt file for this generation
-        tbl <- read.table(paste("data/scores-",i,".rslt",sep=""),colClasses="numeric");
+        #read the scores-i.gen file for this generation
+        tbl <- read.table(paste("data/",i,".gen",sep=""),colClasses="numeric");
         plot(rangex, rangey, type="n", col="black", ann=FALSE, axes=FALSE, ylim=c(0,1));
         grid(nx=0,ny=NULL,lwd=1, col=1)
         axis(1)
