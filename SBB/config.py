@@ -109,6 +109,7 @@ class Config():
             'validation': 1,
             'champion': 2,
         },
+        'used_diversities': None, # initialized by sbb.py
     }
 
     @staticmethod

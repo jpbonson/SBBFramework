@@ -36,11 +36,15 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team) (validation): DONE
 - accumulative performance curve for the population (tutorial, page 21) (validation): DONE
 - diversity x score x fitness x generations (for both diversities, array of values (validation): DONE
+- outputs para R plot (training) (fitness + diversity x2 + test score, per generation): DONE
 
-- outputs para R plot (training) (fitness + diversity x2 + test score, per generation): TODO
+- DOING
+- implementar primeiro 'global performance against opponent' (validation) (comum para ttt e poker)
+- implementar a diversity entropy?
+- atualizar codigo no server do NIMS
+- mandar rodar runs de tictactoe (sets de 5 runs?) (tentar tambem no bluenose e no hector)
 
-- metrica para performance por range de hand strenght nas hole cards? conferir na tabela como organizar os ranges? (e por position?)
-    - overall e por team? + opponent overall? (validation): TODO
+- metrica para performance por range de hand strenght nas hole cards? conferir na tabela como organizar os ranges? (e por position?) overall e por team? (validation): TODO
 - how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time (considerar swap)) (validation?): TODO
 
 ler papers:

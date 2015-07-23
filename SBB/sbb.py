@@ -50,6 +50,8 @@ class SBB:
         overall_info += "\n### CONFIG: "+str(Config.USER)+"\n"
         overall_info += environment.metrics()
         overall_info += "\nSeeds per run: "+str(self.seeds_per_run_)
+        Config.RESTRICTIONS['used_diversities'] = set(Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show'])
+        overall_info += "\nDiversities: "+str(Config.RESTRICTIONS['used_diversities'])
         print overall_info
 
         run_infos = []
@@ -98,6 +100,9 @@ class SBB:
                     actions_distribution = Counter([p.action for p in programs_population])
                     print "\nactions distribution: "+str(actions_distribution)+"\n"
 
+                # store data for this generation in run_info
+                self._store_teams_data_per_generation(run_info, teams_population)
+
             # store and print metrics per run
             print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())
             run_info.elapsed_time = time.time() - start_time
@@ -129,7 +134,9 @@ class SBB:
             environment.validate(self.current_generation_, run_info.hall_of_fame_in_last_generation)
 
         if Config.RESTRICTIONS['write_output_files']:
+            self.filepath_ = self._create_folder()
             self._write_output_files(run_infos, overall_info)
+            self._save_teams_data_per_generation(run_infos)
 
     def _initialize_environment(self):
         if Config.USER['task'] == 'classification':
@@ -144,6 +151,19 @@ class SBB:
     def _set_seed(self, seed):
         random.seed(seed)
         numpy.random.seed(seed)
+
+    def _create_folder(self):
+        if not os.path.exists("outputs/"):
+            os.makedirs("outputs/")
+        localtime = time.localtime()
+        pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+str(localtime.tm_hour)+str(localtime.tm_min)+str(localtime.tm_sec)
+        if Config.USER['task'] == 'classification':
+            filename = Config.USER['classification_parameters']['dataset']
+        else:
+            filename = Config.USER['reinforcement_parameters']['environment']
+        filepath = "outputs/"+str(filename)+"_"+pretty_localtime+"/"
+        os.makedirs(filepath)
+        return filepath
 
     def _initialize_populations(self):
         """
@@ -195,6 +215,22 @@ class SBB:
             return True
         return False
 
+    def _store_teams_data_per_generation(self, run_info, teams_population):
+        generation_info = []
+        for team in teams_population:
+            if team.generation != self.current_generation_:
+                team_info = []
+                team_info.append(round_value(team.fitness_, round_decimals_to = 3))
+                team_info.append(round_value(team.score_testset_, round_decimals_to = 3))
+                for diversity in Config.RESTRICTIONS['used_diversities']:
+                    if diversity in team.diversity_:
+                        value = round_value(team.diversity_[diversity], round_decimals_to = 3)
+                    else:
+                        value = 0.0
+                    team_info.append(value)
+                generation_info.append(team_info)
+        run_info.info_per_team_per_generation.append(generation_info)
+
     def _calculate_accumulative_performance(self, environment, teams_population):
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]
         sorted_teams = sorted(older_teams, key=lambda team: team.extra_metrics_['validation_score'], reverse = True) # better ones first
@@ -240,8 +276,7 @@ class SBB:
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
-        diversities = set(Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show'])
-        for diversity in diversities:
+        for diversity in Config.RESTRICTIONS['used_diversities']:
             array = [[generation[diversity] for generation in run.diversity_per_generation] for run in run_infos]
             score_means, score_stds = self._process_scores(array)
             msg += "\n\nMean Diversity per Generation across Runs ("+str(diversity)+"):"
@@ -263,20 +298,10 @@ class SBB:
         return score_means, score_stds
 
     def _write_output_files(self, run_infos, overall_info):
-        if not os.path.exists("outputs/"):
-            os.makedirs("outputs/")
-        localtime = time.localtime()
-        pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+str(localtime.tm_hour)+str(localtime.tm_min)+str(localtime.tm_sec)
-        if Config.USER['task'] == 'classification':
-            filename = Config.USER['classification_parameters']['dataset']
-        else:
-            filename = Config.USER['reinforcement_parameters']['environment']
-        filepath = "outputs/"+str(filename)+"_"+pretty_localtime
-        os.makedirs(filepath)
-        with open(filepath+"/metrics_overall.txt", "w") as text_file:
+        with open(self.filepath_+"metrics_overall.txt", "w") as text_file:
             text_file.write(overall_info)
         for run in run_infos:
-            path = filepath+"/run"+str(run.run_id)+"/"
+            path = self.filepath_+"run"+str(run.run_id)+"/"
             os.makedirs(path)
             with open(path+"metrics.txt", "w") as text_file:
                 text_file.write(str(run))
@@ -287,7 +312,17 @@ class SBB:
             self._save_teams(run.teams_in_last_generation, path+"last_generation_teams/")
             self._save_teams(run.pareto_front_in_last_generation, path+"pareto_front/")
             self._save_teams(run.hall_of_fame_in_last_generation, path+"hall_of_fame/")
-        print "\n### Files saved at "+filepath+"\n"
+        print "\n### Files saved at "+self.filepath_+"\n"
+
+    def _save_teams_data_per_generation(self, run_infos):
+        for run_info in run_infos:
+            path = self.filepath_+"run"+str(run_info.run_id)+"/metrics_per_generation/"
+            os.makedirs(path)
+            for generation_index, generation_info in enumerate(run_info.info_per_team_per_generation):
+                filename = str(generation_index+1)+".gen"
+                with open(path+filename, "w") as text_file:
+                    for team_info in generation_info:
+                        text_file.write(" ".join([str(info) for info in team_info])+"\n")     
 
     def _save_teams(self, teams, path):
         if len(teams) > 0:

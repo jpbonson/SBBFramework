@@ -23,6 +23,7 @@ class RunInfo:
         self.test_score_per_generation = []
         self.diversity_per_generation = []
         self.recall_per_generation = [] # only for classification task
+        self.info_per_team_per_generation = []
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
