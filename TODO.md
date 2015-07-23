@@ -37,7 +37,7 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
 - accumulative performance curve for the population (tutorial, page 21) (validation): DONE
 - diversity x score x fitness x generations (for both diversities, array of values (validation): DONE
 
-- outputs para R plot (training) (fitness + diversity x2, per generation): TODO
+- outputs para R plot (training) (fitness + diversity x2 + test score, per generation): TODO
 
 - metrica para performance por range de hand strenght nas hole cards? conferir na tabela como organizar os ranges? (e por position?)
     - overall e por team? + opponent overall? (validation): TODO

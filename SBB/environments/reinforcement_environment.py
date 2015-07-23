@@ -137,9 +137,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
         """
         if not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
             options = self.point_population_per_opponent_.keys()
-            if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.point_population_per_opponent_['hall_of_fame']) == 0:
+            if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.point_population_per_opponent_['hall_of_fame']) < self.population_size_for_hall_of_fame:
                 options.remove('hall_of_fame')
             self.last_population_ = self.current_population_
+            if len(options) > 1 and self.last_population_:
+                options.remove(self.last_population_)
             self.current_population_ = random.choice(options)
 
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_sbb':

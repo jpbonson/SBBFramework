@@ -240,10 +240,11 @@ class SBB:
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
-        for key in run_infos[0].diversity_per_generation[0]:
-            array = [[generation[key] for generation in run.diversity_per_generation] for run in run_infos]
+        diversities = set(Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show'])
+        for diversity in diversities:
+            array = [[generation[diversity] for generation in run.diversity_per_generation] for run in run_infos]
             score_means, score_stds = self._process_scores(array)
-            msg += "\n\nMean Diversity per Generation across Runs ("+str(key)+"):"
+            msg += "\n\nMean Diversity per Generation across Runs ("+str(diversity)+"):"
             msg += "\nmean: "+str(score_means)
             msg += "\nstd. deviation: "+str(score_stds)
 

@@ -15,6 +15,7 @@ class Selection:
 
     def __init__(self, environment):
         self.environment = environment
+        self.previous_diversity_ = None
 
     def run(self, current_generation, teams_population, programs_population, validation = False):
         teams_population = self._evaluate_teams(teams_population)
@@ -55,9 +56,13 @@ class Selection:
             remove_teams = sorted_solutions[teams_to_keep:]
             pareto_front = []
         else:
-            novelty = random.choice(Config.USER['advanced_training_parameters']['diversity']['use_and_show'])
+            options = list(Config.USER['advanced_training_parameters']['diversity']['use_and_show'])
+            if len(diversities_to_apply) > 1 and self.previous_diversity_:
+                options.remove(self.previous_diversity_)
+            novelty = random.choice(options)
             DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population(), must_calculate = novelty, is_validation = is_validation)
             keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams_population, novelty, teams_to_keep)
+            self.previous_diversity_ = novelty
         return keep_teams, remove_teams, pareto_front
 
     def _calculate_global_diversity_means(self, teams_population, point_population):
