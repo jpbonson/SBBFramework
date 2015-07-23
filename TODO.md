@@ -27,6 +27,10 @@ runs:
         - seems to be a bit more faster
         - sightly less stable test
         - inconclusive: would need to test for more runs
+    results3
+    - full x simplified program, registers and opponent model x simplified + only fold and call
+        - only fold and call: got the worst results, even with the obrigatory fold action the teams didnt learn to use it
+
 
 garantir outputs (for tictactoe and poker, primeiro implementar o que funciona para ambos, para ja ir fazendo as runs de ttt):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team) (validation): DONE
@@ -46,7 +50,7 @@ extra:
 - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 - implementar mais diversity: entropy
 - implementar equity opponent
-- short-term inputs sao uteis?
+- short-term inputs sao uteis? volatility e' util?
 
 pensar sobre:
 - "100 hands against each opponent/type of opponent"
@@ -59,7 +63,6 @@ not sure if the problem is in the algorithm or in the difficult of the task. I t
 will analyse the resultant teams' behaviors.
 - the teams are playing all the hands!
 - obrigar teams a sempre terem uma action fold? (sem o extra registers, e com menos instructions?)
-- full x simplified program, registers and opponent model x simplified + only fold and call
 
 ---
 
