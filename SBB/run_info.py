@@ -19,24 +19,26 @@ class RunInfo:
         self.individual_performance_in_last_generation = []
         self.accumulative_performance_in_last_generation = []
         self.worst_points_in_last_generation = []
-        self.train_score_per_generation = []
-        self.test_score_per_generation = []
-        self.diversity_per_generation = []
-        self.recall_per_generation = [] # only for classification task
+        self.train_score_per_validation = []
+        self.test_score_per_validation = []
+        self.diversity_per_validation = []
+        self.recall_per_validation = [] # only for classification task
+        self.actions_distribution_per_validation = []
         self.info_per_team_per_generation = []
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
         msg += "seed: "+str(self.seed)
-        msg += "\n\n##### METRICS PER GENERATION"
-        msg += "\n\nFitness per Generation: "+str(round_array(self.train_score_per_generation))
-        msg += "\n\nTest Score per Generation: "+str(round_array(self.test_score_per_generation))
-        for key in self.diversity_per_generation[0]:
-            array = [item[key] for item in self.diversity_per_generation]
-            msg += "\n\nGlobal Diversity per Generation ("+str(key)+"): "+str(array)
+        msg += "\n\n\n##### METRICS PER VALIDATION"
+        msg += "\n\nFitness per Validation: "+str(round_array(self.train_score_per_validation))
+        msg += "\n\nTest Score per Validation: "+str(round_array(self.test_score_per_validation))
+        for key in self.diversity_per_validation[0]:
+            array = [item[key] for item in self.diversity_per_validation]
+            msg += "\n\nGlobal Diversity per Validation ("+str(key)+"): "+str(array)
         if Config.USER['task'] == 'classification':
-            msg += "\n\nRecall per Action per Generation: "+str(self.recall_per_generation)
-        msg += "\n\n##### METRICS FOR THE LAST GENERATION"
+            msg += "\n\nRecall per Action per Validation: "+str(self.recall_per_validation)
+        msg += "\n\nActions Distribution per Validation: "+str(self.actions_distribution_per_validation)
+        msg += "\n\n\n##### METRICS FOR THE LAST GENERATION"
         msg += "\n\nActions Distribution: "+str(self.actions_distribution_in_last_generation)
         msg += "\n\nInputs Distribution: "+str(self.inputs_distribution_in_last_generation)
 

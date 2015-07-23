@@ -39,7 +39,6 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
 - outputs para R plot (training) (fitness + diversity x2 + test score, per generation): DONE
 
 - DOING
-- actions distribution over validations
 - implementar primeiro 'global performance against opponent' (validation) (comum para ttt e poker)
 - implementar a diversity entropy?
 - atualizar codigo no server do NIMS

@@ -87,11 +87,11 @@ class SBB:
                     best_team = environment.validate(self.current_generation_, teams_population)
 
                     # store metrics
-                    run_info.train_score_per_generation.append(best_team.fitness_)
-                    run_info.test_score_per_generation.append(best_team.score_testset_)
-                    run_info.diversity_per_generation.append(diversity_means)
+                    run_info.train_score_per_validation.append(best_team.fitness_)
+                    run_info.test_score_per_validation.append(best_team.score_testset_)
+                    run_info.diversity_per_validation.append(diversity_means)
                     if Config.USER['task'] == 'classification':
-                        run_info.recall_per_generation.append(best_team.extra_metrics_['recall_per_action'])
+                        run_info.recall_per_validation.append(best_team.extra_metrics_['recall_per_action'])
 
                     # print metrics
                     print("\nbest team: "+best_team.metrics()+"\n")
@@ -99,6 +99,13 @@ class SBB:
                         print str(key)+": "+str(best_team.diversity_[key])+" (global mean: "+str(diversity_means[key])+")"
                     actions_distribution = Counter([p.action for p in programs_population])
                     print "\nactions distribution: "+str(actions_distribution)+"\n"
+                    actions_distribution_array = []
+                    for action in range(Config.RESTRICTIONS['total_actions']):
+                        if action in actions_distribution:
+                            actions_distribution_array.append(actions_distribution[action])
+                        else:
+                            actions_distribution_array.append(0)
+                    run_info.actions_distribution_per_validation.append(actions_distribution_array)
 
                 # store data for this generation in run_info
                 self._store_teams_data_per_generation(run_info, teams_population)
@@ -264,20 +271,20 @@ class SBB:
         best_run = run_infos[scores.index(max(scores))]
         msg += "\nbest run: "+str(best_run.run_id)
 
-        train_score_per_generations_per_runs = [run.train_score_per_generation for run in run_infos]
+        train_score_per_generations_per_runs = [run.train_score_per_validation for run in run_infos]
         score_means, score_stds = self._process_scores(train_score_per_generations_per_runs)
         msg += "\n\nTrain Score per Generation across Runs:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
-        test_score_per_generations_per_runs = [run.test_score_per_generation for run in run_infos]
+        test_score_per_generations_per_runs = [run.test_score_per_validation for run in run_infos]
         score_means, score_stds = self._process_scores(test_score_per_generations_per_runs)
         msg += "\n\nTest Score per Generation across Runs:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
         for diversity in Config.RESTRICTIONS['used_diversities']:
-            array = [[generation[diversity] for generation in run.diversity_per_generation] for run in run_infos]
+            array = [[generation[diversity] for generation in run.diversity_per_validation] for run in run_infos]
             score_means, score_stds = self._process_scores(array)
             msg += "\n\nMean Diversity per Generation across Runs ("+str(diversity)+"):"
             msg += "\nmean: "+str(score_means)
