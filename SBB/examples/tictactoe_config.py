@@ -81,7 +81,7 @@ TICTACTOE_DEFAULT_1['advanced_training_parameters']['seed'] = 1
 TICTACTOE_DEFAULT_1['training_parameters']['runs_total'] = 13
 TICTACTOE_DEFAULT_1['training_parameters']['program_size']['max'] = 10
 """
-16341, nohup1
+1660, nohup1
 """
 
 TICTACTOE_DEFAULT_2 = copy.deepcopy(TICTACTOE_DEFAULT)
@@ -89,7 +89,7 @@ TICTACTOE_DEFAULT_2['advanced_training_parameters']['seed'] = 2
 TICTACTOE_DEFAULT_2['training_parameters']['runs_total'] = 13
 TICTACTOE_DEFAULT_2['training_parameters']['program_size']['max'] = 10
 """
-16386, nohup2
+1678, nohup2
 """
 
 TICTACTOE_PROGRAM20_1 = copy.deepcopy(TICTACTOE_DEFAULT)
@@ -97,7 +97,7 @@ TICTACTOE_PROGRAM20_1['advanced_training_parameters']['seed'] = 1
 TICTACTOE_PROGRAM20_1['training_parameters']['runs_total'] = 13
 TICTACTOE_PROGRAM20_1['training_parameters']['program_size']['max'] = 20
 """
-16389, nohup3
+1683, nohup3
 """
 
 TICTACTOE_PROGRAM20_2 = copy.deepcopy(TICTACTOE_DEFAULT)
@@ -105,5 +105,5 @@ TICTACTOE_PROGRAM20_2['advanced_training_parameters']['seed'] = 2
 TICTACTOE_PROGRAM20_2['training_parameters']['runs_total'] = 13
 TICTACTOE_PROGRAM20_2['training_parameters']['program_size']['max'] = 20
 """
-16392, nohup4
+1685, nohup4
 """
