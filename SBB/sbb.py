@@ -13,6 +13,7 @@ from run_info import RunInfo
 from program import Program, reset_programs_ids
 from team import Team, reset_teams_ids
 from instruction import Instruction
+from diversity_maintenance import DiversityMaintenance
 from environments.classification_environment import ClassificationEnvironment
 from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
 if os.name == 'posix':
@@ -42,13 +43,13 @@ class SBB:
     def run(self):
         print "\n### Starting pSBB"
 
-        # 1. Initialize environment and the selection algorithm
-        environment = self._initialize_environment()
-        selection = Selection(environment)
+        # initialize the environment and the selection algorithm
+        self.environment = self._initialize_environment()
+        selection = Selection(self.environment)
 
         overall_info = ""
         overall_info += "\n### CONFIG: "+str(Config.USER)+"\n"
-        overall_info += environment.metrics()
+        overall_info += self.environment.metrics()
         overall_info += "\nSeeds per run: "+str(self.seeds_per_run_)
         Config.RESTRICTIONS['used_diversities'] = set(Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show'])
         overall_info += "\nDiversities: "+str(Config.RESTRICTIONS['used_diversities'])
@@ -62,11 +63,11 @@ class SBB:
 
             self._set_seed(run_info.seed)
 
-            # 2. Randomly initialize populations
+            # randomly initialize populations
             self.current_generation_ = 0
             teams_population, programs_population = self._initialize_populations()
             
-            environment.reset()
+            self.environment.reset()
             while not self._stop_criterion():
                 self.current_generation_ += 1
                 
@@ -75,70 +76,34 @@ class SBB:
                 else:
                     validation = False
 
-                # 3. Selection
-                teams_population, programs_population, pareto_front, diversity_means = selection.run(self.current_generation_, teams_population, programs_population, validation)
+                # selection
+                teams_population, programs_population, pareto_front = selection.run(self.current_generation_, teams_population, programs_population, validation)
 
                 # validation
                 if not validation:
                     print ".",
                     sys.stdout.flush()
                 else:
-                    print "\n\n>>>>> Executing generation: "+str(self.current_generation_)+", run: "+str(run_info.run_id)
-                    best_team = environment.validate(self.current_generation_, teams_population)
+                    best_team = self.environment.validate(self.current_generation_, teams_population)
+                    self._print_and_store_per_validation_metrics(run_info, best_team, teams_population, programs_population)
 
-                    # store metrics
-                    run_info.train_score_per_validation.append(best_team.fitness_)
-                    run_info.test_score_per_validation.append(best_team.score_testset_)
-                    run_info.diversity_per_validation.append(diversity_means)
-                    if Config.USER['task'] == 'classification':
-                        run_info.recall_per_validation.append(best_team.extra_metrics_['recall_per_action'])
+                self._store_teams_per_generation_metrics(run_info, teams_population)
 
-                    # print metrics
-                    print("\nbest team: "+best_team.metrics()+"\n")
-                    for key in best_team.diversity_:
-                        print str(key)+": "+str(best_team.diversity_[key])+" (global mean: "+str(diversity_means[key])+")"
-                    actions_distribution = Counter([p.action for p in programs_population])
-                    print "\nactions distribution: "+str(actions_distribution)+"\n"
-                    actions_distribution_array = []
-                    for action in range(Config.RESTRICTIONS['total_actions']):
-                        if action in actions_distribution:
-                            actions_distribution_array.append(actions_distribution[action])
-                        else:
-                            actions_distribution_array.append(0)
-                    run_info.actions_distribution_per_validation.append(actions_distribution_array)
+            # to ensure validation metrics exist for all teams in the hall of fame
+            if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+                print "Validating hall of fame:"
+                self.environment.validate(self.current_generation_, self.environment.hall_of_fame())
 
-                # store data for this generation in run_info
-                self._store_teams_data_per_generation(run_info, teams_population)
-
-            # store and print metrics per run
-            print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())
+            self._print_and_store_per_run_metrics(run_info, best_team, teams_population, pareto_front)
             run_info.elapsed_time = time.time() - start_time
-            run_info.best_team = best_team
-            run_info.actions_distribution_in_last_generation = actions_distribution
-            run_info.inputs_distribution_in_last_generation = Counter()
-            for team in teams_population:
-                if team.generation != self.current_generation_:
-                    run_info.teams_in_last_generation.append(team)
-                    run_info.inputs_distribution_in_last_generation.update(team._inputs_distribution())
-            run_info.pareto_front_in_last_generation = pareto_front
-            run_info.hall_of_fame_in_last_generation = environment.hall_of_fame()
-            if Config.USER['task'] == 'reinforcement':
-                individual_performance, accumulative_performance, worst_points_info = self._calculate_accumulative_performance(environment, teams_population)
-                run_info.individual_performance_in_last_generation = individual_performance
-                run_info.accumulative_performance_in_last_generation = accumulative_performance
-                run_info.worst_points_in_last_generation = worst_points_info
             print("\nFinished run "+str(run_info.run_id)+", elapsed time: "+str(run_info.elapsed_time)+" secs")
             run_infos.append(run_info)
             sys.stdout.flush()
         
-        # 4. Finalize execution (get final metrics, print to output, print to file)
+        # finalize execution (get final metrics, print to output, print to file)
         overall_info += self._generate_overall_metrics_output(run_infos)
         print overall_info
         sys.stdout.flush()
-
-        # to ensure validation metrics for all teams in the hall of fame
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            environment.validate(self.current_generation_, run_info.hall_of_fame_in_last_generation)
 
         if Config.RESTRICTIONS['write_output_files']:
             self.filepath_ = self._create_folder()
@@ -222,7 +187,70 @@ class SBB:
             return True
         return False
 
-    def _store_teams_data_per_generation(self, run_info, teams_population):
+    def _print_and_store_per_validation_metrics(self, run_info, best_team, teams_population, programs_population):
+        print "\n\n>>>>> Generation: "+str(self.current_generation_)+", run: "+str(run_info.run_id)
+        run_info.train_score_per_validation.append(best_team.fitness_)
+        run_info.test_score_per_validation.append(best_team.score_testset_)
+        if Config.USER['task'] == 'classification':
+            run_info.recall_per_validation.append(best_team.extra_metrics_['recall_per_action'])
+        print("\nbest team: "+best_team.metrics()+"\n")
+
+        older_teams = [team for team in teams_population if team.generation != self.current_generation_]
+
+        DiversityMaintenance.calculate_diversities(older_teams, self.environment.point_population(), is_validation = True)
+        diversity_means = {}
+        for diversity in Config.RESTRICTIONS['used_diversities']:
+            diversity_means[diversity] = round_value(numpy.mean([t.diversity_[diversity] for t in older_teams]))
+
+        fitness_score_mean = round_value(numpy.mean([team.fitness_ for team in older_teams]))
+
+        if Config.USER['task'] == 'reinforcement':
+            validation_score_mean = round_value(numpy.mean([team.extra_metrics_['validation_score'] for team in older_teams]))
+            opponent_means = {}
+            for key in older_teams[0].extra_metrics_['validation_opponents']:
+                opponent_means[key] = round_value(numpy.mean([t.extra_metrics_['validation_opponents'][key] for t in older_teams]))    
+
+            run_info.global_validation_score_per_validation.append(validation_score_mean)
+            run_info.global_opponent_results_per_validation.append(opponent_means)               
+            print "score (validation): "+str(best_team.extra_metrics_['validation_score'])+" (global: "+str(validation_score_mean)+")"
+            for key in best_team.extra_metrics_['validation_opponents']:
+                print key+" (validation): "+str(best_team.extra_metrics_['validation_opponents'][key])+" (global: "+str(opponent_means[key])+")"
+        if Config.USER['task'] == 'classification':
+            validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
+            run_info.global_validation_score_per_validation.append(validation_score_mean)
+
+        run_info.global_fitness_score_per_validation.append(fitness_score_mean)
+        print "\nfitness (global): "+str(fitness_score_mean)+"\n"
+
+        run_info.global_diversity_per_validation.append(diversity_means)
+        for key in best_team.diversity_:
+            print str(key)+": "+str(best_team.diversity_[key])+" (global: "+str(diversity_means[key])+")"
+
+        actions_distribution = Counter([p.action for p in programs_population])
+        print "\nactions distribution: "+str(actions_distribution)
+        actions_distribution_array = []
+        for action in range(Config.RESTRICTIONS['total_actions']):
+            if action in actions_distribution:
+                actions_distribution_array.append(actions_distribution[action])
+            else:
+                actions_distribution_array.append(0)
+        run_info.actions_distribution_per_validation.append(actions_distribution_array)
+
+        inputs_distribution = Counter()
+        for team in older_teams:
+            inputs_distribution.update(team._inputs_distribution())
+        print "\ninputs distribution (global): "+str(inputs_distribution)
+        inputs_distribution_array = []
+        for value in range(Config.RESTRICTIONS['total_inputs']):
+            if value in inputs_distribution:
+                inputs_distribution_array.append(inputs_distribution[value])
+            else:
+                inputs_distribution_array.append(0)
+        run_info.inputs_distribution_per_validation.append(inputs_distribution_array)
+
+        print
+
+    def _store_teams_per_generation_metrics(self, run_info, teams_population):
         generation_info = []
         for team in teams_population:
             if team.generation != self.current_generation_:
@@ -238,7 +266,21 @@ class SBB:
                 generation_info.append(team_info)
         run_info.info_per_team_per_generation.append(generation_info)
 
-    def _calculate_accumulative_performance(self, environment, teams_population):
+    def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
+        print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())
+        run_info.best_team = best_team
+        for team in teams_population:
+            if team.generation != self.current_generation_:
+                run_info.teams_in_last_generation.append(team)
+        run_info.pareto_front_in_last_generation = pareto_front
+        run_info.hall_of_fame_in_last_generation = self.environment.hall_of_fame()
+        if Config.USER['task'] == 'reinforcement':
+            individual_performance, accumulative_performance, worst_points_info = self._calculate_accumulative_performance(teams_population)
+            run_info.individual_performance_in_last_generation = individual_performance
+            run_info.accumulative_performance_in_last_generation = accumulative_performance
+            run_info.worst_points_in_last_generation = worst_points_info
+
+    def _calculate_accumulative_performance(self, teams_population):
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]
         sorted_teams = sorted(older_teams, key=lambda team: team.extra_metrics_['validation_score'], reverse = True) # better ones first
         individual_performance = []
@@ -254,37 +296,54 @@ class SBB:
             accumulative_performance.append(sum(best_results_per_point.values()))
         worst_points = sorted(best_results_per_point.items(), key=operator.itemgetter(1), reverse = False)
         worst_points_ids = [point[0] for point in worst_points[:Config.USER['reinforcement_parameters']['validation_population']/10]]
-        validation_population = environment.validation_population()
+        validation_population = self.environment.validation_population()
         worst_points_info = [str(point) for point in validation_population if point.point_id in worst_points_ids]
         return individual_performance, accumulative_performance, worst_points_info
 
     def _generate_overall_metrics_output(self, run_infos):       
         msg = "\n\n\n#################### OVERALL RESULTS ####################"
+        msg += "\n\n\n##### BEST TEAM METRICS"
         score_per_run = []
         for run in run_infos:
             score_per_run.append(round_value(run.best_team.score_testset_))
         self.best_scores_per_runs_ = score_per_run
-        msg += "\n\nTest Score per Run: "+str(score_per_run)
+        msg += "\n\nBest Team Validation Score per Run: "+str(score_per_run)
         msg += "\nmean: "+str(round_value(numpy.mean(score_per_run)))
         msg += "\nstd. deviation: "+str(round_value(numpy.std(score_per_run)))
         scores = [run.best_team.score_testset_ for run in run_infos]
         best_run = run_infos[scores.index(max(scores))]
         msg += "\nbest run: "+str(best_run.run_id)
 
-        train_score_per_generations_per_runs = [run.train_score_per_validation for run in run_infos]
-        score_means, score_stds = self._process_scores(train_score_per_generations_per_runs)
-        msg += "\n\nTrain Score per Generation across Runs:"
+        score_means, score_stds = self._process_scores([run.train_score_per_validation for run in run_infos])
+        msg += "\n\nBest Team Train Score per Generation across Runs:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
-        test_score_per_generations_per_runs = [run.test_score_per_validation for run in run_infos]
-        score_means, score_stds = self._process_scores(test_score_per_generations_per_runs)
-        msg += "\n\nTest Score per Generation across Runs:"
+        score_means, score_stds = self._process_scores([run.test_score_per_validation for run in run_infos])
+        msg += "\n\nBest Team Validation Score per Generation across Runs:"
+        msg += "\nmean: "+str(score_means)
+        msg += "\nstd. deviation: "+str(score_stds)
+
+        msg += "\n\n\n##### GLOBAL METRICS"
+        final_scores = [run.global_validation_score_per_validation[-1] for run in run_infos]
+        msg += "\n\nGlobal Validation Score per Run: "+str(final_scores)
+        msg += "\nmean: "+str(round_value(numpy.mean(final_scores)))
+        msg += "\nstd. deviation: "+str(round_value(numpy.std(final_scores)))
+        best_run = run_infos[final_scores.index(max(final_scores))]
+        msg += "\nbest run: "+str(best_run.run_id)
+
+        score_means, score_stds = self._process_scores([run.global_fitness_score_per_validation for run in run_infos])
+        msg += "\n\nGlobal Train Score per Generation across Runs:"
+        msg += "\nmean: "+str(score_means)
+        msg += "\nstd. deviation: "+str(score_stds)
+
+        score_means, score_stds = self._process_scores([run.global_validation_score_per_validation for run in run_infos])
+        msg += "\n\nGlobal Validation Score per Generation across Runs:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
         for diversity in Config.RESTRICTIONS['used_diversities']:
-            array = [[generation[diversity] for generation in run.diversity_per_validation] for run in run_infos]
+            array = [[generation[diversity] for generation in run.global_diversity_per_validation] for run in run_infos]
             score_means, score_stds = self._process_scores(array)
             msg += "\n\nMean Diversity per Generation across Runs ("+str(diversity)+"):"
             msg += "\nmean: "+str(score_means)

@@ -30,6 +30,8 @@ runs:
     results3
     - full x simplified program, registers and opponent model x simplified + only fold and call
         - only fold and call: got the worst results, even with the obrigatory fold action the teams didnt learn to use it
+        during generation 1 to 100 it went from only 0.50189 to only 0.50284, it still prioritized call much more than fold
+        even with good reuslts for diversity (0.86/0.76 for genotype and 0.3/0.02 for ncd)
 
 
 garantir outputs (for tictactoe and poker, primeiro implementar o que funciona para ambos, para ja ir fazendo as runs de ttt):
@@ -39,10 +41,9 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
 - outputs para R plot (training) (fitness + diversity x2 + test score, per generation): DONE
 
 - DOING
-- implementar primeiro 'global performance against opponent' (validation) (comum para ttt e poker)
-- implementar a diversity entropy?
 - atualizar codigo no server do NIMS
 - mandar rodar runs de tictactoe (sets de 5 runs?) (tentar tambem no bluenose e no hector)
+- no pc do lab, deixar rodando mais um run longo para poker (monitorar memoria) (menos generations, com mais validations)
 
 - metrica para performance por range de hand strenght nas hole cards? conferir na tabela como organizar os ranges? (e por position?) overall e por team? (validation): TODO
 - how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time (considerar swap)) (validation?): TODO
@@ -52,10 +53,12 @@ ler papers:
 
 extra:
 - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
-- implementar mais diversity: entropy
+- implementar mais diversity: entropy (http://stats.stackexchange.com/questions/60619/how-to-calculate-kullback-leibler-divergence-distance, https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence, https://en.wikipedia.org/wiki/Entropy_(information_theory))
 - implementar equity opponent
 - short-term inputs sao uteis? volatility e' util?
 - memmory: parar de usar negative potential? salvar outputs em arquivo durante a execucao?
+- as metricas globais mostram os resultados considerando apenas os parents, deveriam tambem considerar as children?
+- usar metricas globais ou por best team para tomar decisoes?
 
 pensar sobre:
 - "100 hands against each opponent/type of opponent"

@@ -21,17 +21,11 @@ class Selection:
         teams_population = self._evaluate_teams(teams_population)
         keep_teams, remove_teams, pareto_front = self._select_teams_to_keep_and_remove(teams_population, validation)
         teams_to_clone = self._select_teams_to_clone(keep_teams)
-
-        if validation:
-            diversity_means = self._calculate_global_diversity_means(teams_population, self.environment.point_population())
-        else:
-            diversity_means = None
-
         teams_population = self._remove_teams(teams_population, remove_teams)
         programs_population = self._remove_programs_with_no_teams(programs_population)
         teams_population, programs_population = self._create_mutated_teams(current_generation, teams_to_clone, teams_population, programs_population)
         self._check_for_bugs(teams_population, programs_population)
-        return teams_population, programs_population, pareto_front, diversity_means
+        return teams_population, programs_population, pareto_front
 
     def _evaluate_teams(self, teams_population):
         """
@@ -64,16 +58,6 @@ class Selection:
             keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams_population, novelty, teams_to_keep)
             self.previous_diversity_ = novelty
         return keep_teams, remove_teams, pareto_front
-
-    def _calculate_global_diversity_means(self, teams_population, point_population):
-        """
-
-        """
-        diversities = Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show']
-        diversity_means = {}
-        for diversity in set(diversities):
-            diversity_means[diversity] = round_value(numpy.mean([t.diversity_[diversity] for t in teams_population]))
-        return diversity_means
 
     def _remove_teams(self, teams_population, remove_teams):
         for team in remove_teams:
