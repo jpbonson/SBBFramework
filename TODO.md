@@ -40,11 +40,6 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
 - diversity x score x fitness x generations (for both diversities, array of values (validation): DONE
 - outputs para R plot (training) (fitness + diversity x2 + test score, per generation): DONE
 
-- DOING
-- atualizar codigo no server do NIMS
-- mandar rodar runs de tictactoe (sets de 5 runs?) (tentar tambem no bluenose e no hector)
-- no pc do lab, deixar rodando mais um run longo para poker (monitorar memoria) (menos generations, com mais validations)
-
 - metrica para performance por range de hand strenght nas hole cards? conferir na tabela como organizar os ranges? (e por position?) overall e por team? (validation): TODO
 - how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time (considerar swap)) (validation?): TODO
 

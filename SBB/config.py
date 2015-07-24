@@ -51,7 +51,7 @@ class Config():
                     'add_instruction': 0.5,
                     'change_instruction': 1.0,
                     'swap_instructions': 1.0,
-                    'change_action': 0.1,
+                    'change_action': 0.3,
                 },
             },
             'team_size': { # the min and initial size are the total number of actions
@@ -72,7 +72,7 @@ class Config():
             'diversity': {
                 'use_and_show': ['normalized_compression_distance', 'genotype_distance'], # will be applied to fitness and show in the outputs
                 'only_show': [], # will be only show in the outputs
-                'k': 8,
+                'k': 10,
             },
             'run_initialization_step2': False,
         },
@@ -161,4 +161,4 @@ class Config():
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
 # Config.USER = thyroid_config.THYROID_REGISTERS2
-# Config.USER = tictactoe_config.TICTACTOE_DEFAULT
+# Config.USER = tictactoe_config.TICTACTOE_DEFAULT_1
