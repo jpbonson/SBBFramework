@@ -352,6 +352,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         print "\nvalidating all..."
         for team in teams_population:
             if team.generation != current_generation: # dont evaluate teams that have just being created (to improve performance and to get training metrics)
+                team.results_per_points_for_validation_ = {}
                 self.evaluate_team(team, Config.RESTRICTIONS['mode']['validation'])
                 team.extra_metrics_['validation_score'] = round_value(team.score_testset_)
                 team.extra_metrics_['validation_opponents'] = team.extra_metrics_['opponents']
