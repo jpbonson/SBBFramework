@@ -167,15 +167,23 @@ class Team(DefaultOpponent):
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
         if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':
+                
                 msg += "\n\nhands (validation): played: "+str(self.extra_metrics_['hand_played_validation'])+", won: "+str(self.extra_metrics_['won_hands_validation'])+" (total: "+str(self.extra_metrics_['total_hands_validation'])+")"
                 if self.extra_metrics_['total_hands_champion'] > 0:
                     msg += "\nhands (champion): played: "+str(self.extra_metrics_['hand_played_champion'])+", won: "+str(self.extra_metrics_['won_hands_champion'])+" (total: "+str(self.extra_metrics_['total_hands_champion'])+")"
+                
+                for key in self.extra_metrics_['total_hands_validation_per_point_type']:
+                    msg += "\n\nhands (validation, type: "+str(key)+"): played: "+str(self.extra_metrics_['hand_played_validation_per_point_type'][key])+", won: "+str(self.extra_metrics_['won_hands_validation_per_point_type'][key])+" (total: "+str(self.extra_metrics_['total_hands_validation_per_point_type'][key])+")"
+                    if self.extra_metrics_['total_hands_champion'] > 0:
+                        msg += "\nhands (champion, type: "+str(key)+"): played: "+str(self.extra_metrics_['hand_played_champion_per_point_type'][key])+", won: "+str(self.extra_metrics_['won_hands_champion_per_point_type'][key])+" (total: "+str(self.extra_metrics_['total_hands_champion_per_point_type'][key])+")"
+
                 if 'agressiveness' in self.extra_metrics_:
                     msg += "\n\nagressiveness: "+str(self.extra_metrics_['agressiveness'])
                     msg += "\nvolatility: "+str(self.extra_metrics_['volatility'])
                 if 'agressiveness_champion' in self.extra_metrics_:
                     msg += "\nagressiveness (champion): "+str(self.extra_metrics_['agressiveness_champion'])
                     msg += "\nvolatility (champion): "+str(self.extra_metrics_['volatility_champion'])
+
             if 'champion_score' in self.extra_metrics_:
                 msg += "\n\nscore (champion): "+str(self.extra_metrics_['champion_score'])
                 for key in self.extra_metrics_['opponents']:

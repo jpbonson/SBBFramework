@@ -19,7 +19,7 @@ from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
 if os.name == 'posix':
     from environments.poker.poker_environment import PokerEnvironment
 from selection import Selection
-from utils.helpers import round_value
+from utils.helpers import round_value, flatten
 from config import Config
 
 class SBB:
@@ -83,11 +83,11 @@ class SBB:
                 if not validation:
                     print ".",
                     sys.stdout.flush()
+                    self._store_teams_per_generation_metrics(run_info, teams_population)
                 else:
                     best_team = self.environment.validate(self.current_generation_, teams_population)
+                    self._store_teams_per_generation_metrics(run_info, teams_population)
                     self._print_and_store_per_validation_metrics(run_info, best_team, teams_population, programs_population)
-
-                self._store_teams_per_generation_metrics(run_info, teams_population)
 
             # to ensure validation metrics exist for all teams in the hall of fame
             if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
@@ -193,7 +193,7 @@ class SBB:
         run_info.test_score_per_validation.append(best_team.score_testset_)
         if Config.USER['task'] == 'classification':
             run_info.recall_per_validation.append(best_team.extra_metrics_['recall_per_action'])
-        print("\nbest team: "+best_team.metrics()+"\n")
+        print("\n### Best Team Metrics: "+best_team.metrics()+"\n")
 
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]
 
@@ -219,12 +219,15 @@ class SBB:
             validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
             run_info.global_validation_score_per_validation.append(validation_score_mean)
 
+        print
         run_info.global_diversity_per_validation.append(diversity_means)
         for key in best_team.diversity_:
             print str(key)+": "+str(best_team.diversity_[key])+" (global: "+str(diversity_means[key])+")"
 
+        print "\n### Global Metrics:"
+
         run_info.global_fitness_score_per_validation.append(fitness_score_mean)
-        print "\nfitness (global): "+str(fitness_score_mean)+"\n"
+        print "\nfitness (global): "+str(fitness_score_mean)
 
         actions_distribution = Counter([p.action for p in programs_population])
         print "\nactions distribution: "+str(actions_distribution)
@@ -249,19 +252,45 @@ class SBB:
         run_info.inputs_distribution_per_validation.append(inputs_distribution_array)
 
         print
-        print "Global Fitness (last 10 gen.): "+str(run_info.global_fitness_per_generation[:10])
+        print "Global Fitness (last 10 gen.): "+str(run_info.global_fitness_per_generation[-10:])
         
         if Config.USER['task'] == 'reinforcement' and not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
-            print "Opponent Type (last 10 gen.): "+str(run_info.opponent_type_per_generation[:10])
+            print "Opponent Type (last 10 gen.): "+str(run_info.opponent_type_per_generation[-10:])
         
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
             print "Global Diversity (last 10 gen.):"
             for diversity in Config.RESTRICTIONS['used_diversities']:
-                print str(diversity)+": "+str(run_info.global_diversity_per_generation[diversity][:10])
+                print str(diversity)+": "+str(run_info.global_diversity_per_generation[diversity][-10:])
         if len(Config.RESTRICTIONS['used_diversities']) > 1:
-            print "Diversity Type (last 10 gen.): "+str(run_info.novelty_type_per_generation[:10])
+            print "Diversity Type (last 10 gen.): "+str(run_info.novelty_type_per_generation[-10:])
 
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+            print
+            print "Point Distribution per Training (last 10 gen.):"
+            for key in run_info.point_distribution_per_generation:
+                print str(key)+": "+str(run_info.point_distribution_per_generation[key][-10:])
+
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+            print
+            self._calculate_poker_metrics(run_info, teams_population)
+            print "Point Distribution per Validation: "+str(run_info.point_distribution_per_validation)
+            print "Global Point Results per Validation: "
+            for key in run_info.global_result_per_validation:
+                print str(key)+": "+str(run_info.global_result_per_validation[key][-1])
+            
         print
+
+    def _calculate_poker_metrics(self, run_info, teams_population):
+        validation_population = self.environment.validation_population()
+        points_per_position = {}
+        for position in range(PokerEnvironment.CONFIG['positions']):
+            points_per_position[position] = [point for point in validation_population if point.position_ == position]
+        run_info.point_distribution_per_validation = {}
+        for position in range(PokerEnvironment.CONFIG['positions']):
+            run_info.point_distribution_per_validation[position] = len(points_per_position[position])
+        for position in range(PokerEnvironment.CONFIG['positions']):
+            means_per_position = round_value(numpy.mean(flatten([point.teams_results for point in points_per_position[position]])))
+            run_info.global_result_per_validation[position].append(means_per_position)
 
     def _store_teams_per_generation_metrics(self, run_info, teams_population):
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]
@@ -285,6 +314,18 @@ class SBB:
             run_info.novelty_type_per_generation.append(Config.RESTRICTIONS['used_diversities'].index(self.selection.previous_diversity_))
         if Config.USER['task'] == 'reinforcement' and not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
             run_info.opponent_type_per_generation.append(self.environment.opponents_names_.index(self.environment.current_population_))
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+            sbb_opponents_positions = []
+            coded_opponents = []
+            for point in self.environment.point_population():
+                if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
+                    sbb_opponents_positions += point.position_
+                else:
+                    coded_opponents.append(point)
+            for position in range(PokerEnvironment.CONFIG['positions']):
+                total = len([point for point in coded_opponents if point.position_ == position])
+                total += len([point for point in sbb_opponents_positions if point == position])
+                run_info.point_distribution_per_generation[position].append(total)
 
     def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())

@@ -40,9 +40,8 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
 - diversity x score x fitness x generations (for both diversities, array of values (validation): DONE
 - outputs para R plot (training) (fitness + diversity x2 + test score, per generation): DONE
 
-- conferir runs de ttt
-- metrica para performance das teams por range de hand strenght nas hole cards? e do board? conferir na tabela como organizar os ranges? (e por position?) overall e por team? (validation): TODO
-- printar points na population por position, hand strenght das holes cards, e hand strenght do board (training): TODO
+- metrica para performance das teams por range de hand strenght nas hole cards? e do board? conferir na tabela como organizar os ranges? (validation) (individual e global): TODO
+- printar points na population por hand strenght das holes cards, e hand strenght do board (training, cuidado com hall of fame): TODO
 - implementar 4 equity/strenght opponent? e mandar rodar um run longo? TODO
     If we build a couple of opponents that are more likely to engage in hands proportionate to starting equity, i.e., always betting with high equity (say >= 0.65), always calling for moderate (0.5 to < 0.65) and fold anything less (assuming a single opponent context) then this will get us a basic opponent that will be tough to beat initially.  In other words, we could bias the probabilities of <bet, call, fold> with starting equity and let it go from there.  This would cover our 'tight' sample behaviours.
     - tight e loose? passive e agressive?

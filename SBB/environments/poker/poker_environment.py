@@ -38,6 +38,7 @@ class PokerPoint(ReinforcementPoint):
         self.opponent_2card_strength = None
         self.sbb_5card_strength = None
         self.opponent_5card_strength = None
+        self.teams_results = []
 
     def update_metrics(self):
         if self.sbb_hole_cards:
@@ -117,8 +118,10 @@ class PokerEnvironment(ReinforcementEnvironment):
             # because otherwise they wont be able to use the opponent model themselves
             random_generator = numpy.random.RandomState(seed=point.seed_)
             results = []
+            point.position_ = []
             for index in range(PokerEnvironment.CONFIG['hands_against_sbb_opponents']):
                 position = index % 2
+                point.position_.append(position)
                 seed = random_generator.randint(0, Config.RESTRICTIONS['max_seed'])
                 results.append(self._play_hand(team, point, mode, position, seed))
             result = numpy.mean(results)
@@ -173,9 +176,11 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         opponent_use_inputs = False
         one_hand_per_point = True
+        is_sbb_opponent = False
         if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
             opponent_use_inputs = True
             one_hand_per_point = False
+            is_sbb_opponent = True
 
         t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, sbb_port, point, team, is_training, True, True, one_hand_per_point, memories, use_memmory])
         t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, opponent_port, point, team, False, False, opponent_use_inputs, one_hand_per_point, memories, use_memmory])
@@ -208,25 +213,35 @@ class PokerEnvironment(ReinforcementEnvironment):
         else:
             sbb_position = 1
         normalized_value = PokerEnvironment.normalize_winning(float(scores[sbb_position]))
-        if not is_training:
+        if not is_training and not is_sbb_opponent:
             if mode == Config.RESTRICTIONS['mode']['validation']:
                 team.extra_metrics_['total_hands_validation'] += 1
+                team.extra_metrics_['total_hands_validation_per_point_type'][str(position)] += 1
             else:
                 team.extra_metrics_['total_hands_champion'] += 1
+                team.extra_metrics_['total_hands_champion_per_point_type'][str(position)] += 1
             if team.extra_metrics_['played_last_hand']:
                 if mode == Config.RESTRICTIONS['mode']['validation']:
                     team.extra_metrics_['hand_played_validation'] += 1
+                    team.extra_metrics_['hand_played_validation_per_point_type'][str(position)] += 1
                 else:
                     team.extra_metrics_['hand_played_champion'] += 1
+                    team.extra_metrics_['hand_played_champion_per_point_type'][str(position)] += 1
             if team.extra_metrics_['played_last_hand'] and normalized_value > 0.5:
                 if mode == Config.RESTRICTIONS['mode']['validation']:
                     team.extra_metrics_['won_hands_validation'] += 1
+                    team.extra_metrics_['won_hands_validation_per_point_type'][str(position)] += 1
                 else:
                     team.extra_metrics_['won_hands_champion'] += 1
+                    team.extra_metrics_['won_hands_champion_per_point_type'][str(position)] += 1
+
         if Config.USER['reinforcement_parameters']['debug_matches']:
             print "scores: "+str(scores)
             print "players: "+str(players)
             print "normalized_value: "+str(normalized_value)
+
+        point.teams_results.append(normalized_value)
+
         return normalized_value
 
     def reset(self):
@@ -253,6 +268,8 @@ class PokerEnvironment(ReinforcementEnvironment):
             for point in self.point_population_per_opponent_['hall_of_fame']:
                 point.opponent.opponent_model = {}
                 point.opponent.chips = {}
+        for point in self.point_population():
+            point.teams_results = []
         gc.collect()
         yappi.clear_stats()
 
@@ -294,10 +311,22 @@ class PokerEnvironment(ReinforcementEnvironment):
                 team.extra_metrics_['won_hands_validation'] = 0
                 team.extra_metrics_['won_hands_champion'] = 0
 
+                for position in range(PokerEnvironment.CONFIG['positions']):
+                    team.extra_metrics_['total_hands_validation_per_point_type'] = defaultdict(int)
+                    team.extra_metrics_['total_hands_champion_per_point_type'] = defaultdict(int)
+                    team.extra_metrics_['hand_played_validation_per_point_type'] = defaultdict(int)
+                    team.extra_metrics_['hand_played_champion_per_point_type'] = defaultdict(int)
+                    team.extra_metrics_['won_hands_validation_per_point_type'] = defaultdict(int)
+                    team.extra_metrics_['won_hands_champion_per_point_type'] = defaultdict(int)
+
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']: # initializing
             for point in self.point_population_per_opponent_['hall_of_fame']:
                 point.opponent.opponent_model = {}
                 point.opponent.chips = {}
+
+        for point in self.validation_population():
+            point.teams_results = []
+
         best_team = super(PokerEnvironment, self).validate(current_generation, teams_population)
         return best_team
 
