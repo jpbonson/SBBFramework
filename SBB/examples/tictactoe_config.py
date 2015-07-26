@@ -10,6 +10,15 @@ extra registers 0 or 1?
 balanced_opponent_populations True or False?
 hall_of_fame True or False?
 diversity?
+
+TICTACTOE_DEFAULT x TICTACTOE_PROGRAM20
+- cerca de 6500 secs per run x cerca de 9850 secs per run
+- best team validation: The U-value is 331. The Z-Score is -0.119. The p-value is 0.90448. The result is not significant at p <= 0.05.
+- global validation: The U-value is 287. The Z-Score is -0.9242. The p-value is 0.35758. The result is not significant at p <= 0.05.
+
+TICTACTOE_DEFAULT x TICTACTOE_REGISTER1
+- without extra registers, there are no introns! the programs are more sensitive to mutations!
+
 """
 
 TICTACTOE_DEFAULT = {
@@ -79,31 +88,27 @@ TICTACTOE_DEFAULT = {
 TICTACTOE_DEFAULT_1 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_DEFAULT_1['advanced_training_parameters']['seed'] = 1
 TICTACTOE_DEFAULT_1['training_parameters']['runs_total'] = 13
-TICTACTOE_DEFAULT_1['training_parameters']['program_size']['max'] = 10
-"""
-DONE
-"""
 
 TICTACTOE_DEFAULT_2 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_DEFAULT_2['advanced_training_parameters']['seed'] = 2
 TICTACTOE_DEFAULT_2['training_parameters']['runs_total'] = 13
-TICTACTOE_DEFAULT_2['training_parameters']['program_size']['max'] = 10
-"""
-DONE
-"""
 
 TICTACTOE_PROGRAM20_1 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_PROGRAM20_1['advanced_training_parameters']['seed'] = 1
 TICTACTOE_PROGRAM20_1['training_parameters']['runs_total'] = 13
 TICTACTOE_PROGRAM20_1['training_parameters']['program_size']['max'] = 20
-"""
-2496, nohup3
-"""
 
 TICTACTOE_PROGRAM20_2 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_PROGRAM20_2['advanced_training_parameters']['seed'] = 2
 TICTACTOE_PROGRAM20_2['training_parameters']['runs_total'] = 13
 TICTACTOE_PROGRAM20_2['training_parameters']['program_size']['max'] = 20
-"""
-2498, nohup4
-"""
+
+TICTACTOE_REGISTERS1_1 = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_REGISTERS1_1['advanced_training_parameters']['seed'] = 1
+TICTACTOE_REGISTERS1_1['training_parameters']['runs_total'] = 13
+TICTACTOE_REGISTERS1_2['advanced_training_parameters']['extra_registers'] = 1
+
+TICTACTOE_REGISTERS1_2 = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_REGISTERS1_2['advanced_training_parameters']['seed'] = 2
+TICTACTOE_REGISTERS1_2['training_parameters']['runs_total'] = 13
+TICTACTOE_REGISTERS1_2['advanced_training_parameters']['extra_registers'] = 1

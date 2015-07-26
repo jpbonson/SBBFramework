@@ -336,7 +336,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 if is_training:
                     team.results_per_points_[point.point_id] = result
                 else:
-                    if mode == Config.RESTRICTIONS['mode']['validation']:
+                    if mode == Config.RESTRICTIONS['mode']['validation'] and not point.opponent.opponent_id == "hall_of_fame":
                         team.results_per_points_for_validation_[point.point_id] = result
                     extra_metrics_opponents[point.opponent.opponent_id].append(result)
                 if not (point.opponent.opponent_id == "hall_of_fame" and dont_use_results_for_hall_of_fame):
