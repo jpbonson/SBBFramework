@@ -40,11 +40,16 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
 - diversity x score x fitness x generations (for both diversities, array of values (validation): DONE
 - outputs para R plot (training) (fitness + diversity x2 + test score, per generation): DONE
 
-- metrica para performance por range de hand strenght nas hole cards? conferir na tabela como organizar os ranges? (e por position?) overall e por team? (validation): TODO
-- how the point population evolved over time (check the paper Malcolm talked about + opponents, hands, and positions over time (considerar swap)) (validation?): TODO
+- conferir runs de ttt
+- metrica para performance das teams por range de hand strenght nas hole cards? e do board? conferir na tabela como organizar os ranges? (e por position?) overall e por team? (validation): TODO
+- printar points na population por position, hand strenght das holes cards, e hand strenght do board (training): TODO
+- implementar 4 equity/strenght opponent? e mandar rodar um run longo? TODO
+    If we build a couple of opponents that are more likely to engage in hands proportionate to starting equity, i.e., always betting with high equity (say >= 0.65), always calling for moderate (0.5 to < 0.65) and fold anything less (assuming a single opponent context) then this will get us a basic opponent that will be tough to beat initially.  In other words, we could bias the probabilities of <bet, call, fold> with starting equity and let it go from there.  This would cover our 'tight' sample behaviours.
+    - tight e loose? passive e agressive?
 
-ler papers:
-- paper com os plots relevantes para a point population
+entregaveis:
+- ir escrevendo o report (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); rmevoed always_fold opponent)
+- perguntar se o paper Ideal Evaluation from Coevolution foi usado como base para a point population evolution com pareto na versao original do SBB
 
 extra:
 - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados

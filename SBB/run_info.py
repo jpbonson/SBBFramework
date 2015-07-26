@@ -1,3 +1,4 @@
+from collections import defaultdict
 from utils.helpers import round_array
 from config import Config
 
@@ -27,6 +28,10 @@ class RunInfo:
         self.global_validation_score_per_validation = []
         self.global_opponent_results_per_validation = []
         self.info_per_team_per_generation = []
+        self.global_fitness_per_generation = []
+        self.global_diversity_per_generation = defaultdict(list)
+        self.novelty_type_per_generation = []
+        self.opponent_type_per_generation = []
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
@@ -39,15 +44,15 @@ class RunInfo:
         msg += "\n\n\n##### GLOBAL METRICS PER VALIDATION"
         msg += "\n\nGlobal Fitness Score per Validation: "+str(self.global_fitness_score_per_validation)
         msg += "\n\nGlobal Validation Score per Validation: "+str(self.global_validation_score_per_validation)
-        msg += "\n\nGlobal Opponent Results per Validation"
-        for key in self.global_opponent_results_per_validation[-1]:
-            array = [item[key] if key in item else 0.0 for item in self.global_opponent_results_per_validation]
-            msg += "\n"+str(key)+": "+str(array)
-        msg += "\n\nGlobal Diversities per Validation"
-        for key in self.global_diversity_per_validation[0]:
-            array = [item[key] for item in self.global_diversity_per_validation]
-            msg += "\n"+str(key)+": "+str(array)
-        msg += "\n"
+        if Config.USER['task'] == 'reinforcement':
+            msg += "\n\nGlobal Opponent Results per Validation"
+            for key in self.global_opponent_results_per_validation[-1]:
+                msg += "\n"+str(key)+": "+str([item[key] if key in item else 0.0 for item in self.global_opponent_results_per_validation])
+        if len(Config.RESTRICTIONS['used_diversities']) > 0:
+            msg += "\n\nGlobal Diversities per Validation"
+            for key in self.global_diversity_per_validation[0]:
+                msg += "\n"+str(key)+": "+str([item[key] for item in self.global_diversity_per_validation])
+        msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
         msg += "\n\nDistribution of Actions per Validation: "+str(self.actions_distribution_per_validation)
         msg += "\n\nDistribution of Inputs per Validation: "+str(self.inputs_distribution_per_validation)
         msg += "\n\n\n##### METRICS FOR THE LAST GENERATION"
@@ -57,4 +62,14 @@ class RunInfo:
         msg += "\n\nTotal Individual Team Performance: "+str(self.individual_performance_in_last_generation)
         msg += "\n\nTotal Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation)
         msg += "\n\n10% Worst Points Performed Against: "+str(self.worst_points_in_last_generation)
+        msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
+        msg += "\n\nGlobal Fitness Score per Training: "+str(self.global_fitness_per_generation)
+        if Config.USER['task'] == 'reinforcement' and not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            msg += "\n\nOpponent Types per Training: "+str(self.opponent_type_per_generation)
+        if len(Config.RESTRICTIONS['used_diversities']) > 0:
+            msg += "\n\nGlobal Diversities per Training"
+            for key in self.global_diversity_per_generation:
+                msg += "\n"+str(key)+": "+str(self.global_diversity_per_generation[key])
+            if len(Config.RESTRICTIONS['used_diversities']) > 1:
+                msg += "\n\nDiversity Type per Training: "+str(self.novelty_type_per_generation)
         return msg

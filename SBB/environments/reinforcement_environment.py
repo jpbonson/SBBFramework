@@ -53,6 +53,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.opponent_class_mapping_ = {}
         for opponent in self.coded_opponents_for_training_:
             self.opponent_class_mapping_[str(opponent)] = opponent
+        self.opponents_names_ = [str(opponent_class) for opponent_class in self.coded_opponents_for_training_]
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         self.team_to_add_to_hall_of_fame_ = None
@@ -86,6 +87,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_sbb':
             total_opponents += 1
             point_population_per_opponent['sbb'] = []
+            self.opponents_names_.append('sbb')
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_coded':
             total_opponents += len(self.coded_opponents_for_training_)
             for opponent_class in self.coded_opponents_for_training_:
@@ -96,9 +98,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 point_population_per_opponent[str(opponent_class)] = []
             total_opponents += 1
             point_population_per_opponent['sbb'] = []
+            self.opponents_names_.append('sbb')
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             total_opponents += 1
             point_population_per_opponent['hall_of_fame'] = []
+            self.opponents_names_.append('hall_of_fame')
         point_population_size_per_opponent = Config.USER['training_parameters']['populations']['points']/total_opponents
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'hybrid':
             if point_population_size_per_opponent > Config.USER['training_parameters']['populations']['teams']:

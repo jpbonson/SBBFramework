@@ -43,8 +43,8 @@ class Selection:
 
         diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
         if len(diversities_to_apply) == 0:
-            if is_validation and len(Config.USER['advanced_training_parameters']['diversity']['only_show']) > 1:
-                DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population(), is_validation = is_validation)
+            if len(Config.USER['advanced_training_parameters']['diversity']['only_show']) > 0:
+                DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population())
             sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
             keep_teams = sorted_solutions[0:teams_to_keep]
             remove_teams = sorted_solutions[teams_to_keep:]
@@ -54,7 +54,7 @@ class Selection:
             if len(diversities_to_apply) > 1 and self.previous_diversity_:
                 options.remove(self.previous_diversity_)
             novelty = random.choice(options)
-            DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population(), is_validation = is_validation)
+            DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population())
             keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams_population, novelty, teams_to_keep)
             self.previous_diversity_ = novelty
         return keep_teams, remove_teams, pareto_front

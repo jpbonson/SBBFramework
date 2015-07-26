@@ -45,13 +45,13 @@ class SBB:
 
         # initialize the environment and the selection algorithm
         self.environment = self._initialize_environment()
-        selection = Selection(self.environment)
+        self.selection = Selection(self.environment)
 
         overall_info = ""
         overall_info += "\n### CONFIG: "+str(Config.USER)+"\n"
         overall_info += self.environment.metrics()
         overall_info += "\nSeeds per run: "+str(self.seeds_per_run_)
-        Config.RESTRICTIONS['used_diversities'] = set(Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show'])
+        Config.RESTRICTIONS['used_diversities'] = list(set(Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show']))
         overall_info += "\nDiversities: "+str(Config.RESTRICTIONS['used_diversities'])
         print overall_info
 
@@ -77,7 +77,7 @@ class SBB:
                     validation = False
 
                 # selection
-                teams_population, programs_population, pareto_front = selection.run(self.current_generation_, teams_population, programs_population, validation)
+                teams_population, programs_population, pareto_front = self.selection.run(self.current_generation_, teams_population, programs_population, validation)
 
                 # validation
                 if not validation:
@@ -197,7 +197,7 @@ class SBB:
 
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]
 
-        DiversityMaintenance.calculate_diversities(older_teams, self.environment.point_population(), is_validation = True)
+        DiversityMaintenance.calculate_diversities(older_teams, self.environment.point_population())
         diversity_means = {}
         for diversity in Config.RESTRICTIONS['used_diversities']:
             diversity_means[diversity] = round_value(numpy.mean([t.diversity_[diversity] for t in older_teams]))
@@ -219,12 +219,12 @@ class SBB:
             validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
             run_info.global_validation_score_per_validation.append(validation_score_mean)
 
-        run_info.global_fitness_score_per_validation.append(fitness_score_mean)
-        print "\nfitness (global): "+str(fitness_score_mean)+"\n"
-
         run_info.global_diversity_per_validation.append(diversity_means)
         for key in best_team.diversity_:
             print str(key)+": "+str(best_team.diversity_[key])+" (global: "+str(diversity_means[key])+")"
+
+        run_info.global_fitness_score_per_validation.append(fitness_score_mean)
+        print "\nfitness (global): "+str(fitness_score_mean)+"\n"
 
         actions_distribution = Counter([p.action for p in programs_population])
         print "\nactions distribution: "+str(actions_distribution)
@@ -249,22 +249,42 @@ class SBB:
         run_info.inputs_distribution_per_validation.append(inputs_distribution_array)
 
         print
+        print "Global Fitness (last 10 gen.): "+str(run_info.global_fitness_per_generation[:10])
+        
+        if Config.USER['task'] == 'reinforcement' and not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            print "Opponent Type (last 10 gen.): "+str(run_info.opponent_type_per_generation[:10])
+        
+        if len(Config.RESTRICTIONS['used_diversities']) > 0:
+            print "Global Diversity (last 10 gen.):"
+            for diversity in Config.RESTRICTIONS['used_diversities']:
+                print str(diversity)+": "+str(run_info.global_diversity_per_generation[diversity][:10])
+        if len(Config.RESTRICTIONS['used_diversities']) > 1:
+            print "Diversity Type (last 10 gen.): "+str(run_info.novelty_type_per_generation[:10])
+
+        print
 
     def _store_teams_per_generation_metrics(self, run_info, teams_population):
+        older_teams = [team for team in teams_population if team.generation != self.current_generation_]
         generation_info = []
-        for team in teams_population:
-            if team.generation != self.current_generation_:
-                team_info = []
-                team_info.append(round_value(team.fitness_, round_decimals_to = 3))
-                team_info.append(round_value(team.score_testset_, round_decimals_to = 3))
-                for diversity in Config.RESTRICTIONS['used_diversities']:
-                    if diversity in team.diversity_:
-                        value = round_value(team.diversity_[diversity], round_decimals_to = 3)
-                    else:
-                        value = 0.0
-                    team_info.append(value)
-                generation_info.append(team_info)
+        for team in older_teams:
+            team_info = []
+            team_info.append(round_value(team.fitness_, round_decimals_to = 3))
+            team_info.append(round_value(team.score_testset_, round_decimals_to = 3))
+            for diversity in Config.RESTRICTIONS['used_diversities']:
+                if diversity in team.diversity_:
+                    value = round_value(team.diversity_[diversity], round_decimals_to = 3)
+                else:
+                    value = 0.0
+                team_info.append(value)
+            generation_info.append(team_info)
         run_info.info_per_team_per_generation.append(generation_info)
+        run_info.global_fitness_per_generation.append(round_value(numpy.mean([team.fitness_ for team in older_teams]), 3))
+        for diversity in Config.RESTRICTIONS['used_diversities']:
+            run_info.global_diversity_per_generation[diversity].append(round_value(numpy.mean([t.diversity_[diversity] for t in older_teams]), 3))
+        if len(Config.RESTRICTIONS['used_diversities']) > 1 and self.selection.previous_diversity_:
+            run_info.novelty_type_per_generation.append(Config.RESTRICTIONS['used_diversities'].index(self.selection.previous_diversity_))
+        if Config.USER['task'] == 'reinforcement' and not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+            run_info.opponent_type_per_generation.append(self.environment.opponents_names_.index(self.environment.current_population_))
 
     def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())
