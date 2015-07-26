@@ -106,7 +106,7 @@ TICTACTOE_PROGRAM20_2['training_parameters']['program_size']['max'] = 20
 TICTACTOE_REGISTERS1_1 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_REGISTERS1_1['advanced_training_parameters']['seed'] = 1
 TICTACTOE_REGISTERS1_1['training_parameters']['runs_total'] = 13
-TICTACTOE_REGISTERS1_2['advanced_training_parameters']['extra_registers'] = 1
+TICTACTOE_REGISTERS1_1['advanced_training_parameters']['extra_registers'] = 1
 
 TICTACTOE_REGISTERS1_2 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_REGISTERS1_2['advanced_training_parameters']['seed'] = 2
