@@ -35,6 +35,7 @@ class RunInfo:
         self.point_distribution_per_validation = {}
         self.global_result_per_validation = defaultdict(list)
         self.point_distribution_per_generation = defaultdict(list)
+        self.point_distribution_per_population_per_generation = defaultdict(dict)
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
@@ -90,4 +91,10 @@ class RunInfo:
             msg += "\n\nPoint Distribution per Training"
             for key in self.point_distribution_per_generation:
                 msg += "\n"+str(key)+": "+str(self.point_distribution_per_generation[key])
+            if not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+                msg += "\n\nPoint Distribution per Population per Training"
+                for population in self.point_distribution_per_population_per_generation:
+                    msg += "\n"+str(population)+":"
+                    for key in self.point_distribution_per_population_per_generation[population]:
+                        msg += "\n- "+str(key)+": "+str(self.point_distribution_per_population_per_generation[population][key])
         return msg

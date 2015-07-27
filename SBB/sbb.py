@@ -326,6 +326,10 @@ class SBB:
                 total = len([point for point in coded_opponents if point.position_ == position])
                 total += len([point for point in sbb_opponents_positions if point == position])
                 run_info.point_distribution_per_generation[position].append(total)
+                if not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+                    if position not in run_info.point_distribution_per_population_per_generation[str(self.environment.current_population_)]:
+                        run_info.point_distribution_per_population_per_generation[str(self.environment.current_population_)][position] = []
+                    run_info.point_distribution_per_population_per_generation[str(self.environment.current_population_)][position].append(total)
 
     def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())

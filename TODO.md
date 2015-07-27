@@ -40,6 +40,7 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
 - diversity x score x fitness x generations (for both diversities, array of values (validation): DONE
 - outputs para R plot (training) (fitness + diversity x2 + test score, per generation): DONE
 
+- salvar point distribution per traning por opponent population q foi usada (e por global)
 - metrica para performance das teams por range de hand strenght nas hole cards? e do board? conferir na tabela como organizar os ranges? (validation) (individual e global): TODO
 - printar points na population por hand strenght das holes cards, e hand strenght do board (training, cuidado com hall of fame): TODO
 - implementar 4 equity/strenght opponent? e mandar rodar um run longo? TODO
