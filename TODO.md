@@ -40,12 +40,26 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
 - diversity x score x fitness x generations (for both diversities, array of values (validation): DONE
 - outputs para R plot (training) (fitness + diversity x2 + test score, per generation): DONE
 
-- salvar point distribution per traning por opponent population q foi usada (e por global)
 - metrica para performance das teams por range de hand strenght nas hole cards? e do board? conferir na tabela como organizar os ranges? (validation) (individual e global): TODO
 - printar points na population por hand strenght das holes cards, e hand strenght do board (training, cuidado com hall of fame): TODO
 - implementar 4 equity/strenght opponent? e mandar rodar um run longo? TODO
     If we build a couple of opponents that are more likely to engage in hands proportionate to starting equity, i.e., always betting with high equity (say >= 0.65), always calling for moderate (0.5 to < 0.65) and fold anything less (assuming a single opponent context) then this will get us a basic opponent that will be tough to beat initially.  In other words, we could bias the probabilities of <bet, call, fold> with starting equity and let it go from there.  This would cover our 'tight' sample behaviours.
     - tight e loose? passive e agressive?
+    - This playing style is called "tight", as you are very selective and only play hands where you think you have an advantage. At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average. This means you should fold before the flop in four out of five cases. 
+    Some opponents won't stick to this recommendation and play almost every hand, which is a style of play known as "loose".
+    https://www.pokerschoolonline.com/articles/Playing-Style-and-Position
+    - strenght: 1326
+    10%: >= 0.9081632653061225
+    20%: >= 0.8297959183673469
+    30%: >= 0.7187755102040816 ou 0.7089795918367346
+    40%: >= 0.6012244897959184
+    50%: >= 0.49673469387755104
+    60%: >= 0.3955102040816327
+    70%: >= 0.28775510204081634
+    80%: >= 0.19306122448979593
+    90%: >= 0.09183673469387756
+    lowest: 0.003673469387755102
+    highest: 0.9995918367346939
 
 entregaveis:
 - ir escrevendo o report (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); rmevoed always_fold opponent)
@@ -75,6 +89,7 @@ will analyse the resultant teams' behaviors.
 ---
 
 future work:
+- fazer versao do pSBB sem poker, para ser open source, e mover poker para um branch
 - fazer system tests para poker?
 - implementar novos oponentes (opcao de agrupar oponentes por tipo?)
 - nos testes, checar se os teams sabem blefar

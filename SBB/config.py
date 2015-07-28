@@ -96,7 +96,7 @@ class Config():
             'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
             'instruction_size': 4,
             'output_registers': 1,
-            'total_registers': 1+USER['advanced_training_parameters']['extra_registers'],
+            'total_registers': None, # initialized by sbb.py
         },
         'total_actions': -1, # initialized by the environment
         'total_inputs': -1, # initialized by the environment
