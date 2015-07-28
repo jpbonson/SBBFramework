@@ -108,20 +108,24 @@ TICTACTOE_REGISTERS1_1 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_REGISTERS1_1['advanced_training_parameters']['seed'] = 1
 TICTACTOE_REGISTERS1_1['training_parameters']['runs_total'] = 13
 TICTACTOE_REGISTERS1_1['advanced_training_parameters']['extra_registers'] = 1
+# 12783, nohup1
 
 TICTACTOE_REGISTERS1_2 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_REGISTERS1_2['advanced_training_parameters']['seed'] = 2
 TICTACTOE_REGISTERS1_2['training_parameters']['runs_total'] = 13
 TICTACTOE_REGISTERS1_2['advanced_training_parameters']['extra_registers'] = 1
+# 12785, nohup2
 
 TICTACTOE_PARETOP_1 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_PARETOP_1['advanced_training_parameters']['seed'] = 1
 TICTACTOE_PARETOP_1['training_parameters']['runs_total'] = 13
 TICTACTOE_PARETOP_1['advanced_training_parameters']['extra_registers'] = 1
 TICTACTOE_PARETOP_1['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
+# 12787, nohup3
 
 TICTACTOE_PARETOP_2 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_PARETOP_2['advanced_training_parameters']['seed'] = 2
 TICTACTOE_PARETOP_2['training_parameters']['runs_total'] = 13
 TICTACTOE_PARETOP_2['advanced_training_parameters']['extra_registers'] = 1
 TICTACTOE_PARETOP_2['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
+# 12789, nohup4
