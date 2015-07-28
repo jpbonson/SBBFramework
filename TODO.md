@@ -48,7 +48,7 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
     - This playing style is called "tight", as you are very selective and only play hands where you think you have an advantage. At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average. This means you should fold before the flop in four out of five cases. 
     Some opponents won't stick to this recommendation and play almost every hand, which is a style of play known as "loose".
     https://www.pokerschoolonline.com/articles/Playing-Style-and-Position
-    
+
     - strenght: 1326
     1%: >= 0.9897959183673469 (KKo, QQo)
     5%: >= 0.9506122448979591 (99o, 44o)
@@ -62,24 +62,24 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
     80%: >= 0.19306122448979593 (58o)
     90%: >= 0.09183673469387756 (64s)
     100%: < 0.09183673469387756 (32o)
-    lowest: 0.003673469387755102
+    lowest: 0.003673469387755102 (32o)
     highest: 0.9995918367346939 (AAo)
 
     - equity: 169
-    1%: >= 0.796323165 ou 0.821190542
-    5%: >= 0.657264883 ou 0.653189637
-    10%: >= 0.615637267 ou 0.62408774
-    20%: >= 0.571658507 ou 0.580658287
-    30%: >= 0.544165232 ou 0.544292702
-    40%: >= 0.516406165 ou 0.516763675
-    50%: >= 0.486476148 ou 0.485737405
-    60%: >= 0.452025373 ou 0.456850271
+    1%: >= 0.796323165
+    5%: >= 0.657264883
+    10%: >= 0.615637267
+    20%: >= 0.571658507
+    30%: >= 0.544165232
+    40%: >= 0.516406165
+    50%: >= 0.485737405 ou 0.486476148
+    60%: >= 0.456850271
     70%: >= 0.421029753
     80%: >= 0.387406132
     90%: >= 0.35074301
     100%: < 0.35074301
-    lowest: 0.29240095
-    highest: 0.84933161
+    lowest: 0.29240095 (32o)
+    highest: 0.84933161 (AAo)
 
 entregaveis:
 - ir escrevendo o report (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); rmevoed always_fold opponent)
