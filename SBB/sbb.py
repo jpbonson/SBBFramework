@@ -381,12 +381,12 @@ class SBB:
         msg += "\nbest run: "+str(best_run.run_id)
 
         score_means, score_stds = self._process_scores([run.train_score_per_validation for run in run_infos])
-        msg += "\n\nBest Team Train Score per Generation across Runs:"
+        msg += "\n\nBest Team Train Score per Validation across Runs:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
         score_means, score_stds = self._process_scores([run.test_score_per_validation for run in run_infos])
-        msg += "\n\nBest Team Validation Score per Generation across Runs:"
+        msg += "\n\nBest Team Validation Score per Validation across Runs:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
@@ -399,19 +399,19 @@ class SBB:
         msg += "\nbest run: "+str(best_run.run_id)
 
         score_means, score_stds = self._process_scores([run.global_fitness_score_per_validation for run in run_infos])
-        msg += "\n\nGlobal Train Score per Generation across Runs:"
+        msg += "\n\nGlobal Train Score per Validation across Runs:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
         score_means, score_stds = self._process_scores([run.global_validation_score_per_validation for run in run_infos])
-        msg += "\n\nGlobal Validation Score per Generation across Runs:"
+        msg += "\n\nGlobal Validation Score per Validation across Runs:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
         for diversity in Config.RESTRICTIONS['used_diversities']:
             array = [[generation[diversity] for generation in run.global_diversity_per_validation] for run in run_infos]
             score_means, score_stds = self._process_scores(array)
-            msg += "\n\nMean Diversity per Generation across Runs ("+str(diversity)+"):"
+            msg += "\n\nMean Diversity per Validation across Runs ("+str(diversity)+"):"
             msg += "\nmean: "+str(score_means)
             msg += "\nstd. deviation: "+str(score_stds)
 

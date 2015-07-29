@@ -17,8 +17,8 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 30, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 100, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 300, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'opponents_pool': 'only_coded',
             'balanced_opponent_populations': False, # if False, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
@@ -30,11 +30,11 @@ class Config():
 
         'training_parameters': {
             'runs_total': 1,
-            'generations_total': 50,
+            'generations_total': 200,
             'validate_after_each_generation': 25,
             'populations': {
-                'teams': 10,
-                'points': 10,
+                'teams': 100,
+                'points': 100,
             },
             'replacement_rate': {
                 'teams': 0.5,
@@ -68,7 +68,7 @@ class Config():
             'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
             'use_pareto_for_point_population_selection': True, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
-            'extra_registers': 0,
+            'extra_registers': 1,
             'diversity': {
                 'use_and_show': ['normalized_compression_distance', 'genotype_distance'], # will be applied to fitness and show in the outputs
                 'only_show': [], # will be only show in the outputs
