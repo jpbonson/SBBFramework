@@ -12,12 +12,12 @@ class MatchState():
 
     INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'equity', 'hand strength', 'hand potential (positive)', 'hand potential (negative)', 'EHS']
 
-    def __init__(self, message, small_bet, big_bet, full_deck, hand_strength_hole_cards):
+    def __init__(self, message, small_bet, big_bet, full_deck, hole_cards_based_on_equity):
         self.message = message
         self.small_bet = small_bet
         self.big_bet = big_bet
         self.full_deck = list(full_deck)
-        self.hand_strength_hole_cards = hand_strength_hole_cards
+        self.hole_cards_based_on_equity = hole_cards_based_on_equity
         self.position = None
         self.opponent_position = None
         self.hand_id = None
@@ -164,7 +164,7 @@ class MatchState():
         else:
             inputs[2] = 0.0
         inputs[3] = float(self._betting_position())
-        inputs[4] = self._calculate_equity(self.current_hole_cards)
+        inputs[4] = MatchState.calculate_equity(self.current_hole_cards)
         inputs[5] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory, use_memmory)
         if len(self.rounds) == 2 or len(self.rounds) == 3:
             ppot, npot = self._calculate_hand_potential(hand_ppotential_memory, hand_npotential_memory, use_memmory)
@@ -281,7 +281,7 @@ class MatchState():
             our_rank = self.pokereval.evaln(our_cards)
             # considers all two card combinations of the remaining cards for the opponent
 
-            opponent_cards_combinations = list(self.hand_strength_hole_cards)
+            opponent_cards_combinations = list(self.hole_cards_based_on_equity)
             indices = []
             for index, cards in enumerate(opponent_cards_combinations):
                 card1, card2 = cards
@@ -306,7 +306,7 @@ class MatchState():
                 deck_without_dealt_cards = [card for card in deck if card not in dealt_card]
                 if len(self.rounds) == 2: # flop
                     cards_combinations = list(itertools.combinations(deck_without_dealt_cards, 2))
-                    cards_combinations = random.sample(cards_combinations, len(cards_combinations)/6)
+                    cards_combinations = random.sample(cards_combinations, int(len(cards_combinations)*0.2))
                     for turn, river in cards_combinations:
                         # final 5-card board
                         board = self.board_cards + [turn] + [river]
@@ -320,7 +320,7 @@ class MatchState():
                             hp[index][behind] += 1.0
                         total += 1.0
                 else: # turn
-                    cards = random.sample(deck_without_dealt_cards, len(deck_without_dealt_cards)*3/4)
+                    cards = random.sample(deck_without_dealt_cards, int(len(deck_without_dealt_cards)*0.75))
                     for river in cards:
                         # final 5-card board
                         board = self.board_cards + [river]
@@ -350,7 +350,8 @@ class MatchState():
 
             return ppot, npot
 
-    def _calculate_equity(self, hole_cards):
+    @staticmethod
+    def calculate_equity(hole_cards):
         if hole_cards[0][1] == hole_cards[1][1]:
             suit = 's'
         else:

@@ -33,11 +33,8 @@ class PokerPoint(ReinforcementPoint):
         super(PokerPoint, self).__init__(point_id, opponent)
         self.sbb_hole_cards = None
         self.opponent_hole_cards = None
-        self.board_cards = None
         self.sbb_2card_strength = None
         self.opponent_2card_strength = None
-        self.sbb_5card_strength = None
-        self.opponent_5card_strength = None
         self.teams_results = []
 
     def update_metrics(self):
@@ -45,16 +42,11 @@ class PokerPoint(ReinforcementPoint):
             self.sbb_2card_strength = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.sbb_hole_cards)]
         if self.opponent_hole_cards:
             self.opponent_2card_strength = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.opponent_hole_cards)]
-        if self.board_cards:
-            if self.sbb_hole_cards and not self.sbb_5card_strength:
-                self.sbb_5card_strength = MatchState.calculate_hand_strength(self.sbb_hole_cards, self.board_cards, PokerEnvironment.full_deck, {}, use_memmory = False)
-            if self.opponent_hole_cards and not self.opponent_5card_strength:
-                self.opponent_5card_strength = MatchState.calculate_hand_strength(self.opponent_hole_cards, self.board_cards, PokerEnvironment.full_deck, {}, use_memmory = False)
 
     def __str__(self):
         msg = str(self.opponent)+","+str(self.position_)+","+str(self.seed_)
-        cards = str(self.sbb_hole_cards)+","+str(self.opponent_hole_cards)+","+str(self.board_cards)
-        metrics = str(self.sbb_2card_strength)+","+str(self.opponent_2card_strength)+","+str(self.sbb_5card_strength)+","+str(self.opponent_5card_strength)
+        cards = str(self.sbb_hole_cards)+","+str(self.opponent_hole_cards)
+        metrics = str(self.sbb_2card_strength)+","+str(self.opponent_2card_strength)
         return "(id = ["+msg+"], cards = ["+cards+"], metrics = ["+metrics+"])"
 
     def __repr__(self):
@@ -258,7 +250,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             PokerEnvironment.HAND_NPOTENTIAL_MEMORY['validation'] = defaultdict(dict)
         super(PokerEnvironment, self).reset()
         PokerEnvironment.full_deck = self._initialize_deck()
-        PokerEnvironment.hand_strength_hole_cards = self._initialize_hole_cards_based_on_hand_strength()
+        PokerEnvironment.hole_cards_based_on_equity = self._initialize_hole_cards_based_on_equity()
         gc.collect()
         yappi.clear_stats()
 
@@ -354,15 +346,18 @@ class PokerEnvironment(ReinforcementEnvironment):
                 deck.append(rank+suit)
         return deck
 
-    def _initialize_hole_cards_based_on_hand_strength(self):
-        hole_cards = STRENGTH_TABLE_FOR_2_CARDS.keys()
-        strengths = [x for x in STRENGTH_TABLE_FOR_2_CARDS.values()]
-        total_strengths = sum(strengths)
-        probabilities = [e/total_strengths for e in strengths]
-        hole_cards = numpy.random.choice(hole_cards, size = len(hole_cards)*1/2, replace = False, p = probabilities)
+    def _initialize_hole_cards_based_on_equity(self):
+        deck = self._initialize_deck()
+        hole_cards = list(itertools.combinations(deck, 2))
+        equities = []
+        for card1, card2 in hole_cards:
+            equities.append(MatchState.calculate_equity([card1, card2]))
+        total_equities = sum(equities)
+        probabilities = [e/float(total_equities) for e in equities]
+        hole_cards_indices = numpy.random.choice(range(len(hole_cards)), size = int(len(hole_cards)*0.4), replace = False, p = probabilities)
         final_cards = []
-        for cards in hole_cards:
-            final_cards.append(list(cards))
+        for index in hole_cards_indices:
+            final_cards.append(hole_cards[index])
         return final_cards
 
     def _remove_points(self, points_to_remove, teams_population):
@@ -403,7 +398,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     @staticmethod
     def execute_player(player, port, point, team, is_training, is_sbb, use_inputs, one_hand_per_point, memories, use_memmory):
         if is_sbb and not is_training:
-            player.extra_metrics_['played_last_hand'] = False
+            player.extra_metrics_['played_last_hand'] = True
 
         socket_tmp = socket.socket()
 
@@ -443,7 +438,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             previous_messages = list(partial_messages)
             partial_messages = message.split("MATCHSTATE")
             last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-            match_state = MatchState(last_message, PokerEnvironment.CONFIG['small_bet'], PokerEnvironment.CONFIG['big_bet'], PokerEnvironment.full_deck, PokerEnvironment.hand_strength_hole_cards)
+            match_state = MatchState(last_message, PokerEnvironment.CONFIG['small_bet'], PokerEnvironment.CONFIG['big_bet'], PokerEnvironment.full_deck, PokerEnvironment.hole_cards_based_on_equity)
             if match_state.is_showdown():
                 previous_action = None
                 if Config.USER['reinforcement_parameters']['debug_matches']:
@@ -471,8 +466,8 @@ class PokerEnvironment(ReinforcementEnvironment):
                     if is_sbb and is_training:
                         player.action_sequence_.append(str(action))
                     if is_sbb and not is_training:
-                        if len(match_state.rounds) == 1 and len(match_state.rounds[0]) < 2 and action != 0: # first action of first round wasnt a fold
-                            player.extra_metrics_['played_last_hand'] = True
+                        if len(match_state.rounds) == 1 and len(match_state.rounds[0]) < 2 and action == 0: # first action of first round is a fold
+                            player.extra_metrics_['played_last_hand'] = False
                     action = PokerEnvironment.ACTION_MAPPING[action]
                     previous_action = action
                     send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
@@ -501,9 +496,6 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         if one_hand_per_point:
             updated = False
-            if match_state.board_cards and not point.board_cards:
-                point.board_cards = match_state.board_cards
-                updated = True
             if is_sbb and not point.sbb_hole_cards:
                 point.sbb_hole_cards = match_state.current_hole_cards
                 updated = True
@@ -547,7 +539,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def update_opponent_model_and_chips(player, point, team, messages, debug_file, previous_action, is_sbb):
         for partial_msg in reversed(messages):
             if partial_msg:
-                partial_match_state = MatchState(partial_msg, PokerEnvironment.CONFIG['small_bet'], PokerEnvironment.CONFIG['big_bet'], PokerEnvironment.full_deck, PokerEnvironment.hand_strength_hole_cards)
+                partial_match_state = MatchState(partial_msg, PokerEnvironment.CONFIG['small_bet'], PokerEnvironment.CONFIG['big_bet'], PokerEnvironment.full_deck, PokerEnvironment.hole_cards_based_on_equity)
                 self_actions, opponent_actions = partial_match_state.actions_per_player()
                 if partial_match_state.is_showdown():
                     if Config.USER['reinforcement_parameters']['debug_matches']:

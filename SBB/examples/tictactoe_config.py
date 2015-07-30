@@ -127,12 +127,16 @@ TICTACTOE_PARETOP_2['advanced_training_parameters']['use_pareto_for_point_popula
 
 TICTACTOE_BALANCED_1 = copy.deepcopy(TICTACTOE_PARETOP_1)
 TICTACTOE_BALANCED_1['reinforcement_parameters']['balanced_opponent_populations'] = True
+# 1, 15090
 
 TICTACTOE_BALANCED_2 = copy.deepcopy(TICTACTOE_PARETOP_2)
 TICTACTOE_BALANCED_2['reinforcement_parameters']['balanced_opponent_populations'] = True
+# 2, 15092
 
 TICTACTOE_NOFAME_1 = copy.deepcopy(TICTACTOE_PARETOP_1)
 TICTACTOE_NOFAME_1['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+# 3, 15094
 
 TICTACTOE_NOFAME_2 = copy.deepcopy(TICTACTOE_PARETOP_2)
 TICTACTOE_NOFAME_2['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+# 4, 15096

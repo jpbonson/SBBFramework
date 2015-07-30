@@ -34,6 +34,24 @@ runs:
         even with good reuslts for diversity (0.86/0.76 for genotype and 0.3/0.02 for ncd)
 
 
+----
+Next steps:
+- define hand equity ranges (3 to 4 groups) (generate all combinations of cards first, to get the real distribution + be careful to consider the hand equity distribution and ensure all groups have a god enough number of cards + apply pareto only after balance is achieved) (balancear apenas a mao do player, mas ter metrica para a mao do oponente)
+- balance point population per hand equity + only one point population for all opponents + randomize point population at the beginning of the generation
+- check if NCD is correct (compare with other compression algorithms) Compare bzip and zip across test cases (always fold x always fold, always raise x always raise, always fold x always raise, smart x always fold, smart x always raise)
+- modify hall of fame + fix gambiarra para hall of fame opponent no poker + proibir only_sbb para poker
+- metric for hand equity (performance per hand equity and point population evolution)
+- optional: 4 opponents based on equity
+- optional: fazer profiling de um run de umas 4 horas
+- 120 point? 90 point?
+
+----
+
+
+
+
+
+
 garantir outputs (for tictactoe and poker, primeiro implementar o que funciona para ambos, para ja ir fazendo as runs de ttt):
 - analisar quais inputs estao sendo usados (apenas dos programs ativos no team) (validation): DONE
 - accumulative performance curve for the population (tutorial, page 21) (validation): DONE
@@ -48,22 +66,6 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
     - This playing style is called "tight", as you are very selective and only play hands where you think you have an advantage. At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average. This means you should fold before the flop in four out of five cases. 
     Some opponents won't stick to this recommendation and play almost every hand, which is a style of play known as "loose".
     https://www.pokerschoolonline.com/articles/Playing-Style-and-Position
-
-    - strenght: 1326
-    1%: >= 0.9897959183673469 (KKo, QQo)
-    5%: >= 0.9506122448979591 (99o, 44o)
-    10%: >= 0.9081632653061225 (ATo, AKo, 22o, 33o)
-    20%: >= 0.8297959183673469 (3Ao)
-    30%: >= 0.7187755102040816 ou 0.7089795918367346
-    40%: >= 0.6012244897959184 (QJo)
-    50%: >= 0.49673469387755104
-    60%: >= 0.3955102040816327
-    70%: >= 0.28775510204081634
-    80%: >= 0.19306122448979593 (58o)
-    90%: >= 0.09183673469387756 (64s)
-    100%: < 0.09183673469387756 (32o)
-    lowest: 0.003673469387755102 (32o)
-    highest: 0.9995918367346939 (AAo)
 
     - equity: 169
     1%: >= 0.796323165 (QQo, KKo, AAo)
