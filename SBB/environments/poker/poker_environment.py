@@ -354,7 +354,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             equities.append(MatchState.calculate_equity([card1, card2]))
         total_equities = sum(equities)
         probabilities = [e/float(total_equities) for e in equities]
-        hole_cards_indices = numpy.random.choice(range(len(hole_cards)), size = int(len(hole_cards)*0.4), replace = False, p = probabilities)
+        hole_cards_indices = numpy.random.choice(range(len(hole_cards)), size = int(len(hole_cards)*0.3), replace = False, p = probabilities)
         final_cards = []
         for index in hole_cards_indices:
             final_cards.append(hole_cards[index])
