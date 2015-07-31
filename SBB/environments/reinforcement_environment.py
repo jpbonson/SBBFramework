@@ -61,7 +61,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.champion_population_ = None
         self.first_sampling_ = True
         self.last_population_ = None
-        self.current_population_ = None
+        self.current_opponent_ = None
         self.samples_per_opponent_to_keep_ = {}
         self.samples_per_opponent_to_remove_ = {}
         Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
@@ -113,7 +113,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
             return flatten(self.point_population_per_opponent_.values())
         else:
-            return self.point_population_per_opponent_[self.current_population_]
+            return self.point_population_per_opponent_[self.current_opponent_]
 
     def validation_population(self):
         return self.test_population_
@@ -126,7 +126,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.champion_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
         self.last_population_ = None
-        self.current_population_ = None
+        self.current_opponent_ = None
 
     def _initialize_random_balanced_population_of_coded_opponents_for_validation(self, population_size):
         population = []
@@ -144,10 +144,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
             options = self.point_population_per_opponent_.keys()
             if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.point_population_per_opponent_['hall_of_fame']) < self.population_size_for_hall_of_fame:
                 options.remove('hall_of_fame')
-            self.last_population_ = self.current_population_
+            self.last_population_ = self.current_opponent_
             if len(options) > 1 and self.last_population_:
                 options.remove(self.last_population_)
-            self.current_population_ = random.choice(options)
+            self.current_opponent_ = random.choice(options)
 
         if Config.USER['reinforcement_parameters']['opponents_pool'] == 'only_sbb':
             if len(self.point_population_per_opponent_['sbb']) > 0:
@@ -251,10 +251,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
                     opponents.append(key)
                     current_subsets_per_opponent.append(values)
         else:
-            if self.current_population_ == 'hall_of_fame' or self.current_population_ == 'sbb':
+            if self.current_opponent_ == 'hall_of_fame' or self.current_opponent_ == 'sbb':
                 return
-            opponents = [self.current_population_]
-            current_subsets_per_opponent = [self.point_population_per_opponent_[self.current_population_]]
+            opponents = [self.current_opponent_]
+            current_subsets_per_opponent = [self.point_population_per_opponent_[self.current_opponent_]]
 
         samples_per_opponent_to_keep = int(round(self.population_size_*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
         

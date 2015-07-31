@@ -68,6 +68,9 @@ class ParetoDominanceForTeams():
     @staticmethod
     def _balance_pareto_front_to_up(dominateds, keep_solutions, remove_solutions, teams_to_keep):
         available = [team for team in dominateds if team.fitness_ > 0.0]
+        if len(available) < teams_to_keep:
+            not_available = [team for team in dominateds if team.fitness_ == 0.0]
+            available += not_available[:teams_to_keep-len(available)]
         sorted_solutions = sorted(available, key=lambda solution: solution.submission_score_, reverse = False) # worse ones first
         for solution in sorted_solutions:
             if solution not in keep_solutions:

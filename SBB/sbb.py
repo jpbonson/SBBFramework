@@ -314,7 +314,7 @@ class SBB:
         if len(Config.RESTRICTIONS['used_diversities']) > 1 and self.selection.previous_diversity_:
             run_info.novelty_type_per_generation.append(Config.RESTRICTIONS['used_diversities'].index(self.selection.previous_diversity_))
         if Config.USER['task'] == 'reinforcement' and not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
-            run_info.opponent_type_per_generation.append(self.environment.opponents_names_.index(self.environment.current_population_))
+            run_info.opponent_type_per_generation.append(self.environment.opponents_names_.index(self.environment.current_opponent_))
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             sbb_opponents_positions = []
             coded_opponents = []
@@ -328,9 +328,9 @@ class SBB:
                 total += len([point for point in sbb_opponents_positions if point == position])
                 run_info.point_distribution_per_generation[position].append(total)
                 if not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
-                    if position not in run_info.point_distribution_per_population_per_generation[str(self.environment.current_population_)]:
-                        run_info.point_distribution_per_population_per_generation[str(self.environment.current_population_)][position] = []
-                    run_info.point_distribution_per_population_per_generation[str(self.environment.current_population_)][position].append(total)
+                    if position not in run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_)]:
+                        run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_)][position] = []
+                    run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_)][position].append(total)
 
     def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())

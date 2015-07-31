@@ -134,7 +134,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerEnvironment.CONFIG['acpc_path']+"outputs/"):
             os.makedirs(PokerEnvironment.CONFIG['acpc_path']+"outputs/")
 
-        if mode == Config.RESTRICTIONS['mode']['champion'] or (is_training and self.current_population_ and self.current_population_ == 'sbb'):
+        if mode == Config.RESTRICTIONS['mode']['champion'] or (is_training and self.current_opponent_ and self.current_opponent_ == 'sbb'):
             # because it wastes too much memmory to save the values for the champion
             # and it is usless to save it for the 'sbb' points, since they change every generation
             memories = ({}, {}, {})
@@ -147,9 +147,9 @@ class PokerEnvironment(ReinforcementEnvironment):
                     PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id])
             else:
                 if is_training:
-                    memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[self.current_population_][point.point_id], 
-                        PokerEnvironment.HAND_PPOTENTIAL_MEMORY[self.current_population_][point.point_id], 
-                        PokerEnvironment.HAND_NPOTENTIAL_MEMORY[self.current_population_][point.point_id])
+                    memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[self.current_opponent_][point.point_id], 
+                        PokerEnvironment.HAND_PPOTENTIAL_MEMORY[self.current_opponent_][point.point_id], 
+                        PokerEnvironment.HAND_NPOTENTIAL_MEMORY[self.current_opponent_][point.point_id])
                 else:
                     memories = (PokerEnvironment.HAND_STRENGHT_MEMORY['validation'][point.point_id], 
                         PokerEnvironment.HAND_PPOTENTIAL_MEMORY['validation'][point.point_id], 
