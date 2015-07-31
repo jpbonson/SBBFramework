@@ -42,9 +42,8 @@ Next steps:
 - modify hall of fame + fix gambiarra para hall of fame opponent no poker + proibir only_sbb para poker
 - metric for hand equity (performance per hand equity and point population evolution)
 - optional: 4 opponents based on equity
-- optional: fazer profiling de um run de umas 4 horas
 - 120 point? 90 point?
-
+- fazer mais testes com e sem hand potential, para analisar o runtime
 ----
 
 
