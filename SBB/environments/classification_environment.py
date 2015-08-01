@@ -24,8 +24,6 @@ class ClassificationEnvironment(DefaultEnvironment):
 
     def __init__(self):
         self.point_population_ = None
-        self.samples_per_opponent_to_keep_ = {}
-        self.samples_per_opponent_to_remove_ = {}
         train, test = self._initialize_datasets()
         self.train_population_ = self._dataset_to_points(train)
         self.test_population_ = self._dataset_to_points(test)
@@ -146,7 +144,7 @@ class ClassificationEnvironment(DefaultEnvironment):
             for subset in self.trainset_per_action_:
                 samples_per_class.append(self._sample_subset(subset, total_samples_per_class))
         else: # uses attributes defined in evaluate_point_population()
-            super(ClassificationEnvironment, self)._remove_points(flatten(self.samples_per_class_to_remove_), teams_population)
+            self._remove_points(flatten(self.samples_per_class_to_remove_), teams_population)
             samples_per_class = self.samples_per_class_to_keep_
         
         # ensure that the sampling is balanced for all classes, using oversampling for the ones with less than the minimum samples
@@ -165,6 +163,17 @@ class ClassificationEnvironment(DefaultEnvironment):
         else:
             sample = random.sample(subset, sample_size)
         return sample
+
+    def _remove_points(self, points_to_remove, teams_population):
+        """
+        Remove the points to remove from the teams, in order to save memory.
+        """
+        for team in teams_population:
+            for point in points_to_remove:
+                if point.point_id in team.results_per_points_:
+                    team.results_per_points_.pop(point.point_id)
+                if point.point_id in team.actions_per_points_:
+                    team.actions_per_points_.pop(point.point_id)
 
     def _check_for_bugs(self):
         if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:

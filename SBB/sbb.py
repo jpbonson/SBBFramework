@@ -255,7 +255,7 @@ class SBB:
         print
         print "Global Fitness (last 10 gen.): "+str(run_info.global_fitness_per_generation[-10:])
         
-        if Config.USER['task'] == 'reinforcement' and not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+        if Config.USER['task'] == 'reinforcement':
             print "Opponent Type (last 10 gen.): "+str(run_info.opponent_type_per_generation[-10:])
         
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
@@ -313,24 +313,24 @@ class SBB:
             run_info.global_diversity_per_generation[diversity].append(round_value(numpy.mean([t.diversity_[diversity] for t in older_teams]), 3))
         if len(Config.RESTRICTIONS['used_diversities']) > 1 and self.selection.previous_diversity_:
             run_info.novelty_type_per_generation.append(Config.RESTRICTIONS['used_diversities'].index(self.selection.previous_diversity_))
-        if Config.USER['task'] == 'reinforcement' and not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+        if Config.USER['task'] == 'reinforcement':
             run_info.opponent_type_per_generation.append(self.environment.opponents_names_.index(self.environment.current_opponent_))
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            sbb_opponents_positions = []
-            coded_opponents = []
-            for point in self.environment.point_population():
-                if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
-                    sbb_opponents_positions += point.position_
-                else:
-                    coded_opponents.append(point)
-            for position in range(PokerEnvironment.CONFIG['positions']):
-                total = len([point for point in coded_opponents if point.position_ == position])
-                total += len([point for point in sbb_opponents_positions if point == position])
-                run_info.point_distribution_per_generation[position].append(total)
-                if not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
-                    if position not in run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_)]:
-                        run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_)][position] = []
-                    run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_)][position].append(total)
+            pass # TODO: fix
+            # sbb_opponents_positions = []
+            # coded_opponents = []
+            # for point in self.environment.point_population():
+            #     if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
+            #         sbb_opponents_positions += point.position_
+            #     else:
+            #         coded_opponents.append(point)
+            # for position in range(PokerEnvironment.CONFIG['positions']):
+            #     total = len([point for point in coded_opponents if point.position_ == position])
+            #     total += len([point for point in sbb_opponents_positions if point == position])
+            #     run_info.point_distribution_per_generation[position].append(total)
+                # if position not in run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_)]:
+                #     run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_)][position] = []
+                # run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_)][position].append(total)
 
     def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())

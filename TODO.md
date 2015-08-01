@@ -44,8 +44,36 @@ Next steps:
 - optional: 4 opponents based on equity
 - 120 point? 90 point?
 - fazer mais testes com e sem hand potential, para analisar o runtime
-----
+------------------
+separar .point_population_per_opponent_ em point e opponent population
+separar classes point e oponent (e fazer opponent usar a seed do point)
+o opponent deve usar a seed do point (principalmente para ttt)
 
+seed dos oponentes no point? no caso do poker, isso parece ser irrelevante
+
+Config.USER['reinforcement_parameters']['hall_of_fame']['size']
+
+
+if mode == Config.RESTRICTIONS['mode']['champion']:
+            # because it wastes too much memmory to save the values for the champion
+            memories = ({}, {}, {})
+            use_memmory = False
+
+implementar memoria para (point, opponent) no reinforcement learning
+
+conferir TODOs
+
+fazer apenas o champion ir contra o hall of fame? para mais points?
+
+fazer o balanceando dos points ser pelo atributo 'classe' do point (que deve ser definido assim q ele eh criado, ou 
+durante o treino/validacao?)
+
+ao inves de ter positions nos points, fazer o player jogar em cada position? vale a pena?
+
+refatorar reinforcement environment
+
+consertar a metrica com TODO em sbb.py
+------------------
 
 
 

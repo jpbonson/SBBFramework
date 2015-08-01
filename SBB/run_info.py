@@ -78,7 +78,7 @@ class RunInfo:
 
         msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
         msg += "\n\nGlobal Fitness Score per Training: "+str(self.global_fitness_per_generation)
-        if Config.USER['task'] == 'reinforcement' and not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
+        if Config.USER['task'] == 'reinforcement':
             msg += "\n\nOpponent Types per Training: "+str(self.opponent_type_per_generation)
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
             msg += "\n\nGlobal Diversities per Training"
@@ -91,10 +91,9 @@ class RunInfo:
             msg += "\n\nPoint Distribution per Training"
             for key in self.point_distribution_per_generation:
                 msg += "\n"+str(key)+": "+str(self.point_distribution_per_generation[key])
-            if not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
-                msg += "\n\nPoint Distribution per Population per Training"
-                for population in self.point_distribution_per_population_per_generation:
-                    msg += "\n"+str(population)+":"
-                    for key in self.point_distribution_per_population_per_generation[population]:
-                        msg += "\n- "+str(key)+": "+str(self.point_distribution_per_population_per_generation[population][key])
+            msg += "\n\nPoint Distribution per Population per Training"
+            for population in self.point_distribution_per_population_per_generation:
+                msg += "\n"+str(population)+":"
+                for key in self.point_distribution_per_population_per_generation[population]:
+                    msg += "\n- "+str(key)+": "+str(self.point_distribution_per_population_per_generation[population][key])
         return msg

@@ -38,7 +38,10 @@ class TictactoeEnvironment(ReinforcementEnvironment):
         point.opponent.opponent_id = opponent_id
         return point
 
-    def _play_match(self, team, point, mode):
+    def _instantiate_point(self): # TODO
+        return TictactoePoint(str(random.randint(0, Config.RESTRICTIONS['max_seed'])), TictactoeRandomOpponent())
+
+    def _play_match(self, team, opponent, point, mode):
         """
 
         """
@@ -49,7 +52,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
         outputs = []
         for position in range(1, self.total_positions_+1):
             if position == 1:
-                first_player = point.opponent
+                first_player = opponent.opponent
                 is_training_for_first_player = False
                 second_player = team
                 is_training_for_second_player = is_training
@@ -57,12 +60,12 @@ class TictactoeEnvironment(ReinforcementEnvironment):
             else:
                 first_player = team
                 is_training_for_first_player = is_training
-                second_player = point.opponent
+                second_player = opponent.opponent
                 is_training_for_second_player = False
                 sbb_player = 1
 
             match = TictactoeMatch()
-            point.opponent.initialize()
+            opponent.opponent.initialize()
             while True:
                 player = 1
                 inputs = match.inputs_from_the_point_of_view_of(player)
@@ -95,5 +98,4 @@ class TictactoeEnvironment(ReinforcementEnvironment):
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(self.action_mapping_)
         msg += "\npositions: "+str(self.total_positions_)
-        msg += "\nmatches per opponents (for each position): "+str(self.population_size_)
         return msg

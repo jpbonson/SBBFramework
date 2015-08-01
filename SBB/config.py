@@ -19,9 +19,8 @@ class Config():
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
             'validation_population': 30, # at a validated generation, all the teams with be tested against this population, the best one is the champion
             'champion_population': 100, # at a validated generation, these are the points the champion team will play against to obtain the metrics
-            'opponents_pool': 'only_coded',
-            'balanced_opponent_populations': False, # if False, the opponent populations will be swapped instead of mixed
             'hall_of_fame': {
+                'size': 10,
                 'enabled': True,
                 'diversity': 'normalized_compression_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
@@ -82,7 +81,6 @@ class Config():
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
         'environment_types': ['tictactoe', 'poker'],
-        'opponents_pool_options': ['only_sbb', 'only_coded', 'hybrid'],
         'diversity_options': ['genotype_distance', 'fitness_sharing', 'normalized_compression_distance'], #must have the same name as the methods in DiversityMaintenance
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
@@ -117,11 +115,6 @@ class Config():
         """
         Check if the parameters in CONFIG are valid using RESTRICTIONS
         """
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            if Config.USER['reinforcement_parameters']['opponents_pool'] != 'only_coded':
-                sys.stderr.write("Error: Invalid 'opponents_pool' in CONFIG for poker! Only the option 'only_coded' is compatible with the poker environment.\n")
-                raise SystemExit
-
         if Config.USER['task'] not in Config.RESTRICTIONS['task_types']:
             sys.stderr.write("Error: Invalid 'task' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['task_types'])+"\n")
             raise SystemExit
@@ -143,10 +136,6 @@ class Config():
 
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] not in Config.RESTRICTIONS['environment_types']:
             sys.stderr.write("Error: Invalid 'environment' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['environment_types'])+"\n")
-            raise SystemExit
-
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['opponents_pool'] not in Config.RESTRICTIONS['opponents_pool_options']:
-            sys.stderr.write("Error: Invalid 'opponents_pool' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['opponents_pool_options'])+"\n")
             raise SystemExit
 
         valid_operations = Config.RESTRICTIONS['genotype_options']['simple_operations'] + Config.RESTRICTIONS['genotype_options']['complex_operations']

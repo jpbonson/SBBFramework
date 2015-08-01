@@ -70,7 +70,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         'small_bet': 10,
         'big_bet': 20,
         'positions': 2,
-        'hands_against_sbb_opponents': Config.USER['training_parameters']['populations']['points']/10
     }
 
     def __init__(self):
@@ -81,11 +80,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents_for_training, coded_opponents_for_validation)
         port1, port2 = avaliable_ports()
         PokerEnvironment.CONFIG['available_ports'] = [port1, port2]
-        self.population_size_for_hall_of_fame = self.population_size_/5 # it is lower, since more hands are played
-        if self.population_size_for_hall_of_fame == 0:
-            self.population_size_for_hall_of_fame = 1
-        if PokerEnvironment.CONFIG['hands_against_sbb_opponents'] == 0:
-            PokerEnvironment.CONFIG['hands_against_sbb_opponents'] = 1
 
     def _instantiate_point_for_coded_opponent_class(self, opponent_class):
         instance = opponent_class()
@@ -96,36 +90,16 @@ class PokerEnvironment(ReinforcementEnvironment):
         point.opponent.opponent_id = opponent_id
         return point
 
-    def _play_match(self, team, point, mode):
-        """
-        If the opponent is not a SBB player, play just 1 hand per point (since there will be 
-        more points for that opponent type). If it is a SBB player, then it is necessary to 
-        play more hands in order for it to be able to use effectively all the its inputs.
-        """
-        is_sbb_opponent = point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb"
-        if not is_sbb_opponent:
-            result = self._play_hand(team, point, mode, point.position_, point.seed_)
-        else:
-            # play more hands for sbb opponents (also change de size of the point population for SBB opponents)
-            # because otherwise they wont be able to use the opponent model themselves
-            random_generator = numpy.random.RandomState(seed=point.seed_)
-            results = []
-            point.position_ = []
-            for index in range(PokerEnvironment.CONFIG['hands_against_sbb_opponents']):
-                position = index % 2
-                point.position_.append(position)
-                seed = random_generator.randint(0, Config.RESTRICTIONS['max_seed'])
-                results.append(self._play_hand(team, point, mode, position, seed))
-            result = numpy.mean(results)
-            # cleaning memmory
-            point.opponent.opponent_model = {}
-            point.opponent.chips = {}
-        return result
+    def _instantiate_point(self): # TODO
+        return PokerPoint(str(random.randint(0, Config.RESTRICTIONS['max_seed'])), PokerRandomOpponent())
 
-    def _play_hand(self, team, point, mode, position, seed):
+    def _play_match(self, team, opponent, point, mode):
         """
 
         """
+        position = point.position_
+        seed = point.seed_
+
         if mode == Config.RESTRICTIONS['mode']['training']:
             is_training = True
         else:
@@ -134,26 +108,15 @@ class PokerEnvironment(ReinforcementEnvironment):
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerEnvironment.CONFIG['acpc_path']+"outputs/"):
             os.makedirs(PokerEnvironment.CONFIG['acpc_path']+"outputs/")
 
-        if mode == Config.RESTRICTIONS['mode']['champion'] or (is_training and self.current_opponent_ and self.current_opponent_ == 'sbb'):
+        if mode == Config.RESTRICTIONS['mode']['champion']:
             # because it wastes too much memmory to save the values for the champion
-            # and it is usless to save it for the 'sbb' points, since they change every generation
             memories = ({}, {}, {})
             use_memmory = False
         else:
             use_memmory = True
-            if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
-                memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id], 
-                    PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id], 
-                    PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id])
-            else:
-                if is_training:
-                    memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[self.current_opponent_][point.point_id], 
-                        PokerEnvironment.HAND_PPOTENTIAL_MEMORY[self.current_opponent_][point.point_id], 
-                        PokerEnvironment.HAND_NPOTENTIAL_MEMORY[self.current_opponent_][point.point_id])
-                else:
-                    memories = (PokerEnvironment.HAND_STRENGHT_MEMORY['validation'][point.point_id], 
-                        PokerEnvironment.HAND_PPOTENTIAL_MEMORY['validation'][point.point_id], 
-                        PokerEnvironment.HAND_NPOTENTIAL_MEMORY['validation'][point.point_id])
+            memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id], 
+                PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id], 
+                PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id])
 
         if position == 0:
             sbb_port = PokerEnvironment.CONFIG['available_ports'][0]
@@ -169,13 +132,13 @@ class PokerEnvironment(ReinforcementEnvironment):
         opponent_use_inputs = False
         one_hand_per_point = True
         is_sbb_opponent = False
-        if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
+        if opponent.opponent.opponent_id == "hall_of_fame":
             opponent_use_inputs = True
             one_hand_per_point = False
             is_sbb_opponent = True
 
         t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, sbb_port, point, team, is_training, True, True, one_hand_per_point, memories, use_memmory])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[point.opponent, opponent_port, point, team, False, False, opponent_use_inputs, one_hand_per_point, memories, use_memmory])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[opponent.opponent, opponent_port, point, team, False, False, opponent_use_inputs, one_hand_per_point, memories, use_memmory])
         args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
                 PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
                 PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
@@ -240,14 +203,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         PokerEnvironment.HAND_STRENGHT_MEMORY = defaultdict(dict)
         PokerEnvironment.HAND_PPOTENTIAL_MEMORY = defaultdict(dict)
         PokerEnvironment.HAND_NPOTENTIAL_MEMORY = defaultdict(dict)
-        if not Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
-            for key in self.point_population_per_opponent_.keys():
-                PokerEnvironment.HAND_STRENGHT_MEMORY[key] = defaultdict(dict)
-                PokerEnvironment.HAND_PPOTENTIAL_MEMORY[key] = defaultdict(dict)
-                PokerEnvironment.HAND_NPOTENTIAL_MEMORY[key] = defaultdict(dict)
-            PokerEnvironment.HAND_STRENGHT_MEMORY['validation'] = defaultdict(dict)
-            PokerEnvironment.HAND_PPOTENTIAL_MEMORY['validation'] = defaultdict(dict)
-            PokerEnvironment.HAND_NPOTENTIAL_MEMORY['validation'] = defaultdict(dict)
         super(PokerEnvironment, self).reset()
         PokerEnvironment.full_deck = self._initialize_deck()
         PokerEnvironment.hole_cards_based_on_equity = self._initialize_hole_cards_based_on_equity()
@@ -257,7 +212,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def setup(self, teams_population):
         super(PokerEnvironment, self).setup(teams_population)
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            for point in self.point_population_per_opponent_['hall_of_fame']:
+            for point in self.opponent_population_['hall_of_fame']:
                 point.opponent.opponent_model = {}
                 point.opponent.chips = {}
         for point in self.point_population():
@@ -312,7 +267,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                     team.extra_metrics_['won_hands_champion_per_point_type'] = defaultdict(int)
 
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']: # initializing
-            for point in self.point_population_per_opponent_['hall_of_fame']:
+            for point in self.opponent_population_['hall_of_fame']:
                 point.opponent.opponent_model = {}
                 point.opponent.chips = {}
 
@@ -331,12 +286,10 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(PokerEnvironment.ACTION_MAPPING)
         msg += "\npositions: "+str(PokerEnvironment.CONFIG['positions'])
-        msg += "\nmatches per opponents (not in hall of fame): "+str(self.population_size_)
         msg += "\ntraining opponents: "+str([c.__name__ for c in self.coded_opponents_for_training_])
         msg += "\nvalidation opponents: "+str([c.__name__ for c in self.coded_opponents_for_validation_])
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            msg += "\nhall of fame size: "+str(self.population_size_for_hall_of_fame)
-            msg += "\nmatches per opponents (in hall of fame): "+str(PokerEnvironment.CONFIG['hands_against_sbb_opponents'])
+            msg += "\nhall of fame size: "+str(Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
         return msg
 
     def _initialize_deck(self):
@@ -362,30 +315,10 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def _remove_points(self, points_to_remove, teams_population):
         super(PokerEnvironment, self)._remove_points(points_to_remove, teams_population)
-        if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
-            for point in points_to_remove:
-                del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
-                del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id]
-                del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
-        else:
-            if self.last_population_ != 'hall_of_fame' and self.last_population_ != 'sbb':
-                for point in points_to_remove:
-                    del PokerEnvironment.HAND_STRENGHT_MEMORY[self.last_population_][point.point_id]
-                    del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[self.last_population_][point.point_id]
-                    del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[self.last_population_][point.point_id]
-
-    def _remove_point_from_hall_of_fame(self, point):
-        super(PokerEnvironment, self)._remove_point_from_hall_of_fame(point)
-        if Config.USER['reinforcement_parameters']['balanced_opponent_populations']:
-            if point.point_id in PokerEnvironment.HAND_STRENGHT_MEMORY:
-                del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
-                del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id]
-                del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
-        else:
-            if point.point_id in PokerEnvironment.HAND_STRENGHT_MEMORY['hall_of_fame']:
-                del PokerEnvironment.HAND_STRENGHT_MEMORY['hall_of_fame'][point.point_id]
-                del PokerEnvironment.HAND_PPOTENTIAL_MEMORY['hall_of_fame'][point.point_id]
-                del PokerEnvironment.HAND_NPOTENTIAL_MEMORY['hall_of_fame'][point.point_id]
+        for point in points_to_remove:
+            del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
+            del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id]
+            del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
 
     @staticmethod
     def normalize_winning(value):
