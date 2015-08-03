@@ -29,7 +29,7 @@ class PokerPoint(ReinforcementPoint):
     def __init__(self):
         super(PokerPoint, self).__init__()
         self.position_ = random.randint(0, PokerEnvironment.CONFIG['positions']-1)
-        point_id = "("+str(self.position_)+","+str(self.seed_)+")"
+        self.point_id = "("+str(self.seed_)+","+str(self.position_)+")"
         self.sbb_hole_cards = None
         self.opponent_hole_cards = None
         self.sbb_2card_strength = None
@@ -45,10 +45,10 @@ class PokerPoint(ReinforcementPoint):
     def __str__(self):
         cards = str(self.sbb_hole_cards)+","+str(self.opponent_hole_cards)
         metrics = str(self.sbb_2card_strength)+","+str(self.opponent_2card_strength)
-        return "(id = ["+point_id+"], cards = ["+cards+"], metrics = ["+metrics+"])"
+        return "(id = ["+self.point_id+"], cards = ["+cards+"], metrics = ["+metrics+"])"
 
     def __repr__(self):
-        return point_id
+        return self.point_id
 
 class PokerEnvironment(ReinforcementEnvironment):
     """
