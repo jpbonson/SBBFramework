@@ -32,19 +32,19 @@ class PokerPoint(ReinforcementPoint):
         self.point_id = "("+str(self.seed_)+","+str(self.position_)+")"
         self.sbb_hole_cards = None
         self.opponent_hole_cards = None
-        self.sbb_2card_strength = None
-        self.opponent_2card_strength = None
+        self.sbb_equity_ = None
+        self.opponent_equity_ = None
         self.teams_results = []
 
     def update_metrics(self):
         if self.sbb_hole_cards:
-            self.sbb_2card_strength = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.sbb_hole_cards)]
+            self.sbb_equity_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.sbb_hole_cards)]
         if self.opponent_hole_cards:
-            self.opponent_2card_strength = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.opponent_hole_cards)]
+            self.opponent_equity_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.opponent_hole_cards)]
 
     def __str__(self):
         cards = str(self.sbb_hole_cards)+","+str(self.opponent_hole_cards)
-        metrics = str(self.sbb_2card_strength)+","+str(self.opponent_2card_strength)
+        metrics = str(self.sbb_equity_)+","+str(self.opponent_equity_)
         return "(id = ["+self.point_id+"], cards = ["+cards+"], metrics = ["+metrics+"])"
 
     def __repr__(self):
@@ -94,15 +94,13 @@ class PokerEnvironment(ReinforcementEnvironment):
         if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerEnvironment.CONFIG['acpc_path']+"outputs/"):
             os.makedirs(PokerEnvironment.CONFIG['acpc_path']+"outputs/")
 
-        if mode == Config.RESTRICTIONS['mode']['champion']:
-            # because it wastes too much memmory to save the values for the champion
-            memories = ({}, {}, {})
-            use_memmory = False
-        else:
-            use_memmory = True
-            memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id], 
-                PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id], 
-                PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id])
+        # if mode == Config.RESTRICTIONS['mode']['champion']:
+        #     # because it wastes too much memmory to save the values for the champion
+        #     memories = ({}, {}, {})
+        # else:
+        memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id], 
+            PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id], 
+            PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id])
 
         if point.position_ == 0:
             sbb_port = PokerEnvironment.CONFIG['available_ports'][0]
@@ -119,8 +117,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         if opponent.opponent_id == "hall_of_fame":
             opponent_use_inputs = True
 
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, opponent, point, sbb_port, is_training, True, True, memories, use_memmory])
-        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[opponent, team, point, opponent_port, False, False, opponent_use_inputs, memories, use_memmory])
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, opponent, point, sbb_port, is_training, True, True, memories])
+        t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[opponent, team, point, opponent_port, False, False, opponent_use_inputs, memories])
         args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
                 PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
                 PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
@@ -311,7 +309,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         return (value - max_losing)/float(max_winning - max_losing)
 
     @staticmethod
-    def execute_player(player, opponent, point, port, is_training, is_sbb, use_inputs, memories, use_memmory):
+    def execute_player(player, opponent, point, port, is_training, is_sbb, use_inputs, memories):
         if is_sbb and not is_training:
             player.extra_metrics_['played_last_hand'] = True
 
@@ -372,7 +370,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                             chips = 0.5
                         else:
                             chips = PokerEnvironment.normalize_winning(numpy.mean(chips))
-                        inputs = match_state.inputs(memories, use_memmory) + [chips] + PokerEnvironment.get_opponent_model(player, opponent).inputs()
+                        inputs = match_state.inputs(memories) + [chips] + PokerEnvironment.get_opponent_model(player, opponent).inputs()
                     else:
                         inputs = []
                     action = player.execute(point.point_id, inputs, match_state.valid_actions(), is_training)

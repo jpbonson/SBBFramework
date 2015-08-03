@@ -47,12 +47,7 @@ Next steps:
 ------------------
 fazer nao precisar criar um array de oponentes iguais
 
-if mode == Config.RESTRICTIONS['mode']['champion']:
-            # because it wastes too much memmory to save the values for the champion
-            memories = ({}, {}, {})
-            use_memmory = False
-
-implementar memoria para (point, opponent) no reinforcement learning
+implementar memoria para (point, opponent) no reinforcement learning (e remover quando remove ro point, ou o oponente do hall of fame)
 
 conferir TODOs
 

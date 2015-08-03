@@ -138,7 +138,7 @@ class MatchState():
                             self_actions.append(action)
         return self_actions, opponent_actions
 
-    def inputs(self, memories, use_memmory):
+    def inputs(self, memories):
         """
         ATTENTION: If you change the order, add or remove inputs the SBB teams that were already trained will 
         behave unexpectedly!
@@ -165,9 +165,9 @@ class MatchState():
             inputs[2] = 0.0
         inputs[3] = float(self._betting_position())
         inputs[4] = MatchState.calculate_equity(self.current_hole_cards)
-        inputs[5] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory, use_memmory)
+        inputs[5] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
         # if len(self.rounds) == 2 or len(self.rounds) == 3:
-        #     ppot, npot = self._calculate_hand_potential(hand_ppotential_memory, hand_npotential_memory, use_memmory)
+        #     ppot, npot = self._calculate_hand_potential(hand_ppotential_memory, hand_npotential_memory)
         #     inputs[6] = ppot
         #     inputs[7] = npot
         #     inputs[8] = inputs[5] + (1 - inputs[5]) * ppot
@@ -224,7 +224,7 @@ class MatchState():
             return self.position
 
     @staticmethod
-    def calculate_hand_strength(current_hole_cards, board_cards, full_deck, hand_strength_memmory, use_memmory):
+    def calculate_hand_strength(current_hole_cards, board_cards, full_deck, hand_strength_memmory):
         """
         Implemented as described in the page 21 of the thesis in: http://poker.cs.ualberta.ca/publications/davidson.msc.pdf
         """
@@ -232,7 +232,7 @@ class MatchState():
         our_cards_set = frozenset(our_cards)
         if len(our_cards_set) == 2:
             return STRENGTH_TABLE_FOR_2_CARDS[our_cards_set]
-        if use_memmory and our_cards_set in hand_strength_memmory:
+        if our_cards_set in hand_strength_memmory:
             return hand_strength_memmory[our_cards_set]
         else:
             pokereval = PokerEval()
@@ -258,17 +258,16 @@ class MatchState():
                 else:
                     behind += 1.0
             hand_strength = (ahead + tied/2.0) / (ahead + tied + behind)
-            if use_memmory:
-                hand_strength_memmory[our_cards_set] = hand_strength
+            hand_strength_memmory[our_cards_set] = hand_strength
             return hand_strength
 
-    def _calculate_hand_potential(self, hand_ppotential_memory, hand_npotential_memory, use_memmory):
+    def _calculate_hand_potential(self, hand_ppotential_memory, hand_npotential_memory):
         """
         Implemented as described in the page 23 of the thesis in: http://poker.cs.ualberta.ca/publications/davidson.msc.pdf
         """
         our_cards = self.current_hole_cards + self.board_cards
         out_cards_set = frozenset(our_cards)
-        if use_memmory and out_cards_set in hand_ppotential_memory:
+        if out_cards_set in hand_ppotential_memory:
             return hand_ppotential_memory[out_cards_set], hand_npotential_memory[out_cards_set]
         else:
             # hand potential array, each index represents ahead, tied, and behind
@@ -344,9 +343,8 @@ class MatchState():
             # npot: were ahead but fell behind
             npot = ((hp[ahead][behind]/total)*2.0 + (hp[ahead][tied]/total)*1.0 + (hp[tied][behind]/total)*1.0)/4.0
 
-            if use_memmory:
-                hand_ppotential_memory[out_cards_set] = ppot
-                hand_npotential_memory[out_cards_set] = npot
+            hand_ppotential_memory[out_cards_set] = ppot
+            hand_npotential_memory[out_cards_set] = npot
 
             return ppot, npot
 
