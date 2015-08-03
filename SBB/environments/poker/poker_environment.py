@@ -34,7 +34,7 @@ class PokerPoint(ReinforcementPoint):
         self.opponent_hole_cards = None
         self.sbb_equity_ = None
         self.opponent_equity_ = None
-        self.teams_results = []
+        self.teams_results_ = []
 
     def update_metrics(self):
         if self.sbb_hole_cards:
@@ -73,8 +73,8 @@ class PokerEnvironment(ReinforcementEnvironment):
     def __init__(self):
         total_actions = 3 # fold, call, raise
         total_inputs = len(PokerEnvironment.INPUTS)
-        coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent] # PokerAlwaysFoldOpponent
-        coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent] # PokerAlwaysFoldOpponent
+        coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents_for_training, coded_opponents_for_validation)
         port1, port2 = avaliable_ports()
         PokerEnvironment.CONFIG['available_ports'] = [port1, port2]
@@ -175,7 +175,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             print "players: "+str(players)
             print "normalized_value: "+str(normalized_value)
 
-        point.teams_results.append(normalized_value)
+        point.teams_results_.append(normalized_value)
 
         return normalized_value
 
@@ -196,7 +196,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                 opponent.opponent_model = {}
                 opponent.chips = {}
         for point in self.point_population():
-            point.teams_results = []
+            point.teams_results_ = []
         gc.collect()
         yappi.clear_stats()
 
@@ -252,7 +252,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                 opponent.chips = {}
 
         for point in self.validation_population():
-            point.teams_results = []
+            point.teams_results_ = []
 
         best_team = super(PokerEnvironment, self).validate(current_generation, teams_population)
         return best_team

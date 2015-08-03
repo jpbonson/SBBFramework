@@ -45,10 +45,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.total_inputs_ = total_inputs
         self.coded_opponents_for_training_ = coded_opponents_for_training
         self.coded_opponents_for_validation_ = coded_opponents_for_validation
-        self.opponent_class_mapping_ = {}
-        for opponent in self.coded_opponents_for_training_:
-            self.opponent_class_mapping_[str(opponent)] = opponent
-        self.opponents_names_ = [str(opponent_class) for opponent_class in self.coded_opponents_for_training_]
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         self.team_to_add_to_hall_of_fame_ = None
@@ -60,20 +56,13 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.champion_opponent_population_ = None
         self.first_sampling_ = True
         self.last_population_ = None
+        self.current_opponent_type_ = None
         self.current_opponent_ = None
-        self.current_opponent_population_ = None
         self.samples_per_class_to_keep_ = []
         self.samples_per_class_to_remove_ = []
         Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
         Config.RESTRICTIONS['use_memmory_for_results'] = True # since the opponents are seeded, the same point will always produce the same final result
         
-        self.opponent_population_ = {}
-        for opponent_class in self.coded_opponents_for_training_:
-            self.opponent_population_[str(opponent_class)] = []
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            self.opponent_population_['hall_of_fame'] = []
-            self.opponents_names_.append('hall_of_fame')
-
     def _instantiate_coded_opponent(self, opponent_class):
         return opponent_class()
 
@@ -81,15 +70,14 @@ class ReinforcementEnvironment(DefaultEnvironment):
         team.opponent_id = opponent_id
         return team
 
-    def point_population(self): # TODO: checar se as chamadas a esse metodo usam os oponentes
+    def point_population(self):
         return self.point_population_
 
     def validation_population(self):
         return self.validation_point_population_
 
     def reset(self):
-        for key in self.opponent_population_:
-            self.opponent_population_[key] = []
+        self._initialize_opponent_population()
         self.point_population_ = []
         self.team_to_add_to_hall_of_fame_ = None
         self.validation_point_population_ = [self._instantiate_point() for index in range(Config.USER['reinforcement_parameters']['validation_population'])]
@@ -98,8 +86,15 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.champion_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
         self.last_population_ = None
+        self.current_opponent_type_ = None
         self.current_opponent_ = None
-        self.current_opponent_population_ = None
+
+    def _initialize_opponent_population(self):
+        self.opponent_population_ = {}
+        for opponent_class in self.coded_opponents_for_training_:
+            self.opponent_population_[str(opponent_class)] = [self._instantiate_coded_opponent(opponent_class)]
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            self.opponent_population_['hall_of_fame'] = []
 
     def _initialize_random_balanced_population_of_coded_opponents_for_validation(self, population_size):
         population = []
@@ -113,15 +108,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
         """
         Setup the point and the opponent population.
         """
-        # define current opponent population
-        options = self.opponent_population_.keys()
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.opponent_population_['hall_of_fame']) < Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
-            options.remove('hall_of_fame')
-        self.last_population_ = self.current_opponent_
-        if len(options) > 1 and self.last_population_:
-            options.remove(self.last_population_)
-        self.current_opponent_ = random.choice(options)
-
         # initialize point population
         if self.first_sampling_:
             self.first_sampling_ = False
@@ -132,9 +118,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
             self._remove_points(flatten(self.samples_per_class_to_remove_), teams_population)
             self.point_population_ = flatten(self.samples_per_class_to_keep_)
             random.shuffle(self.point_population_)
-
-        # initialize opponent population
-        self._initialize_point_population_per_opponent_for_coded_opponents()
 
         # setup hall of fame
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
@@ -163,18 +146,17 @@ class ReinforcementEnvironment(DefaultEnvironment):
             for team in self.hall_of_fame():
                 team.action_sequence_ = []
 
-        # setup current_opponent_population
-        self.current_opponent_population_ = []
-        opponent = random.choice(self.opponent_population_[self.current_opponent_])
-        for index in range(Config.USER['training_parameters']['populations']['points']):
-            self.current_opponent_population_.append(opponent)
+        # define current opponent population
+        options = self.opponent_population_.keys()
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.opponent_population_['hall_of_fame']) < Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
+            options.remove('hall_of_fame')
+        self.last_population_ = self.current_opponent_type_
+        if len(options) > 1 and self.last_population_:
+            options.remove(self.last_population_)
+        self.current_opponent_type_ = random.choice(options)
+        self.current_opponent_ = random.choice(self.opponent_population_[self.current_opponent_type_])
 
         self._check_for_bugs()
-
-    def _initialize_point_population_per_opponent_for_coded_opponents(self):
-        for opponent_class in self.coded_opponents_for_training_:
-            for index in range(Config.USER['training_parameters']['populations']['points']):
-                self.opponent_population_[str(opponent_class)].append(self._instantiate_coded_opponent(opponent_class))
 
     def _remove_points(self, points_to_remove, teams_population):
         """
@@ -242,43 +224,40 @@ class ReinforcementEnvironment(DefaultEnvironment):
         the mean of the scores in the matches (1: win, 0.5: draw, 0: lose)
         """
         if mode == Config.RESTRICTIONS['mode']['training']:
-            is_training = True
             point_population = self.point_population()
-            opponent_population = self.current_opponent_population_
+            opponent = self.current_opponent_
+            results = []
+            for point in point_population:
+                results.append(self._execute_match(team, opponent, point, mode, None))
+            team.fitness_ = numpy.mean(results)
         else:
-            is_training = False
             if mode == Config.RESTRICTIONS['mode']['validation']:
                 point_population = self.validation_point_population_
                 opponent_population = self.validation_opponent_population_
             elif mode == Config.RESTRICTIONS['mode']['champion']:
                 point_population = self.champion_point_population_
                 opponent_population = self.champion_opponent_population_
-
-        results = []
-        extra_metrics_opponents = defaultdict(list)
-
-        for point, opponent in zip(point_population, opponent_population):
-            # if is_training and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id in team.results_per_points_:
-            #     results.append(team.results_per_points_[point.point_id])
-            # else: # TODO
-            result = self._play_match(team, opponent, point, mode)
-            if is_training:
-                team.results_per_points_[point.point_id] = result
-            else:
-                if mode == Config.RESTRICTIONS['mode']['validation']:
-                    team.results_per_points_for_validation_[point.point_id] = result
-                extra_metrics_opponents[opponent.opponent_id].append(result)
-            results.append(result)
-
-        score = numpy.mean(results)
-        
-        if is_training:
-            team.fitness_ = score
-        else:
+            results = []
+            extra_metrics_opponents = defaultdict(list)
+            for point, opponent in zip(point_population, opponent_population):
+                results.append(self._execute_match(team, opponent, point, mode, extra_metrics_opponents))
             for key in extra_metrics_opponents:
                 extra_metrics_opponents[key] = round_value(numpy.mean(extra_metrics_opponents[key]))
-            team.score_testset_ = score
+            team.score_testset_ = numpy.mean(results)
             team.extra_metrics_['opponents'] = extra_metrics_opponents
+
+    def _execute_match(self, team, opponent, point, mode, extra_metrics_opponents):
+        # if mode == Config.RESTRICTIONS['mode']['training'] and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id in team.results_per_points_:
+        #     return team.results_per_points_[point.point_id]
+        # else: # TODO
+        result = self._play_match(team, opponent, point, mode)
+        if mode == Config.RESTRICTIONS['mode']['training']:
+            team.results_per_points_[point.point_id] = result
+        else:
+            if mode == Config.RESTRICTIONS['mode']['validation']:
+                team.results_per_points_for_validation_[point.point_id] = result
+            extra_metrics_opponents[opponent.opponent_id].append(result)
+        return result
 
     def validate(self, current_generation, teams_population):
         print "\nvalidating all..."

@@ -45,8 +45,6 @@ Next steps:
 - 120 point? 90 point?
 - fazer mais testes com e sem hand potential, para analisar o runtime
 ------------------
-fazer nao precisar criar um array de oponentes iguais
-
 implementar memoria para (point, opponent) no reinforcement learning (e remover quando remove ro point, ou o oponente do hall of fame)
 
 conferir TODOs
@@ -55,8 +53,6 @@ fazer apenas o champion ir contra o hall of fame? para mais points?
 
 fazer o balanceando dos points ser pelo atributo 'classe' do point (que deve ser definido assim q ele eh criado, ou 
 durante o treino/validacao?)
-
-refatorar reinforcement environment
 
 consertar a metrica com TODO em sbb.py
 
