@@ -39,7 +39,7 @@ class Team(DefaultOpponent):
         self.programs.append(program)
         program.add_team(self)
 
-    def initialize(self):
+    def initialize(self, seed):
         """
         This method is called by the reinforcement learning environments to set 
         the opponent configurations before a match. This class implements this 

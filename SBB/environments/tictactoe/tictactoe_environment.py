@@ -10,8 +10,8 @@ class TictactoePoint(ReinforcementPoint):
     Encapsulates a tictactoe opponent as a point.
     """
 
-    def __init__(self, point_id, opponent):
-        super(TictactoePoint, self).__init__(point_id, opponent)
+    def __init__(self):
+        super(TictactoePoint, self).__init__()
 
 class TictactoeEnvironment(ReinforcementEnvironment):
     """
@@ -29,17 +29,8 @@ class TictactoeEnvironment(ReinforcementEnvironment):
             '[2,0]': 6, '[2,1]': 7, '[2,2]': 8,
         }
 
-    def _instantiate_point_for_coded_opponent_class(self, opponent_class):
-        instance = opponent_class()
-        return TictactoePoint(str(instance), instance)
-
-    def _instantiate_point_for_sbb_opponent(self, team, opponent_id):
-        point = TictactoePoint(team.__repr__(), team)
-        point.opponent.opponent_id = opponent_id
-        return point
-
-    def _instantiate_point(self): # TODO
-        return TictactoePoint(str(random.randint(0, Config.RESTRICTIONS['max_seed'])), TictactoeRandomOpponent())
+    def _instantiate_point(self):
+        return TictactoePoint()
 
     def _play_match(self, team, opponent, point, mode):
         """
@@ -52,7 +43,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
         outputs = []
         for position in range(1, self.total_positions_+1):
             if position == 1:
-                first_player = opponent.opponent
+                first_player = opponent
                 is_training_for_first_player = False
                 second_player = team
                 is_training_for_second_player = is_training
@@ -60,12 +51,12 @@ class TictactoeEnvironment(ReinforcementEnvironment):
             else:
                 first_player = team
                 is_training_for_first_player = is_training
-                second_player = opponent.opponent
+                second_player = opponent
                 is_training_for_second_player = False
                 sbb_player = 1
 
             match = TictactoeMatch()
-            opponent.opponent.initialize()
+            opponent.initialize(point.seed_)
             while True:
                 player = 1
                 inputs = match.inputs_from_the_point_of_view_of(player)

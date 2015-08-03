@@ -8,7 +8,7 @@ class DefaultOpponent(object):
         self.opponent_id = opponent_id
 
     @abc.abstractmethod
-    def initialize(self):
+    def initialize(self, seed):
         """
         Initialize attributes of the opponent before a match.
         """

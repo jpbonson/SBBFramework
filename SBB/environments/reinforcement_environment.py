@@ -17,27 +17,16 @@ class ReinforcementPoint(DefaultPoint):
     """
     __metaclass__  = abc.ABCMeta
 
-    def __init__(self, point_id, opponent):
+    def __init__(self):
+        self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
+        point_id = str(self.seed_)
         super(ReinforcementPoint, self).__init__(point_id)
-        self.opponent = opponent
 
 class ReinforcementEnvironment(DefaultEnvironment):
     """
     
     """
     __metaclass__  = abc.ABCMeta
-
-    @abc.abstractmethod
-    def _instantiate_point_for_coded_opponent_class(self, opponent_class):
-        """
-        
-        """
-
-    @abc.abstractmethod
-    def _instantiate_point_for_sbb_opponent(self, team, opponent_id):
-        """
-        
-        """
 
     @abc.abstractmethod
     def _instantiate_point(self):
@@ -65,9 +54,9 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.team_to_add_to_hall_of_fame_ = None
         self.opponent_population_ = None
         self.point_population_ = []
-        self.validation_point_population = None
+        self.validation_point_population_ = None
         self.champion_point_population_ = None
-        self.validation_opponent_population = None
+        self.validation_opponent_population_ = None
         self.champion_opponent_population_ = None
         self.first_sampling_ = True
         self.last_population_ = None
@@ -85,20 +74,27 @@ class ReinforcementEnvironment(DefaultEnvironment):
             self.opponent_population_['hall_of_fame'] = []
             self.opponents_names_.append('hall_of_fame')
 
+    def _instantiate_coded_opponent(self, opponent_class):
+        return opponent_class()
+
+    def _instantiate_sbb_opponent(self, team, opponent_id):
+        team.opponent_id = opponent_id
+        return team
+
     def point_population(self): # TODO: checar se as chamadas a esse metodo usam os oponentes
         return self.point_population_
 
     def validation_population(self):
-        return self.validation_point_population
+        return self.validation_point_population_
 
     def reset(self):
         for key in self.opponent_population_:
             self.opponent_population_[key] = []
         self.point_population_ = []
         self.team_to_add_to_hall_of_fame_ = None
-        self.validation_point_population = [self._instantiate_point() for index in range(Config.USER['reinforcement_parameters']['validation_population'])]
+        self.validation_point_population_ = [self._instantiate_point() for index in range(Config.USER['reinforcement_parameters']['validation_population'])]
         self.champion_point_population_ = [self._instantiate_point() for index in range(Config.USER['reinforcement_parameters']['champion_population'])]
-        self.validation_opponent_population = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
+        self.validation_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
         self.last_population_ = None
@@ -110,7 +106,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         total_per_opponent = population_size/len(self.coded_opponents_for_validation_)
         for opponent_class in self.coded_opponents_for_validation_:
             for index in range(total_per_opponent):
-                population.append(self._instantiate_point_for_coded_opponent_class(opponent_class))
+                population.append(self._instantiate_coded_opponent(opponent_class))
         return population
 
     def setup(self, teams_population):
@@ -149,17 +145,17 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 copied_team.team_id_ = team_to_copy.team_id_
                 copied_team.fitness_ = team_to_copy.fitness_
                 copied_team.active_programs_ = list(team_to_copy.active_programs_)
-                hall_of_fame.append(self._instantiate_point_for_sbb_opponent(copied_team, "hall_of_fame"))
+                hall_of_fame.append(self._instantiate_sbb_opponent(copied_team, "hall_of_fame"))
                 if len(hall_of_fame) > Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
                     if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:
                         novelty = Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']
-                        teams = [p.opponent for p in hall_of_fame]
+                        teams = [p for p in hall_of_fame]
                         DiversityMaintenance.calculate_diversities_based_on_distances(teams, k = Config.USER['reinforcement_parameters']['hall_of_fame']['size'], distances = [novelty])
                         keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams, novelty, Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
-                        removed_point = [p for p in hall_of_fame if p.opponent == remove_teams[0]]
+                        removed_point = [p for p in hall_of_fame if p == remove_teams[0]]
                         worst_point = removed_point[0]
                     else:
-                        score = [p.opponent.fitness_ for p in hall_of_fame]
+                        score = [p.fitness_ for p in hall_of_fame]
                         worst_point = hall_of_fame[score.index(min(score))]
                     self.opponent_population_['hall_of_fame'].remove(worst_point)
                 self.team_to_add_to_hall_of_fame_ = None
@@ -175,34 +171,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
         self._check_for_bugs()
 
-    def _initialize_point_population_of_sbb_opponents(self, teams_population):
-        size = Config.USER['training_parameters']['populations']['points']
-        if size >= len(teams_population):
-            sbb_opponents = teams_population
-        else:
-            fitness = [team.fitness_ for team in teams_population]
-            total_fitness = sum(fitness)
-            if total_fitness == 0:
-                sbb_opponents = random.sample(teams_population, size)
-            else:
-                probabilities = [f/total_fitness for f in fitness]
-                non_zeros = [p for p in probabilities if p != 0]
-                if len(non_zeros) >= size:
-                    sbb_opponents = numpy.random.choice(teams_population, size = size, replace = False, p = probabilities)
-                else:
-                    sbb_opponents = [team for team in teams_population if team.fitness_ != 0]
-                    new_opponents = [team for team in teams_population if team.fitness_ == 0]
-                    opponents_to_add = size - len(sbb_opponents)
-                    sbb_opponents += random.sample(new_opponents, opponents_to_add)
-        population = []
-        for opponent in sbb_opponents:
-            population.append(self._instantiate_point_for_sbb_opponent(opponent, "sbb"))
-        return population
-
     def _initialize_point_population_per_opponent_for_coded_opponents(self):
         for opponent_class in self.coded_opponents_for_training_:
             for index in range(Config.USER['training_parameters']['populations']['points']):
-                self.opponent_population_[str(opponent_class)].append(self._instantiate_point_for_coded_opponent_class(opponent_class))
+                self.opponent_population_[str(opponent_class)].append(self._instantiate_coded_opponent(opponent_class))
 
     def _remove_points(self, points_to_remove, teams_population):
         """
@@ -257,7 +229,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             self.evaluate_team(team, Config.RESTRICTIONS['mode']['training'])
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             sorted_teams = sorted(teams_population, key=lambda team: team.fitness_, reverse = True) # better ones first
-            team_ids = [p.opponent.team_id_ for p in self.opponent_population_['hall_of_fame']]
+            team_ids = [p.team_id_ for p in self.opponent_population_['hall_of_fame']]
             for team in sorted_teams:
                 if team.team_id_ not in team_ids:
                     self.team_to_add_to_hall_of_fame_ = team
@@ -276,8 +248,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
         else:
             is_training = False
             if mode == Config.RESTRICTIONS['mode']['validation']:
-                point_population = self.validation_point_population
-                opponent_population = self.validation_opponent_population
+                point_population = self.validation_point_population_
+                opponent_population = self.validation_opponent_population_
             elif mode == Config.RESTRICTIONS['mode']['champion']:
                 point_population = self.champion_point_population_
                 opponent_population = self.champion_opponent_population_
@@ -295,7 +267,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             else:
                 if mode == Config.RESTRICTIONS['mode']['validation']:
                     team.results_per_points_for_validation_[point.point_id] = result
-                extra_metrics_opponents[opponent.opponent.opponent_id].append(result)
+                extra_metrics_opponents[opponent.opponent_id].append(result)
             results.append(result)
 
         score = numpy.mean(results)
@@ -332,6 +304,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def hall_of_fame(self):
         if 'hall_of_fame' in self.opponent_population_:
-            return [p.opponent for p in self.opponent_population_['hall_of_fame']]
+            return [p for p in self.opponent_population_['hall_of_fame']]
         else:
             return []
