@@ -363,7 +363,7 @@ class SBB:
         worst_points = sorted(best_results_per_point.items(), key=operator.itemgetter(1), reverse = False)
         worst_points_ids = [point[0] for point in worst_points[:Config.USER['reinforcement_parameters']['validation_population']/10]]
         validation_population = self.environment.validation_population()
-        worst_points_info = [str(point) for point in validation_population if point.point_id in worst_points_ids]
+        worst_points_info = [str(point) for point in validation_population if point.point_id_ in worst_points_ids]
         return individual_performance, accumulative_performance, worst_points_info
 
     def _generate_overall_metrics_output(self, run_infos):       

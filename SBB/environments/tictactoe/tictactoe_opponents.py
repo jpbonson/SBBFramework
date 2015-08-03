@@ -11,7 +11,7 @@ class TictactoeRandomOpponent(DefaultOpponent):
     def initialize(self, seed):
         self.random_generator_ = numpy.random.RandomState(seed=seed)
 
-    def execute(self, point_id, inputs, valid_actions, is_training):
+    def execute(self, point_id_, inputs, valid_actions, is_training):
         return self.random_generator_.choice(valid_actions)
 
 class TictactoeSmartOpponent(DefaultOpponent):
@@ -21,7 +21,7 @@ class TictactoeSmartOpponent(DefaultOpponent):
     def initialize(self, seed):
         self.random_generator_ = numpy.random.RandomState(seed=seed)
 
-    def execute(self, point_id, inputs, valid_actions, is_training):
+    def execute(self, point_id_, inputs, valid_actions, is_training):
         current_player = 1
         opponent_player = 2
 

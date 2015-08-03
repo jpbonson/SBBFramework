@@ -55,13 +55,13 @@ class DiversityMaintenance():
         denominators = [1.0] * len(point_population) # initialized to 1 so we don't divide by zero
         for index, point in enumerate(point_population):
             for team in population:
-                denominators[index] += float(team.results_per_points_[point.point_id])
+                denominators[index] += float(team.results_per_points_[point.point_id_])
 
         # calculate fitness
         for team in population:
             score = 0.0
             for index, point in enumerate(point_population):
-                score += float(team.results_per_points_[point.point_id]) / denominators[index]
+                score += float(team.results_per_points_[point.point_id_]) / denominators[index]
             diversity = score/float(len(point_population))
             team.diversity_['fitness_sharing'] = round_value(diversity)
 

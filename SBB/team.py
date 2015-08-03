@@ -48,7 +48,7 @@ class Team(DefaultOpponent):
         """
         pass
         
-    def execute(self, point_id, inputs, valid_actions, is_training):
+    def execute(self, point_id_, inputs, valid_actions, is_training):
         # test if there are at least one program in the team that is able to provide a valid action
         # if there is no such program, return None, so that the environment will use a default action
         actions = [p.action for p in self.programs]
@@ -58,13 +58,13 @@ class Team(DefaultOpponent):
 
         # if there is a least one program that can produce a valid action, execute the programs
         if is_training:
-            if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id in self.actions_per_points_:
-                return self.actions_per_points_[point_id]
+            if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id_ in self.actions_per_points_:
+                return self.actions_per_points_[point_id_]
             else:
                 selected_program = self._select_program(inputs, valid_actions)
                 output_class = selected_program.action
                 if Config.RESTRICTIONS['use_memmory_for_actions']:
-                    self.actions_per_points_[point_id] = output_class
+                    self.actions_per_points_[point_id_] = output_class
                 if selected_program not in self.active_programs_:
                     self.active_programs_.append(selected_program)
                 if selected_program not in self.overall_active_programs_:

@@ -29,7 +29,6 @@ class PokerPoint(ReinforcementPoint):
     def __init__(self):
         super(PokerPoint, self).__init__()
         self.position_ = random.randint(0, PokerEnvironment.CONFIG['positions']-1)
-        self.point_id = "("+str(self.seed_)+","+str(self.position_)+")"
         self.sbb_hole_cards = None
         self.opponent_hole_cards = None
         self.sbb_equity_ = None
@@ -43,12 +42,9 @@ class PokerPoint(ReinforcementPoint):
             self.opponent_equity_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.opponent_hole_cards)]
 
     def __str__(self):
-        cards = str(self.sbb_hole_cards)+","+str(self.opponent_hole_cards)
-        metrics = str(self.sbb_equity_)+","+str(self.opponent_equity_)
-        return "(id = ["+self.point_id+"], cards = ["+cards+"], metrics = ["+metrics+"])"
-
-    def __repr__(self):
-        return self.point_id
+        cards = str(self.sbb_hole_cards)+", "+str(self.opponent_hole_cards)
+        metrics = str(self.sbb_equity_)+", "+str(self.opponent_equity_)
+        return "(id = ["+str(self.point_id_)+"], attributes = ["+str(self.seed_)+", "+str(self.position_)+"], "+", cards = ["+cards+"], metrics = ["+metrics+"])"
 
 class PokerEnvironment(ReinforcementEnvironment):
     """
@@ -98,9 +94,9 @@ class PokerEnvironment(ReinforcementEnvironment):
         #     # because it wastes too much memmory to save the values for the champion
         #     memories = ({}, {}, {})
         # else:
-        memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id], 
-            PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id], 
-            PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id])
+        memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id_], 
+            PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id_], 
+            PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id_])
 
         if point.position_ == 0:
             sbb_port = PokerEnvironment.CONFIG['available_ports'][0]
@@ -296,9 +292,9 @@ class PokerEnvironment(ReinforcementEnvironment):
     def _remove_points(self, points_to_remove, teams_population):
         super(PokerEnvironment, self)._remove_points(points_to_remove, teams_population)
         for point in points_to_remove:
-            del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id]
-            del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id]
-            del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id]
+            del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id_]
+            del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id_]
+            del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id_]
 
     @staticmethod
     def normalize_winning(value):
@@ -373,7 +369,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                         inputs = match_state.inputs(memories) + [chips] + PokerEnvironment.get_opponent_model(player, opponent).inputs()
                     else:
                         inputs = []
-                    action = player.execute(point.point_id, inputs, match_state.valid_actions(), is_training)
+                    action = player.execute(point.point_id_, inputs, match_state.valid_actions(), is_training)
                     if action is None:
                         action = 1
                     if is_sbb and is_training:

@@ -40,9 +40,9 @@ class ParetoDominanceForPoints():
             for point in point_population:
                 distinction_vector = []
                 for team1 in teams_population:
-                    outcome1 = team1.results_per_points_[point.point_id]
+                    outcome1 = team1.results_per_points_[point.point_id_]
                     for team2 in teams_population:
-                        outcome2 = team2.results_per_points_[point.point_id]                 
+                        outcome2 = team2.results_per_points_[point.point_id_]                 
                         if outcome1 > outcome2 and not is_nearly_equal_to(outcome1, outcome2):
                             distinction_vector.append(1)
                         else:

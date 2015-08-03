@@ -60,7 +60,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
             while True:
                 player = 1
                 inputs = match.inputs_from_the_point_of_view_of(player)
-                action = first_player.execute(point.point_id, inputs, match.valid_actions(), is_training_for_first_player)
+                action = first_player.execute(point.point_id_, inputs, match.valid_actions(), is_training_for_first_player)
                 if action is None:
                     action = random.choice(match.valid_actions())
                 if is_training_for_first_player:
@@ -71,7 +71,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                     break
                 player = 2
                 inputs = match.inputs_from_the_point_of_view_of(player)
-                action = second_player.execute(point.point_id, inputs, match.valid_actions(), is_training_for_second_player)
+                action = second_player.execute(point.point_id_, inputs, match.valid_actions(), is_training_for_second_player)
                 if action is None:
                     action = random.choice(match.valid_actions())
                 if is_training_for_second_player:

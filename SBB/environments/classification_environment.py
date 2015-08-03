@@ -2,7 +2,7 @@ import random
 from collections import Counter
 import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
-from default_environment import DefaultEnvironment, DefaultPoint
+from default_environment import DefaultEnvironment, DefaultPoint, reset_points_ids
 from ..pareto_dominance_for_points import ParetoDominanceForPoints
 from ..utils.helpers import round_array, flatten
 from ..config import Config
@@ -12,8 +12,8 @@ class ClassificationPoint(DefaultPoint):
     Encapsulates a dataset value as a point.
     """
 
-    def __init__(self, point_id, inputs, output):
-        super(ClassificationPoint, self).__init__(point_id)
+    def __init__(self, inputs, output):
+        super(ClassificationPoint, self).__init__()
         self.inputs = inputs
         self.output = output
 
@@ -23,6 +23,7 @@ class ClassificationEnvironment(DefaultEnvironment):
     """
 
     def __init__(self):
+        reset_points_ids()
         self.point_population_ = None
         train, test = self._initialize_datasets()
         self.train_population_ = self._dataset_to_points(train)
@@ -114,7 +115,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         """
         population = []
         for index, item in enumerate(data):
-            population.append(ClassificationPoint(index, numpy.array(item[:-1]), item[-1]))
+            population.append(ClassificationPoint(numpy.array(item[:-1]), item[-1]))
         return population
 
     def _get_data_per_action(self, point_population):
@@ -170,10 +171,10 @@ class ClassificationEnvironment(DefaultEnvironment):
         """
         for team in teams_population:
             for point in points_to_remove:
-                if point.point_id in team.results_per_points_:
-                    team.results_per_points_.pop(point.point_id)
-                if point.point_id in team.actions_per_points_:
-                    team.actions_per_points_.pop(point.point_id)
+                if point.point_id_ in team.results_per_points_:
+                    team.results_per_points_.pop(point.point_id_)
+                if point.point_id_ in team.actions_per_points_:
+                    team.actions_per_points_.pop(point.point_id_)
 
     def _check_for_bugs(self):
         if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
@@ -225,14 +226,14 @@ class ClassificationEnvironment(DefaultEnvironment):
 
         outputs = []
         for point in population:
-            output = team.execute(point.point_id, point.inputs, range(Config.RESTRICTIONS['total_actions']), is_training)
+            output = team.execute(point.point_id_, point.inputs, range(Config.RESTRICTIONS['total_actions']), is_training)
             outputs.append(output)
             if is_training:
                 if output == point.output:
                     result = 1 # correct
                 else:
                     result = 0 # incorrect
-                team.results_per_points_[point.point_id] = result
+                team.results_per_points_[point.point_id_] = result
 
         Y = [p.output for p in population]
         score, extra_metrics = self._calculate_team_metrics(outputs, Y, is_training)

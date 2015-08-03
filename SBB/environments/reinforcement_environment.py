@@ -3,7 +3,7 @@ import random
 import copy
 import numpy
 from collections import defaultdict
-from default_environment import DefaultEnvironment, DefaultPoint
+from default_environment import DefaultEnvironment, DefaultPoint, reset_points_ids
 from ..team import Team
 from ..diversity_maintenance import DiversityMaintenance
 from ..pareto_dominance_for_points import ParetoDominanceForPoints
@@ -18,9 +18,8 @@ class ReinforcementPoint(DefaultPoint):
     __metaclass__  = abc.ABCMeta
 
     def __init__(self):
+        super(ReinforcementPoint, self).__init__()
         self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
-        point_id = str(self.seed_)
-        super(ReinforcementPoint, self).__init__(point_id)
 
 class ReinforcementEnvironment(DefaultEnvironment):
     """
@@ -77,6 +76,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         return self.validation_point_population_
 
     def reset(self):
+        reset_points_ids()
         self._initialize_opponent_population()
         self.point_population_ = []
         self.team_to_add_to_hall_of_fame_ = None
@@ -164,8 +164,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
         """
         for team in teams_population:
             for point in points_to_remove:
-                if point.point_id in team.results_per_points_:
-                    team.results_per_points_.pop(point.point_id)
+                if point.point_id_ in team.results_per_points_:
+                    team.results_per_points_.pop(point.point_id_)
 
     def _check_for_bugs(self):
         if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
@@ -247,15 +247,15 @@ class ReinforcementEnvironment(DefaultEnvironment):
             team.extra_metrics_['opponents'] = extra_metrics_opponents
 
     def _execute_match(self, team, opponent, point, mode, extra_metrics_opponents):
-        # if mode == Config.RESTRICTIONS['mode']['training'] and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id in team.results_per_points_:
-        #     return team.results_per_points_[point.point_id]
+        # if mode == Config.RESTRICTIONS['mode']['training'] and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id_ in team.results_per_points_:
+        #     return team.results_per_points_[point.point_id_]
         # else: # TODO
         result = self._play_match(team, opponent, point, mode)
         if mode == Config.RESTRICTIONS['mode']['training']:
-            team.results_per_points_[point.point_id] = result
+            team.results_per_points_[point.point_id_] = result
         else:
             if mode == Config.RESTRICTIONS['mode']['validation']:
-                team.results_per_points_for_validation_[point.point_id] = result
+                team.results_per_points_for_validation_[point.point_id_] = result
             extra_metrics_opponents[opponent.opponent_id].append(result)
         return result
 
