@@ -82,29 +82,14 @@ garantir outputs (for tictactoe and poker, primeiro implementar o que funciona p
     Some opponents won't stick to this recommendation and play almost every hand, which is a style of play known as "loose".
     https://www.pokerschoolonline.com/articles/Playing-Style-and-Position
 
-    - equity: 169
-    1%: >= 0.796323165 (QQo, KKo, AAo)
-    5%: >= 0.657264883 (77o, 88o, 99o, TTo, JJo)
-    10%: >= 0.615637267 (66o)
-    20%: >= 0.571658507 (55o, QKo)
-    30%: >= 0.544165232 (44o)
-    40%: >= 0.516406165 (33o)
-    50%: >= 0.485737405 (22o, J6s, T7s)
-    60%: >= 0.456850271 (87s)
-    70%: >= 0.421029753 (69o)
-    80%: >= 0.387406132 (58o)
-    90%: >= 0.35074301 (45o)
-    100%: < 0.35074301
-    lowest: 0.29240095 (32o)
-    highest: 0.84933161 (AAo)
-
-    - equity: 169
-    1 (10%): >= 0.615637267 (QQo, KKo, AAo, 77o, 88o, 99o, TTo, JJo, 66o, JAo)
-    2 (20%): >= 0.571658507 (55o, QKo, QJs)
-    3 (40%): >= 0.516406165 (44o, 33o, 5Ao, 9Qo)
-    4 (60%): >= 0.456850271 (22o, J6s, T7s, 87s, 98s)
-    5: < 0.456850271 (69o, 58o, 45o, 32o, 4Jo, 5To, 76s)
-    highest: 0.84933161 (AAo)
+    print str(s[int(round(len(s)*0.2))]) # 20% (>= 0.564089482, ('9h', 'Kc'))
+    print str(s[int(round(len(s)*0.5))]) # 30% (>= 0.478209277, ('8c', 'Ts'))
+    print str(s[int(round(len(s)*0.6))]) # 50% (< 0.478209277, ('5c', 'Jh'))
+    print "---"
+    print str(s[int(round(len(s)*0.1))]) # 10% (>= 0.605853525, ('Tc', 'Kc'))
+    print str(s[int(round(len(s)*0.2))]) # 20% (>= 0.564089482, ('9h', 'Kc'))
+    print str(s[int(round(len(s)*0.6))]) # 30% (>= 0.449015885, ('5c', 'Jh'))
+    print str(s[int(round(len(s)*0.7))]) # 40% (< 0.449015885, ('4s', 'Tc'))
 
 entregaveis:
 - ir escrevendo o report (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); rmevoed always_fold opponent)
