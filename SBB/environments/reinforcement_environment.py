@@ -29,23 +29,18 @@ class ReinforcementEnvironment(DefaultEnvironment):
     __metaclass__  = abc.ABCMeta
 
     @abc.abstractmethod
-    def _instantiate_point(self):
-        """
-        
-        """
-
-    @abc.abstractmethod
     def _play_match(self, team, point, mode):
         """
         
         """
 
-    def __init__(self, total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation):
+    def __init__(self, total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class):
         self.total_actions_ = total_actions
         self.total_inputs_ = total_inputs
         self.total_labels_ = total_labels
         self.coded_opponents_for_training_ = coded_opponents_for_training
         self.coded_opponents_for_validation_ = coded_opponents_for_validation
+        self.point_class = point_class
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         self.team_to_add_to_hall_of_fame_ = None
@@ -81,8 +76,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self._initialize_opponent_population()
         self.point_population_ = []
         self.team_to_add_to_hall_of_fame_ = None
-        self.validation_point_population_ = [self._instantiate_point() for index in range(Config.USER['reinforcement_parameters']['validation_population'])]
-        self.champion_point_population_ = [self._instantiate_point() for index in range(Config.USER['reinforcement_parameters']['champion_population'])]
+        self.validation_point_population_ = [self.point_class() for index in range(Config.USER['reinforcement_parameters']['validation_population'])]
+        self.champion_point_population_ = [self.point_class() for index in range(Config.USER['reinforcement_parameters']['champion_population'])]
         self.validation_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
@@ -112,7 +107,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         # initialize point population
         if self.first_sampling_:
             self.first_sampling_ = False
-            population = [self._instantiate_point() for index in range(Config.USER['training_parameters']['populations']['points'])]
+            population = [self.point_class() for index in range(Config.USER['training_parameters']['populations']['points'])]
             subsets_per_label = self._get_data_per_label(population)
             total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_labels_
             balanced_subsets = []
@@ -193,7 +188,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         samples_per_class_to_remove = total_samples_per_class - samples_per_class_to_keep
 
         total_points_to_add = (total_samples_per_class - samples_per_class_to_keep)*self.total_labels_
-        points_to_add = [self._instantiate_point() for x in range(total_points_to_add)]
+        points_to_add = [self.point_class() for x in range(total_points_to_add)]
         points_to_add_per_label = self._get_data_per_label(points_to_add)
 
         kept_subsets_per_class = []

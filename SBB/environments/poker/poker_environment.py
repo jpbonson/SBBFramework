@@ -15,71 +15,28 @@ import numpy
 from collections import defaultdict
 from opponent_model import OpponentModel
 from match_state import MatchState
-from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
+from poker_point import PokerPoint
+from poker_config import PokerConfig
 from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
-from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
-from ...utils.helpers import avaliable_ports
+from ..reinforcement_environment import ReinforcementEnvironment
+from ...utils.helpers import avaliable_ports, round_value, flatten
 from ...config import Config
-
-class PokerPoint(ReinforcementPoint):
-    """
-    Encapsulates a poker opponent, seeded hand, and position as a point.
-    """
-
-    def __init__(self):
-        super(PokerPoint, self).__init__()
-        self.position_ = random.randint(0, PokerEnvironment.CONFIG['positions']-1)
-        self.sbb_hole_cards = None
-        self.opponent_hole_cards = None
-        self.sbb_equity_ = None
-        self.opponent_equity_ = None
-        self.teams_results_ = []
-        self.label_ = 0 # TODO: temp
-
-    def update_metrics(self):
-        if self.sbb_hole_cards:
-            self.sbb_equity_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.sbb_hole_cards)]
-        if self.opponent_hole_cards:
-            self.opponent_equity_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.opponent_hole_cards)]
-
-    def __str__(self):
-        cards = str(self.sbb_hole_cards)+", "+str(self.opponent_hole_cards)
-        metrics = str(self.sbb_equity_)+", "+str(self.opponent_equity_)
-        return "(id = ["+str(self.point_id_)+"], attributes = ["+str(self.seed_)+", "+str(self.position_)+"], "+", cards = ["+cards+"], metrics = ["+metrics+"])"
 
 class PokerEnvironment(ReinforcementEnvironment):
     """
     This environment encapsulates all methods to deal with a reinforcement learning task for TicTacToe.
     """
 
-    ACTION_MAPPING = {0: 'f', 1: 'c', 2: 'r'}
-    INPUTS = MatchState.INPUTS+['chips']+OpponentModel.INPUTS
-    RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-    SUITS = ['s', 'd', 'h', 'c']
-    HAND_STRENGHT_MEMORY = None
-    HAND_PPOTENTIAL_MEMORY = None
-    HAND_NPOTENTIAL_MEMORY = None
-    CONFIG = {
-        'acpc_path': "SBB/environments/poker/ACPC/",
-        'available_ports': [],
-        'small_bet': 10,
-        'big_bet': 20,
-        'positions': 2,
-        'total_labels': 1, # TODO: temp
-    }
-
     def __init__(self):
         total_actions = 3 # fold, call, raise
-        total_inputs = len(PokerEnvironment.INPUTS)
-        total_labels = PokerEnvironment.CONFIG['total_labels']
+        total_inputs = len(PokerConfig.INPUTS)
+        total_labels = PokerConfig.CONFIG['total_labels']
         coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation)
+        point_class = PokerPoint
+        super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
         port1, port2 = avaliable_ports()
-        PokerEnvironment.CONFIG['available_ports'] = [port1, port2]
-
-    def _instantiate_point(self):
-        return PokerPoint()
+        PokerConfig.CONFIG['available_ports'] = [port1, port2]
 
     def _play_match(self, team, opponent, point, mode):
         """
@@ -90,25 +47,25 @@ class PokerEnvironment(ReinforcementEnvironment):
         else:
             is_training = False
 
-        if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerEnvironment.CONFIG['acpc_path']+"outputs/"):
-            os.makedirs(PokerEnvironment.CONFIG['acpc_path']+"outputs/")
+        if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerConfig.CONFIG['acpc_path']+"outputs/"):
+            os.makedirs(PokerConfig.CONFIG['acpc_path']+"outputs/")
 
         # if mode == Config.RESTRICTIONS['mode']['champion']:
         #     # because it wastes too much memmory to save the values for the champion
         #     memories = ({}, {}, {})
         # else:
-        memories = (PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id_], 
-            PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id_], 
-            PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id_])
+        memories = (PokerConfig.HAND_STRENGHT_MEMORY[point.point_id_], 
+            PokerConfig.HAND_PPOTENTIAL_MEMORY[point.point_id_], 
+            PokerConfig.HAND_NPOTENTIAL_MEMORY[point.point_id_])
 
         if point.position_ == 0:
-            sbb_port = PokerEnvironment.CONFIG['available_ports'][0]
-            opponent_port = PokerEnvironment.CONFIG['available_ports'][1]
+            sbb_port = PokerConfig.CONFIG['available_ports'][0]
+            opponent_port = PokerConfig.CONFIG['available_ports'][1]
             player1 = 'sbb'
             player2 = 'opponent'
         else:
-            sbb_port = PokerEnvironment.CONFIG['available_ports'][1]
-            opponent_port = PokerEnvironment.CONFIG['available_ports'][0]
+            sbb_port = PokerConfig.CONFIG['available_ports'][1]
+            opponent_port = PokerConfig.CONFIG['available_ports'][0]
             player1 = 'opponent'
             player2 = 'sbb'
 
@@ -118,13 +75,13 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, opponent, point, sbb_port, is_training, True, True, memories])
         t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[opponent, team, point, opponent_port, False, False, opponent_use_inputs, memories])
-        args = [PokerEnvironment.CONFIG['acpc_path']+'dealer', 
-                PokerEnvironment.CONFIG['acpc_path']+'outputs/match_output', 
-                PokerEnvironment.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
+        args = [PokerConfig.CONFIG['acpc_path']+'dealer', 
+                PokerConfig.CONFIG['acpc_path']+'outputs/match_output', 
+                PokerConfig.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
                 "1", # total hands 
                 str(point.seed_),
                 player1, player2, 
-                '-p', str(PokerEnvironment.CONFIG['available_ports'][0])+","+str(PokerEnvironment.CONFIG['available_ports'][1])]
+                '-p', str(PokerConfig.CONFIG['available_ports'][0])+","+str(PokerConfig.CONFIG['available_ports'][1])]
         if not Config.USER['reinforcement_parameters']['debug_matches']:
             args.append('-l')
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -135,7 +92,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         t2.join()
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
-            with open(PokerEnvironment.CONFIG['acpc_path']+"outputs/match.log", "w") as text_file:
+            with open(PokerConfig.CONFIG['acpc_path']+"outputs/match.log", "w") as text_file:
                 text_file.write(str(err))
         score = out.split("\n")[1]
         score = score.replace("SCORE:", "")
@@ -179,12 +136,12 @@ class PokerEnvironment(ReinforcementEnvironment):
         return normalized_value
 
     def reset(self):
-        PokerEnvironment.HAND_STRENGHT_MEMORY = defaultdict(dict)
-        PokerEnvironment.HAND_PPOTENTIAL_MEMORY = defaultdict(dict)
-        PokerEnvironment.HAND_NPOTENTIAL_MEMORY = defaultdict(dict)
+        PokerConfig.HAND_STRENGHT_MEMORY = defaultdict(dict)
+        PokerConfig.HAND_PPOTENTIAL_MEMORY = defaultdict(dict)
+        PokerConfig.HAND_NPOTENTIAL_MEMORY = defaultdict(dict)
         super(PokerEnvironment, self).reset()
-        PokerEnvironment.full_deck = self._initialize_deck()
-        PokerEnvironment.hole_cards_based_on_equity = self._initialize_hole_cards_based_on_equity()
+        PokerConfig.full_deck = self._initialize_deck()
+        PokerConfig.hole_cards_based_on_equity = self._initialize_hole_cards_based_on_equity()
         gc.collect()
         yappi.clear_stats()
 
@@ -237,7 +194,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                 team.extra_metrics_['won_hands_validation'] = 0
                 team.extra_metrics_['won_hands_champion'] = 0
 
-                for position in range(PokerEnvironment.CONFIG['positions']):
+                for position in range(PokerConfig.CONFIG['positions']):
                     team.extra_metrics_['total_hands_validation_per_point_type'] = defaultdict(int)
                     team.extra_metrics_['total_hands_champion_per_point_type'] = defaultdict(int)
                     team.extra_metrics_['hand_played_validation_per_point_type'] = defaultdict(int)
@@ -259,12 +216,12 @@ class PokerEnvironment(ReinforcementEnvironment):
     def metrics(self):
         msg = ""
         msg += "\n### Environment Info:"
-        msg += "\nports: "+str(PokerEnvironment.CONFIG['available_ports'])
+        msg += "\nports: "+str(PokerConfig.CONFIG['available_ports'])
         msg += "\ntotal inputs: "+str(self.total_inputs_)
-        msg += "\ninputs: "+str(PokerEnvironment.INPUTS)
+        msg += "\ninputs: "+str(PokerConfig.INPUTS)
         msg += "\ntotal actions: "+str(self.total_actions_)
-        msg += "\nactions mapping: "+str(PokerEnvironment.ACTION_MAPPING)
-        msg += "\npositions: "+str(PokerEnvironment.CONFIG['positions'])
+        msg += "\nactions mapping: "+str(PokerConfig.ACTION_MAPPING)
+        msg += "\npositions: "+str(PokerConfig.CONFIG['positions'])
         msg += "\ntraining opponents: "+str([c.__name__ for c in self.coded_opponents_for_training_])
         msg += "\nvalidation opponents: "+str([c.__name__ for c in self.coded_opponents_for_validation_])
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
@@ -273,8 +230,8 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def _initialize_deck(self):
         deck = []
-        for rank in PokerEnvironment.RANKS:
-            for suit in PokerEnvironment.SUITS:
+        for rank in PokerConfig.RANKS:
+            for suit in PokerConfig.SUITS:
                 deck.append(rank+suit)
         return deck
 
@@ -295,14 +252,43 @@ class PokerEnvironment(ReinforcementEnvironment):
     def _remove_points(self, points_to_remove, teams_population):
         super(PokerEnvironment, self)._remove_points(points_to_remove, teams_population)
         for point in points_to_remove:
-            del PokerEnvironment.HAND_STRENGHT_MEMORY[point.point_id_]
-            del PokerEnvironment.HAND_PPOTENTIAL_MEMORY[point.point_id_]
-            del PokerEnvironment.HAND_NPOTENTIAL_MEMORY[point.point_id_]
+            del PokerConfig.HAND_STRENGHT_MEMORY[point.point_id_]
+            del PokerConfig.HAND_PPOTENTIAL_MEMORY[point.point_id_]
+            del PokerConfig.HAND_NPOTENTIAL_MEMORY[point.point_id_]
+
+    def calculate_poker_metrics_per_generation(self, run_info, teams_population):
+        pass # TODO: fix + mover para poker environment
+        # sbb_opponents_positions = []
+        # coded_opponents = []
+        # for point in self.environment.point_population():
+        #     if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
+        #         sbb_opponents_positions += point.position_
+        #     else:
+        #         coded_opponents.append(point)
+        # for position in range(PokerEnvironment.CONFIG['positions']):
+        #     total = len([point for point in coded_opponents if point.position_ == position])
+        #     total += len([point for point in sbb_opponents_positions if point == position])
+        #     run_info.point_distribution_per_generation[position].append(total)
+            # if position not in run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_type_)]:
+            #     run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_type_)][position] = []
+            # run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_type_)][position].append(total)
+
+    def calculate_poker_metrics_per_validation(self, run_info, teams_population):
+        validation_population = self.validation_population()
+        points_per_position = {}
+        for position in range(PokerConfig.CONFIG['positions']):
+            points_per_position[position] = [point for point in validation_population if point.position_ == position]
+        run_info.point_distribution_per_validation = {}
+        for position in range(PokerConfig.CONFIG['positions']):
+            run_info.point_distribution_per_validation[position] = len(points_per_position[position])
+        for position in range(PokerConfig.CONFIG['positions']):
+            means_per_position = round_value(numpy.mean(flatten([point.teams_results_ for point in points_per_position[position]])))
+            run_info.global_result_per_validation[position].append(means_per_position)
 
     @staticmethod
     def normalize_winning(value):
-        max_small_bet_turn_winning = PokerEnvironment.CONFIG['small_bet']*4
-        max_big_bet_turn_winning = PokerEnvironment.CONFIG['big_bet']*4
+        max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
+        max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
         max_winning = max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
         max_losing = -max_winning
         return (value - max_losing)/float(max_winning - max_losing)
@@ -329,7 +315,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         debug_file = None
         if Config.USER['reinforcement_parameters']['debug_matches']:
-            debug_file = open(PokerEnvironment.CONFIG['acpc_path']+'outputs/player'+str(port)+'.log','w')
+            debug_file = open(PokerConfig.CONFIG['acpc_path']+'outputs/player'+str(port)+'.log','w')
             print player.__repr__()+": started"
         socket_tmp.send("VERSION:2.0.0\r\n")
         previous_action = None
@@ -350,7 +336,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             previous_messages = list(partial_messages)
             partial_messages = message.split("MATCHSTATE")
             last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-            match_state = MatchState(last_message, PokerEnvironment.CONFIG['small_bet'], PokerEnvironment.CONFIG['big_bet'], PokerEnvironment.full_deck, PokerEnvironment.hole_cards_based_on_equity)
+            match_state = MatchState(last_message, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'], PokerConfig.full_deck, PokerConfig.hole_cards_based_on_equity)
             if match_state.is_showdown():
                 previous_action = None
                 if Config.USER['reinforcement_parameters']['debug_matches']:
@@ -380,7 +366,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                     if is_sbb and not is_training:
                         if len(match_state.rounds) == 1 and len(match_state.rounds[0]) < 2 and action == 0: # first action of first round is a fold
                             player.extra_metrics_['played_last_hand'] = False
-                    action = PokerEnvironment.ACTION_MAPPING[action]
+                    action = PokerConfig.ACTION_MAPPING[action]
                     previous_action = action
                     send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
                     try:
@@ -447,7 +433,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def update_opponent_model_and_chips(player, opponent, messages, debug_file, previous_action):
         for partial_msg in reversed(messages):
             if partial_msg:
-                partial_match_state = MatchState(partial_msg, PokerEnvironment.CONFIG['small_bet'], PokerEnvironment.CONFIG['big_bet'], PokerEnvironment.full_deck, PokerEnvironment.hole_cards_based_on_equity)
+                partial_match_state = MatchState(partial_msg, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'], PokerConfig.full_deck, PokerConfig.hole_cards_based_on_equity)
                 self_actions, opponent_actions = partial_match_state.actions_per_player()
                 if partial_match_state.is_showdown():
                     if Config.USER['reinforcement_parameters']['debug_matches']:

@@ -59,6 +59,10 @@ consertar a metrica com TODO em sbb.py
 no worst points, mostrar tb qual oponente foi contra (salvar last_opponent no point)
 
 metrica para checar o tamanho da point population evoluindo com o tempo
+
+nao salvar poker memory para champion?
+
+refatorar update_opponent_model_and_chips
 ------------------
 
 

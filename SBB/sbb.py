@@ -84,10 +84,10 @@ class SBB:
                 if not validation:
                     print ".",
                     sys.stdout.flush()
-                    self._store_teams_per_generation_metrics(run_info, teams_population)
+                    self._store_per_generation_metrics(run_info, teams_population)
                 else:
                     best_team = self.environment.validate(self.current_generation_, teams_population)
-                    self._store_teams_per_generation_metrics(run_info, teams_population)
+                    self._store_per_generation_metrics(run_info, teams_population)
                     self._print_and_store_per_validation_metrics(run_info, best_team, teams_population, programs_population)
 
             # to ensure validation metrics exist for all teams in the hall of fame
@@ -273,7 +273,7 @@ class SBB:
 
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             print
-            self._calculate_poker_metrics(run_info, teams_population)
+            self.environment.calculate_poker_metrics_per_validation(run_info, teams_population)
             print "Point Distribution per Validation: "+str(run_info.point_distribution_per_validation)
             print "Global Point Results per Validation: "
             for key in run_info.global_result_per_validation:
@@ -281,19 +281,7 @@ class SBB:
             
         print
 
-    def _calculate_poker_metrics(self, run_info, teams_population):
-        validation_population = self.environment.validation_population()
-        points_per_position = {}
-        for position in range(PokerEnvironment.CONFIG['positions']):
-            points_per_position[position] = [point for point in validation_population if point.position_ == position]
-        run_info.point_distribution_per_validation = {}
-        for position in range(PokerEnvironment.CONFIG['positions']):
-            run_info.point_distribution_per_validation[position] = len(points_per_position[position])
-        for position in range(PokerEnvironment.CONFIG['positions']):
-            means_per_position = round_value(numpy.mean(flatten([point.teams_results_ for point in points_per_position[position]])))
-            run_info.global_result_per_validation[position].append(means_per_position)
-
-    def _store_teams_per_generation_metrics(self, run_info, teams_population):
+    def _store_per_generation_metrics(self, run_info, teams_population):
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]
         generation_info = []
         for team in older_teams:
@@ -316,21 +304,7 @@ class SBB:
         if Config.USER['task'] == 'reinforcement':
             run_info.opponent_type_per_generation.append(self.environment.opponent_population_.keys().index(self.environment.current_opponent_type_))
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            pass # TODO: fix
-            # sbb_opponents_positions = []
-            # coded_opponents = []
-            # for point in self.environment.point_population():
-            #     if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
-            #         sbb_opponents_positions += point.position_
-            #     else:
-            #         coded_opponents.append(point)
-            # for position in range(PokerEnvironment.CONFIG['positions']):
-            #     total = len([point for point in coded_opponents if point.position_ == position])
-            #     total += len([point for point in sbb_opponents_positions if point == position])
-            #     run_info.point_distribution_per_generation[position].append(total)
-                # if position not in run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_type_)]:
-                #     run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_type_)][position] = []
-                # run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_type_)][position].append(total)
+            self.environment.calculate_poker_metrics_per_generation(run_info, teams_population)
 
     def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())
