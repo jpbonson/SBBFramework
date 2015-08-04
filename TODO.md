@@ -52,9 +52,7 @@ conferir TODOs
 
 fazer apenas o champion ir contra o hall of fame? para mais points?
 
-definir label_ do poker point assim q ele eh criado, definir total_labels, e nao haver mais o metric_update
-
-consertar a metrica com TODO em sbb.py
+definir label_ do poker point assim q ele eh criado, definir total_labels
 
 no worst points, mostrar tb qual oponente foi contra (salvar last_opponent no point)
 

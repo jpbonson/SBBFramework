@@ -37,6 +37,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
         port1, port2 = avaliable_ports()
         PokerConfig.CONFIG['available_ports'] = [port1, port2]
+        PokerConfig.full_deck = self._initialize_deck()
 
     def _play_match(self, team, opponent, point, mode):
         """
@@ -140,7 +141,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         PokerConfig.HAND_PPOTENTIAL_MEMORY = defaultdict(dict)
         PokerConfig.HAND_NPOTENTIAL_MEMORY = defaultdict(dict)
         super(PokerEnvironment, self).reset()
-        PokerConfig.full_deck = self._initialize_deck()
         PokerConfig.hole_cards_based_on_equity = self._initialize_hole_cards_based_on_equity()
         gc.collect()
         yappi.clear_stats()
@@ -300,7 +300,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         socket_tmp = socket.socket()
 
-        total = 10
+        total = 100
         attempt = 0
         while True:
             try:
@@ -309,7 +309,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             except socket_error as e:
                 attempt += 1
                 if e.errno == errno.ECONNREFUSED:
-                    time.sleep(10)
+                    time.sleep(1)
                 if attempt > total:
                     raise ValueError("Could not connect to port "+str(port))
 
@@ -391,16 +391,6 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         if use_inputs:
             PokerEnvironment.update_opponent_model_and_chips(player, opponent, previous_messages+partial_messages, debug_file, previous_action)
-
-        updated = False
-        if is_sbb and not point.sbb_hole_cards:
-            point.sbb_hole_cards = match_state.current_hole_cards
-            updated = True
-        if not is_sbb and not point.opponent_hole_cards:
-            point.opponent_hole_cards = match_state.current_hole_cards
-            updated = True
-        if updated:
-            point.update_metrics()
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file.write("The end.\n\n")
