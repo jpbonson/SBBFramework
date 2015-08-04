@@ -31,7 +31,6 @@ class Team(DefaultOpponent):
         self.overall_active_programs_ = [] # for training and validation
         self.memory_actions_per_points_ = {}
         self.results_per_points_ = {}
-        self.memory_results_per_points_and_opponents_ = defaultdict(tuple) # only used by reinforcement learning
         self.results_per_points_for_validation_ = {}
         self.diversity_ = {}
         self.action_sequence_ = [] # only used by reinforcement learning, contains the action sequence for the last generation

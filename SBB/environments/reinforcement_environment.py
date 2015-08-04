@@ -171,9 +171,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
             for point in points_to_remove:
                 if point.point_id_ in team.results_per_points_:
                     team.results_per_points_.pop(point.point_id_)
-                values = [(key1, key2) for key1, key2 in team.memory_results_per_points_and_opponents_ if point.point_id_ == key1]
-                for key in values:
-                    team.memory_results_per_points_and_opponents_.pop(key)
 
     def evaluate_point_population(self, teams_population):
         """
@@ -289,12 +286,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             team.extra_metrics_['opponents'] = extra_metrics_opponents
 
     def _execute_match(self, team, opponent, point, mode, extra_metrics_opponents):
-        if mode != Config.RESTRICTIONS['mode']['champion'] and (point.point_id_, opponent.opponent_id) in team.memory_results_per_points_and_opponents_:
-            result = team.memory_results_per_points_and_opponents_[(point.point_id_, opponent.opponent_id)]
-        else:
-            result = self._play_match(team, opponent, point, mode)
-            if mode != Config.RESTRICTIONS['mode']['champion']:
-                team.memory_results_per_points_and_opponents_[(point.point_id_, opponent.opponent_id)] = result
+        result = self._play_match(team, opponent, point, mode)
         if mode == Config.RESTRICTIONS['mode']['training']:
             team.results_per_points_[point.point_id_] = result
         if mode == Config.RESTRICTIONS['mode']['validation']:
