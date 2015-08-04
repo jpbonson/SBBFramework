@@ -19,5 +19,10 @@ class PokerConfig():
         'small_bet': 10,
         'big_bet': 20,
         'positions': 2,
-        'total_labels': 1, # TODO: temp
+        'labels': {
+            '0': 0.605853525, # >=
+            '1': 0.564089482, # >=
+            '2': 0.449015885, # >=
+            '3': 0.449015885, # <
+        }
     }

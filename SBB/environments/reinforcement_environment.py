@@ -222,10 +222,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
                     kept_subsets_per_class.append(subset)
                     removed_subsets_per_class.append([])
 
-        total_points_to_add_per_label = total_points_to_add/self.total_labels_
         for subset, points_to_add in zip(kept_subsets_per_class, points_to_add_per_label):
-            if len(points_to_add) > total_points_to_add_per_label:
-                subset += random.sample(points_to_add, total_points_to_add_per_label)
+            if len(subset)+len(points_to_add) > total_samples_per_class:
+                size = total_samples_per_class-len(subset)
+                subset += random.sample(points_to_add, size)
             else:
                 subset += points_to_add
 

@@ -30,7 +30,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def __init__(self):
         total_actions = 3 # fold, call, raise
         total_inputs = len(PokerConfig.INPUTS)
-        total_labels = PokerConfig.CONFIG['total_labels']
+        total_labels = len(PokerConfig.CONFIG['labels'].keys())
         coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         point_class = PokerPoint
