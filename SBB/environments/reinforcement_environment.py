@@ -62,7 +62,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.samples_per_class_to_keep_ = []
         self.samples_per_class_to_remove_ = []
         Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
-        Config.RESTRICTIONS['use_memmory_for_results'] = True # since the opponents are seeded, the same point will always produce the same final result
         
     def _instantiate_coded_opponent(self, opponent_class):
         return opponent_class()
@@ -172,6 +171,9 @@ class ReinforcementEnvironment(DefaultEnvironment):
             for point in points_to_remove:
                 if point.point_id_ in team.results_per_points_:
                     team.results_per_points_.pop(point.point_id_)
+                values = [(key1, key2) for key1, key2 in team.memory_results_per_points_and_opponents_ if point.point_id_ == key1]
+                for key in values:
+                    team.memory_results_per_points_and_opponents_.pop(key)
 
     def evaluate_point_population(self, teams_population):
         """
@@ -287,15 +289,17 @@ class ReinforcementEnvironment(DefaultEnvironment):
             team.extra_metrics_['opponents'] = extra_metrics_opponents
 
     def _execute_match(self, team, opponent, point, mode, extra_metrics_opponents):
-        # if mode == Config.RESTRICTIONS['mode']['training'] and Config.RESTRICTIONS['use_memmory_for_results'] and point.point_id_ in team.results_per_points_:
-        #     return team.results_per_points_[point.point_id_]
-        # else: # TODO
-        result = self._play_match(team, opponent, point, mode)
+        if mode != Config.RESTRICTIONS['mode']['champion'] and (point.point_id_, opponent.opponent_id) in team.memory_results_per_points_and_opponents_:
+            result = team.memory_results_per_points_and_opponents_[(point.point_id_, opponent.opponent_id)]
+        else:
+            result = self._play_match(team, opponent, point, mode)
+            if mode != Config.RESTRICTIONS['mode']['champion']:
+                team.memory_results_per_points_and_opponents_[(point.point_id_, opponent.opponent_id)] = result
         if mode == Config.RESTRICTIONS['mode']['training']:
             team.results_per_points_[point.point_id_] = result
-        else:
-            if mode == Config.RESTRICTIONS['mode']['validation']:
-                team.results_per_points_for_validation_[point.point_id_] = result
+        if mode == Config.RESTRICTIONS['mode']['validation']:
+            team.results_per_points_for_validation_[point.point_id_] = result
+        if mode != Config.RESTRICTIONS['mode']['training']:
             extra_metrics_opponents[opponent.opponent_id].append(result)
         return result
 

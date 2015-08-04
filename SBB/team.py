@@ -1,7 +1,7 @@
 import random
 import copy
 import json
-from collections import Counter
+from collections import Counter, defaultdict
 from program import Program
 from environments.default_opponent import DefaultOpponent
 from utils.helpers import round_value, round_array
@@ -29,8 +29,9 @@ class Team(DefaultOpponent):
         self.extra_metrics_ = {}
         self.active_programs_ = [] # only for training, used for genotype diversity
         self.overall_active_programs_ = [] # for training and validation
-        self.actions_per_points_ = {}
+        self.memory_actions_per_points_ = {}
         self.results_per_points_ = {}
+        self.memory_results_per_points_and_opponents_ = defaultdict(tuple) # only used by reinforcement learning
         self.results_per_points_for_validation_ = {}
         self.diversity_ = {}
         self.action_sequence_ = [] # only used by reinforcement learning, contains the action sequence for the last generation
@@ -58,13 +59,13 @@ class Team(DefaultOpponent):
 
         # if there is a least one program that can produce a valid action, execute the programs
         if is_training:
-            if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id_ in self.actions_per_points_:
-                return self.actions_per_points_[point_id_]
+            if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id_ in self.memory_actions_per_points_:
+                return self.memory_actions_per_points_[point_id_]
             else:
                 selected_program = self._select_program(inputs, valid_actions)
                 output_class = selected_program.action
                 if Config.RESTRICTIONS['use_memmory_for_actions']:
-                    self.actions_per_points_[point_id_] = output_class
+                    self.memory_actions_per_points_[point_id_] = output_class
                 if selected_program not in self.active_programs_:
                     self.active_programs_.append(selected_program)
                 if selected_program not in self.overall_active_programs_:

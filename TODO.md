@@ -44,8 +44,6 @@ Next steps:
 - 120 point? 90 point?
 - fazer mais testes com e sem hand potential, para analisar o runtime
 ------------------
-implementar memoria para (point, opponent) no reinforcement learning (e remover quando remove ro point, ou o oponente do hall of fame)
-
 conferir NCD
 
 voltar a fazer runs de ttt?

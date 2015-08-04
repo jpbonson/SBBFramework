@@ -36,7 +36,6 @@ class ClassificationEnvironment(DefaultEnvironment):
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         Config.RESTRICTIONS['use_memmory_for_actions'] = True # since for the same input, the output label is always the same
-        Config.RESTRICTIONS['use_memmory_for_results'] = False # since it is necessary to know exactly what labels were correct or incorrect, not just the overall results
         # ensures that the point population will be balanced:
         total_samples_per_criteria = Config.USER['training_parameters']['populations']['points']/self.total_actions_
         Config.USER['training_parameters']['populations']['points'] = total_samples_per_criteria*self.total_actions_
@@ -173,8 +172,8 @@ class ClassificationEnvironment(DefaultEnvironment):
             for point in points_to_remove:
                 if point.point_id_ in team.results_per_points_:
                     team.results_per_points_.pop(point.point_id_)
-                if point.point_id_ in team.actions_per_points_:
-                    team.actions_per_points_.pop(point.point_id_)
+                if point.point_id_ in team.memory_actions_per_points_:
+                    team.memory_actions_per_points_.pop(point.point_id_)
 
     def _check_for_bugs(self):
         if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
