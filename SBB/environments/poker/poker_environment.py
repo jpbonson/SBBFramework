@@ -34,6 +34,7 @@ class PokerPoint(ReinforcementPoint):
         self.sbb_equity_ = None
         self.opponent_equity_ = None
         self.teams_results_ = []
+        self.label_ = 0 # TODO: temp
 
     def update_metrics(self):
         if self.sbb_hole_cards:
@@ -64,14 +65,16 @@ class PokerEnvironment(ReinforcementEnvironment):
         'small_bet': 10,
         'big_bet': 20,
         'positions': 2,
+        'total_labels': 1, # TODO: temp
     }
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
         total_inputs = len(PokerEnvironment.INPUTS)
+        total_labels = PokerEnvironment.CONFIG['total_labels']
         coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        super(PokerEnvironment, self).__init__(total_actions, total_inputs, coded_opponents_for_training, coded_opponents_for_validation)
+        super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation)
         port1, port2 = avaliable_ports()
         PokerEnvironment.CONFIG['available_ports'] = [port1, port2]
 

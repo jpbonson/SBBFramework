@@ -36,10 +36,9 @@ runs:
 
 ----
 Next steps:
-- define hand equity ranges (3 to 4 groups) (generate all combinations of cards first, to get the real distribution + be careful to consider the hand equity distribution and ensure all groups have a god enough number of cards + apply pareto only after balance is achieved) (balancear apenas a mao do player, mas ter metrica para a mao do oponente)
-- balance point population per hand equity + only one point population for all opponents + randomize point population at the beginning of the generation
+- define hand equity ranges (3 to 4 groups (check how well the point population is filled for each size)) (generate all combinations of cards first, to get the real distribution + be careful to consider the hand equity distribution and ensure all groups have a god enough number of cards + apply pareto only after balance is achieved) (balancear apenas a mao do player, mas ter metrica para a mao do oponente)
+- balance point population per hand equity
 - check if NCD is correct (compare with other compression algorithms) Compare bzip and zip across test cases (always fold x always fold, always raise x always raise, always fold x always raise, smart x always fold, smart x always raise)
-- modify hall of fame + fix gambiarra para hall of fame opponent no poker + proibir only_sbb para poker
 - metric for hand equity (performance per hand equity and point population evolution)
 - optional: 4 opponents based on equity
 - 120 point? 90 point?
@@ -47,16 +46,21 @@ Next steps:
 ------------------
 implementar memoria para (point, opponent) no reinforcement learning (e remover quando remove ro point, ou o oponente do hall of fame)
 
+conferir NCD
+
+voltar a fazer runs de ttt?
+
 conferir TODOs
 
 fazer apenas o champion ir contra o hall of fame? para mais points?
 
-fazer o balanceando dos points ser pelo atributo 'classe' do point (que deve ser definido assim q ele eh criado, ou 
-durante o treino/validacao?)
+definir label_ do poker point assim q ele eh criado, definir total_labels, e nao haver mais o metric_update
 
 consertar a metrica com TODO em sbb.py
 
 no worst points, mostrar tb qual oponente foi contra (salvar last_opponent no point)
+
+metrica para checar o tamanho da point population evoluindo com o tempo
 ------------------
 
 
