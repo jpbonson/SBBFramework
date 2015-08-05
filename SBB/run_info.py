@@ -33,9 +33,8 @@ class RunInfo:
         self.novelty_type_per_generation = []
         self.opponent_type_per_generation = []
         self.point_distribution_per_validation = {}
-        self.global_result_per_validation = defaultdict(list)
-        self.point_distribution_per_generation = defaultdict(list)
-        self.point_distribution_per_population_per_generation = defaultdict(dict)
+        self.global_result_per_validation = defaultdict(dict)
+        self.point_distribution_per_generation = defaultdict(dict)
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
@@ -60,8 +59,10 @@ class RunInfo:
                 msg += "\n"+str(key)+": "+str([item[key] for item in self.global_diversity_per_validation])
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\nGlobal Results per Validation"
-            for key in self.global_result_per_validation:
-                msg += "\n"+str(key)+": "+str(self.global_result_per_validation[key])
+            for attribute in self.global_result_per_validation:
+                msg += "\n"+str(attribute)+":"
+                for key in self.global_result_per_validation[attribute]:
+                    msg += "\n- "+str(key)+": "+str(self.global_result_per_validation[attribute][key])
 
         msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
         msg += "\n\nDistribution of Actions per Validation: "+str(self.actions_distribution_per_validation)
@@ -89,11 +90,8 @@ class RunInfo:
         msg += "\n\n\n##### DISTRIBUTION METRICS PER TRAINING"
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\nPoint Distribution per Training"
-            for key in self.point_distribution_per_generation:
-                msg += "\n"+str(key)+": "+str(self.point_distribution_per_generation[key])
-            msg += "\n\nPoint Distribution per Population per Training"
-            for population in self.point_distribution_per_population_per_generation:
-                msg += "\n"+str(population)+":"
-                for key in self.point_distribution_per_population_per_generation[population]:
-                    msg += "\n- "+str(key)+": "+str(self.point_distribution_per_population_per_generation[population][key])
+            for attribute in self.point_distribution_per_generation:
+                msg += "\n"+str(attribute)+":"
+                for key in self.point_distribution_per_generation[attribute]:
+                    msg += "\n- "+str(key)+": "+str(self.point_distribution_per_generation[attribute][key])
         return msg

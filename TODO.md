@@ -37,12 +37,9 @@ runs:
 ----
 Next steps:
 - check if NCD is correct (compare with other compression algorithms) Compare bzip and zip across test cases (always fold x always fold, always raise x always raise, always fold x always raise, smart x always fold, smart x always raise)
-- metric for hand equity (performance per hand equity (do sbb e do oponente) and point population evolution)
+- metric for hand equity (performance per hand equity (do sbb e do oponente) (validation))
 - optional: 4 opponents based on equity
-- 120 point? 90 point?
 - fazer mais testes com e sem hand potential, para analisar o runtime
-
-conferir NCD
 
 voltar a fazer runs de ttt?
 
@@ -51,8 +48,6 @@ conferir TODOs
 fazer apenas o champion ir contra o hall of fame? para mais points?
 
 no worst points, mostrar tb qual oponente foi contra (salvar last_opponent no point)
-
-metrica para checar o tamanho da point population evoluindo com o tempo, por label
 
 nao salvar poker memory para champion?
 

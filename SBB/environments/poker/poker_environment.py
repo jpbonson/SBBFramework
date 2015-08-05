@@ -257,33 +257,37 @@ class PokerEnvironment(ReinforcementEnvironment):
             del PokerConfig.HAND_NPOTENTIAL_MEMORY[point.point_id_]
 
     def calculate_poker_metrics_per_generation(self, run_info, teams_population):
-        pass # TODO: fix + mover para poker environment
-        # sbb_opponents_positions = []
-        # coded_opponents = []
-        # for point in self.environment.point_population():
-        #     if point.opponent.opponent_id == "hall_of_fame" or point.opponent.opponent_id == "sbb":
-        #         sbb_opponents_positions += point.position_
-        #     else:
-        #         coded_opponents.append(point)
-        # for position in range(PokerEnvironment.CONFIG['positions']):
-        #     total = len([point for point in coded_opponents if point.position_ == position])
-        #     total += len([point for point in sbb_opponents_positions if point == position])
-        #     run_info.point_distribution_per_generation[position].append(total)
-            # if position not in run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_type_)]:
-            #     run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_type_)][position] = []
-            # run_info.point_distribution_per_population_per_generation[str(self.environment.current_opponent_type_)][position].append(total)
+        for position in range(PokerConfig.CONFIG['positions']):
+            total = len([point for point in self.point_population() if point.position_ == position])
+            if position not in run_info.point_distribution_per_generation['position']:
+                run_info.point_distribution_per_generation['position'][position] = []
+            run_info.point_distribution_per_generation['position'][position].append(total)
 
-    def calculate_poker_metrics_per_validation(self, run_info, teams_population):
-        validation_population = self.validation_population()
+        for label in PokerConfig.CONFIG['labels'].keys():
+
+            total = len([point for point in self.point_population() if point.label_ == label])
+            if label not in run_info.point_distribution_per_generation['sbb_hole_card_equity']:
+                run_info.point_distribution_per_generation['sbb_hole_card_equity'][label] = []
+            run_info.point_distribution_per_generation['sbb_hole_card_equity'][label].append(total)
+
+            total = len([point for point in self.point_population() if point.opponent_label_ == label])
+            if label not in run_info.point_distribution_per_generation['opp_hole_card_equity']:
+                run_info.point_distribution_per_generation['opp_hole_card_equity'][label] = []
+            run_info.point_distribution_per_generation['opp_hole_card_equity'][label].append(total)
+
+    def calculate_poker_metrics_per_validation(self, run_info, teams_population): # TODO
         points_per_position = {}
         for position in range(PokerConfig.CONFIG['positions']):
-            points_per_position[position] = [point for point in validation_population if point.position_ == position]
+            points_per_position[position] = [point for point in self.validation_population() if point.position_ == position]
         run_info.point_distribution_per_validation = {}
+        run_info.point_distribution_per_validation['position'] = {}
         for position in range(PokerConfig.CONFIG['positions']):
-            run_info.point_distribution_per_validation[position] = len(points_per_position[position])
+            run_info.point_distribution_per_validation['position'][position] = len(points_per_position[position])
         for position in range(PokerConfig.CONFIG['positions']):
             means_per_position = round_value(numpy.mean(flatten([point.teams_results_ for point in points_per_position[position]])))
-            run_info.global_result_per_validation[position].append(means_per_position)
+            if position not in run_info.global_result_per_validation['position']:
+                run_info.global_result_per_validation['position'][position] = []
+            run_info.global_result_per_validation['position'][position].append(means_per_position)
 
     @staticmethod
     def normalize_winning(value):

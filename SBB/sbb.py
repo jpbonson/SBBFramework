@@ -261,23 +261,29 @@ class SBB:
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
             print "Global Diversity (last 10 gen.):"
             for diversity in Config.RESTRICTIONS['used_diversities']:
-                print str(diversity)+": "+str(run_info.global_diversity_per_generation[diversity][-10:])
+                print "- "+str(diversity)+": "+str(run_info.global_diversity_per_generation[diversity][-10:])
         if len(Config.RESTRICTIONS['used_diversities']) > 1:
             print "Diversity Type (last 10 gen.): "+str(run_info.novelty_type_per_generation[-10:])
 
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             print
-            print "Point Distribution per Training (last 10 gen.):"
-            for key in run_info.point_distribution_per_generation:
-                print str(key)+": "+str(run_info.point_distribution_per_generation[key][-10:])
+            print "Point Distribution per Training (last gen.):"
+            for attribute in run_info.point_distribution_per_generation:
+                temp = []
+                for key in run_info.point_distribution_per_generation[attribute]:
+                    temp.append(str(key)+": "+str(run_info.point_distribution_per_generation[attribute][key][-1]))
+                print "- "+str(attribute)+" = "+", ".join(temp)
 
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             print
             self.environment.calculate_poker_metrics_per_validation(run_info, teams_population)
             print "Point Distribution per Validation: "+str(run_info.point_distribution_per_validation)
             print "Global Point Results per Validation: "
-            for key in run_info.global_result_per_validation:
-                print str(key)+": "+str(run_info.global_result_per_validation[key][-1])
+            for attribute in run_info.global_result_per_validation:
+                temp = []
+                for key in run_info.global_result_per_validation[attribute]:
+                    temp.append(str(key)+": "+str(run_info.global_result_per_validation[attribute][key][-1]))
+                print "- "+str(attribute)+" = "+", ".join(temp)
             
         print
 

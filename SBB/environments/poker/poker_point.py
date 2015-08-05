@@ -52,13 +52,14 @@ class PokerPoint(ReinforcementPoint):
         self.sbb_equity_ = MatchState.calculate_equity(self.sbb_hole_cards)
         self.opponent_equity_ = MatchState.calculate_equity(self.opponent_hole_cards)
         self.label_ = self._get_label(self.sbb_equity_)
+        self.opponent_label_ = self._get_label(self.opponent_equity_)
 
     def _get_label(self, equity):
-        if equity >= PokerConfig.CONFIG['labels']['0']:
+        if equity >= PokerConfig.CONFIG['labels'][0]:
             return 0
-        if equity >= PokerConfig.CONFIG['labels']['1']:
+        if equity >= PokerConfig.CONFIG['labels'][1]:
             return 1
-        if equity >= PokerConfig.CONFIG['labels']['2']:
+        if equity >= PokerConfig.CONFIG['labels'][2]:
             return 2
         return 3
 
