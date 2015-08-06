@@ -23,6 +23,7 @@ class PokerPoint(ReinforcementPoint):
         self.label_ = 0
         self.sbb_equity_ = None
         self.opponent_equity_ = None
+        self.last_opponent_ = None
         self.teams_results_ = []
         self._initialize_metrics()
 
@@ -71,7 +72,8 @@ class PokerPoint(ReinforcementPoint):
         opp_info = str(self.opponent_hole_cards)+", "+str(self.opponent_equity_)+", "+str(self.opponent_strength_)
         msg = ""
         msg += "(id = ["+str(self.point_id_)+"], attributes = ["+str(self.seed_)+", "+str(self.position_)+"], "
-        msg += "sbb cards info = ["+sbb_info+"], opp cards info = ["+opp_info+"])"
+        msg += "sbb cards info = ["+sbb_info+"], opp cards info = ["+opp_info+"], "
+        msg += " last opponent = ["+self.last_opponent_+"])"
         return msg
 
     @staticmethod

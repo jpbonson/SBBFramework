@@ -145,6 +145,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             print "normalized_value: "+str(normalized_value)
 
         point.teams_results_.append(normalized_value)
+        point.last_opponent_ = opponent.__repr__()
 
         return normalized_value
 
@@ -518,6 +519,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                         opponent_folded = True
                         PokerEnvironment.get_chips(player, opponent).append(+(partial_match_state.calculate_pot()))
                     elif previous_action == 'f':
+                        print "Warning! (1)"
                         if Config.USER['reinforcement_parameters']['debug_matches']:
                             debug_file.write("partial_msg: "+str(partial_msg)+", I folded (2)\n\n")
                             print player.__repr__()+": partial_msg: "+str(partial_msg)+", I folded (2)\n"
@@ -525,6 +527,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                         opponent_folded = False
                         PokerEnvironment.get_chips(player, opponent).append(-(partial_match_state.calculate_pot()))
                     else:
+                        print "Warning! (2)"
                         if Config.USER['reinforcement_parameters']['debug_matches']:
                             debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (2)\n\n")
                             print player.__repr__()+": partial_msg: "+str(partial_msg)+", opponent folded (2)\n"

@@ -1,117 +1,43 @@
 ===
-TODO:
-
-runs:
-- initial results:
-    results1
-    - only_coded x2 (from test: [0.5139 to 0.534, very stable], train: [0.51602 to 0.56009, quite unstable], time: 43600 secs)
-    - only_sbb x2 (from test: [0.50984 to 0.52742, mostly stable], train: [0.50032 to 0.49283, very unstable], time: 63406 secs)
-        - is too slow (at least 50% more than only_coded, since it dont use memory) and produced below average results
-    - hybrid x2 (from test: [0.5139 to 0.53163, very stable], train: [0.51901 to 0.52942, more quite unstable], time: 49318 secs)
-        - very similar results for test, but for train the scoe is much lower than only_coded, just a bit slower
-    - hybrid+hall of fame x2 (from test: [0.5139 to 0.53469, mostly stable], train: [0.53002 to 0.52838, very unstable], time: 42392 secs)
-        - hall of fame seems to have improved the test results, but the train results are more unstable, similar runtime
-    - only coded+equity+hall of fame x2 (from test: [0.50992 to 0.51701, very unstable], train: [0.52013 to 0.52337, very unstable], time: 37316 secs)
-    - only coded+equity+hall of fame x1 (from test: [0.51677 to 0.53499, mostly stable], train: [0.54409 to 0.50364, very unstable], time: 37316 secs)
-    - only_coded+equity+potential x1 (from test: [0.50656 to 0.53591, very stable], train: [0.50173 to 0.54714, very unstable], time: 48677 secs)
-        - it took more generations to improve, but improved more than just only_coded
-    others:
-        - best option: only_coded + hall_of_fame? not sure if hall_of_fame is helping or not
-        - usar equity_deck seems to provide faster results without decreasing the quality
-        - hand_potential seems to decrease to quality, but should be tested more
-        - com a melhor combinacao, testar apenas fold, call e raise, e testar random?
-    results2
-    - full_deck for hand_strength (ok) and equity 1/3 for hand potential (fazer testes rapidos?), balanced: True
-    - balanced: False (check memory!)
-        - training a bit more balanced
-        - seems to be a bit more faster
-        - sightly less stable test
-        - inconclusive: would need to test for more runs
-    results3
-    - full x simplified program, registers and opponent model x simplified + only fold and call
-        - only fold and call: got the worst results, even with the obrigatory fold action the teams didnt learn to use it
-        during generation 1 to 100 it went from only 0.50189 to only 0.50284, it still prioritized call much more than fold
-        even with good reuslts for diversity (0.86/0.76 for genotype and 0.3/0.02 for ncd)
-
-
-----
-check if NCD is correct (compare with other compression algorithms) Compare bzip and zip across test cases (always fold x always fold, always raise x always raise, always fold x always raise, smart x always fold, smart x always raise)
-
-fazer apenas o champion ir contra o hall of fame? para mais points?
-
-no worst points, mostrar tb qual oponente foi contra (salvar last_opponent no point)
+todo:
+- check if NCD is correct (compare with other compression algorithms) Compare bzip and zip across test cases (always fold x always fold, always raise x always raise, always fold x always raise, smart x always fold, smart x always raise)
+- fazer apenas o champion ir contra o hall of fame? para mais points?
 
 optional:
-4 opponents based on equity
-refatorar update_opponent_model_and_chips
+- 4 opponents based on equity
+- checar anotacoes ali embaixo
 
 extra:
-nao salvar poker memory para champion?
-voltar a fazer runs de ttt?
-3 ou 4 grupos de equity e strength? 10/20/30/40 ou 20/30/50?
-fazer mais testes com e sem hand potential, para analisar o runtime
-fazer outro run de performance? (nao esquecer de remover a delecao de memoria do yappi)
+- nao salvar poker memory para champion?
+- voltar a fazer runs de ttt?
+- 3 ou 4 grupos de equity e strength? 10/20/30/40 ou 20/30/50?
+- fazer mais testes com e sem hand potential, para analisar o runtime
+- fazer outro run de performance? (nao esquecer de remover a delecao de memoria do yappi)
+
 ------------------
-
-
-
-
-
-garantir outputs (for tictactoe and poker, primeiro implementar o que funciona para ambos, para ja ir fazendo as runs de ttt):
-- analisar quais inputs estao sendo usados (apenas dos programs ativos no team) (validation): DONE
-- accumulative performance curve for the population (tutorial, page 21) (validation): DONE
-- diversity x score x fitness x generations (for both diversities, array of values (validation): DONE
-- outputs para R plot (training) (fitness + diversity x2 + test score, per generation): DONE
-
-- metrica para performance das teams por range de hand strenght nas hole cards? e do board? conferir na tabela como organizar os ranges? (validation) (individual e global): TODO
-- printar points na population por hand strenght das holes cards, e hand strenght do board (training, cuidado com hall of fame): TODO
 - implementar 4 equity/strenght opponent? e mandar rodar um run longo? TODO
     If we build a couple of opponents that are more likely to engage in hands proportionate to starting equity, i.e., always betting with high equity (say >= 0.65), always calling for moderate (0.5 to < 0.65) and fold anything less (assuming a single opponent context) then this will get us a basic opponent that will be tough to beat initially.  In other words, we could bias the probabilities of <bet, call, fold> with starting equity and let it go from there.  This would cover our 'tight' sample behaviours.
     - tight e loose? passive e agressive?
     - This playing style is called "tight", as you are very selective and only play hands where you think you have an advantage. At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average. This means you should fold before the flop in four out of five cases. 
     Some opponents won't stick to this recommendation and play almost every hand, which is a style of play known as "loose".
     https://www.pokerschoolonline.com/articles/Playing-Style-and-Position
-
-    print str(s[int(round(len(s)*0.2))]) # 20% (>= 0.564089482, ('9h', 'Kc'))
-    print str(s[int(round(len(s)*0.5))]) # 30% (>= 0.478209277, ('8c', 'Ts'))
-    print str(s[int(round(len(s)*0.6))]) # 50% (< 0.478209277, ('5c', 'Jh'))
-    print "---"
-    print str(s[int(round(len(s)*0.1))]) # 10% (>= 0.605853525, ('Tc', 'Kc'))
-    print str(s[int(round(len(s)*0.2))]) # 20% (>= 0.564089482, ('9h', 'Kc'))
-    print str(s[int(round(len(s)*0.6))]) # 30% (>= 0.449015885, ('5c', 'Jh'))
-    print str(s[int(round(len(s)*0.7))]) # 40% (< 0.449015885, ('4s', 'Tc'))
-
+------------------
 entregaveis:
-- ir escrevendo o report (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); rmevoed always_fold opponent)
+- ir escrevendo o report (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); removed always_fold opponent)
+- implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 - perguntar se o paper Ideal Evaluation from Coevolution foi usado como base para a point population evolution com pareto na versao original do SBB
 
 extra:
-- implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
+- refatorar update_opponent_model_and_chips (baseado nos warnings)
+- volatility, agressiveness, hand potential?
 - implementar mais diversity: entropy (http://stats.stackexchange.com/questions/60619/how-to-calculate-kullback-leibler-divergence-distance, https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence, https://en.wikipedia.org/wiki/Entropy_(information_theory))
-- implementar equity opponent
-- short-term inputs sao uteis? volatility e' util?
 - memmory: parar de usar negative potential? salvar outputs em arquivo durante a execucao?
 - as metricas globais mostram os resultados considerando apenas os parents, deveriam tambem considerar as children?
-- usar metricas globais ou por best team para tomar decisoes?
-
-pensar sobre:
-- "100 hands against each opponent/type of opponent"
-- no minimo, era esperado que o training score subisse consideravelmente, sera que apenas nao rodou por tempo o suficiente?
-- obs.: removi always_fold dos oponentes, ja que ele estava fazendo com que os resultados das generations com ele fossem basicamente random
-- problems? ttt is able to perform better than random (more than 50%, usually it gets to 70% quickly), so it doesn't seem to be a problem 
-with the reinforcement learning algorithm. But the poker task is evolving so slow for more than 50% that I am not sure if it is being able 
-to evolve at all. I expected that at least the training score woudl evolve quickly. I looked for bugs but so far I found nothing, so I am 
-not sure if the problem is in the algorithm or in the difficult of the task. I tried to provide equity as the only input against only the allways_raise opponent, but I got no better results. I will continue to implement the last outputs while I run SBB for poker, and then I 
-will analyse the resultant teams' behaviors.
-- the teams are playing all the hands!
-- obrigar teams a sempre terem uma action fold? (sem o extra registers, e com menos instructions?)
 
 ---
 
 future work:
 - fazer versao do pSBB sem poker, para ser open source, e mover poker para um branch
-- fazer system tests para poker?
-- implementar novos oponentes (opcao de agrupar oponentes por tipo?)
 - nos testes, checar se os teams sabem blefar
 - refatorar codigo
 - ir testando enquanto implementa:
