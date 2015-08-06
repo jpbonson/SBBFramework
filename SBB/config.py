@@ -32,8 +32,8 @@ class Config():
             'generations_total': 50,
             'validate_after_each_generation': 25,
             'populations': {
-                'teams': 20,
-                'points': 20,
+                'teams': 18,
+                'points': 18,
             },
             'replacement_rate': {
                 'teams': 0.5,

@@ -30,7 +30,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def __init__(self):
         total_actions = 3 # fold, call, raise
         total_inputs = len(PokerConfig.INPUTS)
-        total_labels = len(PokerConfig.CONFIG['labels'].keys())
+        total_labels = len(PokerConfig.CONFIG['hand_equity_labels'].keys())
         coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         point_class = PokerPoint
@@ -108,24 +108,36 @@ class PokerEnvironment(ReinforcementEnvironment):
         if not is_training:
             if mode == Config.RESTRICTIONS['mode']['validation']:
                 team.extra_metrics_['total_hands_validation'] += 1
-                team.extra_metrics_['total_hands_validation_per_point_type'][str(point.position_)] += 1
+                team.extra_metrics_['total_hands_validation_per_point_type']['position'][point.position_] += 1
+                team.extra_metrics_['total_hands_validation_per_point_type']['sbb_equity'][point.label_] += 1
+                team.extra_metrics_['total_hands_validation_per_point_type']['sbb_strength'][point.sbb_strength_label_] += 1
             else:
                 team.extra_metrics_['total_hands_champion'] += 1
-                team.extra_metrics_['total_hands_champion_per_point_type'][str(point.position_)] += 1
+                team.extra_metrics_['total_hands_champion_per_point_type']['position'][point.position_] += 1
+                team.extra_metrics_['total_hands_champion_per_point_type']['sbb_equity'][point.label_] += 1
+                team.extra_metrics_['total_hands_champion_per_point_type']['sbb_strength'][point.sbb_strength_label_] += 1
             if team.extra_metrics_['played_last_hand']:
                 if mode == Config.RESTRICTIONS['mode']['validation']:
                     team.extra_metrics_['hand_played_validation'] += 1
-                    team.extra_metrics_['hand_played_validation_per_point_type'][str(point.position_)] += 1
+                    team.extra_metrics_['hand_played_validation_per_point_type']['position'][point.position_] += 1
+                    team.extra_metrics_['hand_played_validation_per_point_type']['sbb_equity'][point.label_] += 1
+                    team.extra_metrics_['hand_played_validation_per_point_type']['sbb_strength'][point.sbb_strength_label_] += 1
                 else:
                     team.extra_metrics_['hand_played_champion'] += 1
-                    team.extra_metrics_['hand_played_champion_per_point_type'][str(point.position_)] += 1
+                    team.extra_metrics_['hand_played_champion_per_point_type']['position'][point.position_] += 1
+                    team.extra_metrics_['hand_played_champion_per_point_type']['sbb_equity'][point.label_] += 1
+                    team.extra_metrics_['hand_played_champion_per_point_type']['sbb_strength'][point.sbb_strength_label_] += 1
             if team.extra_metrics_['played_last_hand'] and normalized_value > 0.5:
                 if mode == Config.RESTRICTIONS['mode']['validation']:
                     team.extra_metrics_['won_hands_validation'] += 1
-                    team.extra_metrics_['won_hands_validation_per_point_type'][str(point.position_)] += 1
+                    team.extra_metrics_['won_hands_validation_per_point_type']['position'][point.position_] += 1
+                    team.extra_metrics_['won_hands_validation_per_point_type']['sbb_equity'][point.label_] += 1
+                    team.extra_metrics_['won_hands_validation_per_point_type']['sbb_strength'][point.sbb_strength_label_] += 1
                 else:
                     team.extra_metrics_['won_hands_champion'] += 1
-                    team.extra_metrics_['won_hands_champion_per_point_type'][str(point.position_)] += 1
+                    team.extra_metrics_['won_hands_champion_per_point_type']['position'][point.position_] += 1
+                    team.extra_metrics_['won_hands_champion_per_point_type']['sbb_equity'][point.label_] += 1
+                    team.extra_metrics_['won_hands_champion_per_point_type']['sbb_strength'][point.sbb_strength_label_] += 1
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             print "scores: "+str(scores)
@@ -195,12 +207,30 @@ class PokerEnvironment(ReinforcementEnvironment):
                 team.extra_metrics_['won_hands_champion'] = 0
 
                 for position in range(PokerConfig.CONFIG['positions']):
-                    team.extra_metrics_['total_hands_validation_per_point_type'] = defaultdict(int)
-                    team.extra_metrics_['total_hands_champion_per_point_type'] = defaultdict(int)
-                    team.extra_metrics_['hand_played_validation_per_point_type'] = defaultdict(int)
-                    team.extra_metrics_['hand_played_champion_per_point_type'] = defaultdict(int)
-                    team.extra_metrics_['won_hands_validation_per_point_type'] = defaultdict(int)
-                    team.extra_metrics_['won_hands_champion_per_point_type'] = defaultdict(int)
+                    team.extra_metrics_['total_hands_validation_per_point_type'] = {}
+                    team.extra_metrics_['total_hands_champion_per_point_type'] = {}
+                    team.extra_metrics_['hand_played_validation_per_point_type'] = {}
+                    team.extra_metrics_['hand_played_champion_per_point_type'] = {}
+                    team.extra_metrics_['won_hands_validation_per_point_type'] = {}
+                    team.extra_metrics_['won_hands_champion_per_point_type'] = {}
+                    team.extra_metrics_['total_hands_validation_per_point_type']['position'] = defaultdict(int)
+                    team.extra_metrics_['total_hands_champion_per_point_type']['position'] = defaultdict(int)
+                    team.extra_metrics_['hand_played_validation_per_point_type']['position'] = defaultdict(int)
+                    team.extra_metrics_['hand_played_champion_per_point_type']['position'] = defaultdict(int)
+                    team.extra_metrics_['won_hands_validation_per_point_type']['position'] = defaultdict(int)
+                    team.extra_metrics_['won_hands_champion_per_point_type']['position'] = defaultdict(int)
+                    team.extra_metrics_['total_hands_validation_per_point_type']['sbb_equity'] = defaultdict(int)
+                    team.extra_metrics_['total_hands_champion_per_point_type']['sbb_equity'] = defaultdict(int)
+                    team.extra_metrics_['hand_played_validation_per_point_type']['sbb_equity'] = defaultdict(int)
+                    team.extra_metrics_['hand_played_champion_per_point_type']['sbb_equity'] = defaultdict(int)
+                    team.extra_metrics_['won_hands_validation_per_point_type']['sbb_equity'] = defaultdict(int)
+                    team.extra_metrics_['won_hands_champion_per_point_type']['sbb_equity'] = defaultdict(int)
+                    team.extra_metrics_['total_hands_validation_per_point_type']['sbb_strength'] = defaultdict(int)
+                    team.extra_metrics_['total_hands_champion_per_point_type']['sbb_strength'] = defaultdict(int)
+                    team.extra_metrics_['hand_played_validation_per_point_type']['sbb_strength'] = defaultdict(int)
+                    team.extra_metrics_['hand_played_champion_per_point_type']['sbb_strength'] = defaultdict(int)
+                    team.extra_metrics_['won_hands_validation_per_point_type']['sbb_strength'] = defaultdict(int)
+                    team.extra_metrics_['won_hands_champion_per_point_type']['sbb_strength'] = defaultdict(int)
 
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']: # initializing
             for opponent in self.opponent_population_['hall_of_fame']:
@@ -256,38 +286,58 @@ class PokerEnvironment(ReinforcementEnvironment):
             del PokerConfig.HAND_PPOTENTIAL_MEMORY[point.point_id_]
             del PokerConfig.HAND_NPOTENTIAL_MEMORY[point.point_id_]
 
-    def calculate_poker_metrics_per_generation(self, run_info, teams_population):
-        for position in range(PokerConfig.CONFIG['positions']):
-            total = len([point for point in self.point_population() if point.position_ == position])
-            if position not in run_info.point_distribution_per_generation['position']:
-                run_info.point_distribution_per_generation['position'][position] = []
-            run_info.point_distribution_per_generation['position'][position].append(total)
+    def calculate_poker_metrics_per_generation(self, run_info, current_generation):
+        if run_info.balanced_point_population is None:
+            current_subsets_per_class = self._get_data_per_label(self.point_population_)
+            array = [len(a) for a in current_subsets_per_class]
+            if array.count(array[0]) == len(array):
+                run_info.balanced_point_population = current_generation
 
-        for label in PokerConfig.CONFIG['labels'].keys():
+    def calculate_poker_metrics_per_validation(self, run_info):
+        self._calculate_point_population_metrics_per_validation(run_info)
+        self._calculate_validation_population_metrics_per_validation(run_info)
 
-            total = len([point for point in self.point_population() if point.label_ == label])
-            if label not in run_info.point_distribution_per_generation['sbb_hole_card_equity']:
-                run_info.point_distribution_per_generation['sbb_hole_card_equity'][label] = []
-            run_info.point_distribution_per_generation['sbb_hole_card_equity'][label].append(total)
+    def _calculate_point_population_metrics_per_validation(self, run_info):
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.position_, 'position', range(PokerConfig.CONFIG['positions']))
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_hole_card_equity', PokerConfig.CONFIG['hand_equity_labels'].keys())
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.opponent_label_, 'opp_hole_card_equity', PokerConfig.CONFIG['hand_equity_labels'].keys())
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_strength_label_, 'sbb_hole_card_strength', PokerConfig.CONFIG['hand_strength_labels'].keys())
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.opponent_strength_label_, 'opp_hole_card_strength', PokerConfig.CONFIG['hand_strength_labels'].keys())
 
-            total = len([point for point in self.point_population() if point.opponent_label_ == label])
-            if label not in run_info.point_distribution_per_generation['opp_hole_card_equity']:
-                run_info.point_distribution_per_generation['opp_hole_card_equity'][label] = []
-            run_info.point_distribution_per_generation['opp_hole_card_equity'][label].append(total)
+    def _calculate_point_population_metric_per_validation(self, run_info, get_attribute, key, labels):
+        for label in labels:
+            total = len([point for point in self.point_population() if get_attribute(point) == label])
+            if label not in run_info.point_population_distribution_per_validation[key]:
+                run_info.point_population_distribution_per_validation[key][label] = []
+            run_info.point_population_distribution_per_validation[key][label].append(total)
 
-    def calculate_poker_metrics_per_validation(self, run_info, teams_population): # TODO
-        points_per_position = {}
-        for position in range(PokerConfig.CONFIG['positions']):
-            points_per_position[position] = [point for point in self.validation_population() if point.position_ == position]
-        run_info.point_distribution_per_validation = {}
-        run_info.point_distribution_per_validation['position'] = {}
-        for position in range(PokerConfig.CONFIG['positions']):
-            run_info.point_distribution_per_validation['position'][position] = len(points_per_position[position])
-        for position in range(PokerConfig.CONFIG['positions']):
-            means_per_position = round_value(numpy.mean(flatten([point.teams_results_ for point in points_per_position[position]])))
-            if position not in run_info.global_result_per_validation['position']:
-                run_info.global_result_per_validation['position'][position] = []
-            run_info.global_result_per_validation['position'][position].append(means_per_position)
+    def _calculate_validation_population_metrics_per_validation(self, run_info):
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.position_, 'position', range(PokerConfig.CONFIG['positions']))
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_hole_card_equity', PokerConfig.CONFIG['hand_equity_labels'].keys())
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.opponent_label_, 'opp_hole_card_equity', PokerConfig.CONFIG['hand_equity_labels'].keys())
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_strength_label_, 'sbb_hole_card_strength', PokerConfig.CONFIG['hand_strength_labels'].keys())
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.opponent_strength_label_, 'opp_hole_card_strength', PokerConfig.CONFIG['hand_strength_labels'].keys())
+
+    def _calculate_validation_population_metric_per_validation(self, run_info, get_attribute, key, labels):
+        point_per_distribution = {}
+        for label in labels:
+            point_per_distribution[label] = [point for point in self.validation_population() if get_attribute(point) == label]
+        run_info.validation_population_distribution_per_validation[key] = {}
+        for label in labels:
+            run_info.validation_population_distribution_per_validation[key][label] = len(point_per_distribution[label])
+
+        for label in labels:
+            means_per_position = round_value(numpy.mean(flatten([point.teams_results_ for point in point_per_distribution[label]])))
+            if label not in run_info.global_result_per_validation[key]:
+                run_info.global_result_per_validation[key][label] = []
+            run_info.global_result_per_validation[key][label].append(means_per_position)
+
+        point_per_distribution = {}
+        for label in labels:
+            point_per_distribution[label] = [point for point in self.champion_point_population_ if get_attribute(point) == label]
+        run_info.champion_population_distribution_per_validation[key] = {}
+        for label in labels:
+            run_info.champion_population_distribution_per_validation[key][label] = len(point_per_distribution[label])
 
     @staticmethod
     def normalize_winning(value):

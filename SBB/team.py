@@ -172,10 +172,12 @@ class Team(DefaultOpponent):
                 if self.extra_metrics_['total_hands_champion'] > 0:
                     msg += "\nhands (champion): played: "+str(self.extra_metrics_['hand_played_champion'])+", won: "+str(self.extra_metrics_['won_hands_champion'])+" (total: "+str(self.extra_metrics_['total_hands_champion'])+")"
                 
-                for key in self.extra_metrics_['total_hands_validation_per_point_type']:
-                    msg += "\n\nhands (validation, type: "+str(key)+"): played: "+str(self.extra_metrics_['hand_played_validation_per_point_type'][key])+", won: "+str(self.extra_metrics_['won_hands_validation_per_point_type'][key])+" (total: "+str(self.extra_metrics_['total_hands_validation_per_point_type'][key])+")"
-                    if self.extra_metrics_['total_hands_champion'] > 0:
-                        msg += "\nhands (champion, type: "+str(key)+"): played: "+str(self.extra_metrics_['hand_played_champion_per_point_type'][key])+", won: "+str(self.extra_metrics_['won_hands_champion_per_point_type'][key])+" (total: "+str(self.extra_metrics_['total_hands_champion_per_point_type'][key])+")"
+                for metric in self.extra_metrics_['total_hands_validation_per_point_type']:
+                    msg += "\n"
+                    for key in self.extra_metrics_['total_hands_validation_per_point_type'][metric]:
+                        msg += "\nhands (validation, "+str(metric)+", "+str(key)+"): played: "+str(self.extra_metrics_['hand_played_validation_per_point_type'][metric][key])+", won: "+str(self.extra_metrics_['won_hands_validation_per_point_type'][metric][key])+" (total: "+str(self.extra_metrics_['total_hands_validation_per_point_type'][metric][key])+")"
+                        if self.extra_metrics_['total_hands_champion'] > 0:
+                            msg += "\nhands (champion, "+str(metric)+", "+str(key)+"): played: "+str(self.extra_metrics_['hand_played_champion_per_point_type'][metric][key])+", won: "+str(self.extra_metrics_['won_hands_champion_per_point_type'][metric][key])+" (total: "+str(self.extra_metrics_['total_hands_champion_per_point_type'][metric][key])+")"
 
                 if 'agressiveness' in self.extra_metrics_:
                     msg += "\n\nagressiveness: "+str(self.extra_metrics_['agressiveness'])

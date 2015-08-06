@@ -32,9 +32,11 @@ class RunInfo:
         self.global_diversity_per_generation = defaultdict(list)
         self.novelty_type_per_generation = []
         self.opponent_type_per_generation = []
-        self.point_distribution_per_validation = {}
+        self.validation_population_distribution_per_validation = {}
+        self.champion_population_distribution_per_validation = {}
         self.global_result_per_validation = defaultdict(dict)
-        self.point_distribution_per_generation = defaultdict(dict)
+        self.point_population_distribution_per_validation = defaultdict(dict)
+        self.balanced_point_population = None
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
@@ -68,10 +70,17 @@ class RunInfo:
         msg += "\n\nDistribution of Actions per Validation: "+str(self.actions_distribution_per_validation)
         msg += "\n\nDistribution of Inputs per Validation: "+str(self.inputs_distribution_per_validation)
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            msg += "\n\nDistribution of Points per Validation: "+str(self.point_distribution_per_validation)
+            msg += "\n\nValidation Population Distribution per Validation: "+str(self.validation_population_distribution_per_validation)
+            msg += "\n\nChampion Population Distribution per Validation: "+str(self.champion_population_distribution_per_validation)
         msg += "\n\nTotal Individual Team Performance: "+str(self.individual_performance_in_last_generation)
         msg += "\n\nTotal Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation)
         msg += "\n\n10% Worst Points Performed Against: "+str(self.worst_points_in_last_generation)
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+            msg += "\n\nPoint Population Distribution per Validation"
+            for attribute in self.point_population_distribution_per_validation:
+                msg += "\n"+str(attribute)+":"
+                for key in self.point_population_distribution_per_validation[attribute]:
+                    msg += "\n- "+str(key)+": "+str(self.point_population_distribution_per_validation[attribute][key])
 
         msg += "\n\n\n##### METRICS FOR THE LAST GENERATION"
         msg += "\n\nDistribution of Actions: "+str(self.actions_distribution_per_validation[-1])
@@ -87,11 +96,6 @@ class RunInfo:
                 msg += "\n"+str(key)+": "+str(self.global_diversity_per_generation[key])
             if len(Config.RESTRICTIONS['used_diversities']) > 1:
                 msg += "\n\nDiversity Type per Training: "+str(self.novelty_type_per_generation)
-        msg += "\n\n\n##### DISTRIBUTION METRICS PER TRAINING"
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            msg += "\n\nPoint Distribution per Training"
-            for attribute in self.point_distribution_per_generation:
-                msg += "\n"+str(attribute)+":"
-                for key in self.point_distribution_per_generation[attribute]:
-                    msg += "\n- "+str(key)+": "+str(self.point_distribution_per_generation[attribute][key])
+            msg += "\n\nGeneration the Point Population became Balanced: "+str(self.balanced_point_population)
         return msg

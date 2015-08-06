@@ -35,23 +35,22 @@ runs:
 
 
 ----
-Next steps:
-- check if NCD is correct (compare with other compression algorithms) Compare bzip and zip across test cases (always fold x always fold, always raise x always raise, always fold x always raise, smart x always fold, smart x always raise)
-- metric for hand equity (performance per hand equity (do sbb e do oponente) (validation))
-- optional: 4 opponents based on equity
-- fazer mais testes com e sem hand potential, para analisar o runtime
-
-voltar a fazer runs de ttt?
-
-conferir TODOs
+check if NCD is correct (compare with other compression algorithms) Compare bzip and zip across test cases (always fold x always fold, always raise x always raise, always fold x always raise, smart x always fold, smart x always raise)
 
 fazer apenas o champion ir contra o hall of fame? para mais points?
 
 no worst points, mostrar tb qual oponente foi contra (salvar last_opponent no point)
 
-nao salvar poker memory para champion?
-
+optional:
+4 opponents based on equity
 refatorar update_opponent_model_and_chips
+
+extra:
+nao salvar poker memory para champion?
+voltar a fazer runs de ttt?
+3 ou 4 grupos de equity e strength? 10/20/30/40 ou 20/30/50?
+fazer mais testes com e sem hand potential, para analisar o runtime
+fazer outro run de performance? (nao esquecer de remover a delecao de memoria do yappi)
 ------------------
 
 

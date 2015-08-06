@@ -51,22 +51,28 @@ class PokerPoint(ReinforcementPoint):
 
         self.sbb_equity_ = MatchState.calculate_equity(self.sbb_hole_cards)
         self.opponent_equity_ = MatchState.calculate_equity(self.opponent_hole_cards)
-        self.label_ = self._get_label(self.sbb_equity_)
-        self.opponent_label_ = self._get_label(self.opponent_equity_)
+        self.label_ = self._label(self.sbb_equity_, 'hand_equity_labels')
+        self.opponent_label_ = self._label(self.opponent_equity_, 'hand_equity_labels')
 
-    def _get_label(self, equity):
-        if equity >= PokerConfig.CONFIG['labels'][0]:
+        self.sbb_strength_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.sbb_hole_cards)]
+        self.opponent_strength_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.opponent_hole_cards)]
+        self.sbb_strength_label_ = self._label(self.sbb_strength_, 'hand_strength_labels')
+        self.opponent_strength_label_ = self._label(self.opponent_strength_, 'hand_strength_labels')
+
+    def _label(self, value, key):
+        if value >= PokerConfig.CONFIG[key][0]:
             return 0
-        if equity >= PokerConfig.CONFIG['labels'][1]:
+        if value >= PokerConfig.CONFIG[key][1]:
             return 1
-        if equity >= PokerConfig.CONFIG['labels'][2]:
-            return 2
-        return 3
+        return 2
 
     def __str__(self):
-        cards = str(self.sbb_hole_cards)+", "+str(self.opponent_hole_cards)
-        metrics = str(self.sbb_equity_)+", "+str(self.opponent_equity_)
-        return "(id = ["+str(self.point_id_)+"], attributes = ["+str(self.seed_)+", "+str(self.position_)+"], "+", cards = ["+cards+"], metrics = ["+metrics+"])"
+        sbb_info = str(self.sbb_hole_cards)+", "+str(self.sbb_equity_)+", "+str(self.sbb_strength_)
+        opp_info = str(self.opponent_hole_cards)+", "+str(self.opponent_equity_)+", "+str(self.opponent_strength_)
+        msg = ""
+        msg += "(id = ["+str(self.point_id_)+"], attributes = ["+str(self.seed_)+", "+str(self.position_)+"], "
+        msg += "sbb cards info = ["+sbb_info+"], opp cards info = ["+opp_info+"])"
+        return msg
 
     @staticmethod
     def test_execution(point, port, is_sbb):

@@ -266,24 +266,24 @@ class SBB:
             print "Diversity Type (last 10 gen.): "+str(run_info.novelty_type_per_generation[-10:])
 
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+            self.environment.calculate_poker_metrics_per_validation(run_info)
             print
-            print "Point Distribution per Training (last gen.):"
-            for attribute in run_info.point_distribution_per_generation:
+            print "Point Population Distribution per Validation (last gen.):"
+            for attribute in run_info.point_population_distribution_per_validation:
                 temp = []
-                for key in run_info.point_distribution_per_generation[attribute]:
-                    temp.append(str(key)+": "+str(run_info.point_distribution_per_generation[attribute][key][-1]))
+                for key in run_info.point_population_distribution_per_validation[attribute]:
+                    temp.append(str(key)+": "+str(run_info.point_population_distribution_per_validation[attribute][key][-1]))
                 print "- "+str(attribute)+" = "+", ".join(temp)
-
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             print
-            self.environment.calculate_poker_metrics_per_validation(run_info, teams_population)
-            print "Point Distribution per Validation: "+str(run_info.point_distribution_per_validation)
+            print "Validation Population Distribution per Validation: "+str(run_info.validation_population_distribution_per_validation)
             print "Global Point Results per Validation: "
             for attribute in run_info.global_result_per_validation:
                 temp = []
                 for key in run_info.global_result_per_validation[attribute]:
                     temp.append(str(key)+": "+str(run_info.global_result_per_validation[attribute][key][-1]))
                 print "- "+str(attribute)+" = "+", ".join(temp)
+            print
+            print "Champion Population Distribution per Validation: "+str(run_info.champion_population_distribution_per_validation)
             
         print
 
@@ -310,7 +310,7 @@ class SBB:
         if Config.USER['task'] == 'reinforcement':
             run_info.opponent_type_per_generation.append(self.environment.opponent_population_.keys().index(self.environment.current_opponent_type_))
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            self.environment.calculate_poker_metrics_per_generation(run_info, teams_population)
+            self.environment.calculate_poker_metrics_per_generation(run_info, self.current_generation_)
 
     def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())
