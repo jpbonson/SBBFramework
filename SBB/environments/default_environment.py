@@ -68,7 +68,7 @@ class DefaultEnvironment(object):
         """
 
     @abc.abstractmethod
-    def evaluate_teams_population(self, teams_population):
+    def evaluate_teams_population_for_training(self, teams_population):
         """
         Evaluate all the teams using the evaluate_team() method, and sets metrics. Used only 
         for training.

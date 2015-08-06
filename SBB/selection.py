@@ -33,7 +33,7 @@ class Selection:
         and then use the teams results to evluate the point population.
         """
         self.environment.setup(teams_population)
-        self.environment.evaluate_teams_population(teams_population)
+        self.environment.evaluate_teams_population_for_training(teams_population)
         self.environment.evaluate_point_population(teams_population)
         return teams_population
 

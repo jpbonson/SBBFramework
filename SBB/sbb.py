@@ -210,7 +210,8 @@ class SBB:
             opponent_means = {}
             for key in older_teams[0].extra_metrics_['validation_opponents']:
                 opponent_means[key] = round_value(numpy.mean([t.extra_metrics_['validation_opponents'][key] for t in older_teams]))    
-
+            if 'hall_of_fame' in best_team.extra_metrics_['champion_opponents']:
+                opponent_means['hall_of_fame(champion)'] = best_team.extra_metrics_['champion_opponents']['hall_of_fame']
             run_info.global_validation_score_per_validation.append(validation_score_mean)
             run_info.global_opponent_results_per_validation.append(opponent_means)               
             print "score (validation): "+str(best_team.extra_metrics_['validation_score'])+" (global: "+str(validation_score_mean)+")"
@@ -285,7 +286,7 @@ class SBB:
             print
             print "Champion Population Distribution per Validation: "+str(run_info.champion_population_distribution_per_validation)
             
-        print
+        print "\n<<<<< Generation: "+str(self.current_generation_)+", run: "+str(run_info.run_id)
 
     def _store_per_generation_metrics(self, run_info, teams_population):
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]

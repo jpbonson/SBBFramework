@@ -1,18 +1,18 @@
 ===
 todo:
 - check if NCD is correct (compare with other compression algorithms) Compare bzip and zip across test cases (always fold x always fold, always raise x always raise, always fold x always raise, smart x always fold, smart x always raise)
-- fazer apenas o champion ir contra o hall of fame? para mais points?
 
 optional:
 - 4 opponents based on equity
 - checar anotacoes ali embaixo
 
 extra:
+- repassar comentairos do paper sobre NCD para o doc
 - nao salvar poker memory para champion?
 - voltar a fazer runs de ttt?
 - 3 ou 4 grupos de equity e strength? 10/20/30/40 ou 20/30/50?
 - fazer mais testes com e sem hand potential, para analisar o runtime
-- fazer outro run de performance? (nao esquecer de remover a delecao de memoria do yappi)
+- implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 
 ------------------
 - implementar 4 equity/strenght opponent? e mandar rodar um run longo? TODO
@@ -24,7 +24,6 @@ extra:
 ------------------
 entregaveis:
 - ir escrevendo o report (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); removed always_fold opponent)
-- implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 - perguntar se o paper Ideal Evaluation from Coevolution foi usado como base para a point population evolution com pareto na versao original do SBB
 
 extra:

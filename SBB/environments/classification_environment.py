@@ -208,7 +208,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         self.samples_per_class_to_keep_ = kept_subsets_per_class
         self.samples_per_class_to_remove_ = removed_subsets_per_class
 
-    def evaluate_teams_population(self, teams_population):
+    def evaluate_teams_population_for_training(self, teams_population):
         for team in teams_population:
             self.evaluate_team(team, Config.RESTRICTIONS['mode']['training'])
 

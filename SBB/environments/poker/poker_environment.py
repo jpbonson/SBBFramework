@@ -335,7 +335,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         point_per_distribution = {}
         for label in labels:
-            point_per_distribution[label] = [point for point in self.champion_point_population_ if get_attribute(point) == label]
+            point_per_distribution[label] = [point for point in self.champion_population() if get_attribute(point) == label]
         run_info.champion_population_distribution_per_validation[key] = {}
         for label in labels:
             run_info.champion_population_distribution_per_validation[key][label] = len(point_per_distribution[label])
