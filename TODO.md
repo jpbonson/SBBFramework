@@ -1,5 +1,6 @@
 ===
 todo:
+- comecar a mandar rodar runs longos de poker no server e no pc do lab? uns 3 runs com diferentes seeds? e runs de ttt para checar os parametros? conferir se os outputs estao sem bugs
 - 4 opponents based on equity (probabilistic?)
     If we build a couple of opponents that are more likely to engage in hands proportionate to starting equity, i.e., always betting with high equity (say >= 0.65), always calling for moderate (0.5 to < 0.65) and fold anything less (assuming a single opponent context) then this will get us a basic opponent that will be tough to beat initially.  In other words, we could bias the probabilities of <bet, call, fold> with starting equity and let it go from there.  This would cover our 'tight' sample behaviours.
         - tight e loose? passive e agressive?
@@ -14,7 +15,6 @@ todo:
     - e automaticamente calcular e printar as distances
     - fazer isso em um script em tools, para ser um procedimento repetivel
     - I implemented entropy and is not very clear if entropy or NCD are the best options, so the next thing I will do is implement a more detailed test. First I will implement the 4 static opponents (the agressive/passive and tight/loose ones). Then I will run each opponent for 100 hands against all the 7 opponents (the 4 static ones + the 3 ''always X'' ones), get the total sequence of actions for each one and use them as inputs for the NCD and entropy algorithms. I expect that this way I will be able to find the better distance metric to obtain diversity in poker behaviors (or at least for poker behaviors that aren't super complex). Do you have any suggestions about how I should perform this test besides or regarding what I described? Maybe ensure that the 100 hands are balanced?
-- fazer runs com ttt? (sem ncd?)
 - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 - escrever report
     (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); removed always_fold opponent)
@@ -22,7 +22,6 @@ todo:
 extra:
 - fazer mais testes com e sem hand potential, para analisar o runtime
 - repassar comentairos do paper sobre NCD para o doc
-- voltar a fazer runs de ttt?
 - 3 ou 4 grupos de equity e strength? 10/20/30/40 ou 20/30/50?
 - ajeitar arquivos em pastas core e utils
 - 10 ou 20 instructions?

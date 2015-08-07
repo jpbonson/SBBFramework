@@ -1,6 +1,6 @@
 import sys
 import numpy
-from examples import thyroid_config, tictactoe_config
+from examples import thyroid_config, tictactoe_config, poker_config
 
 class Config():
     """
@@ -155,3 +155,4 @@ class Config():
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
 # Config.USER = thyroid_config.THYROID_REGISTERS2
 # Config.USER = tictactoe_config.TICTACTOE_DEFAULT_1
+# Config.USER = poker_config.POKER_DEFAULT_1
