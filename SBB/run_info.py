@@ -37,6 +37,7 @@ class RunInfo:
         self.global_result_per_validation = defaultdict(dict)
         self.point_population_distribution_per_validation = defaultdict(dict)
         self.balanced_point_population = None
+        self.hall_of_fame_per_validation = []
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
@@ -81,6 +82,8 @@ class RunInfo:
                 msg += "\n"+str(attribute)+":"
                 for key in self.point_population_distribution_per_validation[attribute]:
                     msg += "\n- "+str(key)+": "+str(self.point_population_distribution_per_validation[attribute][key])
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            msg += "\n\nHall of Fame per Validation: "+str(self.hall_of_fame_per_validation)
 
         msg += "\n\n\n##### METRICS FOR THE LAST GENERATION"
         msg += "\n\nDistribution of Actions: "+str(self.actions_distribution_per_validation[-1])

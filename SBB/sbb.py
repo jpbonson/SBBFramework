@@ -286,6 +286,9 @@ class SBB:
             print
             print "Champion Population Distribution per Validation: "+str(run_info.champion_population_distribution_per_validation)
             
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            run_info.hall_of_fame_per_validation.append([p.__repr__() for p in self.environment.hall_of_fame()])
+            print "\nHall of Fame: "+str(run_info.hall_of_fame_per_validation[-1])
         print "\n<<<<< Generation: "+str(self.current_generation_)+", run: "+str(run_info.run_id)
 
     def _store_per_generation_metrics(self, run_info, teams_population):

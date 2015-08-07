@@ -1,0 +1,23 @@
+﻿sbbTeam.h and sbbTeam.cc define the team class in sbb. This is basically the original sbb code plus a handful of things I've added. I'll describe briefly the functions of interest to you:
+
+   double symbiontUtilityDistance(team*, long);
+   double symbiontUtilityDistance(vector < long > &, long);
+
+These are two version of the "genotypic" distance measurement, which compare a pair of teams based on the ratio of active symbionts they have in common.
+
+   double ncdBehaviouralDistance(team*);
+
+This is my "behavioural" distance measurement, which compares a pair of teams based on the NCD of their profile vectors. The profile vectors are like recordings of the team's behaviour over time. They are long sequences of action-state-action-state..., where both action and state must be discrete intergers.
+
+sbbMisc.cc has helper functions, two that might be useful are:
+
+   double normalizedCompressionDistance(vector<int>&v1,vector<int>&v2);
+
+   inline double discretize(double f,double min, double max, int steps);
+
+Both are self explanatory. I tested the compression distance against a known-correct Linux command line tool.
+
+Finally, paretoScoreRanking_FUNCTION.cc is an extract from my main sbb code. This function gives every team in the population a score based on multi-objective Pareto ranking with novelty 
+and performance as objectives. _hostDistanceMode is used to switch between either distance metric above. Later, the selection process orders teams based on their score and marks the worst for replacement.
+
+
