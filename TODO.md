@@ -1,18 +1,19 @@
 ===
 todo:
-- implementar os 4 oponentes e checar o quao bem NCD e entropy diferenciam entre eles + os 3 always para 100 hands vs cada oponente (incluindo a si mesmo, e na mesma ordem para todos)
-    - alterar play_match para jogar 100 hands com seed 1, e forcar para o sbb e o oponente serem coded oponentes
-    obter a action sequence no final, e colocar um raise SystemExit
-    - concatenar todas as action sequences daquele coded opponent
-    - e automaticamente calcular e printar as distances
-    - fazer isso em um script em tools, para ser um procedimento repetivel
-- inserir relative entropy no codigo principal
-- 4 opponents based on equity
+- 4 opponents based on equity (probabilistic?)
     If we build a couple of opponents that are more likely to engage in hands proportionate to starting equity, i.e., always betting with high equity (say >= 0.65), always calling for moderate (0.5 to < 0.65) and fold anything less (assuming a single opponent context) then this will get us a basic opponent that will be tough to beat initially.  In other words, we could bias the probabilities of <bet, call, fold> with starting equity and let it go from there.  This would cover our 'tight' sample behaviours.
         - tight e loose? passive e agressive?
         - This playing style is called "tight", as you are very selective and only play hands where you think you have an advantage. At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average. This means you should fold before the flop in four out of five cases. 
         Some opponents won't stick to this recommendation and play almost every hand, which is a style of play known as "loose".
         https://www.pokerschoolonline.com/articles/Playing-Style-and-Position
+- inserir relative entropy no codigo principal
+- checar o quao bem NCD e entropy diferenciam entre eles + os 3 always para 100 hands vs cada oponente (incluindo a si mesmo, e na mesma ordem para todos)
+    - alterar play_match para jogar 100 hands com seed 1, e forcar para o sbb e o oponente serem coded oponentes
+    obter a action sequence no final, e colocar um raise SystemExit
+    - concatenar todas as action sequences daquele coded opponent
+    - e automaticamente calcular e printar as distances
+    - fazer isso em um script em tools, para ser um procedimento repetivel
+    - I implemented entropy and is not very clear if entropy or NCD are the best options, so the next thing I will do is implement a more detailed test. First I will implement the 4 static opponents (the agressive/passive and tight/loose ones). Then I will run each opponent for 100 hands against all the 7 opponents (the 4 static ones + the 3 ''always X'' ones), get the total sequence of actions for each one and use them as inputs for the NCD and entropy algorithms. I expect that this way I will be able to find the better distance metric to obtain diversity in poker behaviors (or at least for poker behaviors that aren't super complex). Do you have any suggestions about how I should perform this test besides or regarding what I described? Maybe ensure that the 100 hands are balanced?
 - fazer runs com ttt? (sem ncd?)
 - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 - escrever report
