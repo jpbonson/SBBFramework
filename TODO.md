@@ -1,14 +1,19 @@
 ===
 todo:
-- fazer runs com ttt?
-- implementar relative entropy
-    (http://stats.stackexchange.com/questions/60619/how-to-calculate-kullback-leibler-divergence-distance, https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence, https://en.wikipedia.org/wiki/Entropy_(information_theory))
+- implementar os 4 oponentes e checar o quao bem NCD e entropy diferenciam entre eles + os 3 always para 100 hands vs cada oponente (incluindo a si mesmo, e na mesma ordem para todos)
+    - alterar play_match para jogar 100 hands com seed 1, e forcar para o sbb e o oponente serem coded oponentes
+    obter a action sequence no final, e colocar um raise SystemExit
+    - concatenar todas as action sequences daquele coded opponent
+    - e automaticamente calcular e printar as distances
+    - fazer isso em um script em tools, para ser um procedimento repetivel
+- inserir relative entropy no codigo principal
 - 4 opponents based on equity
     If we build a couple of opponents that are more likely to engage in hands proportionate to starting equity, i.e., always betting with high equity (say >= 0.65), always calling for moderate (0.5 to < 0.65) and fold anything less (assuming a single opponent context) then this will get us a basic opponent that will be tough to beat initially.  In other words, we could bias the probabilities of <bet, call, fold> with starting equity and let it go from there.  This would cover our 'tight' sample behaviours.
         - tight e loose? passive e agressive?
         - This playing style is called "tight", as you are very selective and only play hands where you think you have an advantage. At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average. This means you should fold before the flop in four out of five cases. 
         Some opponents won't stick to this recommendation and play almost every hand, which is a style of play known as "loose".
         https://www.pokerschoolonline.com/articles/Playing-Style-and-Position
+- fazer runs com ttt? (sem ncd?)
 - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 - escrever report
     (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); removed always_fold opponent)
