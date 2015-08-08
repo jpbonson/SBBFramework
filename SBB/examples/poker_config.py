@@ -3,6 +3,12 @@ import copy
 """
 ##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
+pareto point
+program size
+oponentes
+inputs
+diversity
+equity groups
 
 """
 
@@ -22,7 +28,7 @@ POKER_DEFAULT = {
 
     'training_parameters': {
         'runs_total': 1,
-        'generations_total': 300,
+        'generations_total': 150,
         'validate_after_each_generation': 25,
         'populations': {
             'teams': 100,
@@ -43,12 +49,12 @@ POKER_DEFAULT = {
                 'add_instruction': 0.5,
                 'change_instruction': 1.0,
                 'swap_instructions': 1.0,
-                'change_action': 0.3,
+                'change_action': 0.1,
             },
         },
         'team_size': { # the min size is the total number of actions
             'min': 2,
-            'max': 18,
+            'max': 9,
         },
         'program_size': {
             'min': 2,
@@ -62,11 +68,17 @@ POKER_DEFAULT = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
-            'use_and_show': [], # will be applied to fitness and show in the outputs
+            'use_and_show': ['normalized_compression_distance', 'genotype_distance'], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 10,
         },
         'run_initialization_step2': False,
     },
 }
-# POKER_DEFAULT_1 = copy.deepcopy(POKER_DEFAULT)
+POKER_DEFAULT_1 = copy.deepcopy(POKER_DEFAULT)
+POKER_DEFAULT_1['advanced_training_parameters']['seed'] = 1
+# running: lab, tab 1, 20249
+
+POKER_DEFAULT_2 = copy.deepcopy(POKER_DEFAULT)
+POKER_DEFAULT_2['advanced_training_parameters']['seed'] = 2
+# running: lab, tab 2, 26514

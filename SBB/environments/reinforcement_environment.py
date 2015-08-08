@@ -43,6 +43,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.point_class = point_class
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
+        self.opponent_names_ = [str(opponent_class) for opponent_class in self.coded_opponents_for_training_]
+        self.opponent_names_.append('hall_of_fame')
         self.team_to_add_to_hall_of_fame_ = None
         self.opponent_population_ = None
         self.point_population_ = []
@@ -82,7 +84,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
     def champion_opponent_population(self):
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.opponent_population_['hall_of_fame']) == Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
             temp = self.opponent_population_['hall_of_fame']*self.matches_per_hall_of_fame_opponent_
-            print "AQUI: "+str(temp)
             return self.champion_opponent_population_ + temp
         else:
             return self.champion_opponent_population_

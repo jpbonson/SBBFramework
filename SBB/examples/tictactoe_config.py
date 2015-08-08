@@ -3,7 +3,9 @@ import copy
 """
 ##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
-# balanced_opponent_populations True or False?
+
+
+--- old reuslts:
 # hall_of_fame True or False?
 # diversity?
 
@@ -64,7 +66,7 @@ TICTACTOE_DEFAULT = {
                 'add_instruction': 0.5,
                 'change_instruction': 1.0,
                 'swap_instructions': 1.0,
-                'change_action': 0.3,
+                'change_action': 0.1,
             },
         },
         'team_size': { # the min size is the total number of actions
@@ -90,52 +92,17 @@ TICTACTOE_DEFAULT = {
         'run_initialization_step2': False,
     },
 }
-# TICTACTOE_DEFAULT_1 = copy.deepcopy(TICTACTOE_DEFAULT)
-# TICTACTOE_DEFAULT_1['advanced_training_parameters']['seed'] = 1
-# TICTACTOE_DEFAULT_1['training_parameters']['runs_total'] = 13
+TICTACTOE_DEFAULT = copy.deepcopy(TICTACTOE_DEFAULT)
+# 29591, nohup1
 
-# TICTACTOE_DEFAULT_2 = copy.deepcopy(TICTACTOE_DEFAULT)
-# TICTACTOE_DEFAULT_2['advanced_training_parameters']['seed'] = 2
-# TICTACTOE_DEFAULT_2['training_parameters']['runs_total'] = 13
+TICTACTOE_PROGRAM20 = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_PROGRAM20['training_parameters']['program_size']['max'] = 20
+# 29593, nohup2
 
-# TICTACTOE_PROGRAM20_1 = copy.deepcopy(TICTACTOE_DEFAULT)
-# TICTACTOE_PROGRAM20_1['advanced_training_parameters']['seed'] = 1
-# TICTACTOE_PROGRAM20_1['training_parameters']['runs_total'] = 13
-# TICTACTOE_PROGRAM20_1['training_parameters']['program_size']['max'] = 20
+TICTACTOE_PARETOP = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_PARETOP['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
+# 29595, nohup3
 
-# TICTACTOE_PROGRAM20_2 = copy.deepcopy(TICTACTOE_DEFAULT)
-# TICTACTOE_PROGRAM20_2['advanced_training_parameters']['seed'] = 2
-# TICTACTOE_PROGRAM20_2['training_parameters']['runs_total'] = 13
-# TICTACTOE_PROGRAM20_2['training_parameters']['program_size']['max'] = 20
-
-# TICTACTOE_REGISTERS1_1 = copy.deepcopy(TICTACTOE_DEFAULT)
-# TICTACTOE_REGISTERS1_1['advanced_training_parameters']['seed'] = 1
-# TICTACTOE_REGISTERS1_1['training_parameters']['runs_total'] = 13
-# TICTACTOE_REGISTERS1_1['advanced_training_parameters']['extra_registers'] = 1
-
-# TICTACTOE_REGISTERS1_2 = copy.deepcopy(TICTACTOE_DEFAULT)
-# TICTACTOE_REGISTERS1_2['advanced_training_parameters']['seed'] = 2
-# TICTACTOE_REGISTERS1_2['training_parameters']['runs_total'] = 13
-# TICTACTOE_REGISTERS1_2['advanced_training_parameters']['extra_registers'] = 1
-
-# TICTACTOE_PARETOP_1 = copy.deepcopy(TICTACTOE_REGISTERS1_1)
-# TICTACTOE_PARETOP_1['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
-
-# TICTACTOE_PARETOP_2 = copy.deepcopy(TICTACTOE_REGISTERS1_2)
-# TICTACTOE_PARETOP_2['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
-
-# TICTACTOE_BALANCED_1 = copy.deepcopy(TICTACTOE_PARETOP_1)
-# TICTACTOE_BALANCED_1['reinforcement_parameters']['balanced_opponent_populations'] = True
-# # 1, 15090
-
-# TICTACTOE_BALANCED_2 = copy.deepcopy(TICTACTOE_PARETOP_2)
-# TICTACTOE_BALANCED_2['reinforcement_parameters']['balanced_opponent_populations'] = True
-# # 2, 15092
-
-# TICTACTOE_NOFAME_1 = copy.deepcopy(TICTACTOE_PARETOP_1)
-# TICTACTOE_NOFAME_1['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-# # 3, 15094
-
-# TICTACTOE_NOFAME_2 = copy.deepcopy(TICTACTOE_PARETOP_2)
-# TICTACTOE_NOFAME_2['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-# # 4, 15096
+TICTACTOE_NOFAME = copy.deepcopy(TICTACTOE_DEFAULT)
+TICTACTOE_NOFAME['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+# 29599, nohup4

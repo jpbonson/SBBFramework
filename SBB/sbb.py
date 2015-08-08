@@ -312,7 +312,7 @@ class SBB:
         if len(Config.RESTRICTIONS['used_diversities']) > 1 and self.selection.previous_diversity_:
             run_info.novelty_type_per_generation.append(Config.RESTRICTIONS['used_diversities'].index(self.selection.previous_diversity_))
         if Config.USER['task'] == 'reinforcement':
-            run_info.opponent_type_per_generation.append(self.environment.opponent_population_.keys().index(self.environment.current_opponent_type_))
+            run_info.opponent_type_per_generation.append(self.environment.opponent_names_.index(self.environment.current_opponent_type_))
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             self.environment.calculate_poker_metrics_per_generation(run_info, self.current_generation_)
 

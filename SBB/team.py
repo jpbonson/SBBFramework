@@ -168,16 +168,18 @@ class Team(DefaultOpponent):
         if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':
                 
-                msg += "\n\nhands (validation): played: "+str(self.extra_metrics_['hand_played_validation'])+", won: "+str(self.extra_metrics_['won_hands_validation'])+" (total: "+str(self.extra_metrics_['total_hands_validation'])+")"
-                if self.extra_metrics_['total_hands_champion'] > 0:
-                    msg += "\nhands (champion): played: "+str(self.extra_metrics_['hand_played_champion'])+", won: "+str(self.extra_metrics_['won_hands_champion'])+" (total: "+str(self.extra_metrics_['total_hands_champion'])+")"
-                
+                msg += "\n\nhands (validation):"
+                msg += "\ntotal: "+str(self.extra_metrics_['total_hands_validation'])+", played: "+str(round_value(self.extra_metrics_['hand_played_validation']/float(self.extra_metrics_['total_hands_validation'])))+", won: "+str(round_value(self.extra_metrics_['won_hands_validation']/float(self.extra_metrics_['hand_played_validation'])))
                 for metric in self.extra_metrics_['total_hands_validation_per_point_type']:
-                    msg += "\n"
                     for key in self.extra_metrics_['total_hands_validation_per_point_type'][metric]:
-                        msg += "\nhands (validation, "+str(metric)+", "+str(key)+"): played: "+str(self.extra_metrics_['hand_played_validation_per_point_type'][metric][key])+", won: "+str(self.extra_metrics_['won_hands_validation_per_point_type'][metric][key])+" (total: "+str(self.extra_metrics_['total_hands_validation_per_point_type'][metric][key])+")"
-                        if self.extra_metrics_['total_hands_champion'] > 0:
-                            msg += "\nhands (champion, "+str(metric)+", "+str(key)+"): played: "+str(self.extra_metrics_['hand_played_champion_per_point_type'][metric][key])+", won: "+str(self.extra_metrics_['won_hands_champion_per_point_type'][metric][key])+" (total: "+str(self.extra_metrics_['total_hands_champion_per_point_type'][metric][key])+")"
+                        msg += "\n"+str(metric)+", "+str(key)+" ("+str(self.extra_metrics_['total_hands_validation_per_point_type'][metric][key])+"): played: "+str(round_value(self.extra_metrics_['hand_played_validation_per_point_type'][metric][key]/float(self.extra_metrics_['total_hands_validation_per_point_type'][metric][key])))+", won: "+str(round_value(self.extra_metrics_['won_hands_validation_per_point_type'][metric][key]/float(self.extra_metrics_['hand_played_validation_per_point_type'][metric][key])))
+                
+                msg += "\n\nhands (champion):"
+                if self.extra_metrics_['total_hands_champion'] > 0:
+                    msg += "\ntotal: "+str(self.extra_metrics_['total_hands_champion'])+", played: "+str(round_value(self.extra_metrics_['hand_played_champion']/float(self.extra_metrics_['total_hands_champion'])))+", won: "+str(round_value(self.extra_metrics_['won_hands_champion']/float(self.extra_metrics_['hand_played_champion'])))
+                    for metric in self.extra_metrics_['total_hands_champion_per_point_type']:
+                        for key in self.extra_metrics_['total_hands_champion_per_point_type'][metric]:
+                            msg += "\n"+str(metric)+", "+str(key)+" ("+str(self.extra_metrics_['total_hands_champion_per_point_type'][metric][key])+"): played: "+str(round_value(self.extra_metrics_['hand_played_champion_per_point_type'][metric][key]/float(self.extra_metrics_['total_hands_champion_per_point_type'][metric][key])))+", won: "+str(round_value(self.extra_metrics_['won_hands_champion_per_point_type'][metric][key]/float(self.extra_metrics_['hand_played_champion_per_point_type'][metric][key])))
 
                 if 'agressiveness' in self.extra_metrics_:
                     msg += "\n\nagressiveness: "+str(self.extra_metrics_['agressiveness'])

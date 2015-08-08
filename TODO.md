@@ -25,11 +25,11 @@ extra:
 - 3 ou 4 grupos de equity e strength? 10/20/30/40 ou 20/30/50?
 - ajeitar arquivos em pastas core e utils
 - 10 ou 20 instructions?
+- volatility, agressiveness, hand potential?
 ------------------
 extra:
 - perguntar se o paper Ideal Evaluation from Coevolution foi usado como base para a point population evolution com pareto na versao original do SBB
 - refatorar update_opponent_model_and_chips (baseado nos warnings)
-- volatility, agressiveness, hand potential?
 - memmory: parar de usar negative potential? salvar outputs em arquivo durante a execucao? nao salvar poker memory para champion?
 - as metricas globais mostram os resultados considerando apenas as team parents, deveriam tambem considerar as team children?
 
