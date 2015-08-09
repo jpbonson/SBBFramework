@@ -2,16 +2,13 @@
 consertei opponent type per generation
 melhorei a metric de hands total/played/won
 adicionei 'opponent short-term agressiveness' no opponent model
+adicionei 'opponent hand agressiveness' no opponent model
 
 todo:
 - comecar a mandar rodar runs longos de poker no server e no pc do lab? uns 3 runs com diferentes seeds? e runs de ttt para checar os parametros? conferir se os outputs estao sem bugs
-- melhorar opponent model: adicionar agressiveness da hand? (de 0/call a 1/raise)
-- 4 opponents based on equity (probabilistic?)
-    If we build a couple of opponents that are more likely to engage in hands proportionate to starting equity, i.e., always betting with high equity (say >= 0.65), always calling for moderate (0.5 to < 0.65) and fold anything less (assuming a single opponent context) then this will get us a basic opponent that will be tough to beat initially.  In other words, we could bias the probabilities of <bet, call, fold> with starting equity and let it go from there.  This would cover our 'tight' sample behaviours.
-        - tight e loose? passive e agressive?
-        - This playing style is called "tight", as you are very selective and only play hands where you think you have an advantage. At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average. This means you should fold before the flop in four out of five cases. 
-        Some opponents won't stick to this recommendation and play almost every hand, which is a style of play known as "loose".
-        https://www.pokerschoolonline.com/articles/Playing-Style-and-Position
+- 4 opponents based on equity
+    - 'tight': raise (>= 0.65),  call (0.5 to < 0.65) and fold anything less
+    - "tight": At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average. 
 - inserir relative entropy no codigo principal
 - checar o quao bem NCD e entropy diferenciam entre eles + os 3 always para 100 hands vs cada oponente (incluindo a si mesmo, e na mesma ordem para todos)
     - alterar play_match para jogar 100 hands com seed 1, e forcar para o sbb e o oponente serem coded oponentes
