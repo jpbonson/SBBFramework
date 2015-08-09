@@ -5,7 +5,7 @@ import itertools
 import numpy
 if os.name == 'posix':
     from pokereval import PokerEval
-from tables.equity_table import EQUITY_TABLE
+from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
 from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
 
 class MatchState():
@@ -166,13 +166,13 @@ class MatchState():
             inputs[2] = 0.0
         inputs[3] = float(self._betting_position())
         inputs[4] = (len(self.rounds)-1)/3.0
-        inputs[5] = MatchState.calculate_equity(self.current_hole_cards)
+        inputs[5] = NORMALIZED_HAND_EQUITY[frozenset(self.current_hole_cards)]
         inputs[6] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
         # if len(self.rounds) == 2 or len(self.rounds) == 3:
         #     ppot, npot = self._calculate_hand_potential(hand_ppotential_memory, hand_npotential_memory)
         #     inputs[7] = ppot
         #     inputs[8] = npot
-        #     inputs[9] = inputs[5] + (1 - inputs[5]) * ppot
+        #     inputs[9] = inputs[6] + (1 - inputs[6]) * ppot
         # else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
         #     inputs[7] = 0.0
         #     inputs[8] = 0.0
@@ -349,16 +349,6 @@ class MatchState():
             hand_npotential_memory[out_cards_set] = npot
 
             return ppot, npot
-
-    @staticmethod
-    def calculate_equity(hole_cards):
-        if hole_cards[0][1] == hole_cards[1][1]:
-            suit = 's'
-        else:
-            suit = 'o'
-        key = hole_cards[0][0]+hole_cards[1][0]+suit
-        result = EQUITY_TABLE[key][0]
-        return result
 
     def valid_actions(self):
         """

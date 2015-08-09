@@ -8,6 +8,7 @@ import threading
 from match_state import MatchState
 from poker_config import PokerConfig
 from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
+from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
 from ..reinforcement_environment import ReinforcementPoint
 
 class PokerPoint(ReinforcementPoint):
@@ -50,8 +51,8 @@ class PokerPoint(ReinforcementPoint):
         t1.join()
         t2.join()
 
-        self.sbb_equity_ = MatchState.calculate_equity(self.sbb_hole_cards)
-        self.opponent_equity_ = MatchState.calculate_equity(self.opponent_hole_cards)
+        self.sbb_equity_ = NORMALIZED_HAND_EQUITY[frozenset(self.sbb_hole_cards)]
+        self.opponent_equity_ = NORMALIZED_HAND_EQUITY[frozenset(self.opponent_hole_cards)]
         self.label_ = self._label(self.sbb_equity_, 'hand_equity_labels')
         self.opponent_label_ = self._label(self.opponent_equity_, 'hand_equity_labels')
 

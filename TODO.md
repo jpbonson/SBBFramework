@@ -4,13 +4,20 @@ melhorei a metric de hands total/played/won
 adicionei input 'opponent short-term agressiveness' no opponent model
 adicionei input 'opponent hand agressiveness' no opponent model
 adicionei input 'round' no match state
+normalizar equity, e atualziar a tabela em poker_config de acordo
 
 todo:
+- definir inputs por set
+- usar equity no round1, e EHS nos rounds 2, 3 e 4 para os opponents
+- remvoer negative potential, para poupar memoria
+- salvar apenas EHS, e nao salvar mais os potentials? (conferir valores)
+- inserir relative entropy no codigo principal
+- mandar rodar runs longos para as duas diversity metrics, com os novos inputs
+
 - comecar a mandar rodar runs longos de poker no server e no pc do lab? uns 3 runs com diferentes seeds? e runs de ttt para checar os parametros? conferir se os outputs estao sem bugs
 - 4 opponents based on equity
     - 'tight': raise (>= 0.65),  call (0.5 to < 0.65) and fold anything less
     - "tight": At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average. 
-- inserir relative entropy no codigo principal
 - checar o quao bem NCD e entropy diferenciam entre eles + os 3 always para 100 hands vs cada oponente (incluindo a si mesmo, e na mesma ordem para todos)
     - alterar play_match para jogar 100 hands com seed 1, e forcar para o sbb e o oponente serem coded oponentes
     obter a action sequence no final, e colocar um raise SystemExit

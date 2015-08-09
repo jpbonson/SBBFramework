@@ -18,6 +18,7 @@ from match_state import MatchState
 from poker_point import PokerPoint
 from poker_config import PokerConfig
 from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
+from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
 from ..reinforcement_environment import ReinforcementEnvironment
 from ...utils.helpers import avaliable_ports, round_value, flatten
 from ...config import Config
@@ -258,7 +259,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         hole_cards = list(itertools.combinations(deck, 2))
         equities = []
         for card1, card2 in hole_cards:
-            equities.append(MatchState.calculate_equity([card1, card2]))
+            equities.append(NORMALIZED_HAND_EQUITY[frozenset([card1, card2])])
         total_equities = sum(equities)
         probabilities = [e/float(total_equities) for e in equities]
         hole_cards_indices = numpy.random.choice(range(len(hole_cards)), size = int(len(hole_cards)*0.3), replace = False, p = probabilities)
