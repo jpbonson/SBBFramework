@@ -27,7 +27,7 @@ class OpponentModel():
     # INPUTS = ['opponent long-term agressiveness', 'opponent short-term agressiveness', 'self long-term agressiveness',
     #    'self short-term agressiveness', 'self short-term volatility', 'self long-term volatility', 
     #    'opponent short-term volatility', 'opponent long-term volatility']
-    INPUTS = ['opponent long-term agressiveness']
+    INPUTS = ['opponent long-term agressiveness', 'opponent short-term agressiveness'] #, 'opponent hand agressiveness']
 
     def __init__(self):
         self.self_agressiveness = []
@@ -37,7 +37,7 @@ class OpponentModel():
         self.opponent_agressiveness_preflop = []
         self.opponent_agressiveness_postflop = []
 
-    def update_agressiveness(self, total_rounds, self_actions, opponent_actions, self_folded, opponent_folded, previous_action):
+    def update_overall_agressiveness(self, total_rounds, self_actions, opponent_actions, self_folded, opponent_folded, previous_action):
         if self_folded:
             if self_actions:
                 if self_actions[-1] != 'f':
@@ -76,11 +76,15 @@ class OpponentModel():
                 points += 1.0
         return points
 
-    def inputs(self):
+    def inputs(self, match_state):
         inputs = [0.5] * len(OpponentModel.INPUTS)
         if len(self.opponent_agressiveness) > 0:
             inputs[0] = numpy.mean(self.opponent_agressiveness)
-        #     inputs[1] = numpy.mean(self.opponent_agressiveness[:10])
+            inputs[1] = numpy.mean(self.opponent_agressiveness[:10])
+
+        self_actions, opponent_actions = match_state.actions_per_player()
+        # print str(opponent_actions)
+
         # if len(self.self_agressiveness) > 0:
         #     inputs[2] = numpy.mean(self.self_agressiveness)
         #     inputs[3] = numpy.mean(self.self_agressiveness[:10])

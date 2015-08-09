@@ -25,7 +25,6 @@ todo:
     (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); removed always_fold opponent)
 
 extra:
-- refatorar total_hands_validation para total_hands[validation], e refatorar o metrics de team
 - fazer mais testes com e sem hand potential, para analisar o runtime
 - repassar comentairos do paper sobre NCD para o doc
 - 3 ou 4 grupos de equity e strength? 10/20/30/40 ou 20/30/50?
