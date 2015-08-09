@@ -1,8 +1,9 @@
 ===
 consertei opponent type per generation
 melhorei a metric de hands total/played/won
-adicionei 'opponent short-term agressiveness' no opponent model
-adicionei 'opponent hand agressiveness' no opponent model
+adicionei input 'opponent short-term agressiveness' no opponent model
+adicionei input 'opponent hand agressiveness' no opponent model
+adicionei input 'round' no match state
 
 todo:
 - comecar a mandar rodar runs longos de poker no server e no pc do lab? uns 3 runs com diferentes seeds? e runs de ttt para checar os parametros? conferir se os outputs estao sem bugs

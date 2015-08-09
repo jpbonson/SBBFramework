@@ -10,7 +10,7 @@ from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'equity', 'hand strength'] #, 'hand potential (positive)', 'hand potential (negative)', 'EHS']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'round', 'equity', 'hand strength'] #, 'hand potential (positive)', 'hand potential (negative)', 'EHS']
 
     def __init__(self, message, small_bet, big_bet, full_deck, hole_cards_based_on_equity):
         self.message = message
@@ -149,11 +149,12 @@ class MatchState():
         inputs[1] = bet
         inputs[2] = pot odds
         inputs[3] = betting position (0: first betting, 1: last betting)
-        inputs[4] = equity
-        inputs[5] = hand_strength
-        inputs[6] = hand_potential (positive)
-        inputs[7] = hand_potential (negative)
-        inputs[8] = EHS
+        inputs[4] = round 
+        inputs[5] = equity
+        inputs[6] = hand_strength
+        inputs[7] = hand_potential (positive)
+        inputs[8] = hand_potential (negative)
+        inputs[9] = EHS
         """
         hand_strength_memory, hand_ppotential_memory, hand_npotential_memory = memories
         inputs = [0] * len(MatchState.INPUTS)
@@ -164,17 +165,18 @@ class MatchState():
         else:
             inputs[2] = 0.0
         inputs[3] = float(self._betting_position())
-        inputs[4] = MatchState.calculate_equity(self.current_hole_cards)
-        inputs[5] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
+        inputs[4] = len(self.rounds)/4.0
+        inputs[5] = MatchState.calculate_equity(self.current_hole_cards)
+        inputs[6] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
         # if len(self.rounds) == 2 or len(self.rounds) == 3:
         #     ppot, npot = self._calculate_hand_potential(hand_ppotential_memory, hand_npotential_memory)
-        #     inputs[6] = ppot
-        #     inputs[7] = npot
-        #     inputs[8] = inputs[5] + (1 - inputs[5]) * ppot
+        #     inputs[7] = ppot
+        #     inputs[8] = npot
+        #     inputs[9] = inputs[5] + (1 - inputs[5]) * ppot
         # else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
-        #     inputs[6] = 0.0
         #     inputs[7] = 0.0
         #     inputs[8] = 0.0
+        #     inputs[9] = 0.0
         return inputs
 
     def calculate_pot(self):
