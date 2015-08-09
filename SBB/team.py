@@ -167,20 +167,7 @@ class Team(DefaultOpponent):
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
         if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':
-                
-                msg += "\n\nhands (validation):"
-                msg += "\ntotal: "+str(self.extra_metrics_['total_hands_validation'])+", played: "+str(round_value(self.extra_metrics_['hand_played_validation']/float(self.extra_metrics_['total_hands_validation'])))+", won: "+str(round_value(self.extra_metrics_['won_hands_validation']/float(self.extra_metrics_['hand_played_validation'])))
-                for metric in self.extra_metrics_['total_hands_validation_per_point_type']:
-                    for key in self.extra_metrics_['total_hands_validation_per_point_type'][metric]:
-                        msg += "\n"+str(metric)+", "+str(key)+" ("+str(self.extra_metrics_['total_hands_validation_per_point_type'][metric][key])+"): played: "+str(round_value(self.extra_metrics_['hand_played_validation_per_point_type'][metric][key]/float(self.extra_metrics_['total_hands_validation_per_point_type'][metric][key])))+", won: "+str(round_value(self.extra_metrics_['won_hands_validation_per_point_type'][metric][key]/float(self.extra_metrics_['hand_played_validation_per_point_type'][metric][key])))
-                
-                msg += "\n\nhands (champion):"
-                if self.extra_metrics_['total_hands_champion'] > 0:
-                    msg += "\ntotal: "+str(self.extra_metrics_['total_hands_champion'])+", played: "+str(round_value(self.extra_metrics_['hand_played_champion']/float(self.extra_metrics_['total_hands_champion'])))+", won: "+str(round_value(self.extra_metrics_['won_hands_champion']/float(self.extra_metrics_['hand_played_champion'])))
-                    for metric in self.extra_metrics_['total_hands_champion_per_point_type']:
-                        for key in self.extra_metrics_['total_hands_champion_per_point_type'][metric]:
-                            msg += "\n"+str(metric)+", "+str(key)+" ("+str(self.extra_metrics_['total_hands_champion_per_point_type'][metric][key])+"): played: "+str(round_value(self.extra_metrics_['hand_played_champion_per_point_type'][metric][key]/float(self.extra_metrics_['total_hands_champion_per_point_type'][metric][key])))+", won: "+str(round_value(self.extra_metrics_['won_hands_champion_per_point_type'][metric][key]/float(self.extra_metrics_['hand_played_champion_per_point_type'][metric][key])))
-
+                msg += self._hand_player_metrics()
                 if 'agressiveness' in self.extra_metrics_:
                     msg += "\n\nagressiveness: "+str(self.extra_metrics_['agressiveness'])
                     msg += "\nvolatility: "+str(self.extra_metrics_['volatility'])
@@ -211,6 +198,44 @@ class Team(DefaultOpponent):
             inputs += program.inputs_list_
         inputs_distribution = Counter(inputs)
         return inputs_distribution
+
+    def _hand_player_metrics(self):
+        msg = ""
+        msg += "\n\nhands (validation):"
+        a = round_value(self.extra_metrics_['hand_played_validation']/float(self.extra_metrics_['total_hands_validation']))
+        b = None
+        if self.extra_metrics_['hand_played_validation'] > 0:
+            b = round_value(self.extra_metrics_['won_hands_validation']/float(self.extra_metrics_['hand_played_validation']))
+        msg += "\ntotal: "+str(self.extra_metrics_['total_hands_validation'])+", played: "+str(a)+", won: "+str(b)
+        for metric in self.extra_metrics_['total_hands_validation_per_point_type']:
+            for key in self.extra_metrics_['total_hands_validation_per_point_type'][metric]:
+                a = self.extra_metrics_['total_hands_validation_per_point_type'][metric][key]
+                b = None
+                c = None
+                if a > 0:
+                    b = round_value(self.extra_metrics_['hand_played_validation_per_point_type'][metric][key]/float(self.extra_metrics_['total_hands_validation_per_point_type'][metric][key]))
+                    if self.extra_metrics_['hand_played_validation_per_point_type'][metric][key] > 0:
+                        c = round_value(self.extra_metrics_['won_hands_validation_per_point_type'][metric][key]/float(self.extra_metrics_['hand_played_validation_per_point_type'][metric][key]))
+                msg += "\n"+str(metric)+", "+str(key)+" ("+str(a)+"): played: "+str(b)+", won: "+str(c)
+        
+        if self.extra_metrics_['total_hands_champion'] > 0:
+            msg += "\n\nhands (champion):"
+            a = round_value(self.extra_metrics_['hand_played_champion']/float(self.extra_metrics_['total_hands_champion']))
+            b = None
+            if self.extra_metrics_['hand_played_champion'] > 0:
+                b = round_value(self.extra_metrics_['won_hands_champion']/float(self.extra_metrics_['hand_played_champion']))
+            msg += "\ntotal: "+str(self.extra_metrics_['total_hands_champion'])+", played: "+str(a)+", won: "+str(b)
+            for metric in self.extra_metrics_['total_hands_champion_per_point_type']:
+                for key in self.extra_metrics_['total_hands_champion_per_point_type'][metric]:
+                    a = self.extra_metrics_['total_hands_champion_per_point_type'][metric][key]
+                    b = None
+                    c = None
+                    if a > 0:
+                        b = round_value(self.extra_metrics_['hand_played_champion_per_point_type'][metric][key]/float(self.extra_metrics_['total_hands_champion_per_point_type'][metric][key]))
+                        if self.extra_metrics_['hand_played_champion_per_point_type'][metric][key] > 0:
+                            c = round_value(self.extra_metrics_['won_hands_champion_per_point_type'][metric][key]/float(self.extra_metrics_['hand_played_champion_per_point_type'][metric][key]))
+                    msg += "\n"+str(metric)+", "+str(key)+" ("+str(a)+"): played: "+str(b)+", won: "+str(c)
+        return msg
 
     def json(self):
         programs_json = []
