@@ -165,7 +165,7 @@ class MatchState():
         else:
             inputs[2] = 0.0
         inputs[3] = float(self._betting_position())
-        inputs[4] = len(self.rounds)/4.0
+        inputs[4] = (len(self.rounds)-1)/3.0
         inputs[5] = MatchState.calculate_equity(self.current_hole_cards)
         inputs[6] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
         # if len(self.rounds) == 2 or len(self.rounds) == 3:
