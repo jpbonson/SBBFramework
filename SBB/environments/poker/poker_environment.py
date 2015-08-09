@@ -57,8 +57,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         #     memories = ({}, {}, {})
         # else:
         memories = (PokerConfig.HAND_STRENGHT_MEMORY[point.point_id_], 
-            PokerConfig.HAND_PPOTENTIAL_MEMORY[point.point_id_], 
-            PokerConfig.HAND_NPOTENTIAL_MEMORY[point.point_id_])
+            PokerConfig.HAND_PPOTENTIAL_MEMORY[point.point_id_])
 
         if point.position_ == 0:
             sbb_port = PokerConfig.CONFIG['available_ports'][0]
@@ -153,7 +152,6 @@ class PokerEnvironment(ReinforcementEnvironment):
     def reset(self):
         PokerConfig.HAND_STRENGHT_MEMORY = defaultdict(dict)
         PokerConfig.HAND_PPOTENTIAL_MEMORY = defaultdict(dict)
-        PokerConfig.HAND_NPOTENTIAL_MEMORY = defaultdict(dict)
         super(PokerEnvironment, self).reset()
         PokerConfig.hole_cards_based_on_equity = self._initialize_hole_cards_based_on_equity()
         gc.collect()
@@ -273,7 +271,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         for point in points_to_remove:
             del PokerConfig.HAND_STRENGHT_MEMORY[point.point_id_]
             del PokerConfig.HAND_PPOTENTIAL_MEMORY[point.point_id_]
-            del PokerConfig.HAND_NPOTENTIAL_MEMORY[point.point_id_]
 
     def calculate_poker_metrics_per_generation(self, run_info, current_generation):
         if run_info.balanced_point_population is None:

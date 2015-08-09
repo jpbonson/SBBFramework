@@ -10,7 +10,7 @@ from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'round', 'equity', 'hand strength'] #, 'hand potential (positive)', 'hand potential (negative)', 'EHS']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'round', 'equity', 'hand strength', 'EHS']
 
     def __init__(self, message, small_bet, big_bet, full_deck, hole_cards_based_on_equity):
         self.message = message
@@ -152,11 +152,9 @@ class MatchState():
         inputs[4] = round 
         inputs[5] = equity
         inputs[6] = hand_strength
-        inputs[7] = hand_potential (positive)
-        inputs[8] = hand_potential (negative)
-        inputs[9] = EHS
+        inputs[7] = EHS
         """
-        hand_strength_memory, hand_ppotential_memory, hand_npotential_memory = memories
+        hand_strength_memory, hand_ppotential_memory = memories
         inputs = [0] * len(MatchState.INPUTS)
         inputs[0] = self.calculate_pot()/float(self.maximum_winning())
         inputs[1] = self._calculate_bet()
@@ -168,15 +166,11 @@ class MatchState():
         inputs[4] = (len(self.rounds)-1)/3.0
         inputs[5] = NORMALIZED_HAND_EQUITY[frozenset(self.current_hole_cards)]
         inputs[6] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
-        # if len(self.rounds) == 2 or len(self.rounds) == 3:
-        #     ppot, npot = self._calculate_hand_potential(hand_ppotential_memory, hand_npotential_memory)
-        #     inputs[7] = ppot
-        #     inputs[8] = npot
-        #     inputs[9] = inputs[6] + (1 - inputs[6]) * ppot
-        # else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
-        #     inputs[7] = 0.0
-        #     inputs[8] = 0.0
-        #     inputs[9] = 0.0
+        if len(self.rounds) == 2 or len(self.rounds) == 3:
+            ppotential = self._calculate_hand_potential(hand_ppotential_memory)
+        else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
+            ppotential = 0.0
+        inputs[7] = inputs[6] + (1 - inputs[6]) * ppotential
         return inputs
 
     def calculate_pot(self):
@@ -263,14 +257,14 @@ class MatchState():
             hand_strength_memmory[our_cards_set] = hand_strength
             return hand_strength
 
-    def _calculate_hand_potential(self, hand_ppotential_memory, hand_npotential_memory):
+    def _calculate_hand_potential(self, hand_ppotential_memory):
         """
         Implemented as described in the page 23 of the thesis in: http://poker.cs.ualberta.ca/publications/davidson.msc.pdf
         """
         our_cards = self.current_hole_cards + self.board_cards
         out_cards_set = frozenset(our_cards)
         if out_cards_set in hand_ppotential_memory:
-            return hand_ppotential_memory[out_cards_set], hand_npotential_memory[out_cards_set]
+            return hand_ppotential_memory[out_cards_set]
         else:
             # hand potential array, each index represents ahead, tied, and behind
             ahead = 0
@@ -346,9 +340,8 @@ class MatchState():
             npot = ((hp[ahead][behind]/total)*2.0 + (hp[ahead][tied]/total)*1.0 + (hp[tied][behind]/total)*1.0)/4.0
 
             hand_ppotential_memory[out_cards_set] = ppot
-            hand_npotential_memory[out_cards_set] = npot
 
-            return ppot, npot
+            return ppot
 
     def valid_actions(self):
         """

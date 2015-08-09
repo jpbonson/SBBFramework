@@ -5,12 +5,11 @@ adicionei input 'opponent short-term agressiveness' no opponent model
 adicionei input 'opponent hand agressiveness' no opponent model
 adicionei input 'round' no match state
 normalizar equity, e atualziar a tabela em poker_config de acordo
+adicionei input 'EHS' no match state
 
 todo:
 - definir inputs por set
 - usar equity no round1, e EHS nos rounds 2, 3 e 4 para os opponents
-- remvoer negative potential, para poupar memoria
-- salvar apenas EHS, e nao salvar mais os potentials? (conferir valores)
 - inserir relative entropy no codigo principal
 - mandar rodar runs longos para as duas diversity metrics, com os novos inputs
 
