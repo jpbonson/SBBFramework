@@ -33,11 +33,11 @@ def pdf(array):
 def relative_entropy1(action_sequence, other_action_sequence):
     pdf1 = pdf(action_sequence)
     other_pdf = pdf(other_action_sequence)
-    print str(pdf1)
-    print str(other_pdf)
-    r = stats.entropy(pdf1, qk=other_pdf)
-    r = r/27.6310211158
-    return r
+    distance1 = stats.entropy(pdf1, qk=other_pdf)
+    distance1 = distance1/27.6310211158
+    distance2 = stats.entropy(other_pdf, qk=pdf1)
+    distance2 = distance2/27.6310211158
+    return (distance1 + distance2)/2.0
 
 if __name__ == "__main__":
     # 15 hands against random opponents
@@ -60,52 +60,52 @@ if __name__ == "__main__":
     fr3 = ['2', '2', '2', '2', '2', '2', '2', '2', '0', '0', '2', '0', '0', '0', '0', '2']
     fcr2 = ['0', '1', '0', '0', '2', '2', '1', '0', '0', '2', '0', '0', '2', '2', '0', '0', '0', '0', '0', '2', '2', '0', '0', '0', '0', '0', '0', '0', '0', '2', '2']
 
-    # print "--- low distances => better"
-    # i = [raises, raises_2]
-    # print "raises x raises_2: "+str(relative_entropy1(i[0], i[1]))
-    # i = [fr, fr_2]
-    # print "fr x fr_2: "+str(relative_entropy1(i[0], i[1]))
+    print "--- low distances => better"
+    i = [raises, raises_2]
+    print "raises x raises_2: "+str(relative_entropy1(i[0], i[1]))
+    i = [fr, fr_2]
+    print "fr x fr_2: "+str(relative_entropy1(i[0], i[1]))
     i = [cr, cr_2]
     print "cr x cr_2: "+str(relative_entropy1(i[0], i[1]))
-    # i = [fc, fc_2]
-    # print "fc x fc_2: "+str(relative_entropy1(i[0], i[1]))
-    # i = [fcr, fcr]
-    # print "fcr x fcr: "+str(relative_entropy1(i[0], i[1]))
-    # print "---"
-    # print "--- high distances => better"
-    # i = [folds, raises]
-    # print "folds x raises: "+str(relative_entropy1(i[0], i[1]))
-    # i = [folds, calls]
-    # print "folds x calls: "+str(relative_entropy1(i[0], i[1]))
-    # i = [raises, calls]
-    # print "raises x calls: "+str(relative_entropy1(i[0], i[1]))
-    # i = [fr, cr]
-    # print "fr x cr: "+str(relative_entropy1(i[0], i[1]))
-    # i = [cr, fc]
-    # print "cr x fc: "+str(relative_entropy1(i[0], i[1]))
-    # i = [fc, fr]
-    # print "fc x fr: "+str(relative_entropy1(i[0], i[1]))
-    # i = [folds, cr]
-    # print "folds x cr: "+str(relative_entropy1(i[0], i[1]))
-    # i = [calls, fr]
-    # print "calls x fr: "+str(relative_entropy1(i[0], i[1]))
-    # i = [raises, fc]
-    # print "raises x fc: "+str(relative_entropy1(i[0], i[1]))
-    # i = [fcr, fr]
-    # print "fcr x fr: "+str(relative_entropy1(i[0], i[1]))
-    # i = [fcr, fc]
-    # print "fcr x fc: "+str(relative_entropy1(i[0], i[1]))
-    # i = [calls, fr2]
-    # print "calls x fr2: "+str(relative_entropy1(i[0], i[1]))
-    # i = [fcr, cr]
-    # print "fcr x cr: "+str(relative_entropy1(i[0], i[1]))
-    # i = [fr, fr3]
-    # print "fr x fr3: "+str(relative_entropy1(i[0], i[1]))
-    # i = [fcr, fcr2]
-    # print "fcr x fcr2: "+str(relative_entropy1(i[0], i[1]))
-    # i = [f1, fr]
-    # print "f1 x fr: "+str(relative_entropy1(i[0], i[1]))
-    # print "---"
+    i = [fc, fc_2]
+    print "fc x fc_2: "+str(relative_entropy1(i[0], i[1]))
+    i = [fcr, fcr]
+    print "fcr x fcr: "+str(relative_entropy1(i[0], i[1]))
+    print "---"
+    print "--- high distances => better"
+    i = [folds, raises]
+    print "folds x raises: "+str(relative_entropy1(i[0], i[1]))
+    i = [folds, calls]
+    print "folds x calls: "+str(relative_entropy1(i[0], i[1]))
+    i = [raises, calls]
+    print "raises x calls: "+str(relative_entropy1(i[0], i[1]))
+    i = [fr, cr]
+    print "fr x cr: "+str(relative_entropy1(i[0], i[1]))
+    i = [cr, fc]
+    print "cr x fc: "+str(relative_entropy1(i[0], i[1]))
+    i = [fc, fr]
+    print "fc x fr: "+str(relative_entropy1(i[0], i[1]))
+    i = [folds, cr]
+    print "folds x cr: "+str(relative_entropy1(i[0], i[1]))
+    i = [calls, fr]
+    print "calls x fr: "+str(relative_entropy1(i[0], i[1]))
+    i = [raises, fc]
+    print "raises x fc: "+str(relative_entropy1(i[0], i[1]))
+    i = [fcr, fr]
+    print "fcr x fr: "+str(relative_entropy1(i[0], i[1]))
+    i = [fcr, fc]
+    print "fcr x fc: "+str(relative_entropy1(i[0], i[1]))
+    i = [calls, fr2]
+    print "calls x fr2: "+str(relative_entropy1(i[0], i[1]))
+    i = [fcr, cr]
+    print "fcr x cr: "+str(relative_entropy1(i[0], i[1]))
+    i = [fr, fr3]
+    print "fr x fr3: "+str(relative_entropy1(i[0], i[1]))
+    i = [fcr, fcr2]
+    print "fcr x fcr2: "+str(relative_entropy1(i[0], i[1]))
+    i = [f1, fr]
+    print "f1 x fr: "+str(relative_entropy1(i[0], i[1]))
+    print "---"
 
 """
 manual:
@@ -130,35 +130,36 @@ fcr x fr: 0.164347871045
 fcr x fc: 0.337223959199
 calls x fr2: 0.995671222338
 fcr x cr: 0.0294276475584
-fr x fr3: 0.00462184895034 # inverted probabilities
-fcr x fcr2: 0.0354665993883 # inverted probabilities
+fr x fr3: 0.00462184895034
+fcr x fcr2: 0.0354665993883
 f1 x fr: 0.184033613287
 ---
 
 scipy:
 --- low distances => better
-raises x raises_2: 0.00147739724579
-fr x fr_2: 0.00101125586015
-cr x cr_2: 1.3353729443e-05
-fc x fc_2: 0.000179605804036
-fcr x fcr: 0.0
+raises x raises_2: 0.0176996479301
+fr x fr_2: 0.000981698359302
+cr x cr_2: 1.33842559668e-05
+fc x fc_2: 0.000178811913565
+fcr x fcr: -0.0
 ---
 --- high distances => better
 folds x raises: 1.0
 folds x calls: 1.0
 raises x calls: 1.0
-fr x cr: 0.607358645631
-cr x fc: 0.615182910099
-fc x fr: 0.442587059342
-folds x cr: 1.0
-calls x fr: 1.0
-raises x fc: 1.0
-fcr x fr: 0.284694205892
-fcr x fc: 0.625162722499
-calls x fr2: 1.0
-fcr x cr: 0.0561361813972
+fr x cr: 0.488612052716
+cr x fc: 0.574158963606
+fc x fr: 0.403756203301
+folds x cr: 0.988062120247
+calls x fr: 0.988028614012
+raises x fc: 0.987519988397
+fcr x fr: 0.164347871046
+fcr x fc: 0.337223959201
+calls x fr2: 0.995671222342
+fcr x cr: 0.0294276475585
 fr x fr3: 0.00462184895036
-fcr x fcr2: 0.0290716729799
-f1 x fr: 0.0170099985537
+fcr x fcr2: 0.0354665993885
+f1 x fr: 0.184033613287
 ---
+
 """

@@ -57,7 +57,7 @@ class RunInfo:
             for key in self.global_opponent_results_per_validation[-1]:
                 msg += "\n"+str(key)+": "+str([item[key] if key in item else 0.0 for item in self.global_opponent_results_per_validation])
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
-            msg += "\n\nGlobal Diversities per Validation"
+            msg += "\n\nGlobal Diversities per Validation (recalculated for only among the parents)"
             for key in self.global_diversity_per_validation[0]:
                 msg += "\n"+str(key)+": "+str([item[key] for item in self.global_diversity_per_validation])
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':

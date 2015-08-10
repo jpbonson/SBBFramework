@@ -6,11 +6,11 @@ adicionei input 'opponent hand agressiveness' no opponent model
 adicionei input 'round' no match state
 normalizar equity, e atualziar a tabela em poker_config de acordo
 adicionei input 'EHS' no match state
+- inserir relative entropy no codigo principal
 
 todo:
 - definir inputs por set
 - usar equity no round1, e EHS nos rounds 2, 3 e 4 para os opponents
-- inserir relative entropy no codigo principal
 - mandar rodar runs longos para as duas diversity metrics, com os novos inputs
 
 - comecar a mandar rodar runs longos de poker no server e no pc do lab? uns 3 runs com diferentes seeds? e runs de ttt para checar os parametros? conferir se os outputs estao sem bugs

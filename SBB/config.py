@@ -22,7 +22,7 @@ class Config():
             'hall_of_fame': {
                 'size': 3,
                 'enabled': True,
-                'diversity': 'normalized_compression_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+                'diversity': 'relative_entropy_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
         },
@@ -69,7 +69,7 @@ class Config():
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {
-                'use_and_show': ['normalized_compression_distance', 'genotype_distance'], # will be applied to fitness and show in the outputs
+                'use_and_show': ['relative_entropy_distance', 'genotype_distance'], # will be applied to fitness and show in the outputs
                 'only_show': [], # will be only show in the outputs
                 'k': 10,
             },
@@ -81,7 +81,7 @@ class Config():
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
         'environment_types': ['tictactoe', 'poker'],
-        'diversity_options': ['genotype_distance', 'fitness_sharing', 'normalized_compression_distance'], #must have the same name as the methods in DiversityMaintenance
+        'diversity_options': ['genotype_distance', 'fitness_sharing', 'normalized_compression_distance', 'relative_entropy_distance'], #must have the same name as the methods in DiversityMaintenance
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
