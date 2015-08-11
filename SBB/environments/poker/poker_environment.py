@@ -58,10 +58,10 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_actions = 3 # fold, call, raise
         total_inputs = len(PokerConfig.INPUTS)
         total_labels = len(PokerConfig.CONFIG['hand_equity_labels'].keys())
-        # coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        # coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
-        coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
+        coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        # coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
+        # coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
         port1, port2 = avaliable_ports()
@@ -149,33 +149,39 @@ class PokerEnvironment(ReinforcementEnvironment):
                 team.extra_metrics_['total_hands_per_point_type']['validation']['position'][point.position_] += 1
                 team.extra_metrics_['total_hands_per_point_type']['validation']['sbb_equity'][point.label_] += 1
                 team.extra_metrics_['total_hands_per_point_type']['validation']['sbb_strength'][point.sbb_strength_label_] += 1
+                team.extra_metrics_['total_hands_per_point_type']['validation']['sbb_ehs'][point.sbb_ehs_label_] += 1
             else:
                 team.extra_metrics_['total_hands']['champion'] += 1
                 team.extra_metrics_['total_hands_per_point_type']['champion']['position'][point.position_] += 1
                 team.extra_metrics_['total_hands_per_point_type']['champion']['sbb_equity'][point.label_] += 1
                 team.extra_metrics_['total_hands_per_point_type']['champion']['sbb_strength'][point.sbb_strength_label_] += 1
+                team.extra_metrics_['total_hands_per_point_type']['champion']['sbb_ehs'][point.sbb_ehs_label_] += 1
             if team.extra_metrics_['played_last_hand']:
                 if mode == Config.RESTRICTIONS['mode']['validation']:
                     team.extra_metrics_['hand_played']['validation'] += 1
                     team.extra_metrics_['hand_played_per_point_type']['validation']['position'][point.position_] += 1
                     team.extra_metrics_['hand_played_per_point_type']['validation']['sbb_equity'][point.label_] += 1
                     team.extra_metrics_['hand_played_per_point_type']['validation']['sbb_strength'][point.sbb_strength_label_] += 1
+                    team.extra_metrics_['hand_played_per_point_type']['validation']['sbb_ehs'][point.sbb_ehs_label_] += 1
                 else:
                     team.extra_metrics_['hand_played']['champion'] += 1
                     team.extra_metrics_['hand_played_per_point_type']['champion']['position'][point.position_] += 1
                     team.extra_metrics_['hand_played_per_point_type']['champion']['sbb_equity'][point.label_] += 1
                     team.extra_metrics_['hand_played_per_point_type']['champion']['sbb_strength'][point.sbb_strength_label_] += 1
+                    team.extra_metrics_['hand_played_per_point_type']['champion']['sbb_ehs'][point.sbb_ehs_label_] += 1
             if team.extra_metrics_['played_last_hand'] and normalized_value > 0.5:
                 if mode == Config.RESTRICTIONS['mode']['validation']:
                     team.extra_metrics_['won_hands']['validation'] += 1
                     team.extra_metrics_['won_hands_per_point_type']['validation']['position'][point.position_] += 1
                     team.extra_metrics_['won_hands_per_point_type']['validation']['sbb_equity'][point.label_] += 1
                     team.extra_metrics_['won_hands_per_point_type']['validation']['sbb_strength'][point.sbb_strength_label_] += 1
+                    team.extra_metrics_['won_hands_per_point_type']['validation']['sbb_ehs'][point.sbb_ehs_label_] += 1
                 else:
                     team.extra_metrics_['won_hands']['champion'] += 1
                     team.extra_metrics_['won_hands_per_point_type']['champion']['position'][point.position_] += 1
                     team.extra_metrics_['won_hands_per_point_type']['champion']['sbb_equity'][point.label_] += 1
                     team.extra_metrics_['won_hands_per_point_type']['champion']['sbb_strength'][point.sbb_strength_label_] += 1
+                    team.extra_metrics_['won_hands_per_point_type']['champion']['sbb_ehs'][point.sbb_ehs_label_] += 1
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             print "scores: "+str(scores)
@@ -245,7 +251,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def validate(self, current_generation, teams_population):
         keys = ['validation', 'champion']
-        subkeys = ['position', 'sbb_equity', 'sbb_strength']
+        subkeys = ['position', 'sbb_equity', 'sbb_strength', 'sbb_ehs']
         for team in teams_population:
             if team.generation != current_generation:
                 team.extra_metrics_['total_hands'] = {}

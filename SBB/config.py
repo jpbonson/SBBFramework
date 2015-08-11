@@ -22,7 +22,7 @@ class Config():
             'hall_of_fame': {
                 'size': 5,
                 'enabled': True,
-                'diversity': 'relative_entropy_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+                'diversity': 'normalized_compression_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
         },
@@ -69,7 +69,7 @@ class Config():
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {
-                'use_and_show': ['relative_entropy_distance', 'genotype_distance'], # will be applied to fitness and show in the outputs
+                'use_and_show': ['normalized_compression_distance', 'genotype_distance'], # will be applied to fitness and show in the outputs
                 'only_show': [], # will be only show in the outputs
                 'k': 5,
             },

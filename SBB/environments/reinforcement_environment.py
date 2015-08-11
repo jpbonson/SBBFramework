@@ -202,6 +202,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         25 -> 23 -> 25
         """
         current_subsets_per_class = self._get_data_per_label(self.point_population_)
+        # print str([[a.sbb_hole_cards for a in subset] for subset in current_subsets_per_class])
         total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_labels_
         samples_per_class_to_keep = int(round(total_samples_per_class*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
         samples_per_class_to_remove = total_samples_per_class - samples_per_class_to_keep
@@ -297,9 +298,24 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 opponent_population = self.champion_opponent_population()
             results = []
             extra_metrics_opponents = defaultdict(list)
+            extra_metrics_points = {}
+            if Config.USER['reinforcement_parameters']['environment'] == 'poker': # TODO: refactor
+                extra_metrics_points['position'] = defaultdict(list)
+                extra_metrics_points['sbb_equity'] = defaultdict(list)
+                extra_metrics_points['sbb_hand_strength'] = defaultdict(list)
+                extra_metrics_points['sbb_EHS'] = defaultdict(list)
+                extra_metrics_points['opp_equity'] = defaultdict(list)
+                extra_metrics_points['opp_hand_strength'] = defaultdict(list)
             for point, opponent in zip(point_population, opponent_population):
                 result = self._play_match(team, opponent, point, mode)
                 extra_metrics_opponents[opponent.opponent_id].append(result)
+                if Config.USER['reinforcement_parameters']['environment'] == 'poker': # TODO: refactor
+                    extra_metrics_points['position'][point.position_].append(result)
+                    extra_metrics_points['sbb_equity'][point.label_].append(result)
+                    extra_metrics_points['sbb_hand_strength'][point.sbb_strength_label_].append(result)
+                    extra_metrics_points['sbb_EHS'][point.sbb_ehs_label_].append(result)
+                    extra_metrics_points['opp_equity'][point.opponent_label_].append(result)
+                    extra_metrics_points['opp_hand_strength'][point.opponent_strength_label_].append(result)
                 if mode == Config.RESTRICTIONS['mode']['validation']:
                     team.results_per_points_for_validation_[point.point_id_] = result
                     results.append(result)
@@ -308,8 +324,13 @@ class ReinforcementEnvironment(DefaultEnvironment):
                         results.append(result)
             for key in extra_metrics_opponents:
                 extra_metrics_opponents[key] = round_value(numpy.mean(extra_metrics_opponents[key]))
-            team.score_testset_ = numpy.mean(results)
             team.extra_metrics_['opponents'] = extra_metrics_opponents
+            if Config.USER['reinforcement_parameters']['environment'] == 'poker': # TODO: refactor
+                for key in extra_metrics_points:
+                    for subkey in extra_metrics_points[key]:
+                        extra_metrics_points[key][subkey] = round_value(numpy.mean(extra_metrics_points[key][subkey]))
+            team.extra_metrics_['points'] = extra_metrics_points
+            team.score_testset_ = numpy.mean(results)
 
     def validate(self, current_generation, teams_population):
         print "\nvalidating all..."
@@ -319,8 +340,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 self.evaluate_team(team, Config.RESTRICTIONS['mode']['validation'])
                 team.extra_metrics_['validation_score'] = round_value(team.score_testset_)
                 team.extra_metrics_['validation_opponents'] = team.extra_metrics_['opponents']
+                team.extra_metrics_['validation_points'] = team.extra_metrics_['points']
                 team.extra_metrics_.pop('champion_score', None)
                 team.extra_metrics_.pop('champion_opponents', None)
+                team.extra_metrics_.pop('champion_points', None)
         score = [p.score_testset_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]
         print "\nvalidating champion..."
@@ -329,6 +352,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.evaluate_team(best_team, Config.RESTRICTIONS['mode']['champion'])
         best_team.extra_metrics_['champion_score'] = round_value(best_team.score_testset_)
         best_team.extra_metrics_['champion_opponents'] = best_team.extra_metrics_['opponents']
+        best_team.extra_metrics_['champion_points'] = best_team.extra_metrics_['points']
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             # reset action sequence
             for team in self.hall_of_fame():

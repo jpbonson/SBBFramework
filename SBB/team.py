@@ -177,18 +177,27 @@ class Team(DefaultOpponent):
                     msg += "\nagressiveness (champion): "+str(self.extra_metrics_['agressiveness_champion'])
                     msg += "\nvolatility (champion): "+str(self.extra_metrics_['volatility_champion'])
 
+                msg += "\n\nscore per point (validation): "
+                for key in self.extra_metrics_['validation_points']:
+                    msg += "\n"+key+": "+str(dict(self.extra_metrics_['validation_points'][key]))
+
+                if 'champion_score' in self.extra_metrics_:
+                    msg += "\n\nscore per point (champion): "
+                    for key in self.extra_metrics_['champion_points']:
+                        msg += "\n"+key+": "+str(dict(self.extra_metrics_['champion_points'][key]))
+
             if 'champion_score' in self.extra_metrics_:
-                msg += "\n\nscore (champion): "+str(self.extra_metrics_['champion_score'])
+                msg += "\n\nscore per opponent (champion): "+str(self.extra_metrics_['champion_score'])
                 for key in self.extra_metrics_['opponents']:
-                    msg += "\n"+key+" (champion): "+str(self.extra_metrics_['champion_opponents'][key])
+                    msg += "\n"+key+": "+str(self.extra_metrics_['champion_opponents'][key])
         if full_version:
             if Config.USER['task'] == 'classification' and self.extra_metrics_:
                 msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
                 msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])
             if Config.USER['task'] == 'reinforcement' and 'validation_score'in self.extra_metrics_:
-                msg += "\n\nscore (validation): "+str(self.extra_metrics_['validation_score'])
+                msg += "\n\nscore per opponent (validation): "+str(self.extra_metrics_['validation_score'])
                 for key in self.extra_metrics_['validation_opponents']:
-                    msg += "\n"+key+" (validation): "+str(self.extra_metrics_['validation_opponents'][key])
+                    msg += "\n"+key+": "+str(self.extra_metrics_['validation_opponents'][key])
             msg += "\n"
             for key, value in self.diversity_.iteritems():
                 msg +=  "\n"+str(key)+": "+str(value)

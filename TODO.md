@@ -1,15 +1,14 @@
 ===
 modifiquei hand potential e ehs
 salvar valores arrendondados na memory das hands?
+scores per hand type
 
 todo:
-- comecar a mandar rodar runs longos de poker no server e no pc do lab? uns 3 runs com diferentes seeds? e runs de ttt para checar os parametros? conferir se os outputs estao sem bugs
-    - checar resultados para ttt
-    - mandar rodar runs novos de poker no server (com e sem oponentes novos)
-- 4 opponents based on equity
-    - 'tight': raise (>= 0.65),  call (0.5 to < 0.65) and fold anything less
-    - "tight": At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average.
-    - usar equity no round1, e EHS nos rounds 2, 3 e 4 para os opponents + definir inputs por set 
+checar resultados para ttt
+mandar rodar mais runs (de 50 e de 80)
+
+
+- cumulative performance is wrong?
 - checar o quao bem NCD e entropy diferenciam entre eles + os 3 always para 100 hands vs cada oponente (incluindo a si mesmo, e na mesma ordem para todos)
     - alterar play_match para jogar 100 hands com seed 1, e forcar para o sbb e o oponente serem coded oponentes
     obter a action sequence no final, e colocar um raise SystemExit
@@ -18,6 +17,7 @@ todo:
     - fazer isso em um script em tools, para ser um procedimento repetivel
     - I implemented entropy and is not very clear if entropy or NCD are the best options, so the next thing I will do is implement a more detailed test. First I will implement the 4 static opponents (the agressive/passive and tight/loose ones). Then I will run each opponent for 100 hands against all the 7 opponents (the 4 static ones + the 3 ''always X'' ones), get the total sequence of actions for each one and use them as inputs for the NCD and entropy algorithms. I expect that this way I will be able to find the better distance metric to obtain diversity in poker behaviors (or at least for poker behaviors that aren't super complex). Do you have any suggestions about how I should perform this test besides or regarding what I described? Maybe ensure that the 100 hands are balanced?
     -  100 balanced hands.
+    - fazer 2 conjuntos de action sequence para 100 hands, para comrpar e checar se a distancia eh pequena
 - pensar em outra behavioral diversity metric (uma evolucao da entropy?)
 - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 - escrever report

@@ -167,7 +167,7 @@ class MatchState():
         inputs[4] = (len(self.rounds)-1)/3.0
         inputs[5] = NORMALIZED_HAND_EQUITY[frozenset(self.current_hole_cards)]
         inputs[6] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
-        inputs[7] = self._calculate_ehs(inputs[6], inputs[5], hand_ppotential_memory)
+        inputs[7] = self._calculate_ehs(inputs[6], inputs[5], hand_ppotential_memory, len(self.rounds))
         return inputs
 
     def inputs_for_rule_based_opponents(self, memories):
@@ -179,15 +179,15 @@ class MatchState():
         inputs['equity'] = NORMALIZED_HAND_EQUITY[frozenset(self.current_hole_cards)]
         hand_strength_memory, hand_ppotential_memory = memories
         hand_strength = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
-        inputs['EHS'] = self._calculate_ehs(hand_strength, inputs['equity'], hand_ppotential_memory)
+        inputs['EHS'] = self._calculate_ehs(hand_strength, inputs['equity'], hand_ppotential_memory, len(self.rounds))
         return inputs
 
-    def _calculate_ehs(self, hand_strength, hand_equity, hand_ppotential_memory):
-        if len(self.rounds) == 1:
+    def _calculate_ehs(self, hand_strength, hand_equity, hand_ppotential_memory, round_id):
+        if round_id == 1:
             potential = hand_equity
-        if len(self.rounds) == 2 or len(self.rounds) == 3: # too expensive if calculated for the pre-flop, and useless if calculated for the river
+        if round_id == 2 or round_id == 3: # too expensive if calculated for the pre-flop, and useless if calculated for the river
             potential = self._calculate_hand_potential(hand_ppotential_memory)
-        if len(self.rounds) == 4:
+        if round_id == 4:
             potential = 0.0
         weigth = 0.5
         ehs = hand_strength + (1.0 - hand_strength) * potential * weigth

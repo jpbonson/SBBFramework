@@ -214,9 +214,9 @@ class SBB:
                 opponent_means['hall_of_fame(champion)'] = best_team.extra_metrics_['champion_opponents']['hall_of_fame']
             run_info.global_validation_score_per_validation.append(validation_score_mean)
             run_info.global_opponent_results_per_validation.append(opponent_means)               
-            print "score (validation): "+str(best_team.extra_metrics_['validation_score'])+" (global: "+str(validation_score_mean)+")"
+            print "score per opponent (validation): "+str(best_team.extra_metrics_['validation_score'])+" (global: "+str(validation_score_mean)+")"
             for key in best_team.extra_metrics_['validation_opponents']:
-                print key+" (validation): "+str(best_team.extra_metrics_['validation_opponents'][key])+" (global: "+str(opponent_means[key])+")"
+                print key+": "+str(best_team.extra_metrics_['validation_opponents'][key])+" (global: "+str(opponent_means[key])+")"
         if Config.USER['task'] == 'classification':
             validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
             run_info.global_validation_score_per_validation.append(validation_score_mean)

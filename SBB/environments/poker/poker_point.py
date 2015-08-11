@@ -61,6 +61,9 @@ class PokerPoint(ReinforcementPoint):
         self.sbb_strength_label_ = self._label(self.sbb_strength_, 'hand_strength_labels')
         self.opponent_strength_label_ = self._label(self.opponent_strength_, 'hand_strength_labels')
 
+        self.sbb_ehs_ = self.sbb_strength_ + (1.0 - self.sbb_strength_) * self.sbb_equity_ * 0.5 # TODO: refactor
+        self.sbb_ehs_label_ = self._label(self.sbb_ehs_, 'hand_strength_labels')
+
     def _label(self, value, key):
         if value >= PokerConfig.CONFIG[key][0]:
             return 0
