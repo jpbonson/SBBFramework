@@ -29,4 +29,5 @@ class PokerConfig():
             1: 0.5, # >= (30%)
             2: 0.5, # < (50%)
         },
+        'rule_based_opponents': [],
     }

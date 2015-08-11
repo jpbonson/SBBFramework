@@ -93,7 +93,7 @@ TICTACTOE_DEFAULT = {
     },
 }
 TICTACTOE_DEFAULT = copy.deepcopy(TICTACTOE_DEFAULT)
-# 29591, nohup1
+# 29591, nohup1 - OK
 
 TICTACTOE_PROGRAM20 = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_PROGRAM20['training_parameters']['program_size']['max'] = 20
@@ -101,8 +101,8 @@ TICTACTOE_PROGRAM20['training_parameters']['program_size']['max'] = 20
 
 TICTACTOE_PARETOP = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_PARETOP['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
-# 29595, nohup3
+# 29595, nohup3 - OK
 
 TICTACTOE_NOFAME = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_NOFAME['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-# 29599, nohup4
+# 29599, nohup4 - OK

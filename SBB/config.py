@@ -155,4 +155,4 @@ class Config():
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
 # Config.USER = thyroid_config.THYROID_REGISTERS2
 # Config.USER = tictactoe_config.TICTACTOE_DEFAULT
-# Config.USER = poker_config.POKER_DEFAULT_2
+# Config.USER = poker_config.POKER_DEFAULT_ENTROPY_1

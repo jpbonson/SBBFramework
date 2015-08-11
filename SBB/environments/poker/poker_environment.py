@@ -70,11 +70,13 @@ class PokerEnvironment(ReinforcementEnvironment):
             player1 = 'opponent'
             player2 = 'sbb'
 
-        opponent_use_inputs = False
+        opponent_use_inputs = None
         if opponent.opponent_id == "hall_of_fame":
-            opponent_use_inputs = True
+            opponent_use_inputs = 'all'
+        if opponent.opponent_id in PokerConfig.CONFIG['rule_based_opponents']:
+            opponent_use_inputs = 'rule_based_opponent'
 
-        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, opponent, point, sbb_port, is_training, True, True, memories])
+        t1 = threading.Thread(target=PokerEnvironment.execute_player, args=[team, opponent, point, sbb_port, is_training, True, 'all', memories])
         t2 = threading.Thread(target=PokerEnvironment.execute_player, args=[opponent, team, point, opponent_port, False, False, opponent_use_inputs, memories])
         args = [PokerConfig.CONFIG['acpc_path']+'dealer', 
                 PokerConfig.CONFIG['acpc_path']+'outputs/match_output', 
@@ -334,7 +336,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         return (value - max_losing)/float(max_winning - max_losing)
 
     @staticmethod
-    def execute_player(player, opponent, point, port, is_training, is_sbb, use_inputs, memories):
+    def execute_player(player, opponent, point, port, is_training, is_sbb, inputs_type, memories):
         if is_sbb and not is_training:
             player.extra_metrics_['played_last_hand'] = True
 
@@ -389,13 +391,16 @@ class PokerEnvironment(ReinforcementEnvironment):
                         debug_file.write("opponent folded\n")
                         print player.__repr__()+":opponent folded\n\n"
                 else:
-                    if use_inputs:
-                        chips = PokerEnvironment.get_chips(player, opponent)
-                        if len(chips) == 0:
-                            chips = 0.5
-                        else:
-                            chips = PokerEnvironment.normalize_winning(numpy.mean(chips))
-                        inputs = match_state.inputs(memories) + [chips] + PokerEnvironment.get_opponent_model(player, opponent).inputs(match_state)
+                    if inputs_type:
+                        if inputs_type == 'all':
+                            chips = PokerEnvironment.get_chips(player, opponent)
+                            if len(chips) == 0:
+                                chips = 0.5
+                            else:
+                                chips = PokerEnvironment.normalize_winning(numpy.mean(chips))
+                            inputs = match_state.inputs(memories) + [chips] + PokerEnvironment.get_opponent_model(player, opponent).inputs(match_state)
+                        elif inputs_type == 'rule_based_opponent':
+                            inputs = match_state.inputs_for_rule_based_opponents(memories)
                     else:
                         inputs = []
                     action = player.execute(point.point_id_, inputs, match_state.valid_actions(), is_training)
@@ -429,7 +434,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                     print player.__repr__()+":nothing to do\n"
         socket_tmp.close()
 
-        if use_inputs:
+        if inputs_type and inputs_type == 'all':
             PokerEnvironment.update_opponent_model_and_chips(player, opponent, previous_messages+partial_messages, debug_file, previous_action)
 
         if Config.USER['reinforcement_parameters']['debug_matches']:

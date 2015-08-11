@@ -77,8 +77,14 @@ POKER_DEFAULT = {
 }
 POKER_DEFAULT_1 = copy.deepcopy(POKER_DEFAULT)
 POKER_DEFAULT_1['advanced_training_parameters']['seed'] = 1
-# running: lab, tab 1, 20249
+# 
 
 POKER_DEFAULT_2 = copy.deepcopy(POKER_DEFAULT)
 POKER_DEFAULT_2['advanced_training_parameters']['seed'] = 2
-# running: lab, tab 2, 26514
+# 
+
+POKER_DEFAULT_ENTROPY_1 = copy.deepcopy(POKER_DEFAULT)
+POKER_DEFAULT_ENTROPY_1['advanced_training_parameters']['seed'] = 1
+POKER_DEFAULT_ENTROPY_1['reinforcement_parameters']['hall_of_fame']['diversity'] = 'relative_entropy_distance'
+POKER_DEFAULT_ENTROPY_1['advanced_training_parameters']['diversity']['use_and_show'] = ['relative_entropy_distance', 'genotype_distance']
+# 

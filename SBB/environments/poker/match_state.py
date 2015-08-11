@@ -7,6 +7,7 @@ if os.name == 'posix':
     from pokereval import PokerEval
 from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
 from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
+from ...utils.helpers import round_value
 
 class MatchState():
 
@@ -152,7 +153,7 @@ class MatchState():
         inputs[4] = round 
         inputs[5] = equity
         inputs[6] = hand_strength
-        inputs[7] = EHS
+        inputs[7] = EHS # modified from the original
         """
         hand_strength_memory, hand_ppotential_memory = memories
         inputs = [0] * len(MatchState.INPUTS)
@@ -170,7 +171,23 @@ class MatchState():
             ppotential = self._calculate_hand_potential(hand_ppotential_memory)
         else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
             ppotential = 0.0
-        inputs[7] = inputs[6] + (1 - inputs[6]) * ppotential
+        inputs[7] = inputs[6] + (1.0 - inputs[6]) * ppotential * 2.0 # modified from the original
+        return inputs
+
+    def inputs_for_rule_based_opponents(self, memories):
+        """
+        """
+        inputs = {}
+        inputs['bet'] = self._calculate_bet()
+        inputs['round'] = len(self.rounds)
+        inputs['equity'] = NORMALIZED_HAND_EQUITY[frozenset(self.current_hole_cards)]
+        hand_strength_memory, hand_ppotential_memory = memories
+        hand_strength = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
+        if len(self.rounds) == 2 or len(self.rounds) == 3:
+            ppotential = self._calculate_hand_potential(hand_ppotential_memory)
+        else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
+            ppotential = 0.0
+        inputs['EHS'] = hand_strength + (1 - hand_strength) * ppotential
         return inputs
 
     def calculate_pot(self):
@@ -254,7 +271,7 @@ class MatchState():
                 else:
                     behind += 1.0
             hand_strength = (ahead + tied/2.0) / (ahead + tied + behind)
-            hand_strength_memmory[our_cards_set] = hand_strength
+            hand_strength_memmory[our_cards_set] = round_value(hand_strength)
             return hand_strength
 
     def _calculate_hand_potential(self, hand_ppotential_memory):
@@ -271,7 +288,7 @@ class MatchState():
             tied = 1
             behind = 2
             hp = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
-            # hp_total = [0.0, 0.0, 0.0]
+            hp_total = [0.0, 0.0, 0.0]
             total = 0.0
             our_rank = self.pokereval.evaln(our_cards)
             # considers all two card combinations of the remaining cards for the opponent
@@ -293,7 +310,7 @@ class MatchState():
                     index = tied
                 else:
                     index = behind
-                # hp_total[index] += 1.0
+                # hp_total[index] += 1.0 # original version
 
                 # all possible board cards to come
                 deck = list(self.full_deck)
@@ -314,6 +331,7 @@ class MatchState():
                         else:
                             hp[index][behind] += 1.0
                         total += 1.0
+                        hp_total[index] += 1.0 # new version
                 else: # turn
                     cards = random.sample(deck_without_dealt_cards, int(len(deck_without_dealt_cards)*0.75))
                     for river in cards:
@@ -328,18 +346,22 @@ class MatchState():
                         else:
                             hp[index][behind] += 1.0
                         total += 1.0
+                        hp_total[index] += 1.0 # new version
 
             # the original formula:
             # ppot = (hp[behind][ahead] + hp[behind][tied]/2.0 + hp[tied][ahead]/2.0) / (hp_total[behind] + hp_total[tied]/2.0)
             # npot = (hp[ahead][behind] + hp[tied][behind]/2.0 + hp[ahead][tied]/2.0) / (hp_total[ahead] + hp_total[tied]/2.0)
 
-            # ppot: were behind but moved ahead
-            ppot = ((hp[behind][ahead]/total)*2.0 + (hp[behind][tied]/total)*1.0 + (hp[tied][ahead]/total)*1.0)/4.0
+            # ppot: were behind but moved ahead: cant use the original hp_total, because the result isnt normalzied and because it dont work for the heuristics
+            if (hp_total[behind]+hp_total[tied]) > 0:
+                ppot = (hp[behind][ahead] + hp[behind][tied]/2.0 + hp[tied][ahead]/2.0) / (hp_total[behind]*1.5 + hp_total[tied]*0.5)
+            else:
+                ppot = 0.0 # it already is the best possible set of cards
 
             # npot: were ahead but fell behind
-            npot = ((hp[ahead][behind]/total)*2.0 + (hp[ahead][tied]/total)*1.0 + (hp[tied][behind]/total)*1.0)/4.0
+            # npot = ((hp[ahead][behind]/total)*2.0 + (hp[ahead][tied]/total)*1.0 + (hp[tied][behind]/total)*1.0)/4.0
 
-            hand_ppotential_memory[out_cards_set] = ppot
+            hand_ppotential_memory[out_cards_set] = round_value(ppot)
 
             return ppot
 

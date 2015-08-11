@@ -1,22 +1,17 @@
 ===
-consertei opponent type per generation
-melhorei a metric de hands total/played/won
-adicionei input 'opponent short-term agressiveness' no opponent model
-adicionei input 'opponent hand agressiveness' no opponent model
-adicionei input 'round' no match state
-normalizar equity, e atualziar a tabela em poker_config de acordo
-adicionei input 'EHS' no match state
-- inserir relative entropy no codigo principal
+modifiquei hand potential
 
 todo:
-- definir inputs por set
-- usar equity no round1, e EHS nos rounds 2, 3 e 4 para os opponents
-- mandar rodar runs longos para as duas diversity metrics, com os novos inputs
+- % de folds, raises, e call? training, validation e champion?
+- salvar valores arrendondados na memory das hands?
 
 - comecar a mandar rodar runs longos de poker no server e no pc do lab? uns 3 runs com diferentes seeds? e runs de ttt para checar os parametros? conferir se os outputs estao sem bugs
+    - checar resultados para ttt
+    - mandar rodar runs novos de poker no server
 - 4 opponents based on equity
     - 'tight': raise (>= 0.65),  call (0.5 to < 0.65) and fold anything less
-    - "tight": At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average. 
+    - "tight": At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average.
+    - usar equity no round1, e EHS nos rounds 2, 3 e 4 para os opponents + definir inputs por set 
 - checar o quao bem NCD e entropy diferenciam entre eles + os 3 always para 100 hands vs cada oponente (incluindo a si mesmo, e na mesma ordem para todos)
     - alterar play_match para jogar 100 hands com seed 1, e forcar para o sbb e o oponente serem coded oponentes
     obter a action sequence no final, e colocar um raise SystemExit
@@ -24,6 +19,8 @@ todo:
     - e automaticamente calcular e printar as distances
     - fazer isso em um script em tools, para ser um procedimento repetivel
     - I implemented entropy and is not very clear if entropy or NCD are the best options, so the next thing I will do is implement a more detailed test. First I will implement the 4 static opponents (the agressive/passive and tight/loose ones). Then I will run each opponent for 100 hands against all the 7 opponents (the 4 static ones + the 3 ''always X'' ones), get the total sequence of actions for each one and use them as inputs for the NCD and entropy algorithms. I expect that this way I will be able to find the better distance metric to obtain diversity in poker behaviors (or at least for poker behaviors that aren't super complex). Do you have any suggestions about how I should perform this test besides or regarding what I described? Maybe ensure that the 100 hands are balanced?
+    -  100 balanced hands.
+- pensar em outra behavioral diversity metric (uma evolucao da entropy?)
 - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 - escrever report
     (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); removed always_fold opponent)
@@ -36,6 +33,11 @@ extra:
 - 10 ou 20 instructions?
 - volatility, agressiveness, hand potential?
 - conferir paper Learning Strategies for Opponent Modeling in Poker, para mais inputs (e resultados) e "An Investigation into Tournament Poker Strategy using Evolutionary Algorithms, 2007" para uma analise de quais inputs se saem melhor
+
+1 hand for 2 always raise opponents:
+scores: ['240', '-240']
+players: ['sbb', 'opponent']
+normalized_value: 1.0
 ------------------
 extra:
 - perguntar se o paper Ideal Evaluation from Coevolution foi usado como base para a point population evolution com pareto na versao original do SBB
