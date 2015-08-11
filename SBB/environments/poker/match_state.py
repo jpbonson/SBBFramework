@@ -167,11 +167,7 @@ class MatchState():
         inputs[4] = (len(self.rounds)-1)/3.0
         inputs[5] = NORMALIZED_HAND_EQUITY[frozenset(self.current_hole_cards)]
         inputs[6] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
-        if len(self.rounds) == 2 or len(self.rounds) == 3:
-            ppotential = self._calculate_hand_potential(hand_ppotential_memory)
-        else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
-            ppotential = 0.0
-        inputs[7] = inputs[6] + (1.0 - inputs[6]) * ppotential * 2.0 # modified from the original
+        inputs[7] = self._calculate_ehs(inputs[6], inputs[5], hand_ppotential_memory)
         return inputs
 
     def inputs_for_rule_based_opponents(self, memories):
@@ -183,12 +179,19 @@ class MatchState():
         inputs['equity'] = NORMALIZED_HAND_EQUITY[frozenset(self.current_hole_cards)]
         hand_strength_memory, hand_ppotential_memory = memories
         hand_strength = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
-        if len(self.rounds) == 2 or len(self.rounds) == 3:
-            ppotential = self._calculate_hand_potential(hand_ppotential_memory)
-        else: # too expensive if calculated for the pre-flop, and useless if calculated for the river
-            ppotential = 0.0
-        inputs['EHS'] = hand_strength + (1 - hand_strength) * ppotential
+        inputs['EHS'] = self._calculate_ehs(hand_strength, inputs['equity'], hand_ppotential_memory)
         return inputs
+
+    def _calculate_ehs(self, hand_strength, hand_equity, hand_ppotential_memory):
+        if len(self.rounds) == 1:
+            potential = hand_equity
+        if len(self.rounds) == 2 or len(self.rounds) == 3: # too expensive if calculated for the pre-flop, and useless if calculated for the river
+            potential = self._calculate_hand_potential(hand_ppotential_memory)
+        if len(self.rounds) == 4:
+            potential = 0.0
+        weigth = 0.5
+        ehs = hand_strength + (1.0 - hand_strength) * potential * weigth
+        return ehs
 
     def calculate_pot(self):
         # check if is the small blind
@@ -360,6 +363,8 @@ class MatchState():
 
             # npot: were ahead but fell behind
             # npot = ((hp[ahead][behind]/total)*2.0 + (hp[ahead][tied]/total)*1.0 + (hp[tied][behind]/total)*1.0)/4.0
+
+            ppot = ppot/0.2 # max potential
 
             hand_ppotential_memory[out_cards_set] = round_value(ppot)
 

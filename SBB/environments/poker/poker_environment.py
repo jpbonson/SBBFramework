@@ -17,11 +17,36 @@ from opponent_model import OpponentModel
 from match_state import MatchState
 from poker_point import PokerPoint
 from poker_config import PokerConfig
-from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
+from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
 from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
 from ..reinforcement_environment import ReinforcementEnvironment
 from ...utils.helpers import avaliable_ports, round_value, flatten
 from ...config import Config
+
+# def reset_info():
+#     global fold_count
+#     global call_count
+#     global raise_count
+#     fold_count = 0
+#     call_count = 0
+#     raise_count = 0
+
+# def update_info(action_sequence):
+#     global fold_count
+#     global call_count
+#     global raise_count
+#     for action in action_sequence:
+#         if action == '0':
+#             fold_count += 1
+#         if action == '1':
+#             call_count += 1
+#         if action == '2':
+#             raise_count += 1
+#     total = float(fold_count+call_count+raise_count)
+#     if total > 0:
+#         return fold_count/total, call_count/total, raise_count/total
+#     else:
+#         return -1
 
 class PokerEnvironment(ReinforcementEnvironment):
     """
@@ -29,11 +54,14 @@ class PokerEnvironment(ReinforcementEnvironment):
     """
 
     def __init__(self):
+        # reset_info()
         total_actions = 3 # fold, call, raise
         total_inputs = len(PokerConfig.INPUTS)
         total_labels = len(PokerConfig.CONFIG['hand_equity_labels'].keys())
-        coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        # coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        # coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
+        coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
         port1, port2 = avaliable_ports()
@@ -44,6 +72,14 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
 
         """
+        # blah = random.randint(0, 1)
+        # if blah == 0:
+        #     team = PokerAlwaysCallOpponent()
+        # else:
+        # team = PokerAlwaysRaiseOpponent()
+        # team.action_sequence_ = []
+        # opponent.action_sequence_ = []
+
         if mode == Config.RESTRICTIONS['mode']['training']:
             is_training = True
         else:
@@ -149,6 +185,9 @@ class PokerEnvironment(ReinforcementEnvironment):
         point.teams_results_.append(normalized_value)
         point.last_opponent_ = opponent.__repr__()
 
+        # results = update_info([opponent.action_sequence_[0]])
+        # results = update_info(opponent.action_sequence_)
+
         return normalized_value
 
     def reset(self):
@@ -169,6 +208,12 @@ class PokerEnvironment(ReinforcementEnvironment):
             point.teams_results_ = []
         gc.collect()
         yappi.clear_stats()
+
+    # def evaluate_teams_population_for_training(self, teams_population):
+    #     super(PokerEnvironment, self).evaluate_teams_population_for_training(teams_population)
+    #     results = update_info([])
+    #     print str(results)
+    #     raise SystemExit
 
     def evaluate_team(self, team, mode):
         team.opponent_model = {}

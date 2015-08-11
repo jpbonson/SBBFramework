@@ -1,13 +1,11 @@
 ===
-modifiquei hand potential
+modifiquei hand potential e ehs
+salvar valores arrendondados na memory das hands?
 
 todo:
-- % de folds, raises, e call? training, validation e champion?
-- salvar valores arrendondados na memory das hands?
-
 - comecar a mandar rodar runs longos de poker no server e no pc do lab? uns 3 runs com diferentes seeds? e runs de ttt para checar os parametros? conferir se os outputs estao sem bugs
     - checar resultados para ttt
-    - mandar rodar runs novos de poker no server
+    - mandar rodar runs novos de poker no server (com e sem oponentes novos)
 - 4 opponents based on equity
     - 'tight': raise (>= 0.65),  call (0.5 to < 0.65) and fold anything less
     - "tight": At a table with nine players you should only play 15 to 20 per cent of the hands you are dealt, on average.
