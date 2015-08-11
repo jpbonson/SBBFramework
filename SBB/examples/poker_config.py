@@ -16,8 +16,8 @@ POKER_DEFAULT = {
     'task': 'reinforcement',
     'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
         'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-        'validation_population': 300, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-        'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+        'validation_population': 240, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+        'champion_population': 800, # at a validated generation, these are the points the champion team will play against to obtain the metrics
         'hall_of_fame': {
             'size': 10,
             'enabled': True,
@@ -31,8 +31,8 @@ POKER_DEFAULT = {
         'generations_total': 150,
         'validate_after_each_generation': 25,
         'populations': {
-            'teams': 100,
-            'points': 100,
+            'teams': 80,
+            'points': 80,
         },
         'replacement_rate': {
             'teams': 0.5,
@@ -77,7 +77,8 @@ POKER_DEFAULT = {
 }
 POKER_DEFAULT_1 = copy.deepcopy(POKER_DEFAULT)
 POKER_DEFAULT_1['advanced_training_parameters']['seed'] = 1
-# 
+# 31282, nohup1 - 2 opps
+# 19189, nohup3 - 4 opps
 
 POKER_DEFAULT_2 = copy.deepcopy(POKER_DEFAULT)
 POKER_DEFAULT_2['advanced_training_parameters']['seed'] = 2
@@ -87,4 +88,7 @@ POKER_DEFAULT_ENTROPY_1 = copy.deepcopy(POKER_DEFAULT)
 POKER_DEFAULT_ENTROPY_1['advanced_training_parameters']['seed'] = 1
 POKER_DEFAULT_ENTROPY_1['reinforcement_parameters']['hall_of_fame']['diversity'] = 'relative_entropy_distance'
 POKER_DEFAULT_ENTROPY_1['advanced_training_parameters']['diversity']['use_and_show'] = ['relative_entropy_distance', 'genotype_distance']
-# 
+# 2984, nohup2 - 2 opps
+# 12956, nohup6 - 4 opps
+
+# ncd, 2 opps / ncd, 4 opps / entropy, 4 opps
