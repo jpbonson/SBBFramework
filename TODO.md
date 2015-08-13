@@ -1,29 +1,57 @@
 ===
-modifiquei hand potential e ehs
-salvar valores arrendondados na memory das hands?
-scores per hand type
+para amanha:
+- fazer sampling de 5000 hands, categorizar seeds por hand strenght das hole cards e hand strength do board (e talvez, como extra, essas infos para o oponente, tambem)
+    - dois tipos de balance: por hole strength e por hole+board strength
+    - talvez, apenas para amanha, fazer a validation population ser gerada a forca? ir fazendo sampling ate obter uma population balanceada? talvez fazer isso separado apenas para pegar a seed?
+    - salvar hand strength, hand equity, potential, e tals no point, para nao precisar calcular em tempo de execucao (nao ai mais rpecisar usar o atributo MEMORY)
+- accumulative curve per money e per hands won, com subdivisao per hand type
+- focar em oponentes simples (definir alfa e beta para oponentes simples? apenas loose agressive/passive? ou loose/tight?)
+- run com 50 teams e 50 points
+- escrever report (umas 4 paginas, sem formatacao, com o que implementei e resultados iniciais, principalmente as accumulative curves)
+- enviar papers sobre alfa e beta nos oponentes
+- focar no NCD
+- remover a metric de diversity apenas para parents na validation
+
+obs.: removi hand potential porque o range e' apenas 0.0-0.2 e so' existe para 2 dos 4 rounds
 
 todo:
-checar resultados para ttt
-mandar rodar mais runs (de 50 e de 80)
+- fazer opcao em config para escolher grupo de oponentes de poker?
+- printar tempo em minutos
+- distribution of inputs per team? (instead of total)
+- std dev dos scores per point type e per opponent type?
 
+- cumulative performance is wrong? ler sobre
 
-- cumulative performance is wrong?
-- checar o quao bem NCD e entropy diferenciam entre eles + os 3 always para 100 hands vs cada oponente (incluindo a si mesmo, e na mesma ordem para todos)
-    - alterar play_match para jogar 100 hands com seed 1, e forcar para o sbb e o oponente serem coded oponentes
-    obter a action sequence no final, e colocar um raise SystemExit
-    - concatenar todas as action sequences daquele coded opponent
-    - e automaticamente calcular e printar as distances
-    - fazer isso em um script em tools, para ser um procedimento repetivel
-    - I implemented entropy and is not very clear if entropy or NCD are the best options, so the next thing I will do is implement a more detailed test. First I will implement the 4 static opponents (the agressive/passive and tight/loose ones). Then I will run each opponent for 100 hands against all the 7 opponents (the 4 static ones + the 3 ''always X'' ones), get the total sequence of actions for each one and use them as inputs for the NCD and entropy algorithms. I expect that this way I will be able to find the better distance metric to obtain diversity in poker behaviors (or at least for poker behaviors that aren't super complex). Do you have any suggestions about how I should perform this test besides or regarding what I described? Maybe ensure that the 100 hands are balanced?
-    -  100 balanced hands.
-    - fazer 2 conjuntos de action sequence para 100 hands, para comrpar e checar se a distancia eh pequena
-- pensar em outra behavioral diversity metric (uma evolucao da entropy?)
+- tentar com 60 teams e 60 points?
+
 - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 - escrever report
     (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); removed always_fold opponent)
 
+para depois:
+- layer 1:
+    - objetivo:
+        - boa diversity: accumulative curves bem separadas
+        - teams devem aprender como usar as hand types
+        - o foco nao e' oponentes, entao usar oponentes dummy com pouca variacao
+        - mudar hand types 
+- layer 2:
+    - objetivo:
+        - teams devem aprender como ldiar com diferentes opponents, mais dificeis
+        - adicionar uma population de opponents que evolui com coevolution, usando pareto
+- para testar diferentes diversity metrics: focar nas accumulative curves
+- na NCD, salvar tambem o state (hand type+position), comparar com a versao antiga?
+- conferir 'least regret', usado pela University of Alberta?
+- na ultima generation, nao criar teams novos? (ou nem se dar ao trabalho de mudar, ja que acho q nao muda nada?)
+- salvar nas metrics do team qual foi o ultimo opponent type q ele enfrentou?
+- nas metrics do environment, printar numero na frente do input para facilitar achar eles
+
+bug?
+- testar se NCD/entropy/pareto esta funcionando no hall of fame ou nao
+- testar se todos os teams com fold estao dando fold nos points da position 1
+
 extra:
+- pensar em outra behavioral diversity metric (uma evolucao da entropy?)
 - fazer mais testes com e sem hand potential, para analisar o runtime
 - repassar comentairos do paper sobre NCD para o doc
 - 3 ou 4 grupos de equity e strength? 10/20/30/40 ou 20/30/50?
@@ -32,10 +60,6 @@ extra:
 - volatility, agressiveness, hand potential?
 - conferir paper Learning Strategies for Opponent Modeling in Poker, para mais inputs (e resultados) e "An Investigation into Tournament Poker Strategy using Evolutionary Algorithms, 2007" para uma analise de quais inputs se saem melhor
 
-1 hand for 2 always raise opponents:
-scores: ['240', '-240']
-players: ['sbb', 'opponent']
-normalized_value: 1.0
 ------------------
 extra:
 - perguntar se o paper Ideal Evaluation from Coevolution foi usado como base para a point population evolution com pareto na versao original do SBB
@@ -56,6 +80,15 @@ future work:
         if r[0] >= i[0]:
             if r[0] < i[0]:
                 r[0] = cos(r[0])
+
+    r[0] = exp(r[0])
+    r[1] = r[1] - i[5]
+    if r[0] >= r[1]:
+        r[1] = r[1] - r[0]
+    r[0] = r[0] - i[0]
+    r[1] = r[1] + i[7] # AQUI
+    r[0] = exp(r[0])
+    r[0] = r[0] * i[6]
 - steps:
     3. better opponents
     4. opponent model
@@ -93,6 +126,7 @@ future work:
 
 ========
 Observacoes:
+- o correto e' calcular as validation metrics apenas para os parents mesmo
 - cada dimensao da point population eh uma das dimensoes q vai ser maximizada no pareto, gerando as poker behaviors
 - tomar cuidado com: cycling. disingagement, overspecialization, forgetting
 - Reward for point population:
@@ -134,6 +168,11 @@ max program size = 48
 
 ========
 NOTES:
+
+1 hand for 2 always raise opponents:
+scores: ['240', '-240']
+players: ['sbb', 'opponent']
+normalized_value: 1.0
 
 showdown:
 - I was thinking if in some way the result of the showdown could be useful for the SBB player (during and after training), e.g. be able to know if the opponent was bluffing or not. An option would be to create an input "% of showdown hands the opponent has bluffed", but then it woulb be necessary to implement a way to define what is or isn't a bluff.

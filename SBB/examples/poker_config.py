@@ -3,6 +3,8 @@ import copy
 """
 ##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
+more teams?
+
 pareto point
 program size
 oponentes
@@ -77,8 +79,8 @@ POKER_DEFAULT = {
 }
 POKER_DEFAULT_1 = copy.deepcopy(POKER_DEFAULT)
 POKER_DEFAULT_1['advanced_training_parameters']['seed'] = 1
-# 31282, nohup1 - 2 opps - error?
-# 19189, nohup3 - 4 opps
+# 14506, nohup1 - 2 opps
+# 22754, nohup3 - 4 opps
 
 POKER_DEFAULT_2 = copy.deepcopy(POKER_DEFAULT)
 POKER_DEFAULT_2['advanced_training_parameters']['seed'] = 2
@@ -88,7 +90,7 @@ POKER_DEFAULT_ENTROPY_1 = copy.deepcopy(POKER_DEFAULT)
 POKER_DEFAULT_ENTROPY_1['advanced_training_parameters']['seed'] = 1
 POKER_DEFAULT_ENTROPY_1['reinforcement_parameters']['hall_of_fame']['diversity'] = 'relative_entropy_distance'
 POKER_DEFAULT_ENTROPY_1['advanced_training_parameters']['diversity']['use_and_show'] = ['relative_entropy_distance', 'genotype_distance']
-# 2984, nohup2 - 2 opps - error?
-# 12956, nohup5 - 4 opps
+# 10636, nohup2 - 2 opps
+# 28512, nohup4 - 4 opps
 
-# ncd, 2 opps / ncd, 4 opps / entropy, 4 opps
+# ncd, 2 opps / entropy, 2 opps / ncd, 4 opps /  entropy, 4 opps

@@ -3,7 +3,17 @@ import copy
 """
 ##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
 
+TICTACTOE_DEFAULT x TICTACTOE_PARETOP:
+- 7390 secs x 8441 secs
+- best team: The U-value is 299. The Z-Score is -0.2522. The p-value is 0.80258. The result is not significant at p <= 0.05.
+- global: The U-value is 239. The Z-Score is 1.4164. The p-value is 0.1556. The result is not significant at p <= 0.05.
+- results: it seems that it is just slower, with no relevant improvements
 
+TICTACTOE_DEFAULT x TICTACTOE_NOFAME
+- 7390 secs x 6765 secs
+- best team: The U-value is 168. The Z-Score is -2.794. The p-value is 0.00528. The result is significant at p <= 0.05.
+- global: The U-value is 130. The Z-Score is -3.5313. The p-value is 0.00042. The result is significant at p <= 0.05.
+- results: without hall of fame is better, but I will keep it since I hope it will be useful for more complex cases
 
 --- old reuslts:
 # hall_of_fame True or False?
@@ -95,9 +105,9 @@ TICTACTOE_DEFAULT = {
 TICTACTOE_DEFAULT = copy.deepcopy(TICTACTOE_DEFAULT)
 # 29591, nohup1 - OK
 
-TICTACTOE_PROGRAM20 = copy.deepcopy(TICTACTOE_DEFAULT)
-TICTACTOE_PROGRAM20['training_parameters']['program_size']['max'] = 20
-# 29593, nohup2
+# TICTACTOE_PROGRAM20 = copy.deepcopy(TICTACTOE_DEFAULT)
+# TICTACTOE_PROGRAM20['training_parameters']['program_size']['max'] = 20
+# # 29593, nohup2 - too slow, cancelled, try with 15 instructions?
 
 TICTACTOE_PARETOP = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_PARETOP['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
