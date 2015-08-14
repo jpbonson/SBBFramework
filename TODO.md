@@ -2,6 +2,7 @@
 always_opp + hole_cards_strength / always_opp + board_strength / loo_opp + hole_cards_strength / loo_opp + board_strength / 
 
 hole_cards_strength (always_opp -> loo_opp): 0.54817, test score: 0.54512 -> fitness: 0.65017, test score: 0.58516
+board_strength (always_opp -> loo_opp, gen 125): fitness: 0.60633, test score: 0.61175 -> fitness: 0.54557, test score: 0.6672
 
 
 para amanha:
@@ -17,6 +18,7 @@ para amanha:
 - enviar papers sobre alfa e beta nos oponentes
 
 todo:
+- add state info to the NCD
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per money e per hands won
 - accumulative curve para mais coisas alem de sbb_label?

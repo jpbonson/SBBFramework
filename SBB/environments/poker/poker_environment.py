@@ -60,10 +60,10 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_actions = 3 # fold, call, raise
         total_inputs = len(PokerConfig.INPUTS)
         total_labels = len(PokerConfig.CONFIG['hand_strength_labels'].keys())
-        coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        # coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
-        # coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
+        # coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        # coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
+        coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
+        coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
         port1, port2 = available_ports()
@@ -394,7 +394,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         sorted_teams = sorted(older_teams, key=lambda team: team.extra_metrics_['validation_score'], reverse = True) # better ones first
         individual_performance = []
         accumulative_performance = []
-        best_results_per_point = dict(sorted_teams[0].results_per_points_for_validation_)
+        best_results_per_point = defaultdict(int)
         for team in sorted_teams:
             total = 0.0
             for key, item in team.results_per_points_for_validation_.iteritems():
@@ -415,7 +415,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         sorted_teams = sorted(older_teams, key=lambda team: team.extra_metrics_['validation_points']['sbb_label'][key], reverse = True) # better ones first
         individual_performance = []
         accumulative_performance = []
-        best_results_per_point = dict(sorted_teams[0].results_per_points_for_validation_)
+        best_results_per_point = defaultdict(int)
         for team in sorted_teams:
             total = 0.0
             for key, item in team.results_per_points_for_validation_.iteritems():

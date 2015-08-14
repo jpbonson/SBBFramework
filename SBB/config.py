@@ -26,7 +26,7 @@ class Config():
             },
             'debug_matches': False, # use this option to debug
             'poker': {
-                'balance_based_on': 'hole_cards_strength', # or board_strength
+                'balance_based_on': 'hole_cards_strength', # hole_cards_strength or board_strength # TODO: refactor
             },            
         },
 
