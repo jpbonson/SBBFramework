@@ -59,14 +59,14 @@ class PokerRuleBasedOpponent(DefaultOpponent):
 
     def execute(self, point_id, inputs, valid_actions, is_training):
         action = 1
-        winning_probability = inputs['EHS']
+        winning_probability = inputs[0]
         if winning_probability >= self.alfa_:
             if winning_probability >= self.beta_:
                 action = 2
             else:
                 action = 1
         else:
-            if inputs['bet'] > 0.0:
+            if inputs[1] > 0.0:
                 action = 0
             else:
                 action = 1

@@ -5,6 +5,7 @@ import json
 import errno
 import yappi
 import socket
+import operator
 import itertools
 import time
 from socket import error as socket_error
@@ -61,8 +62,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_labels = len(PokerConfig.CONFIG['hand_strength_labels'].keys())
         coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
         coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        # coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
-        # coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
+        # coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
+        # coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
         port1, port2 = available_ports()
@@ -88,7 +89,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         if len(self.backup_points_per_label) == 0:
             data = []
             for label in range(self.total_labels_):
-                idxs = random.sample(range(1, self.num_lines_per_file_[label]-1), population_size_per_label*25)
+                idxs = random.sample(range(1, self.num_lines_per_file_[label]-1), population_size_per_label*5)
                 result = [linecache.getline("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json", i) for i in idxs]
                 data.append([PokerPoint(label, json.loads(r)) for r in result])
             self.backup_points_per_label = data
@@ -411,7 +412,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def _calculate_accumulative_performance2(self, teams_population, key, get_attribute, current_generation):
         point_ids = [point.point_id_ for point in self.validation_population() if get_attribute(point) == key]
         older_teams = [team for team in teams_population if team.generation != current_generation]
-        sorted_teams = sorted(older_teams, key=lambda team: team.extra_metrics_['sbb_label'][key], reverse = True) # better ones first
+        sorted_teams = sorted(older_teams, key=lambda team: team.extra_metrics_['validation_points']['sbb_label'][key], reverse = True) # better ones first
         individual_performance = []
         accumulative_performance = []
         best_results_per_point = dict(sorted_teams[0].results_per_points_for_validation_)

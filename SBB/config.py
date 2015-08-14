@@ -32,7 +32,7 @@ class Config():
 
         'training_parameters': {
             'runs_total': 1,
-            'generations_total': 150,
+            'generations_total': 100,
             'validate_after_each_generation': 25,
             'populations': {
                 'teams': 50,

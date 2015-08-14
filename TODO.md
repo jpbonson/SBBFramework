@@ -1,4 +1,9 @@
 ===
+always_opp + hole_cards_strength / always_opp + board_strength / loo_opp + hole_cards_strength / loo_opp + board_strength / 
+
+hole_cards_strength (always_opp -> loo_opp): 0.54817, test score: 0.54512 -> fitness: 0.65017, test score: 0.58516
+
+
 para amanha:
 - run:
     - oponentes: always_raise/always_call e com os dois agressives (ajeitar alfa e beta)
@@ -12,6 +17,7 @@ para amanha:
 - enviar papers sobre alfa e beta nos oponentes
 
 todo:
+- obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per money e per hands won
 - accumulative curve para mais coisas alem de sbb_label?
 - precisa do -1 em num_lines_per_file_?
