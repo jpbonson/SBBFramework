@@ -38,6 +38,8 @@ class RunInfo:
         self.point_population_distribution_per_validation = defaultdict(dict)
         self.balanced_point_population = None
         self.hall_of_fame_per_validation = []
+        self.individual_performance_per_label_in_last_generation = {}
+        self.accumulative_performance_per_label_in_last_generation = {}
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
@@ -73,10 +75,18 @@ class RunInfo:
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\nValidation Population Distribution per Validation: "+str(self.validation_population_distribution_per_validation)
             msg += "\n\nChampion Population Distribution per Validation: "+str(self.champion_population_distribution_per_validation)
-        msg += "\n\nTotal Individual Team Performance: "+str(self.individual_performance_in_last_generation)
-        msg += "\n\nTotal Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation)
-        msg += "\n\n10% Worst Points Performed Against: "+str(self.worst_points_in_last_generation)
+
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+            msg += "\n\nOverall Accumulative Results:"
+            msg += "\n- Individual Team Performance: "+str(self.individual_performance_in_last_generation)
+            msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation)
+            msg += "\n\n- 10% Worst Points Performed Against: "+str(self.worst_points_in_last_generation)
+            
+            for key in self.individual_performance_per_label_in_last_generation:
+                msg += "\n\nAccumulative Results ("+str(key)+"):"
+                msg += "\n- Individual Team Performance: "+str(self.individual_performance_per_label_in_last_generation[key])
+                msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_per_label_in_last_generation[key])
+
             msg += "\n\nPoint Population Distribution per Validation"
             for attribute in self.point_population_distribution_per_validation:
                 msg += "\n"+str(attribute)+":"

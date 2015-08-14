@@ -105,10 +105,10 @@ if __name__ == "__main__":
     # organizar arquivos pelas labels, uma seed por linha
     # inicialmente, pegar 1000 hands
 
-    path = "hands_types/board_strength"
+    path = "hand_types/board_strength"
     index = 3
 
-    # path = "hands_types/hole_cards_strength"
+    # path = "hand_types/hole_cards_strength"
     # index = 0
 
     print "starting"

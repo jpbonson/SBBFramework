@@ -1,7 +1,5 @@
 ===
 para amanha:
-- accumulative curve per money e per hands won, com subdivisao per hand type
-- fazer o gerador salvar metricas para o oponente, para poder reativar o hall of fame e as metrics para oponente
 - run:
     - oponentes: always_raise/always_call e com os dois agressives (ajeitar alfa e beta)
     - com as duas balances
@@ -10,9 +8,12 @@ para amanha:
 - escrever report (umas 4 paginas, sem formatacao, com o que implementei e resultados iniciais, principalmente as accumulative curves)
     - (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); removed always_fold opponent)
     - obs.: removi hand potential porque o range e' apenas 0.0-0.2 e so' existe para 2 dos 4 rounds
+    - falar das proximas tarefas
 - enviar papers sobre alfa e beta nos oponentes
 
 todo:
+- accumulative curve per money e per hands won
+- accumulative curve para mais coisas alem de sbb_label?
 - precisa do -1 em num_lines_per_file_?
 - conferir alfa e beta dos rule-based opponents
 - repensar EHS: usar hand potential puro, ao inves de misturar com hand strenght? e como fica o primeiro round?

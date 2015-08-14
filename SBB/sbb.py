@@ -319,31 +319,8 @@ class SBB:
                 run_info.teams_in_last_generation.append(team)
         run_info.pareto_front_in_last_generation = pareto_front
         run_info.hall_of_fame_in_last_generation = self.environment.hall_of_fame()
-        if Config.USER['task'] == 'reinforcement':
-            individual_performance, accumulative_performance, worst_points_info = self._calculate_accumulative_performance(teams_population)
-            run_info.individual_performance_in_last_generation = individual_performance
-            run_info.accumulative_performance_in_last_generation = accumulative_performance
-            run_info.worst_points_in_last_generation = worst_points_info
-
-    def _calculate_accumulative_performance(self, teams_population):
-        older_teams = [team for team in teams_population if team.generation != self.current_generation_]
-        sorted_teams = sorted(older_teams, key=lambda team: team.extra_metrics_['validation_score'], reverse = True) # better ones first
-        individual_performance = []
-        accumulative_performance = []
-        best_results_per_point = dict(sorted_teams[0].results_per_points_for_validation_)
-        for team in sorted_teams:
-            total = 0.0
-            for key, item in team.results_per_points_for_validation_.iteritems():
-                total += item
-                if item > best_results_per_point[key]:
-                    best_results_per_point[key] = item
-            individual_performance.append(total)
-            accumulative_performance.append(sum(best_results_per_point.values()))
-        worst_points = sorted(best_results_per_point.items(), key=operator.itemgetter(1), reverse = False)
-        worst_points_ids = [point[0] for point in worst_points[:Config.USER['reinforcement_parameters']['validation_population']/10]]
-        validation_population = self.environment.validation_population()
-        worst_points_info = [str(point) for point in validation_population if point.point_id_ in worst_points_ids]
-        return individual_performance, accumulative_performance, worst_points_info
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+            self.environment.calculate_accumulative_performances(run_info, teams_population, self.current_generation_)
 
     def _generate_overall_metrics_output(self, run_infos):       
         msg = "\n\n\n#################### OVERALL RESULTS ####################"

@@ -377,6 +377,55 @@ class PokerEnvironment(ReinforcementEnvironment):
         for label in labels:
             run_info.champion_population_distribution_per_validation[key][label] = len(point_per_distribution[label])
 
+    def calculate_accumulative_performances(self, run_info, teams_population, current_generation): # TODO: refactor a duplicacao de codigo
+        individual_performance, accumulative_performance, worst_points_info = self._calculate_accumulative_performance1(teams_population, current_generation)
+        run_info.individual_performance_in_last_generation = individual_performance
+        run_info.accumulative_performance_in_last_generation = accumulative_performance
+        run_info.worst_points_in_last_generation = worst_points_info
+
+        for label in PokerConfig.CONFIG['hand_strength_labels'].keys():
+            individual_performance, accumulative_performance = self._calculate_accumulative_performance2(teams_population, label, lambda x: x.label_, current_generation)
+            run_info.individual_performance_per_label_in_last_generation[label] = individual_performance
+            run_info.accumulative_performance_per_label_in_last_generation[label] = accumulative_performance
+
+    def _calculate_accumulative_performance1(self, teams_population, current_generation):
+        older_teams = [team for team in teams_population if team.generation != current_generation]
+        sorted_teams = sorted(older_teams, key=lambda team: team.extra_metrics_['validation_score'], reverse = True) # better ones first
+        individual_performance = []
+        accumulative_performance = []
+        best_results_per_point = dict(sorted_teams[0].results_per_points_for_validation_)
+        for team in sorted_teams:
+            total = 0.0
+            for key, item in team.results_per_points_for_validation_.iteritems():
+                total += item
+                if item > best_results_per_point[key]:
+                    best_results_per_point[key] = item
+            individual_performance.append(total)
+            accumulative_performance.append(sum(best_results_per_point.values()))
+        worst_points = sorted(best_results_per_point.items(), key=operator.itemgetter(1), reverse = False)
+        worst_points_ids = [point[0] for point in worst_points[:Config.USER['reinforcement_parameters']['validation_population']/10]]
+        validation_population = self.validation_population()
+        worst_points_info = [str(point) for point in validation_population if point.point_id_ in worst_points_ids]
+        return individual_performance, accumulative_performance, worst_points_info
+
+    def _calculate_accumulative_performance2(self, teams_population, key, get_attribute, current_generation):
+        point_ids = [point.point_id_ for point in self.validation_population() if get_attribute(point) == key]
+        older_teams = [team for team in teams_population if team.generation != current_generation]
+        sorted_teams = sorted(older_teams, key=lambda team: team.extra_metrics_['sbb_label'][key], reverse = True) # better ones first
+        individual_performance = []
+        accumulative_performance = []
+        best_results_per_point = dict(sorted_teams[0].results_per_points_for_validation_)
+        for team in sorted_teams:
+            total = 0.0
+            for key, item in team.results_per_points_for_validation_.iteritems():
+                if key in point_ids:
+                    total += item
+                    if item > best_results_per_point[key]:
+                        best_results_per_point[key] = item
+            individual_performance.append(total)
+            accumulative_performance.append(sum(best_results_per_point.values()))
+        return individual_performance, accumulative_performance
+
     @staticmethod
     def normalize_winning(value):
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4

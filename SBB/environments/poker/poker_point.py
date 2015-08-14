@@ -16,22 +16,16 @@ class PokerPoint(ReinforcementPoint):
         self.showdown_result_ = info['r']
         self.hand_strength_ = info['str']
         self.ehs_ = info['ehs']
-        
-        # TODO: opponent metrics
-        self.opp_hand_strength_ = []
-        self.opp_ehs_ = []
-        self.opp_label_ = 0
-        self.opp_extra_label_ = 0
 
-        # self.opp_hand_strength_ = info['ostr']
-        # self.opp_ehs_ = info['oehs']
-        # if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'hole_cards_strength':
-        #     self.opp_label_ = self._label(info['str'][0])
-        #     self.opp_extra_label_ = self._label(info['str'][3])
-        # else:
-        #     self.opp_label_ = self._label(info['str'][3])
-        #     self.opp_extra_label_ = self._label(info['str'][0])
-        #
+        self.opp_hand_strength_ = info['ostr']
+        self.opp_ehs_ = info['oehs']
+        if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'hole_cards_strength':
+            self.opp_label_ = self._label(info['str'][0])
+            self.opp_extra_label_ = self._label(info['str'][3])
+        else:
+            self.opp_label_ = self._label(info['str'][3])
+            self.opp_extra_label_ = self._label(info['str'][0])
+        
 
         if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'hole_cards_strength':
             self.sbb_extra_label_ = self._label(info['str'][3])
