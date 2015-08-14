@@ -68,11 +68,12 @@ class PokerEnvironment(ReinforcementEnvironment):
         port1, port2 = available_ports()
         PokerConfig.CONFIG['available_ports'] = [port1, port2]
         self.num_lines_per_file_ = []
+        self.backup_points_per_label =[]
 
     def _initialize_random_population_of_points(self, population_size):
         if len(self.num_lines_per_file_) == 0:
             for label in range(self.total_labels_):
-                self.num_lines_per_file_.append(sum([1 for line in open("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json")])-1)
+                self.num_lines_per_file_.append(sum([1 for line in open("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json")]))
         population_size_per_label = population_size/self.total_labels_
         data = self._sample_point_per_label(population_size_per_label)
         data = flatten(data)
@@ -84,11 +85,17 @@ class PokerEnvironment(ReinforcementEnvironment):
         return self._sample_point_per_label(total_points_to_add_per_label)
 
     def _sample_point_per_label(self, population_size_per_label):
+        if len(self.backup_points_per_label) == 0:
+            data = []
+            for label in range(self.total_labels_):
+                idxs = random.sample(range(1, self.num_lines_per_file_[label]-1), population_size_per_label*25)
+                result = [linecache.getline("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json", i) for i in idxs]
+                data.append([PokerPoint(label, json.loads(r)) for r in result])
+            self.backup_points_per_label = data
         data = []
-        for label in range(self.total_labels_):
-            idxs = random.sample(range(self.num_lines_per_file_[label]), population_size_per_label)
-            result = [linecache.getline("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json", i) for i in idxs]
-            data.append([PokerPoint(label, json.loads(r)) for r in result])
+        for sample in self.backup_points_per_label:
+            data.append(sample[:population_size_per_label])
+            sample = sample[population_size_per_label:]
         return data
 
     def _play_match(self, team, opponent, point, mode):

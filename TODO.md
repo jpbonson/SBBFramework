@@ -2,9 +2,9 @@
 para amanha:
 - accumulative curve per money e per hands won, com subdivisao per hand type
 - fazer o gerador salvar metricas para o oponente, para poder reativar o hall of fame e as metrics para oponente
-- gastando muito tmepo lendo arquivo? salvar uns 100 points na memoria e so' ler arquivo de vez em quando?
 - run:
     - oponentes: always_raise/always_call e com os dois agressives (ajeitar alfa e beta)
+    - com as duas balances
     - 50 teams e 50 points
     - focar em ncd
 - escrever report (umas 4 paginas, sem formatacao, com o que implementei e resultados iniciais, principalmente as accumulative curves)
@@ -13,6 +13,7 @@ para amanha:
 - enviar papers sobre alfa e beta nos oponentes
 
 todo:
+- precisa do -1 em num_lines_per_file_?
 - conferir alfa e beta dos rule-based opponents
 - repensar EHS: usar hand potential puro, ao inves de misturar com hand strenght? e como fica o primeiro round?
 - fazer sampling de 5000 hands (dois tipos de balance: por hole strength e por hole+board strength)
