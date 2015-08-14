@@ -93,18 +93,10 @@ def initialize_metrics(seed, port_pos0, port_pos1, full_deck, hole_cards_based_o
     t1.join()
     t2.join()
 
-    # self.sbb_equity_ = NORMALIZED_HAND_EQUITY[frozenset(self.sbb_hole_cards)]
-    # self.opponent_equity_ = NORMALIZED_HAND_EQUITY[frozenset(self.opponent_hole_cards)]
-    # self.label_ = self._label(self.sbb_equity_, 'hand_equity_labels')
-    # self.opponent_label_ = self._label(self.opponent_equity_, 'hand_equity_labels')
-
-    # self.sbb_strength_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.sbb_hole_cards)]
-    # self.opponent_strength_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.opponent_hole_cards)]
-    # self.sbb_strength_label_ = self._label(self.sbb_strength_, 'hand_strength_labels')
-    # self.opponent_strength_label_ = self._label(self.opponent_strength_, 'hand_strength_labels')
-
-    # self.sbb_ehs_ = self.sbb_strength_ + (1.0 - self.sbb_strength_) * self.sbb_equity_ * 0.5 # TODO: refactor
-    # self.sbb_ehs_label_ = self._label(self.sbb_ehs_, 'hand_strength_labels')
+    point_pos0['oehs'] = point_pos1['ehs']
+    point_pos1['oehs'] = point_pos0['ehs']
+    point_pos0['ostr'] = point_pos1['str']
+    point_pos1['ostr'] = point_pos0['str']
 
     return point_pos0, point_pos1
 
@@ -113,8 +105,12 @@ if __name__ == "__main__":
     # organizar arquivos pelas labels, uma seed por linha
     # inicialmente, pegar 1000 hands
 
-    # path = "hands_types/board_strength"
-    path = "hands_types/hole_cards_strength"
+    path = "hands_types/board_strength"
+    index = 3
+
+    # path = "hands_types/hole_cards_strength"
+    # index = 0
+
     print "starting"
     full_deck = initialize_deck()
     hole_cards_based_on_equity = initialize_hole_cards_based_on_equity()
@@ -145,8 +141,8 @@ if __name__ == "__main__":
             point_pos1['r'] = 0.5
         point_pos0.pop('final')
         point_pos1.pop('final')
-        label0 = get_label(point_pos0['str'][3], 'hand_strength_labels')
-        label1 = get_label(point_pos1['str'][3], 'hand_strength_labels')
+        label0 = get_label(point_pos0['str'][index], 'hand_strength_labels')
+        label1 = get_label(point_pos1['str'][index], 'hand_strength_labels')
         print str(label0)+": "+str(point_pos0)
         print str(label1)+": "+str(point_pos1)
         files[label0].write(json.dumps(point_pos0)+'\n')

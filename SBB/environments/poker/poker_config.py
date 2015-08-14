@@ -1,4 +1,5 @@
 from opponent_model import OpponentModel
+from poker_point import PokerPoint
 from match_state import MatchState
 
 class PokerConfig():
@@ -7,35 +8,20 @@ class PokerConfig():
     """
 
     ACTION_MAPPING = {0: 'f', 1: 'c', 2: 'r'}
-    INPUTS = MatchState.INPUTS+['chips']+OpponentModel.INPUTS
+    INPUTS = PokerPoint.INPUTS+MatchState.INPUTS+['chips']+OpponentModel.INPUTS
     RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
     SUITS = ['s', 'd', 'h', 'c']
-    HAND_STRENGHT_MEMORY = None
-    HAND_PPOTENTIAL_MEMORY = None
-    HAND_NPOTENTIAL_MEMORY = None
     CONFIG = {
         'acpc_path': "SBB/environments/poker/ACPC/",
         'available_ports': [],
         'small_bet': 10,
         'big_bet': 20,
         'positions': 2,
-        # 'hand_equity_labels': {
-        #     0: ,  # >= (10%)
-        #     1: ,  # >= (20%)
-        #     2: ,  # >= (30%)
-        #     3: ,  # < (40%)
-        #     # 0: 0.48783188198, # 0.564089482, # >= (20%)
-        #     # 1: 0.333629193623, # 0.478209277, # >= (30%)
-        #     # 2: 0.333629193623, # 0.478209277, # < (50%)
-        # },
-        'hand_strength_labels': {
+        'hand_strength_labels': { # TODO: refactor
             0: 0.9,  # >= (10%)
             1: 0.7,  # >= (20%)
             2: 0.4,  # >= (30%)
             3: 0.4,  # < (40%)
-            # 0: 0.8, # >= (20%)
-            # 1: 0.5, # >= (30%)
-            # 2: 0.5, # < (50%)
         },
         'rule_based_opponents': ['loose_agressive', 'loose_passive', 'tight_agressive', 'tight_passive'],
     }

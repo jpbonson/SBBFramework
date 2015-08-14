@@ -1,17 +1,8 @@
-import os
 import re
-import random
-import itertools
-import numpy
-if os.name == 'posix':
-    from pokereval import PokerEval
-from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
-from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
-from ...utils.helpers import round_value
 
 class MatchState():
 
-    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'round', 'equity', 'hand strength', 'EHS']
+    INPUTS = ['pot', 'bet', 'pot odds', 'betting position', 'round']
 
     def __init__(self, message, small_bet, big_bet):
         self.message = message
@@ -25,7 +16,6 @@ class MatchState():
         self.opponent_hole_cards = None
         self.board_cards = None
         self._decode_message(message)
-        self.pokereval = PokerEval()
 
     def _decode_message(self, message):
         splitted = message.split(":")
@@ -87,15 +77,6 @@ class MatchState():
         else:
             return False
 
-    def get_winner_of_showdown(self):
-        our_rank = self.pokereval.evaln(self.current_hole_cards + self.board_cards)
-        opponent_rank = self.pokereval.evaln(self.opponent_hole_cards + self.board_cards)
-        if our_rank > opponent_rank:
-            return self.position
-        if our_rank < opponent_rank:
-            return self.opponent_position
-        return None # draw
-
     def is_last_action_a_fold(self):
         actions = self.rounds[-1]
         if len(actions) > 0 and actions[-1] == 'f':
@@ -137,47 +118,23 @@ class MatchState():
                             self_actions.append(action)
         return self_actions, opponent_actions
 
-    def inputs(self, memories):
+    def inputs(self):
         """
-        ATTENTION: If you change the order, add or remove inputs the SBB teams that were already trained will 
-        behave unexpectedly!
-
-        All inputs are normalized, so they influence the SBB player potentially equal.
-
         inputs[0] = pot
         inputs[1] = bet
         inputs[2] = pot odds
         inputs[3] = betting position (0: first betting, 1: last betting)
-        inputs[4] = round 
-        inputs[5] = equity
-        inputs[6] = hand_strength
-        inputs[7] = EHS # modified from the original
+        inputs[4] = round
         """
-        hand_strength_memory, hand_ppotential_memory = memories
         inputs = [0] * len(MatchState.INPUTS)
         inputs[0] = self.calculate_pot()/float(self.maximum_winning())
-        inputs[1] = self._calculate_bet()
+        inputs[1] = self.calculate_bet()
         if inputs[0] + inputs[1] > 0:
             inputs[2] = inputs[1] / float(inputs[0] + inputs[1])
         else:
             inputs[2] = 0.0
         inputs[3] = float(self._betting_position())
         inputs[4] = (len(self.rounds)-1)/3.0
-        inputs[5] = NORMALIZED_HAND_EQUITY[frozenset(self.current_hole_cards)]
-        inputs[6] = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
-        inputs[7] = self._calculate_ehs(inputs[6], inputs[5], hand_ppotential_memory, len(self.rounds))
-        return inputs
-
-    def inputs_for_rule_based_opponents(self, memories):
-        """
-        """
-        inputs = {}
-        inputs['bet'] = self._calculate_bet()
-        inputs['round'] = len(self.rounds)
-        inputs['equity'] = NORMALIZED_HAND_EQUITY[frozenset(self.current_hole_cards)]
-        hand_strength_memory, hand_ppotential_memory = memories
-        hand_strength = MatchState.calculate_hand_strength(self.current_hole_cards, self.board_cards, self.full_deck, hand_strength_memory)
-        inputs['EHS'] = self._calculate_ehs(hand_strength, inputs['equity'], hand_ppotential_memory, len(self.rounds))
         return inputs
 
     def calculate_pot(self):
@@ -203,7 +160,7 @@ class MatchState():
         max_big_bet_turn_winning = self.big_bet*4
         return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
 
-    def _calculate_bet(self):
+    def calculate_bet(self):
         # check if is the small blind
         if len(self.rounds) == 1 and len(self.rounds[0]) == 0:
             return 0.5

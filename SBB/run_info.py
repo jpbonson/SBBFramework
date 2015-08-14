@@ -23,7 +23,7 @@ class RunInfo:
         self.recall_per_validation = [] # only for classification task
         self.actions_distribution_per_validation = []
         self.inputs_distribution_per_validation = []
-        self.global_diversity_per_validation = []
+        self.global_diversity_per_validation = defaultdict(list)
         self.global_fitness_score_per_validation = []
         self.global_validation_score_per_validation = []
         self.global_opponent_results_per_validation = []
@@ -57,9 +57,9 @@ class RunInfo:
             for key in self.global_opponent_results_per_validation[-1]:
                 msg += "\n"+str(key)+": "+str([item[key] if key in item else 0.0 for item in self.global_opponent_results_per_validation])
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
-            msg += "\n\nGlobal Diversities per Validation (recalculated for only among the parents)"
-            for key in self.global_diversity_per_validation[0]:
-                msg += "\n"+str(key)+": "+str([item[key] for item in self.global_diversity_per_validation])
+            msg += "\n\nGlobal Diversities per Validation"
+            for key in self.global_diversity_per_validation:
+                msg += "\n"+str(key)+": "+str(self.global_diversity_per_validation[key])
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\nGlobal Results per Validation"
             for attribute in self.global_result_per_validation:

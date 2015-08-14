@@ -198,11 +198,6 @@ class SBB:
 
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]
 
-        DiversityMaintenance.calculate_diversities(older_teams, self.environment.point_population())
-        diversity_means = {}
-        for diversity in Config.RESTRICTIONS['used_diversities']:
-            diversity_means[diversity] = round_value(numpy.mean([t.diversity_[diversity] for t in older_teams]))
-
         fitness_score_mean = round_value(numpy.mean([team.fitness_ for team in older_teams]))
 
         if Config.USER['task'] == 'reinforcement':
@@ -222,9 +217,9 @@ class SBB:
             run_info.global_validation_score_per_validation.append(validation_score_mean)
 
         print
-        run_info.global_diversity_per_validation.append(diversity_means)
         for key in best_team.diversity_:
-            print str(key)+": "+str(best_team.diversity_[key])+" (global: "+str(diversity_means[key])+")"
+            run_info.global_diversity_per_validation[key].append(run_info.global_diversity_per_generation[key][-1])
+            print str(key)+": "+str(best_team.diversity_[key])+" (global: "+str(run_info.global_diversity_per_generation[key][-1])+")"
 
         print "\n### Global Metrics:"
 
@@ -392,10 +387,10 @@ class SBB:
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
-        for diversity in Config.RESTRICTIONS['used_diversities']:
-            array = [[generation[diversity] for generation in run.global_diversity_per_validation] for run in run_infos]
-            score_means, score_stds = self._process_scores(array)
-            msg += "\n\nMean Diversity per Validation across Runs ("+str(diversity)+"):"
+        for key, values in run.global_diversity_per_validation.iteritems():
+            score_means = round_value(numpy.mean(values))
+            score_stds = round_value(numpy.std(values))
+            msg += "\n\nMean Diversity per Validation across Runs ("+str(key)+"):"
             msg += "\nmean: "+str(score_means)
             msg += "\nstd. deviation: "+str(score_stds)
 

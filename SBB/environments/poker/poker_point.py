@@ -1,108 +1,93 @@
-import random
-import time
-import errno
-import socket
-from socket import error as socket_error
-import subprocess
-import threading
-from match_state import MatchState
-from poker_config import PokerConfig
-from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
-from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
 from ..reinforcement_environment import ReinforcementPoint
+from ...config import Config
 
 class PokerPoint(ReinforcementPoint):
     """
     Encapsulates a poker opponent, seeded hand, and position as a point.
     """
 
-    def __init__(self):
+    INPUTS = ['hand strength', 'EHS']
+
+    def __init__(self, label, info):
         super(PokerPoint, self).__init__()
-        self.position_ = random.randint(0, PokerConfig.CONFIG['positions']-1)
-        self.sbb_hole_cards = None
-        self.opponent_hole_cards = None
-        self.label_ = 0
-        self.sbb_equity_ = None
-        self.opponent_equity_ = None
+        self.label_ = label
+        self.seed_ = info['id']
+        self.position_ = info['p']
+        self.showdown_result_ = info['r']
+        self.hand_strength_ = info['str']
+        self.ehs_ = info['ehs']
+        
+        # TODO: opponent metrics
+        self.opp_hand_strength_ = []
+        self.opp_ehs_ = []
+        self.opp_label_ = 0
+        self.opp_extra_label_ = 0
+
+        # self.opp_hand_strength_ = info['ostr']
+        # self.opp_ehs_ = info['oehs']
+        # if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'hole_cards_strength':
+        #     self.opp_label_ = self._label(info['str'][0])
+        #     self.opp_extra_label_ = self._label(info['str'][3])
+        # else:
+        #     self.opp_label_ = self._label(info['str'][3])
+        #     self.opp_extra_label_ = self._label(info['str'][0])
+        #
+
+        if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'hole_cards_strength':
+            self.sbb_extra_label_ = self._label(info['str'][3])
+        else:
+            self.sbb_extra_label_ = self._label(info['str'][0])
+
+        if info['r'] == 0.0:
+            self.sbb_sd_label_ = 0
+        elif info['r'] == 0.5:
+            self.sbb_sd_label_ = 1
+        elif info['r'] == 1.0:
+            self.sbb_sd_label_ = 2
+
         self.last_opponent_ = None
         self.teams_results_ = []
-        self._initialize_metrics()
 
-    def _initialize_metrics(self):
-        sbb_port = PokerConfig.CONFIG['available_ports'][0]
-        opponent_port = PokerConfig.CONFIG['available_ports'][1]
-        player1 = 'sbb'
-        player2 = 'opponent'
+    def _label(self, value): # TODO: refactor
+        if value >= 0.9:
+            return 0
+        if value >= 0.7:
+            return 1
+        if value >= 0.4:
+            return 2
+        return 3
 
-        t1 = threading.Thread(target=PokerPoint.test_execution, args=[self, sbb_port, True])
-        t2 = threading.Thread(target=PokerPoint.test_execution, args=[self, opponent_port, False])
-        args = [PokerConfig.CONFIG['acpc_path']+'dealer', 
-                PokerConfig.CONFIG['acpc_path']+'outputs/match_output', 
-                PokerConfig.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
-                "1", # total hands 
-                str(self.seed_),
-                player1, player2, 
-                '-p', str(PokerConfig.CONFIG['available_ports'][0])+","+str(PokerConfig.CONFIG['available_ports'][1]),
-                '-l']
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        t1.start()
-        t2.start()
-        out, err = p.communicate()
-        t1.join()
-        t2.join()
+    def inputs(self, round_id):
+        """
+        inputs[0] = hand_strength
+        inputs[1] = EHS # modified from the original
+        """
+        inputs = [0] * len(PokerPoint.INPUTS)
+        inputs[0] = self.hand_strength_[round_id-1]
+        inputs[1] = self.ehs_[round_id-1]
+        return inputs
 
-        self.sbb_equity_ = NORMALIZED_HAND_EQUITY[frozenset(self.sbb_hole_cards)]
-        self.opponent_equity_ = NORMALIZED_HAND_EQUITY[frozenset(self.opponent_hole_cards)]
-        self.label_ = self._label(self.sbb_equity_, 'hand_equity_labels')
-        self.opponent_label_ = self._label(self.opponent_equity_, 'hand_equity_labels')
+    def inputs_for_opponent(self, round_id):
+        """
+        inputs[0] = hand_strength
+        inputs[1] = EHS # modified from the original
+        """
+        inputs = [0] * len(PokerPoint.INPUTS)
+        inputs[0] = self.opp_hand_strength_[round_id-1]
+        inputs[1] = self.opp_ehs_[round_id-1]
+        return inputs
 
-        self.sbb_strength_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.sbb_hole_cards)]
-        self.opponent_strength_ = STRENGTH_TABLE_FOR_2_CARDS[frozenset(self.opponent_hole_cards)]
-        self.sbb_strength_label_ = self._label(self.sbb_strength_, 'hand_strength_labels')
-        self.opponent_strength_label_ = self._label(self.opponent_strength_, 'hand_strength_labels')
-
-        self.sbb_ehs_ = self.sbb_strength_ + (1.0 - self.sbb_strength_) * self.sbb_equity_ * 0.5 # TODO: refactor
-        self.sbb_ehs_label_ = self._label(self.sbb_ehs_, 'hand_strength_labels')
+    def winner_of_showdown(self):
+        if self.showdown_result_ == 0.5:
+            return None # draw
+        if self.showdown_result_ == 0.0:
+            if self.position_ == 0:
+                return 1
+            else:
+                return 0
+        if self.showdown_result_ == 1.0:
+            return self.position_
+        raise ValueError("Bug! The code should have finished in the lines above!")        
 
     def __str__(self):
-        sbb_info = str(self.sbb_hole_cards)+", "+str(self.sbb_equity_)+", "+str(self.sbb_strength_)
-        opp_info = str(self.opponent_hole_cards)+", "+str(self.opponent_equity_)+", "+str(self.opponent_strength_)
-        msg = ""
-        msg += "(id = ["+str(self.point_id_)+"], attributes = ["+str(self.seed_)+", "+str(self.position_)+"], "
-        msg += "sbb cards info = ["+sbb_info+"], opp cards info = ["+opp_info+"], "
-        msg += " last opponent = ["+self.last_opponent_+"])"
-        return msg
-
-    @staticmethod
-    def test_execution(point, port, is_sbb):
-        socket_tmp = socket.socket()
-
-        total = 100
-        attempt = 0
-        while True:
-            try:
-                socket_tmp.connect(("localhost", port))
-                break
-            except socket_error as e:
-                attempt += 1
-                if e.errno == errno.ECONNREFUSED:
-                    time.sleep(1)
-                if attempt > total:
-                    raise ValueError("Could not connect to port "+str(port))
-
-        socket_tmp.send("VERSION:2.0.0\r\n")
-
-        message = socket_tmp.recv(1000)
-        message = message.replace("\r\n", "")
-        partial_messages = message.split("MATCHSTATE")
-        last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-        match_state = MatchState(last_message, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'], PokerConfig.full_deck, None)
-        action = "f"
-        send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
-        socket_tmp.send(send_msg)
-        socket_tmp.close()
-
-        if is_sbb:
-            point.sbb_hole_cards = match_state.current_hole_cards
-        if not is_sbb:
-            point.opponent_hole_cards = match_state.current_hole_cards
+        return "("+str(self.point_id_)+","+str(self.seed_)+","+str(self.position_)+","+str(self.label_)+")"

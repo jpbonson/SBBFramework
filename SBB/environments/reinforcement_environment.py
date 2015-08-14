@@ -93,16 +93,23 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self._initialize_opponent_population()
         self.point_population_ = []
         self.team_to_add_to_hall_of_fame_ = None
-        self.validation_point_population_ = [self.point_class() for index in range(Config.USER['reinforcement_parameters']['validation_population'])]
-        self.champion_point_population_ = [self.point_class() for index in range(Config.USER['reinforcement_parameters']['champion_population'])]
+        self.validation_point_population_ = self._initialize_random_population_of_points(Config.USER['reinforcement_parameters']['validation_population'])
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            self.champion_point_population_for_hall_of_fame_ = [self.point_class() for index in range(Config.USER['reinforcement_parameters']['hall_of_fame']['size']*self.matches_per_hall_of_fame_opponent_)]
+            size = Config.USER['reinforcement_parameters']['champion_population'] + Config.USER['reinforcement_parameters']['hall_of_fame']['size']*self.matches_per_hall_of_fame_opponent_
+            population = self._initialize_random_population_of_points(size)
+            self.champion_point_population_ = population[:Config.USER['reinforcement_parameters']['champion_population']]
+            self.champion_point_population_for_hall_of_fame_ = population[Config.USER['reinforcement_parameters']['champion_population']:]
+        else:
+            self.champion_point_population_ = self._initialize_random_population_of_points(Config.USER['reinforcement_parameters']['champion_population'])
         self.validation_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
         self.last_population_ = None
         self.current_opponent_type_ = None
         self.current_opponent_ = None
+
+    def _initialize_random_population_of_points(self, population_size):
+        return [self.point_class() for index in range(population_size)]
 
     def _initialize_opponent_population(self):
         self.opponent_population_ = {}
@@ -126,7 +133,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         # initialize point population
         if self.first_sampling_:
             self.first_sampling_ = False
-            population = [self.point_class() for index in range(Config.USER['training_parameters']['populations']['points'])]
+            population = self._initialize_random_population_of_points(Config.USER['training_parameters']['populations']['points'])
             subsets_per_label = self._get_data_per_label(population)
             total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_labels_
             balanced_subsets = []
@@ -208,8 +215,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         samples_per_class_to_remove = total_samples_per_class - samples_per_class_to_keep
 
         total_points_to_add = (total_samples_per_class - samples_per_class_to_keep)*self.total_labels_
-        points_to_add = [self.point_class() for x in range(total_points_to_add)]
-        points_to_add_per_label = self._get_data_per_label(points_to_add)
+        points_to_add_per_label = self._points_to_add_per_label(total_points_to_add)
 
         kept_subsets_per_class = []
         removed_subsets_per_class = []
@@ -251,6 +257,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
         self.samples_per_class_to_keep_ = flatten(kept_subsets_per_class)
         self.samples_per_class_to_remove_ = flatten(removed_subsets_per_class)
+
+    def _points_to_add_per_label(self, total_points_to_add):
+        points_to_add = [self.point_class() for x in range(total_points_to_add)]
+        points_to_add_per_label = self._get_data_per_label(points_to_add)
+        return points_to_add_per_label
 
     def _get_data_per_label(self, point_population):
         subsets_per_class = []
@@ -301,21 +312,21 @@ class ReinforcementEnvironment(DefaultEnvironment):
             extra_metrics_points = {}
             if Config.USER['reinforcement_parameters']['environment'] == 'poker': # TODO: refactor
                 extra_metrics_points['position'] = defaultdict(list)
-                extra_metrics_points['sbb_equity'] = defaultdict(list)
-                extra_metrics_points['sbb_hand_strength'] = defaultdict(list)
-                extra_metrics_points['sbb_EHS'] = defaultdict(list)
-                extra_metrics_points['opp_equity'] = defaultdict(list)
-                extra_metrics_points['opp_hand_strength'] = defaultdict(list)
+                extra_metrics_points['sbb_label'] = defaultdict(list)
+                extra_metrics_points['sbb_extra_label'] = defaultdict(list)
+                extra_metrics_points['sbb_sd'] = defaultdict(list)
+                extra_metrics_points['opp_label'] = defaultdict(list)
+                extra_metrics_points['opp_extra_label'] = defaultdict(list)
             for point, opponent in zip(point_population, opponent_population):
                 result = self._play_match(team, opponent, point, mode)
                 extra_metrics_opponents[opponent.opponent_id].append(result)
                 if Config.USER['reinforcement_parameters']['environment'] == 'poker': # TODO: refactor
                     extra_metrics_points['position'][point.position_].append(result)
-                    extra_metrics_points['sbb_equity'][point.label_].append(result)
-                    extra_metrics_points['sbb_hand_strength'][point.sbb_strength_label_].append(result)
-                    extra_metrics_points['sbb_EHS'][point.sbb_ehs_label_].append(result)
-                    extra_metrics_points['opp_equity'][point.opponent_label_].append(result)
-                    extra_metrics_points['opp_hand_strength'][point.opponent_strength_label_].append(result)
+                    extra_metrics_points['sbb_label'][point.label_].append(result)
+                    extra_metrics_points['sbb_extra_label'][point.sbb_extra_label_].append(result)
+                    extra_metrics_points['sbb_sd'][point.sbb_sd_label_].append(result)
+                    extra_metrics_points['opp_label'][point.opp_label_].append(result)
+                    extra_metrics_points['opp_extra_label'][point.opp_extra_label_].append(result)
                 if mode == Config.RESTRICTIONS['mode']['validation']:
                     team.results_per_points_for_validation_[point.point_id_] = result
                     results.append(result)
