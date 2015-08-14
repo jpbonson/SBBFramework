@@ -1,4 +1,8 @@
 ===
+done:
+- 
+
+
 para amanha:
 - fazer sampling de 5000 hands, categorizar seeds por hand strenght das hole cards e hand strength do board (e talvez, como extra, essas infos para o oponente, tambem)
     - dois tipos de balance: por hole strength e por hole+board strength
@@ -11,10 +15,17 @@ para amanha:
 - enviar papers sobre alfa e beta nos oponentes
 - focar no NCD
 - remover a metric de diversity apenas para parents na validation
+- balance champion population too
+- balance cards com 40/30/20/10
+
+- separar arquivo com os calculos de card
+- refatorar match_state para usar atributos dos points, inclusive para decidir o showdown + refatorar poker_environment e poker_point
 
 obs.: removi hand potential porque o range e' apenas 0.0-0.2 e so' existe para 2 dos 4 rounds
 
 todo:
+- repensar EHS: usar hand potential puro, ao inves de misturar com hand strenght? e como fica o primeiro round?
+
 - fazer opcao em config para escolher grupo de oponentes de poker?
 - printar tempo em minutos
 - distribution of inputs per team? (instead of total)
@@ -45,6 +56,7 @@ para depois:
 - na ultima generation, nao criar teams novos? (ou nem se dar ao trabalho de mudar, ja que acho q nao muda nada?)
 - salvar nas metrics do team qual foi o ultimo opponent type q ele enfrentou?
 - nas metrics do environment, printar numero na frente do input para facilitar achar eles
+- pensar mais sobre ehs
 
 bug?
 - testar se NCD/entropy/pareto esta funcionando no hall of fame ou nao

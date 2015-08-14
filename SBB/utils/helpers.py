@@ -23,7 +23,7 @@ def is_nearly_equal_to(value1, value2, threshold = Config.RESTRICTIONS['is_nearl
         return True
     return False
 
-def avaliable_ports():
+def available_ports():
     socket_tmp1 = socket.socket()
     socket_tmp1.bind(('', 0))
     socket_tmp2 = socket.socket()

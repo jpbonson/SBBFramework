@@ -20,7 +20,7 @@ from poker_config import PokerConfig
 from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
 from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
 from ..reinforcement_environment import ReinforcementEnvironment
-from ...utils.helpers import avaliable_ports, round_value, flatten
+from ...utils.helpers import available_ports, round_value, flatten
 from ...config import Config
 
 # def reset_info():
@@ -64,7 +64,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         # coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
-        port1, port2 = avaliable_ports()
+        port1, port2 = available_ports()
         PokerConfig.CONFIG['available_ports'] = [port1, port2]
         PokerConfig.full_deck = self._initialize_deck()
 
@@ -297,27 +297,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             msg += "\nhall of fame size: "+str(Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
         return msg
-
-    def _initialize_deck(self):
-        deck = []
-        for rank in PokerConfig.RANKS:
-            for suit in PokerConfig.SUITS:
-                deck.append(rank+suit)
-        return deck
-
-    def _initialize_hole_cards_based_on_equity(self):
-        deck = self._initialize_deck()
-        hole_cards = list(itertools.combinations(deck, 2))
-        equities = []
-        for card1, card2 in hole_cards:
-            equities.append(NORMALIZED_HAND_EQUITY[frozenset([card1, card2])])
-        total_equities = sum(equities)
-        probabilities = [e/float(total_equities) for e in equities]
-        hole_cards_indices = numpy.random.choice(range(len(hole_cards)), size = int(len(hole_cards)*0.3), replace = False, p = probabilities)
-        final_cards = []
-        for index in hole_cards_indices:
-            final_cards.append(hole_cards[index])
-        return final_cards
 
     def _remove_points(self, points_to_remove, teams_population):
         super(PokerEnvironment, self)._remove_points(points_to_remove, teams_population)
