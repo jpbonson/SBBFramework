@@ -1,9 +1,22 @@
 ===
+deixar gerando mais categorizao de hands, para ambas as balances (cuidado com 'a', e range(1000, 5000))
+
+bug:
+Mean Diversity per Validation across Runs (genotype_distance):
+mean: 0.8474
+std. deviation: 0.09751
+-> era para ser um array de resultados!
+
+usar round_value para accumualtive performance
+
+
 always_opp + hole_cards_strength / always_opp + board_strength / loo_opp + hole_cards_strength / loo_opp + board_strength / 
 
 hole_cards_strength (always_opp -> loo_opp): 0.54817, test score: 0.54512 -> fitness: 0.65017, test score: 0.58516
 board_strength (always_opp -> loo_opp, gen 125): fitness: 0.60633, test score: 0.61175 -> fitness: 0.54557, test score: 0.6672
 
+
+- ajeitar TODO list
 
 para amanha:
 - run:
@@ -26,7 +39,6 @@ todo:
 - conferir alfa e beta dos rule-based opponents
 - repensar EHS: usar hand potential puro, ao inves de misturar com hand strenght? e como fica o primeiro round?
 - fazer sampling de 5000 hands (dois tipos de balance: por hole strength e por hole+board strength)
-- focar em oponentes simples (definir alfa e beta para oponentes simples? apenas loose agressive/passive? ou loose/tight?)
 
 - fazer opcao em config para escolher grupo de oponentes de poker?
 - printar tempo em minutos
