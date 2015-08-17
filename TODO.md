@@ -1,5 +1,15 @@
+Main Goals:
+- Find out if the current diversity metrics are being able to maintain diversity, based on the  accumulative performance curves.
+- Find configurations that produce the best results (based on diversity and test score)
+Tasks:
+- Implement more metrics (ie. Accumulative performance based on hands won, and with more subdivisions)
+- Try NCD using state information (right now it only uses the sequence of actions)
+- Define a final version for the EHS formula
+- Sample and categorize at least 5000 hands.
+- Run SBB longer for various runs and configurations
+- + fix and tune minor parts of the code
+
 ===
-deixar gerando mais categorizao de hands, para ambas as balances (cuidado com 'a', e range(1000, 5000))
 
 bug:
 Mean Diversity per Validation across Runs (genotype_distance):
@@ -9,42 +19,21 @@ std. deviation: 0.09751
 
 usar round_value para accumualtive performance
 
-
-always_opp + hole_cards_strength / always_opp + board_strength / loo_opp + hole_cards_strength / loo_opp + board_strength / 
-
-hole_cards_strength (always_opp -> loo_opp): 0.54817, test score: 0.54512 -> fitness: 0.65017, test score: 0.58516
-board_strength (always_opp -> loo_opp, gen 125): fitness: 0.60633, test score: 0.61175 -> fitness: 0.54557, test score: 0.6672
-
-
 - ajeitar TODO list
 
-para amanha:
-- run:
-    - oponentes: always_raise/always_call e com os dois agressives (ajeitar alfa e beta)
-    - com as duas balances
-    - 50 teams e 50 points
-    - focar em ncd
-- escrever report (umas 4 paginas, sem formatacao, com o que implementei e resultados iniciais, principalmente as accumulative curves)
-    - (com o que foi implementado (opponents, diversities, inputs...), o q pretendo implementar, resultados iniciais e charts, os parametros usados, o comportamento dos poker players, os aparentes problemas (right now they are only learning the ratio between raise and call, they dont learn to fold, and it is essential for them to learn it in order to evolve); since I can perform a lot of runs of TTT with various configurations and comapre them with U-Test, I am trying to find initial good parameters for poker this way (maybe I should use a more complex, but still quick, game for it instead?); removed always_fold opponent)
-    - obs.: removi hand potential porque o range e' apenas 0.0-0.2 e so' existe para 2 dos 4 rounds
-    - falar das proximas tarefas
-- enviar papers sobre alfa e beta nos oponentes
-
 todo:
+- conferir TODOs
 - add state info to the NCD
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
-- accumulative curve per money e per hands won
+- accumulative curve per hands won?
 - accumulative curve para mais coisas alem de sbb_label?
 - precisa do -1 em num_lines_per_file_?
 - conferir alfa e beta dos rule-based opponents
 - repensar EHS: usar hand potential puro, ao inves de misturar com hand strenght? e como fica o primeiro round?
-- fazer sampling de 5000 hands (dois tipos de balance: por hole strength e por hole+board strength)
 
-- fazer opcao em config para escolher grupo de oponentes de poker?
 - printar tempo em minutos
 - distribution of inputs per team? (instead of total)
 - std dev dos scores per point type e per opponent type?
-- tentar com 60 teams e 60 points?
 
 - refatorar evaluate_point_population (na parte de add)
     - em _points_to_add_per_label, tomar cuidado para nao repetir points?
@@ -96,10 +85,8 @@ extra:
 - perguntar se o paper Ideal Evaluation from Coevolution foi usado como base para a point population evolution com pareto na versao original do SBB
 - refatorar update_opponent_model_and_chips (baseado nos warnings)
 
-=================================================
-
+===
 future work:
-- fazer versao do pSBB sem poker, para ser open source, e mover poker para um branch
 - nos testes, checar se os teams sabem blefar
 - refatorar codigo
 - ir testando enquanto implementa:
@@ -112,8 +99,6 @@ future work:
     6. more player? unlimited bets?
 
 - extra:
-    - conferir TODOs
-    - fazer reinforcement learning para Othello?
     - implementar um tradutor que usa teams salvas em .json
         - deve ser possivel usa-lo para testar um time no ambiente
         - deve ser possivel usa-lo para treinar mais um conjunto de teams
@@ -127,19 +112,21 @@ future work:
     - nos papers: se possivel, comprar SBB com outros poker players (alem de comparar o SBB entre si para diferentes configuracoes)
     - paper deadlines: january and march
 
-- quando der tempo:
+=================================================
+Quando der tempo:
+    - fazer versao do pSBB sem poker, para ser open source, e mover poker para um branch
     - experimentar violin plot na R language (our usar http://matplotlib.org/examples/statistics/violinplot_demo.html e integrar no pSBB?)
     - usar import logging para nao floodar a tela com prints qd um test falhar
     - melhorar README.md
     - fazer mais testes unitarios (pareto, diversity, selection, matches, operations, program execution)
     - adicionar mais documentacao no codigo
     - remover comentarios em portugues
-
-- performance:
-    - futuro: usar cpython, cython ou similar?
-    - usar mais map, reduce, e filter / list comprehension
-    - armazenar function calls do lado de fora do loop quando possivel
-    - range => xrange
+    - fazer reinforcement learning para outros jogos? (Othello?)
+    - performance:
+        - usar cpython, cython ou similar?
+        - usar mais map, reduce, e filter / list comprehension
+        - armazenar function calls do lado de fora do loop quando possivel
+        - range => xrange
 
 =================================================
 Observacoes:

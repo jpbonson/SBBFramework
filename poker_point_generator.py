@@ -112,17 +112,18 @@ if __name__ == "__main__":
     # index = 0
 
     print "starting"
+    start_time = time.time()
     full_deck = initialize_deck()
     hole_cards_based_on_equity = initialize_hole_cards_based_on_equity()
     port0, port1 = available_ports()
-    if not os.path.exists('hands_types'):
-        os.makedirs('hands_types')
+    if not os.path.exists('hand_types'):
+        os.makedirs('hand_types')
     if not os.path.exists(path):
         os.makedirs(path)
     files = []
     for x in range(4):
-        files.append(open(path+'/hands_type_'+str(x)+'.json','w'))
-    for seed in range(1000):
+        files.append(open(path+'/hands_type_'+str(x)+'.json','a'))
+    for seed in range(10000, 20000):
         point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck, hole_cards_based_on_equity)
         point_pos0['id'] = seed
         point_pos1['id'] = seed
@@ -149,4 +150,5 @@ if __name__ == "__main__":
         files[label1].write(json.dumps(point_pos1)+'\n')
     for f in files:
         f.close()
-    print "finishing"
+    elapsed_time = time.time() - start_time
+    print "finishing, "+str(elapsed_time)+" secs"
