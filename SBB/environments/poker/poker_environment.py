@@ -87,7 +87,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         if len(self.backup_points_per_label) == 0:
             data = []
             for label in range(self.total_labels_):
-                idxs = random.sample(range(1, self.num_lines_per_file_[label]-1), population_size_per_label*100)
+                idxs = random.sample(range(1, self.num_lines_per_file_[label]-1), population_size_per_label*50)
                 result = [linecache.getline("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json", i) for i in idxs]
                 data.append([PokerPoint(label, json.loads(r)) for r in result])
             self.backup_points_per_label = data
