@@ -1,5 +1,6 @@
 Done:
 minor fixes (round_value para acc curve, salvars ids na acc curve, time in mins, distribution of inputs per teams)
+minor fixes (fixed -1 in num_lines_per_file_, refatorar update_opponent_model_and_chips)
 
 ---
 
@@ -7,7 +8,6 @@ minor fixes (round_value para acc curve, salvars ids na acc curve, time in mins,
 - implementar NCD using state information (hand type+position) + testar
 - Define a final version for the EHS formula
 
-===
 
 bug:
 Mean Diversity per Validation across Runs (genotype_distance):
@@ -15,14 +15,11 @@ mean: 0.8474
 std. deviation: 0.09751
 -> era para ser um array de resultados!
 
-- ajeitar TODO list
 
-todo:
 - conferir TODOs
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per hands won?
 - accumulative curve para mais coisas alem de sbb_label?
-- precisa do -1 em num_lines_per_file_?
 - conferir alfa e beta dos rule-based opponents (e limpar a gambiarra)
 - repensar EHS: usar hand potential puro, ao inves de misturar com hand strenght? e como fica o primeiro round?
 - ajeitar unit tetss para nao usarem mais o valor do run
@@ -30,7 +27,6 @@ todo:
 - std dev dos scores per point type e per opponent type?
 
 - refatorar evaluate_point_population (na parte de add)
-    - em _points_to_add_per_label, tomar cuidado para nao repetir points?
 
 futuro:
 - layer 1:
@@ -67,12 +63,9 @@ bug?
     r[0] = r[0] * i[6]
 
 extra:
-- tentar rodar sem a gambiarra do yappi
 - repassar comentairos do paper sobre NCD para o doc
 - ajeitar arquivos em pastas core e utils
 - 10 ou 20 instructions? ou 15?
-- perguntar se o paper Ideal Evaluation from Coevolution foi usado como base para a point population evolution com pareto na versao original do SBB
-- refatorar update_opponent_model_and_chips (baseado nos warnings)
 
 =====================
 Main Goals (next weeks):
@@ -107,6 +100,7 @@ future work:
     - nos papers: se possivel, comprar SBB com outros poker players (alem de comparar o SBB entre si para diferentes configuracoes)
     - paper deadlines: january and march
     - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
+    - perguntar se o paper Ideal Evaluation from Coevolution foi usado como base para a point population evolution com pareto na versao original do SBB
 
 =================================================
 Quando der tempo:

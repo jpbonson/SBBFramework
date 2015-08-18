@@ -87,7 +87,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         if len(self.backup_points_per_label) == 0:
             data = []
             for label in range(self.total_labels_):
-                idxs = random.sample(range(1, self.num_lines_per_file_[label]-1), population_size_per_label*50)
+                idxs = random.sample(range(1, self.num_lines_per_file_[label]+1), population_size_per_label*50)
                 result = [linecache.getline("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json", i) for i in idxs]
                 data.append([PokerPoint(label, json.loads(r)) for r in result])
             self.backup_points_per_label = data
@@ -543,7 +543,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         socket_tmp.close()
 
         if inputs_type and inputs_type == 'all':
-            PokerEnvironment.update_opponent_model_and_chips(player, opponent, point, previous_messages+partial_messages, debug_file, previous_action)
+            PokerEnvironment._update_opponent_model_and_chips(player, opponent, point, previous_messages+partial_messages, debug_file, previous_action)
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file.write("The end.\n\n")
@@ -573,7 +573,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         return opponent_id
 
     @staticmethod
-    def update_opponent_model_and_chips(player, opponent, point, messages, debug_file, previous_action):
+    def _update_opponent_model_and_chips(player, opponent, point, messages, debug_file, previous_action):
         for partial_msg in reversed(messages):
             if partial_msg:
                 partial_match_state = MatchState(partial_msg, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'])
@@ -604,33 +604,19 @@ class PokerEnvironment(ReinforcementEnvironment):
                     if last_player == partial_match_state.position:
                         if self_actions and self_actions[-1] == 'f':
                             if Config.USER['reinforcement_parameters']['debug_matches']:
-                                debug_file.write("partial_msg: "+str(partial_msg)+", I folded (1)\n\n")
-                                print player.__repr__()+": partial_msg: "+str(partial_msg)+", I folded (1)\n"
+                                debug_file.write("partial_msg: "+str(partial_msg)+", I folded\n\n")
+                                print player.__repr__()+": partial_msg: "+str(partial_msg)+", I folded\n"
                             self_folded = True
                             opponent_folded = False
                             PokerEnvironment.get_chips(player, opponent).append(-(partial_match_state.calculate_pot()))
                     elif opponent_actions and opponent_actions[-1] == 'f':
                         if Config.USER['reinforcement_parameters']['debug_matches']:
-                            debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (1)\n\n")
-                            print player.__repr__()+": partial_msg: "+str(partial_msg)+", opponent folded (1)\n"
+                            debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded\n\n")
+                            print player.__repr__()+": partial_msg: "+str(partial_msg)+", opponent folded\n"
                         self_folded = False
                         opponent_folded = True
                         PokerEnvironment.get_chips(player, opponent).append(+(partial_match_state.calculate_pot()))
-                    elif previous_action == 'f':
-                        print "Warning! (1)"
-                        if Config.USER['reinforcement_parameters']['debug_matches']:
-                            debug_file.write("partial_msg: "+str(partial_msg)+", I folded (2)\n\n")
-                            print player.__repr__()+": partial_msg: "+str(partial_msg)+", I folded (2)\n"
-                        self_folded = True
-                        opponent_folded = False
-                        PokerEnvironment.get_chips(player, opponent).append(-(partial_match_state.calculate_pot()))
                     else:
-                        print "Warning! (2)"
-                        if Config.USER['reinforcement_parameters']['debug_matches']:
-                            debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (2)\n\n")
-                            print player.__repr__()+": partial_msg: "+str(partial_msg)+", opponent folded (2)\n"
-                        self_folded = False
-                        opponent_folded = True
-                        PokerEnvironment.get_chips(player, opponent).append(+(partial_match_state.calculate_pot()))
+                        raise ValueError("An unexpected behavior occured during the poker match!")
                 PokerEnvironment.get_opponent_model(player, opponent).update_overall_agressiveness(len(partial_match_state.rounds), self_actions, opponent_actions, self_folded, opponent_folded, previous_action)
                 break
