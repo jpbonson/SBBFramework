@@ -1,13 +1,11 @@
-Main Goals:
-- Find out if the current diversity metrics are being able to maintain diversity, based on the  accumulative performance curves.
-- Find configurations that produce the best results (based on diversity and test score)
-Tasks:
-- Implement more metrics (ie. Accumulative performance based on hands won, and with more subdivisions)
-- Try NCD using state information (right now it only uses the sequence of actions)
+Done:
+minor fixes (round_value para acc curve, salvars ids na acc curve, time in mins, distribution of inputs per teams)
+
+---
+
+- normalizar inputs entre 0 e 10 + testar
+- implementar NCD using state information (hand type+position) + testar
 - Define a final version for the EHS formula
-- Sample and categorize at least 5000 hands.
-- Run SBB longer for various runs and configurations
-- + fix and tune minor parts of the code
 
 ===
 
@@ -17,22 +15,18 @@ mean: 0.8474
 std. deviation: 0.09751
 -> era para ser um array de resultados!
 
-usar round_value para accumualtive performance
-
 - ajeitar TODO list
 
 todo:
 - conferir TODOs
-- add state info to the NCD
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per hands won?
 - accumulative curve para mais coisas alem de sbb_label?
 - precisa do -1 em num_lines_per_file_?
-- conferir alfa e beta dos rule-based opponents
+- conferir alfa e beta dos rule-based opponents (e limpar a gambiarra)
 - repensar EHS: usar hand potential puro, ao inves de misturar com hand strenght? e como fica o primeiro round?
+- ajeitar unit tetss para nao usarem mais o valor do run
 
-- printar tempo em minutos
-- distribution of inputs per team? (instead of total)
 - std dev dos scores per point type e per opponent type?
 
 - refatorar evaluate_point_population (na parte de add)
@@ -49,13 +43,10 @@ futuro:
     - objetivo:
         - teams devem aprender como ldiar com diferentes opponents, mais dificeis
         - adicionar uma population de opponents que evolui com coevolution, usando pareto
-- para testar diferentes diversity metrics: focar nas accumulative curves
-- na NCD, salvar tambem o state (hand type+position), comparar com a versao antiga?
-- conferir 'least regret', usado pela University of Alberta?
+- conferir 'least regreat', usado pela University of Alberta?
 - na ultima generation, nao criar teams novos? (ou nem se dar ao trabalho de mudar, ja que acho q nao muda nada?)
 - salvar nas metrics do team qual foi o ultimo opponent type q ele enfrentou?
 - nas metrics do environment, printar numero na frente do input para facilitar achar eles
-- implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 
 bug?
 - testar se NCD/entropy/pareto esta funcionando no hall of fame ou nao
@@ -77,15 +68,18 @@ bug?
 
 extra:
 - tentar rodar sem a gambiarra do yappi
-- pensar em outra behavioral diversity metric (uma evolucao da entropy?)
 - repassar comentairos do paper sobre NCD para o doc
 - ajeitar arquivos em pastas core e utils
 - 10 ou 20 instructions? ou 15?
-- conferir paper Learning Strategies for Opponent Modeling in Poker, para mais inputs (e resultados) e "An Investigation into Tournament Poker Strategy using Evolutionary Algorithms, 2007" para uma analise de quais inputs se saem melhor
 - perguntar se o paper Ideal Evaluation from Coevolution foi usado como base para a point population evolution com pareto na versao original do SBB
 - refatorar update_opponent_model_and_chips (baseado nos warnings)
 
-===
+=====================
+Main Goals (next weeks):
+- Find out if the current diversity metrics are being able to maintain diversity, based on the  accumulative performance curves.
+- Find configurations that produce the best results (based on diversity and test score)
+- (depois, se necessario) pensar em outra behavioral diversity metric (uma evolucao da entropy?)
+
 future work:
 - nos testes, checar se os teams sabem blefar
 - refatorar codigo
@@ -107,10 +101,12 @@ future work:
         - no layer 2 do SBB os teams do layer 1 ficam frozen e sao usados pelo layer 2 como se fossem 'programs'
         - objetivo do layer 1: produzir uma population de team com alta diversidade
         - objetivo do layer 2: obter o melhor jogador de poker
+    - conferir paper Learning Strategies for Opponent Modeling in Poker, para mais inputs (e resultados) e "An Investigation into Tournament Poker Strategy using Evolutionary Algorithms, 2007" para uma analise de quais inputs se saem melhor
 
 - papers:
     - nos papers: se possivel, comprar SBB com outros poker players (alem de comparar o SBB entre si para diferentes configuracoes)
     - paper deadlines: january and march
+    - implementar scripts em tools para printar os charts (violin, line, etc), python or R? conferir papers do SBB, GP e tutorials para ver os charts mais usados
 
 =================================================
 Quando der tempo:

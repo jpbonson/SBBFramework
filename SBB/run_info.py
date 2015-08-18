@@ -17,12 +17,14 @@ class RunInfo:
         self.pareto_front_in_last_generation = []
         self.individual_performance_in_last_generation = []
         self.accumulative_performance_in_last_generation = []
+        self.ids_for_acc_performance_in_last_generation = []
         self.worst_points_in_last_generation = []
         self.train_score_per_validation = []
         self.test_score_per_validation = []
         self.recall_per_validation = [] # only for classification task
         self.actions_distribution_per_validation = []
-        self.inputs_distribution_per_validation = []
+        self.inputs_distribution_per_instruction_per_validation = []
+        self.inputs_distribution_per_team_per_validation = []
         self.global_diversity_per_validation = defaultdict(list)
         self.global_fitness_score_per_validation = []
         self.global_validation_score_per_validation = []
@@ -40,6 +42,7 @@ class RunInfo:
         self.hall_of_fame_per_validation = []
         self.individual_performance_per_label_in_last_generation = {}
         self.accumulative_performance_per_label_in_last_generation = {}
+        self.ids_for_acc_performance_per_label_in_last_generation = {}
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
@@ -71,7 +74,8 @@ class RunInfo:
 
         msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
         msg += "\n\nDistribution of Actions per Validation: "+str(self.actions_distribution_per_validation)
-        msg += "\n\nDistribution of Inputs per Validation: "+str(self.inputs_distribution_per_validation)
+        msg += "\n\nDistribution of Inputs per Validation (per instruction): "+str(self.inputs_distribution_per_instruction_per_validation)
+        msg += "\n\nDistribution of Inputs per Validation (per team): "+str(self.inputs_distribution_per_team_per_validation)
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\nValidation Population Distribution per Validation: "+str(self.validation_population_distribution_per_validation)
             msg += "\n\nChampion Population Distribution per Validation: "+str(self.champion_population_distribution_per_validation)
@@ -80,12 +84,14 @@ class RunInfo:
             msg += "\n\nOverall Accumulative Results:"
             msg += "\n- Individual Team Performance: "+str(self.individual_performance_in_last_generation)
             msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation)
-            msg += "\n\n- 10% Worst Points Performed Against: "+str(self.worst_points_in_last_generation)
+            msg += "\n- Team ids: "+str(self.ids_for_acc_performance_in_last_generation)
+            msg += "\n- 10% Worst Points Performed Against: "+str(self.worst_points_in_last_generation)
             
             for key in self.individual_performance_per_label_in_last_generation:
                 msg += "\n\nAccumulative Results ("+str(key)+"):"
                 msg += "\n- Individual Team Performance: "+str(self.individual_performance_per_label_in_last_generation[key])
                 msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_per_label_in_last_generation[key])
+                msg += "\n- Team ids: "+str(self.ids_for_acc_performance_per_label_in_last_generation[key])
 
             msg += "\n\nPoint Population Distribution per Validation"
             for attribute in self.point_population_distribution_per_validation:
@@ -97,7 +103,8 @@ class RunInfo:
 
         msg += "\n\n\n##### METRICS FOR THE LAST GENERATION"
         msg += "\n\nDistribution of Actions: "+str(self.actions_distribution_per_validation[-1])
-        msg += "\n\nDistribution of Inputs: "+str(self.inputs_distribution_per_validation[-1])
+        msg += "\n\nDistribution of Inputs (per instruction): "+str(self.inputs_distribution_per_instruction_per_validation[-1])
+        msg += "\n\nDistribution of Inputs (per team): "+str(self.inputs_distribution_per_team_per_validation[-1])
 
         msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
         msg += "\n\nGlobal Fitness Score per Training: "+str(self.global_fitness_per_generation)

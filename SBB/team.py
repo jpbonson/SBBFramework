@@ -162,7 +162,7 @@ class Team(DefaultOpponent):
         msg = self.__repr__()
         msg += "\nteam members ("+str(len(self.programs))+"), A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids)
         msg += "\nfitness: "+str(round_value(self.fitness_))+", test score: "+str(round_value(self.score_testset_))
-        msg += "\ninputs distribution: "+str(self._inputs_distribution())
+        msg += "\ninputs distribution: "+str(self.inputs_distribution())
         if Config.USER['task'] == 'classification' and self.extra_metrics_:
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
         if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
@@ -203,7 +203,7 @@ class Team(DefaultOpponent):
                 msg +=  "\n"+str(key)+": "+str(value)
         return msg
 
-    def _inputs_distribution(self):
+    def inputs_distribution(self):
         inputs = []
         for program in self.overall_active_programs_:
             inputs += program.inputs_list_

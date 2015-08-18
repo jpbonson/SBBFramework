@@ -92,12 +92,12 @@ class SBB:
 
             # to ensure validation metrics exist for all teams in the hall of fame
             if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-                print "Validating hall of fame:"
+                print "Validating hall of fame..."
                 self.environment.validate(self.current_generation_, self.environment.hall_of_fame())
 
             self._print_and_store_per_run_metrics(run_info, best_team, teams_population, pareto_front)
-            run_info.elapsed_time = time.time() - start_time
-            print("\nFinished run "+str(run_info.run_id)+", elapsed time: "+str(run_info.elapsed_time)+" secs")
+            run_info.elapsed_time = round_value((time.time() - start_time)/60.0)
+            print("\nFinished run "+str(run_info.run_id)+", elapsed time: "+str(run_info.elapsed_time)+" mins")
             run_infos.append(run_info)
             sys.stdout.flush()
         
@@ -236,17 +236,26 @@ class SBB:
                 actions_distribution_array.append(0)
         run_info.actions_distribution_per_validation.append(actions_distribution_array)
 
-        inputs_distribution = Counter()
+        inputs_distribution_per_instruction = Counter()
+        inputs_distribution_per_team = Counter()
         for team in older_teams:
-            inputs_distribution.update(team._inputs_distribution())
-        print "\ninputs distribution (global): "+str(inputs_distribution)
-        inputs_distribution_array = []
+            inputs_distribution_per_instruction.update(team.inputs_distribution())
+            inputs_distribution_per_team.update(list(team.inputs_distribution()))
+        inputs_distribution_per_instruction_array = []
+        inputs_distribution_per_team_array = []
         for value in range(Config.RESTRICTIONS['total_inputs']):
-            if value in inputs_distribution:
-                inputs_distribution_array.append(inputs_distribution[value])
+            if value in inputs_distribution_per_instruction:
+                inputs_distribution_per_instruction_array.append(inputs_distribution_per_instruction[value])
             else:
-                inputs_distribution_array.append(0)
-        run_info.inputs_distribution_per_validation.append(inputs_distribution_array)
+                inputs_distribution_per_instruction_array.append(0)
+            if value in inputs_distribution_per_team:
+                inputs_distribution_per_team_array.append(inputs_distribution_per_team[value])
+            else:
+                inputs_distribution_per_team_array.append(0)
+        print "inputs distribution (global, per instruction): "+str(inputs_distribution_per_instruction_array)
+        print "inputs distribution (global, per team): "+str(inputs_distribution_per_team_array)
+        run_info.inputs_distribution_per_instruction_per_validation.append(inputs_distribution_per_instruction_array)
+        run_info.inputs_distribution_per_team_per_validation.append(inputs_distribution_per_team_array)
 
         print
         print "Global Fitness (last 10 gen.): "+str(run_info.global_fitness_per_generation[-10:])
@@ -372,7 +381,7 @@ class SBB:
             msg += "\nstd. deviation: "+str(score_stds)
 
         elapseds_per_run = [run.elapsed_time for run in run_infos]
-        msg += "\n\nFinished execution, total elapsed time: "+str(round_value(sum(elapseds_per_run)))+" secs "
+        msg += "\n\nFinished execution, total elapsed time: "+str(round_value(sum(elapseds_per_run)))+" mins "
         msg += "(mean: "+str(round_value(numpy.mean(elapseds_per_run)))+", std: "+str(round_value(numpy.std(elapseds_per_run)))+")"
         return msg
 
