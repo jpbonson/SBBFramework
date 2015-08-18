@@ -99,8 +99,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.56666]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_sbb_opponents_showing_diversity(self):
@@ -116,8 +116,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.56666]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_genotype_diversity_maintenance(self):
@@ -133,8 +133,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.56666]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_sharing_diversity_maintenance(self):
@@ -150,8 +150,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.58333]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_ncd_diversity_maintenance(self):
@@ -167,8 +167,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.64166]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_all_diversity_maintenance(self):
@@ -184,8 +184,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.68333]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame(self):
@@ -201,8 +201,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.64166]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame_with_diversity(self):
@@ -218,8 +218,8 @@ class ClassificationTests(unittest.TestCase):
         Config.USER = config
         sbb = SBB()
         sbb.run()
-        result = sbb.best_scores_per_runs_
-        expected = [0.64166]
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
         self.assertEqual(expected, result)
 
 if __name__ == '__main__':

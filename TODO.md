@@ -1,19 +1,17 @@
 Done:
 minor fixes (round_value para acc curve, salvars ids na acc curve, time in mins, distribution of inputs per teams)
 minor fixes (fixed -1 in num_lines_per_file_, refatorar update_opponent_model_and_chips)
+minor fixes (fixed bug with diversity across runs metric, fixed unit tests for ttt)
 
 ---
-
+implementar + testar:
 - normalizar inputs entre 0 e 10 + testar
 - implementar NCD using state information (hand type+position) + testar
 - Define a final version for the EHS formula
+- 10 ou 20 instructions? ou 15?
 
-
-bug:
-Mean Diversity per Validation across Runs (genotype_distance):
-mean: 0.8474
-std. deviation: 0.09751
--> era para ser um array de resultados!
+implementar:
+- Do you mean only plot the fitness for the generations with the same diversity/opponents, in a line chart?
 
 
 - conferir TODOs
@@ -21,8 +19,6 @@ std. deviation: 0.09751
 - accumulative curve per hands won?
 - accumulative curve para mais coisas alem de sbb_label?
 - conferir alfa e beta dos rule-based opponents (e limpar a gambiarra)
-- repensar EHS: usar hand potential puro, ao inves de misturar com hand strenght? e como fica o primeiro round?
-- ajeitar unit tetss para nao usarem mais o valor do run
 
 - std dev dos scores per point type e per opponent type?
 
@@ -65,7 +61,6 @@ bug?
 extra:
 - repassar comentairos do paper sobre NCD para o doc
 - ajeitar arquivos em pastas core e utils
-- 10 ou 20 instructions? ou 15?
 
 =====================
 Main Goals (next weeks):

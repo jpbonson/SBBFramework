@@ -373,9 +373,8 @@ class SBB:
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
-        for key, values in run.global_diversity_per_validation.iteritems():
-            score_means = round_value(numpy.mean(values))
-            score_stds = round_value(numpy.std(values))
+        for key in Config.RESTRICTIONS['used_diversities']:
+            score_means, score_stds = self._process_scores([run.global_diversity_per_validation[key] for run in run_infos])
             msg += "\n\nMean Diversity per Validation across Runs ("+str(key)+"):"
             msg += "\nmean: "+str(score_means)
             msg += "\nstd. deviation: "+str(score_stds)
