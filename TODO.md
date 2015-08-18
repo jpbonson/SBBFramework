@@ -1,7 +1,7 @@
 Done:
 minor fixes (round_value para acc curve, salvars ids na acc curve, time in mins, distribution of inputs per teams)
 minor fixes (fixed -1 in num_lines_per_file_, refatorar update_opponent_model_and_chips)
-minor fixes (fixed bug with diversity across runs metric, fixed unit tests for ttt)
+minor fixes (fixed bug with diversity across runs metric, fixed unit tests for ttt, checked alfa and beta for poker opponents + fixed bug + removed workaround)
 
 ---
 implementar + testar:
@@ -18,7 +18,7 @@ implementar:
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per hands won?
 - accumulative curve para mais coisas alem de sbb_label?
-- conferir alfa e beta dos rule-based opponents (e limpar a gambiarra)
+- atualizar opponent model para usar action_sequence do opponent?
 
 - std dev dos scores per point type e per opponent type?
 
