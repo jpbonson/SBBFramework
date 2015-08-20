@@ -195,21 +195,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def evaluate_point_population(self, teams_population):
         """
-        total = 125
-        total_per_class = 25
-        to_keep_per_class = 20
-        to_remove_per_class = 5
-        to_add_per_class = 5
-        total_to_add = 20 ([1, 3, 6, 10, 2])
-        start -> keep/remove -> add
-        2 -> 2 -> 3
-        3 -> 3 -> 6
-        18 -> 18 -> 24
-        25 -> 20 -> 25 (use uniform probability to get the to_add_per_class points)
-        25 -> 23 -> 25
+
         """
         current_subsets_per_class = self._get_data_per_label(self.point_population_)
-        # print str([[a.sbb_hole_cards for a in subset] for subset in current_subsets_per_class])
+
         total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_labels_
         samples_per_class_to_keep = int(round(total_samples_per_class*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
         samples_per_class_to_remove = total_samples_per_class - samples_per_class_to_keep
@@ -222,46 +211,31 @@ class ReinforcementEnvironment(DefaultEnvironment):
         if Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection']:
             # obtain the pareto front for each subset
             for subset, points_to_add in zip(current_subsets_per_class, points_to_add_per_label):
-                if len(points_to_add) >= samples_per_class_to_remove:
-                    samples_to_keep = samples_per_class_to_keep
-                else:
-                    samples_to_keep = total_samples_per_class - len(points_to_add)
-                if len(subset) > samples_to_keep:
-                    keep_solutions, remove_solutions = ParetoDominanceForPoints.run(subset, teams_population, samples_to_keep)
-                else:
-                    keep_solutions = subset
-                    remove_solutions = []
+                samples_to_keep = samples_per_class_to_keep
+                keep_solutions, remove_solutions = ParetoDominanceForPoints.run(subset, teams_population, samples_to_keep)
                 kept_subsets_per_class.append(keep_solutions)
                 removed_subsets_per_class.append(remove_solutions)
         else:
             # obtain the data points that will be kept and that will be removed for each subset using uniform probability
             for subset, points_to_add in zip(current_subsets_per_class, points_to_add_per_label):
-                if len(points_to_add) >= samples_per_class_to_remove:
-                    samples_to_keep = samples_per_class_to_keep
-                else:
-                    samples_to_keep = total_samples_per_class - len(points_to_add)
-                if len(subset) > samples_to_keep:
-                    kept_subsets = random.sample(subset, samples_to_keep) # get points that will be kept
-                    kept_subsets_per_class.append(kept_subsets)
-                    removed_subsets_per_class.append(list(set(subset) - set(kept_subsets))) # find the removed points
-                else:
-                    kept_subsets_per_class.append(subset)
-                    removed_subsets_per_class.append([])
+                samples_to_keep = samples_per_class_to_keep
+                kept_subsets = random.sample(subset, samples_to_keep) # get points that will be kept
+                kept_subsets_per_class.append(kept_subsets)
+                removed_subsets_per_class.append(list(set(subset) - set(kept_subsets))) # find the removed points
 
         for subset, points_to_add in zip(kept_subsets_per_class, points_to_add_per_label):
-            if len(subset)+len(points_to_add) > total_samples_per_class:
-                size = total_samples_per_class-len(subset)
-                subset += random.sample(points_to_add, size)
-            else:
-                subset += points_to_add
+            subset += points_to_add
 
         self.samples_per_class_to_keep_ = flatten(kept_subsets_per_class)
         self.samples_per_class_to_remove_ = flatten(removed_subsets_per_class)
 
     def _points_to_add_per_label(self, total_points_to_add):
+        """
+        This method only works if there is only one label. For more than one label you should 
+        overhide it in the class that inherits this class.
+        """
         points_to_add = [self.point_class() for x in range(total_points_to_add)]
-        points_to_add_per_label = self._get_data_per_label(points_to_add)
-        return points_to_add_per_label
+        return [points_to_add]
 
     def _get_data_per_label(self, point_population):
         subsets_per_class = []

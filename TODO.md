@@ -2,6 +2,7 @@ Done:
 minor fixes (round_value para acc curve, salvars ids na acc curve, time in mins, distribution of inputs per teams)
 minor fixes (fixed -1 in num_lines_per_file_, refatorar update_opponent_model_and_chips)
 minor fixes (fixed bug with diversity across runs metric, fixed unit tests for ttt, checked alfa and beta for poker opponents + fixed bug + removed workaround)
+minor fixes (refactored evaluate_point_population)
 
 ---
 implementar + testar:
@@ -21,8 +22,6 @@ implementar:
 - atualizar opponent model para usar action_sequence do opponent?
 
 - std dev dos scores per point type e per opponent type?
-
-- refatorar evaluate_point_population (na parte de add)
 
 futuro:
 - layer 1:
