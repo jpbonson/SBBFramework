@@ -51,11 +51,11 @@ def test_execution(point, port, full_deck, hole_cards_based_on_equity):
             else:
                 p = 0
             e = calculate_equity(match_state.current_hole_cards)
-            ehs = calculate_ehs(s, e, p, round_id)
-            point['str'][round_id-1] = round_value(s, 3)
+            ep = calculate_ep(s, e, p, round_id)
+            point['str'][round_id-1] = round_value(s*10.0, 3)
             # point['pot'][round_id-1] = round_value(p, 3)
             # point['eq'] = round_value(e)
-            point['ehs'][round_id-1] = round_value(ehs, 3)
+            point['ep'][round_id-1] = round_value(ep*10.0, 3)
             point['final'] = s
     except socket_error as e:
         if e.errno != errno.ECONNRESET and e.errno != errno.EPIPE:
@@ -73,8 +73,8 @@ def initialize_metrics(seed, port_pos0, port_pos1, full_deck, hole_cards_based_o
     point_pos1['str'] = [-1] * 4
     # point_pos0['pot'] = [-1] * 4
     # point_pos1['pot'] = [-1] * 4
-    point_pos0['ehs'] = [-1] * 4
-    point_pos1['ehs'] = [-1] * 4
+    point_pos0['ep'] = [-1] * 4
+    point_pos1['ep'] = [-1] * 4
 
     t1 = threading.Thread(target=test_execution, args=[point_pos0, port_pos0, full_deck, hole_cards_based_on_equity])
     t2 = threading.Thread(target=test_execution, args=[point_pos1, port_pos1, full_deck, hole_cards_based_on_equity])
@@ -93,8 +93,11 @@ def initialize_metrics(seed, port_pos0, port_pos1, full_deck, hole_cards_based_o
     t1.join()
     t2.join()
 
-    point_pos0['oehs'] = point_pos1['ehs']
-    point_pos1['oehs'] = point_pos0['ehs']
+    # print str(point_pos0['str'])+", "+str(point_pos0['ep'])+", "+str(point_pos0['hole_cards']+point_pos0['board_cards'])
+    # print str(point_pos1['str'])+", "+str(point_pos1['ep'])+", "+str(point_pos1['hole_cards']+point_pos1['board_cards'])
+
+    point_pos0['oep'] = point_pos1['ep']
+    point_pos1['oep'] = point_pos0['ep']
     point_pos0['ostr'] = point_pos1['str']
     point_pos1['ostr'] = point_pos0['str']
 
@@ -122,8 +125,8 @@ if __name__ == "__main__":
         os.makedirs(path)
     files = []
     for x in range(4):
-        files.append(open(path+'/hands_type_'+str(x)+'.json','a'))
-    for seed in range(10000, 20000):
+        files.append(open(path+'/hands_type_'+str(x)+'.json','w'))
+    for seed in range(0, 10000):
         point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck, hole_cards_based_on_equity)
         point_pos0['id'] = seed
         point_pos1['id'] = seed

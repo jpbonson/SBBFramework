@@ -143,10 +143,7 @@ def calculate_hand_potential_without_heuristics(current_hole_cards, board_cards,
 
     # ppot: were behind but moved ahead: cant use the original hp_total, because the result isnt normalzied and because it dont work for the heuristics
     # added hp[ahead][ahead] so already good hands wouldnt be given a below average potential
-    if (hp_total[behind]+hp_total[tied]+hp_total[ahead]) > 0:
-        ppot = (hp[ahead][ahead] + hp[behind][ahead] + hp[behind][tied]/2.0 + hp[tied][ahead]/2.0) / (hp_total[behind]*1.5 + hp_total[tied]*0.5 + hp_total[ahead]*1.0)
-    else:
-        ppot = 0.0 # it already is the best possible set of cards
+    ppot = (hp[ahead][ahead] + hp[behind][ahead] + hp[behind][tied]/2.0 + hp[tied][ahead]) / (hp_total[behind]*1.5 + hp_total[tied]*1.0 + hp_total[ahead]*1.0)
 
     # npot: were ahead but fell behind
     # npot = ((hp[ahead][behind]/total)*2.0 + (hp[ahead][tied]/total)*1.0 + (hp[tied][behind]/total)*1.0)/4.0
@@ -164,14 +161,22 @@ def calculate_ehs(hand_strength, hand_equity, hand_potential, round_id):
         ehs = (hand_strength + potential * weigth)/float(1+weigth)
         return ehs
 
+def calculate_ep(hand_strength, hand_equity, hand_potential, round_id):
+        if round_id == 4:
+            return hand_strength
+        if round_id == 1:
+            return hand_equity
+        if round_id == 2 or round_id == 3: # too expensive if calculated for the pre-flop, and useless if calculated for the river
+            return hand_potential
+
 def calculate_equity(hole_cards):
     return NORMALIZED_HAND_EQUITY[frozenset(hole_cards)]
 
-def get_label(value, key):
-    if value >= PokerConfig.CONFIG[key][0]:
+def get_label(value, key): # TODO: refactor
+    if value >= 9.0:
         return 0
-    if value >= PokerConfig.CONFIG[key][1]:
+    if value >= 7.0:
         return 1
-    if value >= PokerConfig.CONFIG[key][2]:
+    if value >= 4.0:
         return 2
     return 3

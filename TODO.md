@@ -5,6 +5,14 @@ minor fixes (fixed bug with diversity across runs metric, fixed unit tests for t
 minor fixes (refactored evaluate_point_population)
 
 ---
+- usar apenas HS nos poker opponents?
+- ao inves de EHS, oferecer equity e ppot -> created Effective Potential (EP) (most of the time, it is just a bad HS metric, that decreases the HS most of the time, not really useful), alterei pop para valorizar mais tied->ahead + x10
+    - alterar oponentes para usarem HS
+    - normalziar outros inputs para x10
+    - fazer mais 10k samples (cuidado com 'w'!)
+    = alterar tudo para usar ep ao inves de ehs
+
+
 implementar + testar:
 - normalizar inputs entre 0 e 10 + testar
 - implementar NCD using state information (hand type+position) + testar
