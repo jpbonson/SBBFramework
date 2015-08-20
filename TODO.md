@@ -3,6 +3,8 @@ minor fixes (round_value para acc curve, salvars ids na acc curve, time in mins,
 minor fixes (fixed -1 in num_lines_per_file_, refatorar update_opponent_model_and_chips)
 minor fixes (fixed bug with diversity across runs metric, fixed unit tests for ttt, checked alfa and beta for poker opponents + fixed bug + removed workaround)
 minor fixes (refactored evaluate_point_population)
+modifed EHS to EP + normalizing values between 0 and 10 + modified ppot
+minor fixes (fixed 2 intron removal bugs)
 
 ---
 - usar apenas HS nos poker opponents?
@@ -12,17 +14,14 @@ minor fixes (refactored evaluate_point_population)
     - fazer mais 10k samples (cuidado com 'w'!)
     = alterar tudo para usar ep ao inves de ehs
 
-
 implementar + testar:
 - normalizar inputs entre 0 e 10 + testar
 - implementar NCD using state information (hand type+position) + testar
-- Define a final version for the EHS formula
 - 10 ou 20 instructions? ou 15?
 
-implementar:
-- Do you mean only plot the fitness for the generations with the same diversity/opponents, in a line chart?
+- store the fitness for the generations with the same diversity/opponents
 
-
+- permitir programs de 1 a 10 instructions
 - conferir TODOs
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per hands won?
@@ -31,39 +30,15 @@ implementar:
 
 - std dev dos scores per point type e per opponent type?
 
-futuro:
-- layer 1:
-    - objetivo:
-        - boa diversity: accumulative curves bem separadas
-        - teams devem aprender como usar as hand types
-        - o foco nao e' oponentes, entao usar oponentes dummy com pouca variacao
-        - mudar hand types 
-- layer 2:
-    - objetivo:
-        - teams devem aprender como ldiar com diferentes opponents, mais dificeis
-        - adicionar uma population de opponents que evolui com coevolution, usando pareto
 - conferir 'least regreat', usado pela University of Alberta?
 - na ultima generation, nao criar teams novos? (ou nem se dar ao trabalho de mudar, ja que acho q nao muda nada?)
 - salvar nas metrics do team qual foi o ultimo opponent type q ele enfrentou?
 - nas metrics do environment, printar numero na frente do input para facilitar achar eles
 
 bug?
+- checar por mais bugs em introns removal
 - testar se NCD/entropy/pareto esta funcionando no hall of fame ou nao
 - testar se todos os teams com fold estao dando fold nos points da position 1
-- intron
-    if r[1] < r[1]: # AQUI
-        if r[0] >= i[0]:
-            if r[0] < i[0]:
-                r[0] = cos(r[0])
-
-    r[0] = exp(r[0])
-    r[1] = r[1] - i[5]
-    if r[0] >= r[1]:
-        r[1] = r[1] - r[0]
-    r[0] = r[0] - i[0]
-    r[1] = r[1] + i[7] # AQUI
-    r[0] = exp(r[0])
-    r[0] = r[0] * i[6]
 
 extra:
 - repassar comentairos do paper sobre NCD para o doc
@@ -86,6 +61,17 @@ future work:
     4. opponent model
     5. second layer
     6. more player? unlimited bets?
+
+- futuro:
+    - layer 1:
+        - objetivo:
+            - boa diversity: accumulative curves bem separadas
+            - teams devem aprender como usar as hand types
+            - o foco nao e' oponentes, entao usar oponentes dummy com pouca variacao
+    - layer 2:
+        - objetivo:
+            - teams devem aprender como lidar com diferentes opponents, mais dificeis
+            - adicionar uma population de opponents que evolui com coevolution, usando pareto
 
 - extra:
     - implementar um tradutor que usa teams salvas em .json

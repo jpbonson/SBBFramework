@@ -46,7 +46,11 @@ class IntronRemovalTests(unittest.TestCase):
         self.assertEqual(instructions, instructions_without_introns)
 
     def test_remove_irrelevant_ifs(self):
-        """ Ensures the algorithm removes irrelevant 'if' instructions """
+        """
+        Ensures the algorithm removes irrelevant 'if' instructions
+
+        The 'if_lesser_than' don't modify relevant registers.
+        """
         instructions = []
         instructions.append(Instruction(mode = 'read-register', target = 0, op = 'cos', source = 0))
         instructions.append(Instruction(mode = 'read-input', target = 1, op = 'if_lesser_than', source = 0))
@@ -55,6 +59,81 @@ class IntronRemovalTests(unittest.TestCase):
         instructions_without_introns = Program.remove_introns(instructions)
         instructions.pop(1)
         instructions.pop(1)
+        self.assertEqual(instructions, instructions_without_introns)
+
+    def test_remove_useless_ifs(self):
+        """
+        Ensures the algorithm removes useless 'if_lesser_than' instructions.
+
+        r[0] = r[0] - i[1]
+        if r[1] < r[1]: # HERE
+            if r[0] >= i[0]:
+                if r[0] < i[0]:
+                    r[0] = cos(r[0])
+        r[0] = r[0] - i[1]
+        """
+        a = Instruction(mode = 'read-input', target = 0, op = '-', source = 1)
+        b = Instruction(mode = 'read-register', target = 1, op = 'if_lesser_than', source = 1)
+        c = Instruction(mode = 'read-input', target = 0, op = 'if_equal_or_higher_than', source = 0)
+        d = Instruction(mode = 'read-input', target = 0, op = 'if_lesser_than', source = 0)
+        e = Instruction(mode = 'read-register', target = 0, op = 'cos', source = 0)
+        f = Instruction(mode = 'read-input', target = 0, op = '-', source = 1)
+        instructions = [a,b,c,d,e,f]
+        instructions_without_introns = Program.remove_introns(instructions)
+        instructions.remove(b)
+        instructions.remove(c)
+        instructions.remove(d)
+        instructions.remove(e)
+        self.assertEqual(instructions, instructions_without_introns)
+
+    def test_remove_introns_for_irrelevant_registers2(self):
+        """
+        Ensures the algorithm removes correctly.
+
+        r[0] = r[0] + i[4]
+        if r[0] >= i[2]: # HERE
+            r[1] = r[1] - r[0] # HERE
+        r[0] = r[0] - i[0]
+        r[1] = r[1] + i[7] # HERE
+        r[0] = exp(r[0]) # r[1] shouldn't be added to relevant registers
+        r[0] = r[0] * i[6]
+        """
+        a = Instruction(mode = 'read-input', target = 0, op = '+', source = 4)
+        b = Instruction(mode = 'read-input', target = 0, op = 'if_equal_or_higher_than', source = 2)
+        c = Instruction(mode = 'read-register', target = 1, op = '-', source = 0)
+        d = Instruction(mode = 'read-input', target = 0, op = '-', source = 0)
+        e = Instruction(mode = 'read-input', target = 1, op = '+', source = 7)
+        f = Instruction(mode = 'read-register', target = 0, op = 'exp', source = 1)
+        g = Instruction(mode = 'read-input', target = 0, op = '*', source = 6)
+        instructions = [a,b,c,d,e,f,g]
+        instructions_without_introns = Program.remove_introns(instructions)
+        instructions.remove(b)
+        instructions.remove(c)
+        instructions.remove(e)
+        self.assertEqual(instructions, instructions_without_introns)
+
+    def test_remove_introns_for_irrelevant_registers3(self):
+        """
+        Ensures the algorithm removes correctly.
+
+        r[0] = r[0] + i[4]
+        r[0] = r[0] - i[0]
+        r[1] = r[1] + i[7] # HERE
+        if r[0] >= r[1]: # HERE: r[1] shouldn't be added to relevant registers
+            r[1] = r[1] - r[0] # HERE
+        r[0] = r[0] * i[6]
+        """
+        a = Instruction(mode = 'read-input', target = 0, op = '+', source = 4)
+        b = Instruction(mode = 'read-input', target = 0, op = '-', source = 0)
+        c = Instruction(mode = 'read-input', target = 1, op = '+', source = 7)
+        d = Instruction(mode = 'read-register', target = 0, op = 'if_equal_or_higher_than', source = 1)
+        e = Instruction(mode = 'read-register', target = 1, op = '-', source = 0)
+        f = Instruction(mode = 'read-input', target = 0, op = '*', source = 6)
+        instructions = [a,b,c,d,e,f]
+        instructions_without_introns = Program.remove_introns(instructions)
+        instructions.remove(c)
+        instructions.remove(d)
+        instructions.remove(e)
         self.assertEqual(instructions, instructions_without_introns)
 
     def test_dont_remove_relevant_ifs(self):
