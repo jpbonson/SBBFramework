@@ -5,6 +5,7 @@ minor fixes (fixed bug with diversity across runs metric, fixed unit tests for t
 minor fixes (refactored evaluate_point_population)
 modifed EHS to EP + normalizing values between 0 and 10 + modified ppot
 minor fixes (fixed 2 intron removal bugs)
+minor fixes (min size for programs is 1)
 
 ---
 - usar apenas HS nos poker opponents?
@@ -21,7 +22,6 @@ implementar + testar:
 
 - store the fitness for the generations with the same diversity/opponents
 
-- permitir programs de 1 a 10 instructions
 - conferir TODOs
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per hands won?

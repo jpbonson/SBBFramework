@@ -61,7 +61,7 @@ class Config():
                 'max': 9,
             },
             'program_size': {
-                'min': 2,
+                'min': 1,
                 'max': 10,
             },
         },
