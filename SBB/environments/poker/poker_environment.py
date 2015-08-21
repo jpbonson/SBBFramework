@@ -452,20 +452,16 @@ class PokerEnvironment(ReinforcementEnvironment):
                 else:
                     if inputs_type:
                         if inputs_type == 'all':
-                            chips = PokerEnvironment.get_chips(player, opponent)
-                            if len(chips) == 0:
-                                chips = 0.5
-                            else:
-                                chips = PokerEnvironment.normalize_winning(numpy.mean(chips))
                             if is_sbb:
                                 point_inputs = point.inputs(len(match_state.rounds))
                             else:
                                 point_inputs = point.inputs_for_opponent(len(match_state.rounds))
+                            chips = PokerEnvironment._calculate_chips_input(player, opponent)
                             inputs = point_inputs + match_state.inputs() + [chips] + PokerEnvironment.get_opponent_model(player, opponent).inputs(match_state)
                         elif inputs_type == 'rule_based_opponent':
                             inputs = []
-                            inputs.append(point.ehs_[len(match_state.rounds)-1])
-                            inputs.append(match_state.calculate_bet())
+                            inputs.append(point.hand_strength_[len(match_state.rounds)-1])
+                            inputs.append(match_state.calculate_bet()*Config.RESTRICTIONS['multiply_normalization_by'])
                     else:
                         inputs = []
                     action = player.execute(point.point_id_, inputs, match_state.valid_actions(), is_training)
@@ -506,6 +502,16 @@ class PokerEnvironment(ReinforcementEnvironment):
             debug_file.write("The end.\n\n")
             print player.__repr__()+": The end.\n"
             debug_file.close()
+
+    @staticmethod
+    def _calculate_chips_input(player, opponent):
+        chips = PokerEnvironment.get_chips(player, opponent)
+        if len(chips) == 0:
+            chips = 0.5
+        else:
+            chips = PokerEnvironment.normalize_winning(numpy.mean(chips))
+        chips = chips*Config.RESTRICTIONS['multiply_normalization_by']
+        return chips
 
     @staticmethod
     def get_chips(player, opponent):

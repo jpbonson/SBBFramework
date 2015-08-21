@@ -17,8 +17,8 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 20, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 40, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 150, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 450, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'hall_of_fame': {
                 'size': 5,
                 'enabled': True,
@@ -26,17 +26,17 @@ class Config():
             },
             'debug_matches': False, # use this option to debug
             'poker': {
-                'balance_based_on': 'hole_cards_strength', # hole_cards_strength or board_strength # TODO: refactor
+                'balance_based_on': 'board_strength', # hole_cards_strength or board_strength # TODO: refactor
             },            
         },
 
         'training_parameters': {
             'runs_total': 1,
-            'generations_total': 25,
+            'generations_total': 100,
             'validate_after_each_generation': 25,
             'populations': {
-                'teams': 20,
-                'points': 20,
+                'teams': 50,
+                'points': 50,
             },
             'replacement_rate': {
                 'teams': 0.5,
@@ -110,6 +110,7 @@ class Config():
             'champion': 2,
         },
         'used_diversities': None, # initialized by sbb.py
+        'multiply_normalization_by': 10.0,
     }
 
     @staticmethod

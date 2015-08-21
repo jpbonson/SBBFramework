@@ -6,7 +6,7 @@ class PokerPoint(ReinforcementPoint):
     Encapsulates a poker opponent, seeded hand, and position as a point.
     """
 
-    INPUTS = ['hand strength', 'EHS']
+    INPUTS = ['hand strength', 'effective potential']
 
     def __init__(self, label, info):
         super(PokerPoint, self).__init__()
@@ -15,17 +15,16 @@ class PokerPoint(ReinforcementPoint):
         self.position_ = info['p']
         self.showdown_result_ = info['r']
         self.hand_strength_ = info['str']
-        self.ehs_ = info['ehs']
+        self.ep_ = info['ep']
 
         self.opp_hand_strength_ = info['ostr']
-        self.opp_ehs_ = info['oehs']
+        self.opp_ep_ = info['oep']
         if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'hole_cards_strength':
             self.opp_label_ = self._label(info['str'][0])
             self.opp_extra_label_ = self._label(info['str'][3])
         else:
             self.opp_label_ = self._label(info['str'][3])
             self.opp_extra_label_ = self._label(info['str'][0])
-        
 
         if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'hole_cards_strength':
             self.sbb_extra_label_ = self._label(info['str'][3])
@@ -54,21 +53,21 @@ class PokerPoint(ReinforcementPoint):
     def inputs(self, round_id):
         """
         inputs[0] = hand_strength
-        inputs[1] = EHS # modified from the original
+        inputs[1] = effective potential
         """
         inputs = [0] * len(PokerPoint.INPUTS)
         inputs[0] = self.hand_strength_[round_id-1]
-        inputs[1] = self.ehs_[round_id-1]
+        inputs[1] = self.ep_[round_id-1]
         return inputs
 
     def inputs_for_opponent(self, round_id):
         """
         inputs[0] = hand_strength
-        inputs[1] = EHS # modified from the original
+        inputs[1] = effective potential
         """
         inputs = [0] * len(PokerPoint.INPUTS)
         inputs[0] = self.opp_hand_strength_[round_id-1]
-        inputs[1] = self.opp_ehs_[round_id-1]
+        inputs[1] = self.opp_ep_[round_id-1]
         return inputs
 
     def winner_of_showdown(self):

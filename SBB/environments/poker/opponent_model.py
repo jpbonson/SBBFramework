@@ -1,4 +1,5 @@
 import numpy
+from ...config import Config
 
 class OpponentModel():
     """
@@ -100,6 +101,8 @@ class OpponentModel():
         # if len(self.opponent_agressiveness_postflop) > 0 and len(self.opponent_agressiveness_preflop) > 0:
         #     inputs[6] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop[:10], self.opponent_agressiveness_preflop[:10])
         #     inputs[7] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop, self.opponent_agressiveness_preflop)
+        
+        inputs = [i*Config.RESTRICTIONS['multiply_normalization_by'] for i in inputs]
         return inputs
 
     @staticmethod

@@ -1,4 +1,5 @@
 import re
+from ...config import Config
 
 class MatchState():
 
@@ -135,6 +136,7 @@ class MatchState():
             inputs[2] = 0.0
         inputs[3] = float(self._betting_position())
         inputs[4] = (len(self.rounds)-1)/3.0
+        inputs = [i*Config.RESTRICTIONS['multiply_normalization_by'] for i in inputs]
         return inputs
 
     def calculate_pot(self):

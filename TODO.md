@@ -6,19 +6,17 @@ minor fixes (refactored evaluate_point_population)
 modifed EHS to EP + normalizing values between 0 and 10 + modified ppot
 minor fixes (fixed 2 intron removal bugs)
 minor fixes (min size for programs is 1)
+using new EP input + normalized between 0 and 10 + opponents using HS + fixed bug for swap instruction when len = 1
 
 ---
-- usar apenas HS nos poker opponents?
-- ao inves de EHS, oferecer equity e ppot -> created Effective Potential (EP) (most of the time, it is just a bad HS metric, that decreases the HS most of the time, not really useful), alterei pop para valorizar mais tied->ahead + x10
-    - alterar oponentes para usarem HS
-    - normalziar outros inputs para x10
-    - fazer mais 10k samples (cuidado com 'w'!)
-    = alterar tudo para usar ep ao inves de ehs
+- fazer mais 10k samples (cuidado com 'w'!)
 
 implementar + testar:
 - normalizar inputs entre 0 e 10 + testar
 - implementar NCD using state information (hand type+position) + testar
 - 10 ou 20 instructions? ou 15?
+
+- apply 'normalize_by' to classification and ttt
 
 - store the fitness for the generations with the same diversity/opponents
 

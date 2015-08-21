@@ -13,6 +13,7 @@ from SBB.environments.poker.tables.strenght_table_for_2cards import STRENGTH_TAB
 from SBB.environments.poker.tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
 from SBB.environments.poker.poker_metrics import *
 from SBB.utils.helpers import available_ports, round_value
+from SBB.config import Config
 
 def test_execution(point, port, full_deck, hole_cards_based_on_equity):
     socket_tmp = socket.socket()
@@ -52,10 +53,10 @@ def test_execution(point, port, full_deck, hole_cards_based_on_equity):
                 p = 0
             e = calculate_equity(match_state.current_hole_cards)
             ep = calculate_ep(s, e, p, round_id)
-            point['str'][round_id-1] = round_value(s*10.0, 3)
+            point['str'][round_id-1] = round_value(s*Config.RESTRICTIONS['multiply_normalization_by'], 3)
             # point['pot'][round_id-1] = round_value(p, 3)
             # point['eq'] = round_value(e)
-            point['ep'][round_id-1] = round_value(ep*10.0, 3)
+            point['ep'][round_id-1] = round_value(ep*Config.RESTRICTIONS['multiply_normalization_by'], 3)
             point['final'] = s
     except socket_error as e:
         if e.errno != errno.ECONNRESET and e.errno != errno.EPIPE:
