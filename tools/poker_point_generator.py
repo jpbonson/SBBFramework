@@ -108,11 +108,11 @@ if __name__ == "__main__":
     # organizar arquivos pelas labels, uma seed por linha
     # inicialmente, pegar 1000 hands
 
-    path = "hand_types/board_strength"
-    index = 3
+    # path = "hand_types/board_strength"
+    # index = 3
 
-    # path = "hand_types/hole_cards_strength"
-    # index = 0
+    path = "hand_types/hole_cards_strength"
+    index = 0
 
     print "starting"
     start_time = time.time()
@@ -125,8 +125,8 @@ if __name__ == "__main__":
         os.makedirs(path)
     files = []
     for x in range(4):
-        files.append(open(path+'/hands_type_'+str(x)+'.json','w'))
-    for seed in range(0, 10000):
+        files.append(open(path+'/hands_type_'+str(x)+'.json','a'))
+    for seed in range(10000, 20000):
         point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck, hole_cards_based_on_equity)
         point_pos0['id'] = seed
         point_pos1['id'] = seed
