@@ -189,13 +189,16 @@ class PokerEnvironment(ReinforcementEnvironment):
     def setup(self, teams_population):
         super(PokerEnvironment, self).setup(teams_population)
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            for opponent in self.opponent_population_['hall_of_fame']:
-                opponent.opponent_model = {}
-                opponent.chips = {}
+            self._clear_hall_of_fame_memory()
         for point in self.point_population():
             point.teams_results_ = []
         gc.collect()
         yappi.clear_stats()
+
+    def _clear_hall_of_fame_memory(self):
+        for opponent in self.opponent_population_['hall_of_fame']:
+            opponent.opponent_model = {}
+            opponent.chips = {}
 
     def evaluate_team(self, team, mode):
         team.opponent_model = {}
@@ -226,6 +229,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         team.chips = {}
 
     def validate(self, current_generation, teams_population):
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            self._clear_hall_of_fame_memory()
         keys = ['validation', 'champion']
         subkeys = ['position', 'sbb_label', 'sbb_extra_label', 'sbb_sd']
         for team in teams_population:
@@ -247,11 +252,6 @@ class PokerEnvironment(ReinforcementEnvironment):
                         team.extra_metrics_['total_hands_per_point_type'][key][subkey] = defaultdict(int)
                         team.extra_metrics_['hand_played_per_point_type'][key][subkey] = defaultdict(int)
                         team.extra_metrics_['won_hands_per_point_type'][key][subkey] = defaultdict(int)
-
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']: # initializing
-            for opponent in self.opponent_population_['hall_of_fame']:
-                opponent.opponent_model = {}
-                opponent.chips = {}
 
         for point in self.validation_population():
             point.teams_results_ = []

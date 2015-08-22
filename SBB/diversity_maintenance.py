@@ -113,23 +113,6 @@ class DiversityMaintenance():
             distance = 1.0
         return distance
 
-    # @staticmethod
-    # def _relative_entropy_distance(team, other_team):
-    #     """
-        
-    #     """
-    #     if team.action_sequence_ == other_team.action_sequence_:
-    #         return 0.0
-    #     action_sequence = team.action_sequence_
-    #     other_action_sequence = other_team.action_sequence_
-    #     pdf = DiversityMaintenance._pdf(action_sequence)
-    #     other_pdf = DiversityMaintenance._pdf(other_action_sequence)
-    #     distance1 = stats.entropy(pdf, qk=other_pdf)
-    #     distance1 = distance1/27.6310211158
-    #     distance2 = stats.entropy(other_pdf, qk=pdf)
-    #     distance2 = distance2/27.6310211158
-    #     return (distance1 + distance2)/2.0
-
     @staticmethod
     def _relative_entropy_distance(team, other_team):
         if team.action_sequence_ == other_team.action_sequence_:

@@ -17,8 +17,8 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 150, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 450, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 25, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 50, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'hall_of_fame': {
                 'size': 5,
                 'enabled': True,
@@ -32,11 +32,11 @@ class Config():
 
         'training_parameters': {
             'runs_total': 1,
-            'generations_total': 100,
+            'generations_total': 25,
             'validate_after_each_generation': 25,
             'populations': {
-                'teams': 50,
-                'points': 50,
+                'teams': 20,
+                'points': 20,
             },
             'replacement_rate': {
                 'teams': 0.5,

@@ -156,13 +156,13 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 copied_team.team_id_ = team_to_copy.team_id_
                 copied_team.fitness_ = team_to_copy.fitness_
                 copied_team.active_programs_ = list(team_to_copy.active_programs_)
+                copied_team.action_sequence_ = list(team_to_copy.action_sequence_)
                 hall_of_fame.append(self._instantiate_sbb_opponent(copied_team, "hall_of_fame"))
                 if len(hall_of_fame) > Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
                     if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:
                         novelty = Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']
-                        teams = [p for p in hall_of_fame]
-                        DiversityMaintenance.calculate_diversities_based_on_distances(teams, k = Config.USER['reinforcement_parameters']['hall_of_fame']['size'], distances = [novelty])
-                        keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams, novelty, Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
+                        DiversityMaintenance.calculate_diversities_based_on_distances(hall_of_fame, k = Config.USER['reinforcement_parameters']['hall_of_fame']['size'], distances = [novelty])
+                        keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(hall_of_fame, novelty, Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
                         removed_point = [p for p in hall_of_fame if p == remove_teams[0]]
                         worst_point = removed_point[0]
                     else:
@@ -170,9 +170,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
                         worst_point = hall_of_fame[score.index(min(score))]
                     self.opponent_population_['hall_of_fame'].remove(worst_point)
                 self.team_to_add_to_hall_of_fame_ = None
-            # reset action sequence
-            for team in self.hall_of_fame():
-                team.action_sequence_ = []
 
         # define current opponent population
         options = self.opponent_population_.keys()
@@ -245,9 +242,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
         return subsets_per_class
 
     def evaluate_teams_population_for_training(self, teams_population):
-        if self.current_opponent_type_ == 'hall_of_fame':
-            self.current_opponent_.opponent_model = {}
-            self.current_opponent_.chips = {}
         for team in teams_population:
             team.action_sequence_ = []
             self.evaluate_team(team, Config.RESTRICTIONS['mode']['training'])
@@ -332,22 +326,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
         score = [p.score_testset_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]
         print "\nvalidating champion..."
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            self._clear_hall_of_fame_memory()
         self.evaluate_team(best_team, Config.RESTRICTIONS['mode']['champion'])
         best_team.extra_metrics_['champion_score'] = round_value(best_team.score_testset_)
         best_team.extra_metrics_['champion_opponents'] = best_team.extra_metrics_['opponents']
         best_team.extra_metrics_['champion_points'] = best_team.extra_metrics_['points']
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            # reset action sequence
-            for team in self.hall_of_fame():
-                team.action_sequence_ = []
         return best_team
-
-    def _clear_hall_of_fame_memory(self):
-        for opponent in self.opponent_population_['hall_of_fame']:
-            opponent.opponent_model = {}
-            opponent.chips = {}
 
     def hall_of_fame(self):
         if 'hall_of_fame' in self.opponent_population_:

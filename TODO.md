@@ -7,12 +7,13 @@ modifed EHS to EP + normalizing values between 0 and 10 + modified ppot
 minor fixes (fixed 2 intron removal bugs)
 minor fixes (min size for programs is 1)
 using new EP input + normalized between 0 and 10 + opponents using HS + fixed bug for swap instruction when len = 1
+- 50 run
+minor fixes (fixed bug where ncd wasnt working for hall of fame + more 1000 hand samples)
 
 ---
 - fazer mais 10k samples (cuidado com 'w'!)
 
 implementar + testar:
-- normalizar inputs entre 0 e 10 + testar
 - implementar NCD using state information (hand type+position) + testar
 - 10 ou 20 instructions? ou 15?
 
@@ -21,6 +22,7 @@ implementar + testar:
 - store the fitness for the generations with the same diversity/opponents
 
 - conferir TODOs
+- remover codigo de poker do reinforcement learning environment
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per hands won?
 - accumulative curve para mais coisas alem de sbb_label?
@@ -28,19 +30,18 @@ implementar + testar:
 
 - std dev dos scores per point type e per opponent type?
 
-- conferir 'least regreat', usado pela University of Alberta?
 - na ultima generation, nao criar teams novos? (ou nem se dar ao trabalho de mudar, ja que acho q nao muda nada?)
 - salvar nas metrics do team qual foi o ultimo opponent type q ele enfrentou?
 - nas metrics do environment, printar numero na frente do input para facilitar achar eles
 
+- ajeitar arquivos em pastas core e utils
+
 bug?
 - checar por mais bugs em introns removal
-- testar se NCD/entropy/pareto esta funcionando no hall of fame ou nao
-- testar se todos os teams com fold estao dando fold nos points da position 1
 
 extra:
+- conferir 'least regreat', usado pela University of Alberta?
 - repassar comentairos do paper sobre NCD para o doc
-- ajeitar arquivos em pastas core e utils
 
 =====================
 Main Goals (next weeks):
