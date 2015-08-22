@@ -9,6 +9,7 @@ minor fixes (min size for programs is 1)
 using new EP input + normalized between 0 and 10 + opponents using HS + fixed bug for swap instruction when len = 1
 - 50 run
 minor fixes (fixed bug where ncd wasnt working for hall of fame + more 1000 hand samples)
+minor fix (added index before input when printing)
 
 ---
 - fazer mais 10k samples (cuidado com 'w'!)
@@ -32,7 +33,6 @@ implementar + testar:
 
 - na ultima generation, nao criar teams novos? (ou nem se dar ao trabalho de mudar, ja que acho q nao muda nada?)
 - salvar nas metrics do team qual foi o ultimo opponent type q ele enfrentou?
-- nas metrics do environment, printar numero na frente do input para facilitar achar eles
 
 - ajeitar arquivos em pastas core e utils
 

@@ -264,7 +264,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\n### Environment Info:"
         msg += "\nports: "+str(PokerConfig.CONFIG['available_ports'])
         msg += "\ntotal inputs: "+str(self.total_inputs_)
-        msg += "\ninputs: "+str(PokerConfig.INPUTS)
+        msg += "\ninputs: "+str([str(index)+": "+value for index, value in enumerate(PokerConfig.INPUTS)])
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(PokerConfig.ACTION_MAPPING)
         msg += "\npositions: "+str(PokerConfig.CONFIG['positions'])
