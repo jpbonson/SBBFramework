@@ -277,24 +277,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 opponent_population = self.champion_opponent_population()
             results = []
             extra_metrics_opponents = defaultdict(list)
-            extra_metrics_points = {}
-            if Config.USER['reinforcement_parameters']['environment'] == 'poker': # TODO: refactor
-                extra_metrics_points['position'] = defaultdict(list)
-                extra_metrics_points['sbb_label'] = defaultdict(list)
-                extra_metrics_points['sbb_extra_label'] = defaultdict(list)
-                extra_metrics_points['sbb_sd'] = defaultdict(list)
-                extra_metrics_points['opp_label'] = defaultdict(list)
-                extra_metrics_points['opp_extra_label'] = defaultdict(list)
+            extra_metrics_points = self._initialize_extra_metrics_for_points()
             for point, opponent in zip(point_population, opponent_population):
                 result = self._play_match(team, opponent, point, mode)
                 extra_metrics_opponents[opponent.opponent_id].append(result)
-                if Config.USER['reinforcement_parameters']['environment'] == 'poker': # TODO: refactor
-                    extra_metrics_points['position'][point.position_].append(result)
-                    extra_metrics_points['sbb_label'][point.label_].append(result)
-                    extra_metrics_points['sbb_extra_label'][point.sbb_extra_label_].append(result)
-                    extra_metrics_points['sbb_sd'][point.sbb_sd_label_].append(result)
-                    extra_metrics_points['opp_label'][point.opp_label_].append(result)
-                    extra_metrics_points['opp_extra_label'][point.opp_extra_label_].append(result)
+                extra_metrics_points = self._update_extra_metrics_for_points(extra_metrics_points, point, result)
                 if mode == Config.RESTRICTIONS['mode']['validation']:
                     team.results_per_points_for_validation_[point.point_id_] = result
                     results.append(result)
@@ -304,12 +291,17 @@ class ReinforcementEnvironment(DefaultEnvironment):
             for key in extra_metrics_opponents:
                 extra_metrics_opponents[key] = round_value(numpy.mean(extra_metrics_opponents[key]))
             team.extra_metrics_['opponents'] = extra_metrics_opponents
-            if Config.USER['reinforcement_parameters']['environment'] == 'poker': # TODO: refactor
-                for key in extra_metrics_points:
-                    for subkey in extra_metrics_points[key]:
-                        extra_metrics_points[key][subkey] = round_value(numpy.mean(extra_metrics_points[key][subkey]))
+            for key in extra_metrics_points:
+                for subkey in extra_metrics_points[key]:
+                    extra_metrics_points[key][subkey] = round_value(numpy.mean(extra_metrics_points[key][subkey]))
             team.extra_metrics_['points'] = extra_metrics_points
             team.score_testset_ = numpy.mean(results)
+
+    def _initialize_extra_metrics_for_points(self):
+        return {}
+
+    def _update_extra_metrics_for_points(self, extra_metrics_points, point, result):
+        return extra_metrics_points
 
     def validate(self, current_generation, teams_population):
         print "\nvalidating all..."

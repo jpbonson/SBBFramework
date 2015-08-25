@@ -228,6 +228,25 @@ class PokerEnvironment(ReinforcementEnvironment):
         team.opponent_model = {}
         team.chips = {}
 
+    def _initialize_extra_metrics_for_points(self):
+        extra_metrics_points = {}
+        extra_metrics_points['position'] = defaultdict(list)
+        extra_metrics_points['sbb_label'] = defaultdict(list)
+        extra_metrics_points['sbb_extra_label'] = defaultdict(list)
+        extra_metrics_points['sbb_sd'] = defaultdict(list)
+        extra_metrics_points['opp_label'] = defaultdict(list)
+        extra_metrics_points['opp_extra_label'] = defaultdict(list)
+        return extra_metrics_points
+
+    def _update_extra_metrics_for_points(self, extra_metrics_points, point, result):
+        extra_metrics_points['position'][point.position_].append(result)
+        extra_metrics_points['sbb_label'][point.label_].append(result)
+        extra_metrics_points['sbb_extra_label'][point.sbb_extra_label_].append(result)
+        extra_metrics_points['sbb_sd'][point.sbb_sd_label_].append(result)
+        extra_metrics_points['opp_label'][point.opp_label_].append(result)
+        extra_metrics_points['opp_extra_label'][point.opp_extra_label_].append(result)
+        return extra_metrics_points
+
     def validate(self, current_generation, teams_population):
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             self._clear_hall_of_fame_memory()
