@@ -43,10 +43,10 @@ class TictactoeMatch():
         spaces with '1' as their spaces, and '2' as the opponent's spaces.
         """
         if position == 1:
-            return list(self.inputs_)
+            return [x*Config.RESTRICTIONS['multiply_normalization_by'] for x in list(self.inputs_)]
         else:
             mapping = [0, 2, 1]
-            inputs = [mapping[x] for x in self.inputs_]
+            inputs = [mapping[x]*Config.RESTRICTIONS['multiply_normalization_by'] for x in list(self.inputs_)]
             return inputs
 
     def is_over(self):

@@ -88,7 +88,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         attributes_len = len(data[0])
         for index in range(attributes_len-1): # dont get normalization parameters for the labels column
             column = data[:,index]
-            normalization_params.append({'mean':numpy.mean(column), 'range':max(column)-min(column)})
+            normalization_params.append({'min':min(column), 'range':max(column)-min(column)})
         return normalization_params
 
     def _normalize(self, normalization_params, data):
@@ -103,7 +103,7 @@ class ClassificationEnvironment(DefaultEnvironment):
                     if normalization_params[i]['range'] == 0.0:
                         cell = 0.0
                     else:
-                        cell = (cell-normalization_params[i]['mean'])/normalization_params[i]['range']
+                        cell = (cell-normalization_params[i]['min'])/float(normalization_params[i]['range'])*Config.RESTRICTIONS['multiply_normalization_by']
                 new_line.append(cell)
             normalized_data.append(new_line)
         return normalized_data

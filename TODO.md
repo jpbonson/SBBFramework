@@ -11,14 +11,14 @@ using new EP input + normalized between 0 and 10 + opponents using HS + fixed bu
 minor fixes (fixed bug where ncd wasnt working for hall of fame + more 1000 hand samples)
 minor fix (added index before input when printing)
 more 5000 hand samples
+minor fix (apply 'normalize_by' to classification and ttt)
 ---
-- fazer mais 10k samples (cuidado com 'w'!)
+- fazer mais 5k samples (cuidado com 'w'!)
 
 implementar + testar:
 - implementar NCD using state information (hand type+position) + testar
 - 10 ou 20 instructions? ou 15?
 
-- apply 'normalize_by' to classification and ttt
 - store the fitness for the generations with the same diversity/opponents
 - conferir TODOs
 - remover codigo de poker do reinforcement learning environment
@@ -33,6 +33,9 @@ implementar + testar:
 extra:
 - conferir 'least regreat', usado pela University of Alberta?
 - repassar comentairos do paper sobre NCD para o doc
+
+scp -r source_file_name username@destination_host:destination_folder
+scp -r username@destination_host:destination_folder source_file_name
 
 =====================
 Main Goals (next weeks):
