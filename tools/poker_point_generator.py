@@ -127,7 +127,7 @@ if __name__ == "__main__":
     files = []
     for x in range(4):
         files.append(open(path+'/hands_type_'+str(x)+'.json','a'))
-    for seed in range(11000, 15000):
+    for seed in range(15000, 20000):
         point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck, hole_cards_based_on_equity)
         point_pos0['id'] = seed
         point_pos1['id'] = seed

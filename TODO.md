@@ -10,7 +10,7 @@ using new EP input + normalized between 0 and 10 + opponents using HS + fixed bu
 - 50 run
 minor fixes (fixed bug where ncd wasnt working for hall of fame + more 1000 hand samples)
 minor fix (added index before input when printing)
-
+more 5000 hand samples
 ---
 - fazer mais 10k samples (cuidado com 'w'!)
 
@@ -19,25 +19,16 @@ implementar + testar:
 - 10 ou 20 instructions? ou 15?
 
 - apply 'normalize_by' to classification and ttt
-
 - store the fitness for the generations with the same diversity/opponents
-
 - conferir TODOs
 - remover codigo de poker do reinforcement learning environment
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per hands won?
 - accumulative curve para mais coisas alem de sbb_label?
 - atualizar opponent model para usar action_sequence do opponent?
-
 - std dev dos scores per point type e per opponent type?
-
-- na ultima generation, nao criar teams novos? (ou nem se dar ao trabalho de mudar, ja que acho q nao muda nada?)
-- salvar nas metrics do team qual foi o ultimo opponent type q ele enfrentou?
-
+- salvar nas metrics do team qual foi o ultimo opponent type q ele enfrentou? (se hall of fame, printar tb o id do oponente)
 - ajeitar arquivos em pastas core e utils
-
-bug?
-- checar por mais bugs em introns removal
 
 extra:
 - conferir 'least regreat', usado pela University of Alberta?
