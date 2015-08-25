@@ -166,6 +166,7 @@ class Team(DefaultOpponent):
         if Config.USER['task'] == 'classification' and self.extra_metrics_:
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
         if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
+            msg += "\nlast opponent played against (training): "+self.extra_metrics_['last_training_opponent']
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':
                 msg += self._hand_player_metrics('validation')
                 if self.extra_metrics_['total_hands']['champion'] > 0:

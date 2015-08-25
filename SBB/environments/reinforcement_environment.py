@@ -268,6 +268,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 team.results_per_points_[point.point_id_] = result
                 results.append(result)
             team.fitness_ = numpy.mean(results)
+            team.extra_metrics_['last_training_opponent'] = self.current_opponent_.__repr__()
         else:
             if mode == Config.RESTRICTIONS['mode']['validation']:
                 point_population = self.validation_point_population_

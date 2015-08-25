@@ -13,6 +13,7 @@ minor fix (added index before input when printing)
 more 5000 hand samples
 minor fix (apply 'normalize_by' to classification and ttt)
 minor fix (remove poker code from reinforcement learning environment (evaluate_team))
+minor fix (storing in team metrics the last opponent they played against)
 ---
 - fazer mais 5k samples (cuidado com 'w'!)
 
@@ -26,7 +27,6 @@ implementar + testar:
 - accumulative curve per hands won?
 - accumulative curve para mais coisas alem de sbb_label?
 - std dev dos scores per point type e per opponent type?
-- salvar nas metrics do team qual foi o ultimo opponent type q ele enfrentou? (se hall of fame, printar tb o id do oponente)
 - ajeitar arquivos em pastas core e utils
 
 extra:
