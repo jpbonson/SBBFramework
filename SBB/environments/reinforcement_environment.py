@@ -157,6 +157,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 copied_team.fitness_ = team_to_copy.fitness_
                 copied_team.active_programs_ = list(team_to_copy.active_programs_)
                 copied_team.action_sequence_ = list(team_to_copy.action_sequence_)
+                copied_team.extra_metrics_ = dict(team_to_copy.extra_metrics_)
                 hall_of_fame.append(self._instantiate_sbb_opponent(copied_team, "hall_of_fame"))
                 if len(hall_of_fame) > Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
                     if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:
