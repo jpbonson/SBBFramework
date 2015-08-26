@@ -10,8 +10,8 @@ from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
 
 def initialize_deck():
     deck = []
-    for rank in PokerConfig.RANKS:
-        for suit in PokerConfig.SUITS:
+    for rank in PokerConfig.CONFIG['ranks']:
+        for suit in PokerConfig.CONFIG['suits']:
             deck.append(rank+suit)
     return deck
 

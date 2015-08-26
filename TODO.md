@@ -14,6 +14,7 @@ more 5000 hand samples
 minor fix (apply 'normalize_by' to classification and ttt)
 minor fix (remove poker code from reinforcement learning environment (evaluate_team))
 minor fix (storing in team metrics the last opponent they played against)
+minor fix (refactored PokerConfig)
 ---
 - fazer mais 5k samples (cuidado com 'w'!)
 

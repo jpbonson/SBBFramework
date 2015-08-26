@@ -32,7 +32,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
-        total_inputs = len(PokerConfig.INPUTS)
+        total_inputs = len(PokerConfig.CONFIG['inputs'])
         total_labels = len(PokerConfig.CONFIG['hand_strength_labels'].keys())
         coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
@@ -61,7 +61,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         if len(self.backup_points_per_label) == 0:
             data = []
             for label in range(self.total_labels_):
-                idxs = random.sample(range(1, self.num_lines_per_file_[label]+1), population_size_per_label*50)
+                idxs = random.sample(range(1, self.num_lines_per_file_[label]+1), population_size_per_label*PokerConfig.CONFIG['point_cache_size'])
                 result = [linecache.getline("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json", i) for i in idxs]
                 data.append([PokerPoint(label, json.loads(r)) for r in result])
             self.backup_points_per_label = data
@@ -283,9 +283,9 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\n### Environment Info:"
         msg += "\nports: "+str(PokerConfig.CONFIG['available_ports'])
         msg += "\ntotal inputs: "+str(self.total_inputs_)
-        msg += "\ninputs: "+str([str(index)+": "+value for index, value in enumerate(PokerConfig.INPUTS)])
+        msg += "\ninputs: "+str([str(index)+": "+value for index, value in enumerate(PokerConfig.CONFIG['inputs'])])
         msg += "\ntotal actions: "+str(self.total_actions_)
-        msg += "\nactions mapping: "+str(PokerConfig.ACTION_MAPPING)
+        msg += "\nactions mapping: "+str(PokerConfig.CONFIG['action_mapping'])
         msg += "\npositions: "+str(PokerConfig.CONFIG['positions'])
         msg += "\ntraining opponents: "+str([c.__name__ for c in self.coded_opponents_for_training_])
         msg += "\nvalidation opponents: "+str([c.__name__ for c in self.coded_opponents_for_validation_])
@@ -491,7 +491,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                     if is_sbb and not is_training:
                         if len(match_state.rounds) == 1 and len(match_state.rounds[0]) < 2 and action == 0: # first action of first round is a fold
                             player.extra_metrics_['played_last_hand'] = False
-                    action = PokerConfig.ACTION_MAPPING[action]
+                    action = PokerConfig.CONFIG['action_mapping'][action]
                     previous_action = action
                     send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
                     try:
