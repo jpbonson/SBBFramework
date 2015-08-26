@@ -31,6 +31,8 @@ class RunInfo:
         self.global_opponent_results_per_validation = []
         self.info_per_team_per_generation = []
         self.global_fitness_per_generation = []
+        self.global_fitness_per_diversity_per_generation = defaultdict(list)
+        self.global_fitness_per_opponent_per_generation = defaultdict(list)
         self.global_diversity_per_generation = defaultdict(list)
         self.novelty_type_per_generation = []
         self.opponent_type_per_generation = []
@@ -108,6 +110,14 @@ class RunInfo:
 
         msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
         msg += "\n\nGlobal Fitness Score per Training: "+str(self.global_fitness_per_generation)
+        msg += "\nGlobal Fitness Score per Training (per diversity):"
+        if len(Config.RESTRICTIONS['used_diversities']) > 1:
+            for key in self.global_fitness_per_diversity_per_generation:
+                msg += "\n"+str(key)+": "+str(self.global_fitness_per_diversity_per_generation[key])
+        msg += "\nGlobal Fitness Score per Training (per opponent):"
+        if Config.USER['task'] == 'reinforcement':
+            for key in self.global_fitness_per_opponent_per_generation:
+                msg += "\n"+str(key)+": "+str(self.global_fitness_per_opponent_per_generation[key])
         if Config.USER['task'] == 'reinforcement':
             msg += "\n\nOpponent Types per Training: "+str(self.opponent_type_per_generation)
         if len(Config.RESTRICTIONS['used_diversities']) > 0:

@@ -310,13 +310,16 @@ class SBB:
                 team_info.append(value)
             generation_info.append(team_info)
         run_info.info_per_team_per_generation.append(generation_info)
-        run_info.global_fitness_per_generation.append(round_value(numpy.mean([team.fitness_ for team in older_teams]), 3))
+        mean_fitness = round_value(numpy.mean([team.fitness_ for team in older_teams]), 3)
+        run_info.global_fitness_per_generation.append(mean_fitness)
         for diversity in Config.RESTRICTIONS['used_diversities']:
             run_info.global_diversity_per_generation[diversity].append(round_value(numpy.mean([t.diversity_[diversity] for t in older_teams]), 3))
-        if len(Config.RESTRICTIONS['used_diversities']) > 1 and self.selection.previous_diversity_:
+        if len(Config.RESTRICTIONS['used_diversities']) > 1:
+            run_info.global_fitness_per_diversity_per_generation[self.selection.previous_diversity_].append(mean_fitness)
             run_info.novelty_type_per_generation.append(Config.RESTRICTIONS['used_diversities'].index(self.selection.previous_diversity_))
         if Config.USER['task'] == 'reinforcement':
-            run_info.opponent_type_per_generation.append(self.environment.opponent_names_.index(self.environment.current_opponent_type_))
+            run_info.global_fitness_per_opponent_per_generation[self.environment.previous_population_type_].append(mean_fitness)
+            run_info.opponent_type_per_generation.append(self.environment.opponent_names_.index(self.environment.previous_population_type_))
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             self.environment.calculate_poker_metrics_per_generation(run_info, self.current_generation_)
 

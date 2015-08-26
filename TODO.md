@@ -16,12 +16,12 @@ minor fix (remove poker code from reinforcement learning environment (evaluate_t
 minor fix (storing in team metrics the last opponent they played against)
 minor fix (refactored PokerConfig)
 more 5000 hand samples
+minor fix (store the fitness for the generations with the same diversity/opponents)
 ---
 implementar + testar:
 - implementar NCD using state information (hand type+position) + testar
 - 10 ou 20 instructions? ou 15?
 
-- store the fitness for the generations with the same diversity/opponents
 - conferir TODOs
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per hands won?

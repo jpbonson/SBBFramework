@@ -54,7 +54,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.validation_opponent_population_ = None
         self.champion_opponent_population_ = None
         self.first_sampling_ = True
-        self.last_population_ = None
+        self.previous_population_type_ = None
         self.current_opponent_type_ = None
         self.current_opponent_ = None
         self.samples_per_class_to_keep_ = []
@@ -104,7 +104,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.validation_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
-        self.last_population_ = None
+        self.previous_population_type_ = None
         self.current_opponent_type_ = None
         self.current_opponent_ = None
 
@@ -176,11 +176,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
         options = self.opponent_population_.keys()
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.opponent_population_['hall_of_fame']) < Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
             options.remove('hall_of_fame')
-        self.last_population_ = self.current_opponent_type_
-        if len(options) > 1 and self.last_population_:
-            options.remove(self.last_population_)
+        if len(options) > 1 and self.previous_population_type_:
+            options.remove(self.previous_population_type_)
         self.current_opponent_type_ = random.choice(options)
         self.current_opponent_ = random.choice(self.opponent_population_[self.current_opponent_type_])
+        self.previous_population_type_ = self.current_opponent_type_
 
     def _remove_points(self, points_to_remove, teams_population):
         """
