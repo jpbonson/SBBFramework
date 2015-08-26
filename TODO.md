@@ -15,9 +15,8 @@ minor fix (apply 'normalize_by' to classification and ttt)
 minor fix (remove poker code from reinforcement learning environment (evaluate_team))
 minor fix (storing in team metrics the last opponent they played against)
 minor fix (refactored PokerConfig)
+more 5000 hand samples
 ---
-- fazer mais 5k samples (cuidado com 'w'!)
-
 implementar + testar:
 - implementar NCD using state information (hand type+position) + testar
 - 10 ou 20 instructions? ou 15?
