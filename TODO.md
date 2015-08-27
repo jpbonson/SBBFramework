@@ -21,6 +21,7 @@ minor fix (store the fitness for the generations with the same diversity/opponen
 implementar + testar:
 - implementar NCD using state information (hand type+position) + testar
 - 10 ou 20 instructions? ou 15?
+- testar apenas armazenar teams no hall of fame, mas nao usa-los no training?
 
 - conferir TODOs
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
@@ -28,6 +29,7 @@ implementar + testar:
 - accumulative curve para mais coisas alem de sbb_label?
 - std dev dos scores per point type e per opponent type?
 - ajeitar arquivos em pastas core e utils
+- separar 'execute_player' e arquivo a parte?
 
 extra:
 - conferir 'least regreat', usado pela University of Alberta?
