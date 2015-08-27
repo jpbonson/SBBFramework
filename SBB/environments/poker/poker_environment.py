@@ -133,43 +133,18 @@ class PokerEnvironment(ReinforcementEnvironment):
         normalized_value = PokerEnvironment.normalize_winning(float(scores[sbb_position]))
         if not is_training:
             if mode == Config.RESTRICTIONS['mode']['validation']:
-                team.extra_metrics_['total_hands']['validation'] += 1
-                team.extra_metrics_['total_hands_per_point_type']['validation']['position'][point.position_] += 1
-                team.extra_metrics_['total_hands_per_point_type']['validation']['sbb_label'][point.label_] += 1
-                team.extra_metrics_['total_hands_per_point_type']['validation']['sbb_extra_label'][point.sbb_extra_label_] += 1
-                team.extra_metrics_['total_hands_per_point_type']['validation']['sbb_sd'][point.sbb_sd_label_] += 1
+                self._update_team_extra_metrics_for_poker(team, point, normalized_value, 'validation')
+                if team.extra_metrics_['played_last_hand']:
+                    team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 1.0
+                    if normalized_value > 0.5:
+                        team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 1.0
+                    else:
+                        team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
+                else:
+                    team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 0.0
+                    team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
             else:
-                team.extra_metrics_['total_hands']['champion'] += 1
-                team.extra_metrics_['total_hands_per_point_type']['champion']['position'][point.position_] += 1
-                team.extra_metrics_['total_hands_per_point_type']['champion']['sbb_label'][point.label_] += 1
-                team.extra_metrics_['total_hands_per_point_type']['champion']['sbb_extra_label'][point.sbb_extra_label_] += 1
-                team.extra_metrics_['total_hands_per_point_type']['champion']['sbb_sd'][point.sbb_sd_label_] += 1
-            if team.extra_metrics_['played_last_hand']:
-                if mode == Config.RESTRICTIONS['mode']['validation']:
-                    team.extra_metrics_['hand_played']['validation'] += 1
-                    team.extra_metrics_['hand_played_per_point_type']['validation']['position'][point.position_] += 1
-                    team.extra_metrics_['hand_played_per_point_type']['validation']['sbb_label'][point.label_] += 1
-                    team.extra_metrics_['hand_played_per_point_type']['validation']['sbb_extra_label'][point.sbb_extra_label_] += 1
-                    team.extra_metrics_['hand_played_per_point_type']['validation']['sbb_sd'][point.sbb_sd_label_] += 1
-                else:
-                    team.extra_metrics_['hand_played']['champion'] += 1
-                    team.extra_metrics_['hand_played_per_point_type']['champion']['position'][point.position_] += 1
-                    team.extra_metrics_['hand_played_per_point_type']['champion']['sbb_label'][point.label_] += 1
-                    team.extra_metrics_['hand_played_per_point_type']['champion']['sbb_extra_label'][point.sbb_extra_label_] += 1
-                    team.extra_metrics_['hand_played_per_point_type']['champion']['sbb_sd'][point.sbb_sd_label_] += 1
-            if team.extra_metrics_['played_last_hand'] and normalized_value > 0.5:
-                if mode == Config.RESTRICTIONS['mode']['validation']:
-                    team.extra_metrics_['won_hands']['validation'] += 1
-                    team.extra_metrics_['won_hands_per_point_type']['validation']['position'][point.position_] += 1
-                    team.extra_metrics_['won_hands_per_point_type']['validation']['sbb_label'][point.label_] += 1
-                    team.extra_metrics_['won_hands_per_point_type']['validation']['sbb_extra_label'][point.sbb_extra_label_] += 1
-                    team.extra_metrics_['won_hands_per_point_type']['validation']['sbb_sd'][point.sbb_sd_label_] += 1
-                else:
-                    team.extra_metrics_['won_hands']['champion'] += 1
-                    team.extra_metrics_['won_hands_per_point_type']['champion']['position'][point.position_] += 1
-                    team.extra_metrics_['won_hands_per_point_type']['champion']['sbb_label'][point.label_] += 1
-                    team.extra_metrics_['won_hands_per_point_type']['champion']['sbb_extra_label'][point.sbb_extra_label_] += 1
-                    team.extra_metrics_['won_hands_per_point_type']['champion']['sbb_sd'][point.sbb_sd_label_] += 1
+                self._update_team_extra_metrics_for_poker(team, point, normalized_value, 'champion')
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             print "scores: "+str(scores)
@@ -180,6 +155,25 @@ class PokerEnvironment(ReinforcementEnvironment):
         point.last_opponent_ = opponent.__repr__()
 
         return normalized_value
+
+    def _update_team_extra_metrics_for_poker(self, team, point, normalized_value, mode_label):
+        team.extra_metrics_['total_hands'][mode_label] += 1
+        team.extra_metrics_['total_hands_per_point_type'][mode_label]['position'][point.position_] += 1
+        team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
+        team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_extra_label'][point.sbb_extra_label_] += 1
+        team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
+        if team.extra_metrics_['played_last_hand']:
+            team.extra_metrics_['hand_played'][mode_label] += 1
+            team.extra_metrics_['hand_played_per_point_type'][mode_label]['position'][point.position_] += 1
+            team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
+            team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_extra_label'][point.sbb_extra_label_] += 1
+            team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
+            if normalized_value > 0.5:
+                team.extra_metrics_['won_hands'][mode_label] += 1
+                team.extra_metrics_['won_hands_per_point_type'][mode_label]['position'][point.position_] += 1
+                team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
+                team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_extra_label'][point.sbb_extra_label_] += 1
+                team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
 
     def reset(self):
         super(PokerEnvironment, self).reset()
@@ -250,27 +244,24 @@ class PokerEnvironment(ReinforcementEnvironment):
     def validate(self, current_generation, teams_population):
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             self._clear_hall_of_fame_memory()
+
         keys = ['validation', 'champion']
         subkeys = ['position', 'sbb_label', 'sbb_extra_label', 'sbb_sd']
+        metrics_with_counts = ['total_hands', 'hand_played', 'won_hands']
+        metrics_with_dicts = ['total_hands_per_point_type', 'hand_played_per_point_type', 'won_hands_per_point_type']
         for team in teams_population:
             if team.generation != current_generation:
-                team.extra_metrics_['total_hands'] = {}
-                team.extra_metrics_['hand_played'] = {}
-                team.extra_metrics_['won_hands'] = {}
-                team.extra_metrics_['total_hands_per_point_type'] = {}
-                team.extra_metrics_['hand_played_per_point_type'] = {}
-                team.extra_metrics_['won_hands_per_point_type'] = {}
+                for metric in (metrics_with_counts + metrics_with_dicts):
+                    team.extra_metrics_[metric] = {}
+                team.extra_metrics_['hands_played_or_not_per_point'] = {}
+                team.extra_metrics_['hands_won_or_lost_per_point'] = {}
                 for key in keys:
-                    team.extra_metrics_['total_hands'][key] = 0
-                    team.extra_metrics_['hand_played'][key] = 0
-                    team.extra_metrics_['won_hands'][key] = 0
-                    team.extra_metrics_['total_hands_per_point_type'][key] = {}
-                    team.extra_metrics_['hand_played_per_point_type'][key] = {}
-                    team.extra_metrics_['won_hands_per_point_type'][key] = {}
-                    for subkey in subkeys:
-                        team.extra_metrics_['total_hands_per_point_type'][key][subkey] = defaultdict(int)
-                        team.extra_metrics_['hand_played_per_point_type'][key][subkey] = defaultdict(int)
-                        team.extra_metrics_['won_hands_per_point_type'][key][subkey] = defaultdict(int)
+                    for metric in metrics_with_counts:
+                        team.extra_metrics_[metric][key] = 0
+                    for metric in metrics_with_dicts:
+                        team.extra_metrics_[metric][key] = {}
+                        for subkey in subkeys:
+                            team.extra_metrics_[metric][key][subkey] = defaultdict(int)
 
         for point in self.validation_population():
             point.teams_results_ = []
@@ -355,49 +346,46 @@ class PokerEnvironment(ReinforcementEnvironment):
     def calculate_accumulative_performances(self, run_info, teams_population, current_generation):
         older_teams = [team for team in teams_population if team.generation != current_generation]
 
-        individual_performance, accumulative_performance, teams_ids, worst_points_info = self._calculate_accumulative_performance_with_worst_points_info(older_teams, current_generation)
-        run_info.individual_performance_in_last_generation = individual_performance
-        run_info.accumulative_performance_in_last_generation = accumulative_performance
-        run_info.ids_for_acc_performance_in_last_generation = teams_ids
-        run_info.worst_points_in_last_generation = worst_points_info
+        for metric in ['score', 'hands_played', 'hands_won']:
+            if metric == 'score':
+                a = lambda x: x.extra_metrics_['validation_score']
+                b = lambda x: x.results_per_points_for_validation_
+            if metric == 'hands_played':
+                a = lambda x: numpy.mean(x.extra_metrics_['hands_played_or_not_per_point'].values())
+                b = lambda x: x.extra_metrics_['hands_played_or_not_per_point']
+            if metric == 'hands_won':
+                a = lambda x: numpy.mean(x.extra_metrics_['hands_won_or_lost_per_point'].values())
+                b = lambda x: x.extra_metrics_['hands_won_or_lost_per_point']
+            point_ids = [point.point_id_ for point in self.validation_population()]
+            individual_performance, accumulative_performance, teams_ids = self._accumulative_performance(older_teams, point_ids, a, b)
+            run_info.individual_performance_in_last_generation[metric] = individual_performance
+            run_info.accumulative_performance_in_last_generation[metric] = accumulative_performance
+            run_info.ids_for_acc_performance_in_last_generation[metric] = teams_ids
 
-        for label in PokerConfig.CONFIG['hand_strength_labels'].keys():
-            individual_performance, accumulative_performance, teams_ids = self._calculate_accumulative_performance(older_teams, label, lambda x: x.label_, current_generation)
-            run_info.individual_performance_per_label_in_last_generation[label] = individual_performance
-            run_info.accumulative_performance_per_label_in_last_generation[label] = accumulative_performance
-            run_info.ids_for_acc_performance_per_label_in_last_generation[label] = teams_ids
+        for metric in ['score']: #, 'hands_played', 'hands_won']:
+            for label in PokerConfig.CONFIG['hand_strength_labels'].keys():
+                point_ids = [point.point_id_ for point in self.validation_population() if point.label_ == label]
+                individual_performance, accumulative_performance, teams_ids = self._accumulative_performance(older_teams, point_ids, lambda x: x.extra_metrics_['validation_points']['sbb_label'][label], lambda x: x.results_per_points_for_validation_)
+                run_info.individual_performance_per_label_in_last_generation[metric][label] = individual_performance
+                run_info.accumulative_performance_per_label_in_last_generation[metric][label] = accumulative_performance
+                run_info.ids_for_acc_performance_per_label_in_last_generation[metric][label] = teams_ids
 
-    def _calculate_accumulative_performance_with_worst_points_info(self, teams_population, current_generation):
-        point_ids = [point.point_id_ for point in self.validation_population()]
-        sorted_teams = sorted(teams_population, key=lambda team: team.extra_metrics_['validation_score'], reverse = True) # better ones first
-        individual_performance, accumulative_performance, best_results_per_point = self._accumulative_performance_for_points(sorted_teams, point_ids)
-        worst_points = sorted(best_results_per_point.items(), key=operator.itemgetter(1), reverse = False)
-        worst_points_ids = [point[0] for point in worst_points[:Config.USER['reinforcement_parameters']['validation_population']/10]]
-        worst_points_info = [str(point) for point in self.validation_population() if point.point_id_ in worst_points_ids]
-        teams_ids = [t.__repr__() for t in sorted_teams]
-        return individual_performance, accumulative_performance, teams_ids, worst_points_info
-
-    def _calculate_accumulative_performance(self, teams_population, key, get_attribute, current_generation):
-        point_ids = [point.point_id_ for point in self.validation_population() if get_attribute(point) == key]
-        sorted_teams = sorted(teams_population, key=lambda team: team.extra_metrics_['validation_points']['sbb_label'][key], reverse = True) # better ones first
-        individual_performance, accumulative_performance, best_results_per_point = self._accumulative_performance_for_points(sorted_teams, point_ids)
-        teams_ids = [t.__repr__() for t in sorted_teams]
-        return individual_performance, accumulative_performance, teams_ids
-
-    def _accumulative_performance_for_points(self, sorted_teams, point_ids):
+    def _accumulative_performance(self, teams_population, point_ids, sorting_criteria, get_results_per_points):
+        sorted_teams = sorted(teams_population, key=lambda team: sorting_criteria(team), reverse = True) # better ones first
         individual_performance = []
         accumulative_performance = []
         best_results_per_point = defaultdict(int)
         for team in sorted_teams:
             total = 0.0
-            for key, item in team.results_per_points_for_validation_.iteritems():
+            for key, item in get_results_per_points(team).iteritems():
                 if key in point_ids:
                     total += item
                     if item > best_results_per_point[key]:
                         best_results_per_point[key] = item
             individual_performance.append(round_value(total))
             accumulative_performance.append(round_value(sum(best_results_per_point.values())))
-        return individual_performance, accumulative_performance, best_results_per_point
+        teams_ids = [t.__repr__() for t in sorted_teams]
+        return individual_performance, accumulative_performance, teams_ids
 
     @staticmethod
     def normalize_winning(value):

@@ -17,6 +17,8 @@ minor fix (storing in team metrics the last opponent they played against)
 minor fix (refactored PokerConfig)
 more 5000 hand samples
 minor fix (store the fitness for the generations with the same diversity/opponents)
+refactored calculate_accumulative_performances
+minor fixes (fixed bug when no diversity is being used + accumulative curve per hands won and played (without subdivisions))
 ---
 implementar + testar:
 - implementar NCD using state information (hand type+position) + testar
@@ -25,8 +27,8 @@ implementar + testar:
 
 - conferir TODOs
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
-- accumulative curve per hands won?
-- accumulative curve para mais coisas alem de sbb_label?
+- accumulative curve per hands won e hands played (com subdivisoes)
+- accumulative curve para mais coisas alem de sbb_label? (position? extra_label? sd? opp_label? opp_extra_label?)
 - std dev dos scores per point type e per opponent type?
 - ajeitar arquivos em pastas core e utils
 - separar 'execute_player' e arquivo a parte?

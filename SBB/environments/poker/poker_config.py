@@ -17,7 +17,7 @@ class PokerConfig():
         'small_bet': 10,
         'big_bet': 20,
         'positions': 2,
-        'hand_strength_labels': { # TODO: refactor
+        'hand_strength_labels': { # TODO: refactor, cuidado com PokerConfig.CONFIG['hand_strength_labels'].keys()
             0: 0.9,  # >= (10%)
             1: 0.7,  # >= (20%)
             2: 0.4,  # >= (30%)

@@ -314,7 +314,7 @@ class SBB:
         run_info.global_fitness_per_generation.append(mean_fitness)
         for diversity in Config.RESTRICTIONS['used_diversities']:
             run_info.global_diversity_per_generation[diversity].append(round_value(numpy.mean([t.diversity_[diversity] for t in older_teams]), 3))
-        if len(Config.RESTRICTIONS['used_diversities']) > 1:
+        if len(Config.RESTRICTIONS['used_diversities']) > 1 and self.selection.previous_diversity_:
             run_info.global_fitness_per_diversity_per_generation[self.selection.previous_diversity_].append(mean_fitness)
             run_info.novelty_type_per_generation.append(Config.RESTRICTIONS['used_diversities'].index(self.selection.previous_diversity_))
         if Config.USER['task'] == 'reinforcement':
