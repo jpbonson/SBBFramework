@@ -362,18 +362,22 @@ class PokerEnvironment(ReinforcementEnvironment):
             run_info.accumulative_performance_in_last_generation[metric] = accumulative_performance
             run_info.ids_for_acc_performance_in_last_generation[metric] = teams_ids
 
-            for label in PokerConfig.CONFIG['hand_strength_labels'].keys():
-                point_ids = [point.point_id_ for point in self.validation_population() if point.label_ == label]
-                if metric == 'score':
-                    sorting_criteria_per_label = lambda x: x.extra_metrics_['validation_points']['sbb_label'][label]
-                if metric == 'hands_played':
-                    sorting_criteria_per_label = lambda x: numpy.mean([x.extra_metrics_['hands_played_or_not_per_point'][point_id] for point_id in point_ids])
-                if metric == 'hands_won':
-                    sorting_criteria_per_label = lambda x: numpy.mean([x.extra_metrics_['hands_won_or_lost_per_point'][point_id] for point_id in point_ids])
-                individual_performance, accumulative_performance, teams_ids = self._accumulative_performance(older_teams, point_ids, sorting_criteria_per_label, get_results_per_points)
-                run_info.individual_performance_per_label_in_last_generation[metric][label] = individual_performance
-                run_info.accumulative_performance_per_label_in_last_generation[metric][label] = accumulative_performance
-                run_info.ids_for_acc_performance_per_label_in_last_generation[metric][label] = teams_ids
+            for subdivision in PokerConfig.CONFIG['labels_per_subdivision'].keys():
+                run_info.individual_performance_per_label_in_last_generation[metric][subdivision] = {}
+                run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision] = {}
+                run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision] = {}
+                for label in PokerConfig.CONFIG['labels_per_subdivision'][subdivision]:
+                    point_ids = [point.point_id_ for point in self.validation_population() if PokerConfig.CONFIG['attributes_per_subdivision'][subdivision](point) == label]
+                    if metric == 'score':
+                        sorting_criteria_per_label = lambda x: x.extra_metrics_['validation_points'][subdivision][label]
+                    if metric == 'hands_played':
+                        sorting_criteria_per_label = lambda x: numpy.mean([x.extra_metrics_['hands_played_or_not_per_point'][point_id] for point_id in point_ids])
+                    if metric == 'hands_won':
+                        sorting_criteria_per_label = lambda x: numpy.mean([x.extra_metrics_['hands_won_or_lost_per_point'][point_id] for point_id in point_ids])
+                    individual_performance, accumulative_performance, teams_ids = self._accumulative_performance(older_teams, point_ids, sorting_criteria_per_label, get_results_per_points)
+                    run_info.individual_performance_per_label_in_last_generation[metric][subdivision][label] = individual_performance
+                    run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][label] = accumulative_performance
+                    run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][label] = teams_ids
 
     def _accumulative_performance(self, teams_population, point_ids, sorting_criteria, get_results_per_points):
         sorted_teams = sorted(teams_population, key=lambda team: sorting_criteria(team), reverse = True) # better ones first
