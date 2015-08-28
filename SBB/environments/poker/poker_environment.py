@@ -284,13 +284,6 @@ class PokerEnvironment(ReinforcementEnvironment):
             msg += "\nhall of fame size: "+str(Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
         return msg
 
-    def calculate_poker_metrics_per_generation(self, run_info, current_generation):
-        if run_info.balanced_point_population is None:
-            current_subsets_per_class = self._get_data_per_label(self.point_population_)
-            array = [len(a) for a in current_subsets_per_class]
-            if array.count(array[0]) == len(array):
-                run_info.balanced_point_population = current_generation
-
     def calculate_poker_metrics_per_validation(self, run_info):
         self._calculate_point_population_metrics_per_validation(run_info)
         self._calculate_validation_population_metrics_per_validation(run_info)

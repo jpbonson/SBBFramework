@@ -320,8 +320,6 @@ class SBB:
         if Config.USER['task'] == 'reinforcement':
             run_info.global_fitness_per_opponent_per_generation[self.environment.previous_population_type_].append(mean_fitness)
             run_info.opponent_type_per_generation.append(self.environment.opponent_names_.index(self.environment.previous_population_type_))
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            self.environment.calculate_poker_metrics_per_generation(run_info, self.current_generation_)
 
     def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())

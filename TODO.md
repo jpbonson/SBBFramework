@@ -29,7 +29,7 @@ implementar + testar:
 
 - conferir TODOs
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
-- std dev dos scores per point type e per opponent type?
+- accumulative curve per opponent type
 - ajeitar arquivos em pastas core e utils
 - separar 'execute_player' e arquivo a parte?
 

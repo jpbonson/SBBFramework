@@ -42,7 +42,6 @@ class RunInfo:
         self.champion_population_distribution_per_validation = {}
         self.global_result_per_validation = defaultdict(dict)
         self.point_population_distribution_per_validation = defaultdict(dict)
-        self.balanced_point_population = None
         self.hall_of_fame_per_validation = []
         
     def __str__(self):
@@ -95,11 +94,11 @@ class RunInfo:
 
         msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
         msg += "\n\nGlobal Fitness Score per Training: "+str(self.global_fitness_per_generation)
-        msg += "\nGlobal Fitness Score per Training (per diversity):"
+        msg += "\n\nGlobal Fitness Score per Training (per diversity):"
         if len(Config.RESTRICTIONS['used_diversities']) > 1:
             for key in self.global_fitness_per_diversity_per_generation:
                 msg += "\n"+str(key)+": "+str(self.global_fitness_per_diversity_per_generation[key])
-        msg += "\nGlobal Fitness Score per Training (per opponent):"
+        msg += "\n\nGlobal Fitness Score per Training (per opponent):"
         if Config.USER['task'] == 'reinforcement':
             for key in self.global_fitness_per_opponent_per_generation:
                 msg += "\n"+str(key)+": "+str(self.global_fitness_per_opponent_per_generation[key])
@@ -111,8 +110,6 @@ class RunInfo:
                 msg += "\n"+str(key)+": "+str(self.global_diversity_per_generation[key])
             if len(Config.RESTRICTIONS['used_diversities']) > 1:
                 msg += "\n\nDiversity Type per Training: "+str(self.novelty_type_per_generation)
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            msg += "\n\nGeneration the Point Population became Balanced: "+str(self.balanced_point_population)
         
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE"
