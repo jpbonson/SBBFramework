@@ -3,9 +3,9 @@ import copy
 import json
 from collections import Counter, defaultdict
 from program import Program
-from environments.default_opponent import DefaultOpponent
-from utils.helpers import round_value, round_array
-from config import Config
+from ..environments.default_opponent import DefaultOpponent
+from ..utils.helpers import round_value, round_array
+from ..config import Config
 
 def reset_teams_ids():
     global next_team_id

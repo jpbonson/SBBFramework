@@ -2,8 +2,8 @@ import bz2
 import numpy
 from scipy import stats
 from collections import defaultdict
-from utils.helpers import round_value
-from config import Config
+from ..utils.helpers import round_value
+from ..config import Config
 
 class DiversityMaintenance():
     """

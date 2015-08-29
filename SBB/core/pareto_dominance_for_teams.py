@@ -1,6 +1,6 @@
 from diversity_maintenance import DiversityMaintenance
-from utils.helpers import is_nearly_equal_to
-from config import Config 
+from ..utils.helpers import is_nearly_equal_to
+from ..config import Config 
 
 class ParetoDominanceForTeams():
     """

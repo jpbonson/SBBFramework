@@ -4,10 +4,10 @@ import copy
 import numpy
 from collections import defaultdict
 from default_environment import DefaultEnvironment, DefaultPoint, reset_points_ids
-from ..team import Team
-from ..diversity_maintenance import DiversityMaintenance
-from ..pareto_dominance_for_points import ParetoDominanceForPoints
-from ..pareto_dominance_for_teams import ParetoDominanceForTeams
+from ..core.team import Team
+from ..core.diversity_maintenance import DiversityMaintenance
+from ..core.pareto_dominance_for_points import ParetoDominanceForPoints
+from ..core.pareto_dominance_for_teams import ParetoDominanceForTeams
 from ..utils.helpers import round_value, flatten
 from ..config import Config
 

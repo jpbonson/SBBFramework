@@ -21,6 +21,7 @@ refactored calculate_accumulative_performances
 minor fixes (fixed bug when no diversity is being used + accumulative curve per hands won and played (without subdivisions))
 minor fixes (added subdivisions to accumulative curve per hands won and played)
 minor fixes (added all subdivisions to all accumulative curve metrics)
+minor fixes (moved files to folder 'core' and examples to 'tools')
 ---
 implementar + testar:
 - implementar NCD using state information (hand type+position) + testar
@@ -30,7 +31,6 @@ implementar + testar:
 - conferir TODOs
 - obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
 - accumulative curve per opponent type
-- ajeitar arquivos em pastas core e utils
 - separar 'execute_player' e arquivo a parte?
 
 extra:

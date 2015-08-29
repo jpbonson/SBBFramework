@@ -1,8 +1,8 @@
 import random
 from scipy.special import expit
 from instruction import Instruction
-from utils.operations import Operation
-from config import Config
+from ..utils.operations import Operation
+from ..config import Config
 
 def reset_programs_ids():
     global next_program_id

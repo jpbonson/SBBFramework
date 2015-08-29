@@ -3,9 +3,9 @@ import numpy
 from team import Team
 from diversity_maintenance import DiversityMaintenance
 from pareto_dominance_for_teams import ParetoDominanceForTeams
-from environments.default_environment import DefaultEnvironment
-from utils.helpers import round_value
-from config import Config
+from ..environments.default_environment import DefaultEnvironment
+from ..utils.helpers import round_value
+from ..config import Config
 
 class Selection:
     """

@@ -1,4 +1,4 @@
-from utils.helpers import is_nearly_equal_to
+from ..utils.helpers import is_nearly_equal_to
 
 class ParetoDominanceForPoints():
     """

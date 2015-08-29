@@ -3,7 +3,7 @@ from collections import Counter
 import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from default_environment import DefaultEnvironment, DefaultPoint, reset_points_ids
-from ..pareto_dominance_for_points import ParetoDominanceForPoints
+from ..core.pareto_dominance_for_points import ParetoDominanceForPoints
 from ..utils.helpers import round_array, flatten
 from ..config import Config
 
