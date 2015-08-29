@@ -15,6 +15,7 @@ from collections import defaultdict
 from opponent_model import OpponentModel
 from poker_point import PokerPoint
 from poker_config import PokerConfig
+from match_state import MatchState
 from poker_metrics import PokerMetrics
 from poker_player_execution import PokerPlayerExecution
 from poker_opponents import PokerRandomOpponent, PokerAlwaysFoldOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
@@ -29,8 +30,9 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
+        PokerConfig.CONFIG['inputs'] = PokerPoint.INPUTS+MatchState.INPUTS+['chips']+OpponentModel.INPUTS
         total_inputs = len(PokerConfig.CONFIG['inputs'])
-        total_labels = len(PokerConfig.CONFIG['hand_strength_labels'].keys())
+        total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         point_class = PokerPoint
@@ -296,10 +298,10 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def _calculate_point_population_metrics_per_validation(self, run_info):
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.position_, 'position', range(PokerConfig.CONFIG['positions']))
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['hand_strength_labels'].keys())
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.opp_label_, 'opp_label', PokerConfig.CONFIG['hand_strength_labels'].keys())
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_extra_label_, 'sbb_extra_label', PokerConfig.CONFIG['hand_strength_labels'].keys())
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.opp_extra_label_, 'opp_extra_label', PokerConfig.CONFIG['hand_strength_labels'].keys())
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.opp_label_, 'opp_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_extra_label_, 'sbb_extra_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.opp_extra_label_, 'opp_extra_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
 
     def _calculate_point_population_metric_per_validation(self, run_info, get_attribute, key, labels):
@@ -311,10 +313,10 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def _calculate_validation_population_metrics_per_validation(self, run_info):
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.position_, 'position', range(PokerConfig.CONFIG['positions']))
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['hand_strength_labels'].keys())
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.opp_label_, 'opp_label', PokerConfig.CONFIG['hand_strength_labels'].keys())
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_extra_label_, 'sbb_extra_label', PokerConfig.CONFIG['hand_strength_labels'].keys())
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.opp_extra_label_, 'opp_extra_label', PokerConfig.CONFIG['hand_strength_labels'].keys())
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.opp_label_, 'opp_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_extra_label_, 'sbb_extra_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.opp_extra_label_, 'opp_extra_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
 
     def _calculate_validation_population_metric_per_validation(self, run_info, get_attribute, key, labels):

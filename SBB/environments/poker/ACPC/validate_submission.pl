@@ -291,7 +291,7 @@ while( $matches_played < $min_matches ) {
   my ( $match_start_time, $match_end_time );
   my $match_name = "$agent_name.test_match.$matches_played";
 
-  # TODO?: Should the generated shell scripts be used to run the agent
+  # TO DO?: Should the generated shell scripts be used to run the agent
   # If not, then files could be left over or we may not detect issues with
   # using the scripts
 

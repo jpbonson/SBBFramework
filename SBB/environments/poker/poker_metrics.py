@@ -190,7 +190,7 @@ class PokerMetrics():
         return NORMALIZED_HAND_EQUITY[frozenset(hole_cards)]
 
     @staticmethod
-    def get_label(value, key): # TODO: refactor
+    def get_hand_strength_label(value):
         if value >= 9.0:
             return 0
         if value >= 7.0:

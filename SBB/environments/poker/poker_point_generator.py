@@ -144,8 +144,8 @@ if __name__ == "__main__":
             point_pos1['r'] = 0.5
         point_pos0.pop('final')
         point_pos1.pop('final')
-        label0 = get_label(point_pos0['str'][index], 'hand_strength_labels')
-        label1 = get_label(point_pos1['str'][index], 'hand_strength_labels')
+        label0 = PokerMetrics.get_hand_strength_label(point_pos0['str'][index])
+        label1 = PokerMetrics.get_hand_strength_label(point_pos1['str'][index])
         print str(label0)+": "+str(point_pos0)
         print str(label1)+": "+str(point_pos1)
         files[label0].write(json.dumps(point_pos0)+'\n')

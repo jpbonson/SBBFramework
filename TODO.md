@@ -25,6 +25,7 @@ minor fixes (moved files to folder 'core' and examples to 'tools')
 minor fixes (refactored some of the poker code)
 minor fix (fixed bug with formula for chips)
 minor fix (implemented accumulative curve per opponent type + minor refactoring of poker code)
+minor fix (refactored TODOs)
 ---
 antes disso:
 - implementar option para NCD using state information (hand type+position)
@@ -38,6 +39,7 @@ enquanto isso:
 - conferir TODOs
 - conferir 'least regreat', usado pela University of Alberta?
 - repassar comentairos do paper sobre NCD para o doc
+- ajeitar README dos outros projetos no github
 
 scp -r source_file_name username@destination_host:destination_folder
 scp -r username@destination_host:destination_folder source_file_name
