@@ -38,7 +38,7 @@ class PokerPoint(ReinforcementPoint):
         elif info['r'] == 1.0:
             self.sbb_sd_label_ = 2
 
-        self.last_opponent_ = None
+        self.last_validation_opponent_id_ = None
         self.teams_results_ = []
 
     def _label(self, value): # TODO: refactor

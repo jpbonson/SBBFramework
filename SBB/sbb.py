@@ -319,7 +319,7 @@ class SBB:
             run_info.novelty_type_per_generation.append(Config.RESTRICTIONS['used_diversities'].index(self.selection.previous_diversity_))
         if Config.USER['task'] == 'reinforcement':
             run_info.global_fitness_per_opponent_per_generation[self.environment.previous_population_type_].append(mean_fitness)
-            run_info.opponent_type_per_generation.append(self.environment.opponent_names_.index(self.environment.previous_population_type_))
+            run_info.opponent_type_per_generation.append(self.environment.opponent_names_for_training_.index(self.environment.previous_population_type_))
 
     def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())

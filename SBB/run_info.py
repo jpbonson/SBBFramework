@@ -114,7 +114,8 @@ class RunInfo:
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE"
             for metric in self.individual_performance_in_last_generation:
-                msg += "\n\nOverall Accumulative Results ("+str(metric)+"):"
+                msg += "\n\n==="
+                msg += "\nOverall Accumulative Results ("+str(metric)+"):"
                 msg += "\n- Individual Team Performance: "+str(self.individual_performance_in_last_generation[metric])
                 msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation[metric])
                 msg += "\n- Team ids: "+str(self.ids_for_acc_performance_in_last_generation[metric])

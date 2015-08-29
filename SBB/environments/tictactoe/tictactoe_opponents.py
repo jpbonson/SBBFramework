@@ -5,8 +5,10 @@ from ..default_opponent import DefaultOpponent
 from ...config import Config
 
 class TictactoeRandomOpponent(DefaultOpponent):
+    OPPONENT_ID = "random"
+
     def __init__(self):
-        super(TictactoeRandomOpponent, self).__init__("random")
+        super(TictactoeRandomOpponent, self).__init__(TictactoeRandomOpponent.OPPONENT_ID)
 
     def initialize(self, seed):
         self.random_generator_ = numpy.random.RandomState(seed=seed)
@@ -15,8 +17,10 @@ class TictactoeRandomOpponent(DefaultOpponent):
         return self.random_generator_.choice(valid_actions)
 
 class TictactoeSmartOpponent(DefaultOpponent):
+    OPPONENT_ID = "smart"
+
     def __init__(self):
-        super(TictactoeSmartOpponent, self).__init__("smart")
+        super(TictactoeSmartOpponent, self).__init__(TictactoeSmartOpponent.OPPONENT_ID)
 
     def initialize(self, seed):
         self.random_generator_ = numpy.random.RandomState(seed=seed)

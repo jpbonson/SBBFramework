@@ -24,7 +24,11 @@ minor fixes (added all subdivisions to all accumulative curve metrics)
 minor fixes (moved files to folder 'core' and examples to 'tools')
 minor fixes (refactored some of the poker code)
 minor fix (fixed bug with formula for chips)
+minor fix (implemented accumulative curve per opponent type + minor refactoring of poker code)
 ---
+antes disso:
+- implementar option para NCD using state information (hand type+position)
+
 implementar + testar:
 - implementar NCD using state information (hand type+position) + testar
 - 10 ou 20 instructions? ou 15?
@@ -34,9 +38,6 @@ enquanto isso:
 - conferir TODOs
 - conferir 'least regreat', usado pela University of Alberta?
 - repassar comentairos do paper sobre NCD para o doc
-
-antes disso:
-- accumulative curve per opponent type
 
 scp -r source_file_name username@destination_host:destination_folder
 scp -r username@destination_host:destination_folder source_file_name

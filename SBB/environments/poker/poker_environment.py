@@ -35,6 +35,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
+        PokerConfig.CONFIG['labels_per_subdivision']['opponent'] = self.opponent_names_for_validation_
         port1, port2 = available_ports()
         PokerConfig.CONFIG['available_ports'] = [port1, port2]
         self.num_lines_per_file_ = []
@@ -131,7 +132,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             opponent_position = 0
 
         normalized_value = PokerMetrics.normalize_winning(float(scores[sbb_position]))
-        
+
         PokerPlayerExecution.get_chips(team, opponent).append(normalized_value)
         if opponent.opponent_id == "hall_of_fame":
             PokerPlayerExecution.get_chips(opponent, team).append(PokerMetrics.normalize_winning(float(scores[opponent_position])))
@@ -139,6 +140,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         if not is_training:
             if mode == Config.RESTRICTIONS['mode']['validation']:
                 self._update_team_extra_metrics_for_poker(team, point, normalized_value, 'validation')
+                point.last_validation_opponent_id_ = opponent.opponent_id
                 if team.extra_metrics_['played_last_hand']:
                     team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 1.0
                     if normalized_value > 0.5:
@@ -157,7 +159,6 @@ class PokerEnvironment(ReinforcementEnvironment):
             print "normalized_value: "+str(normalized_value)
 
         point.teams_results_.append(normalized_value)
-        point.last_opponent_ = opponent.__repr__()
 
         return normalized_value
 
@@ -179,6 +180,11 @@ class PokerEnvironment(ReinforcementEnvironment):
                 team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
                 team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_extra_label'][point.sbb_extra_label_] += 1
                 team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
+
+    def reset(self):
+        super(PokerEnvironment, self).reset()
+        gc.collect()
+        yappi.clear_stats()
 
     def setup(self, teams_population):
         super(PokerEnvironment, self).setup(teams_population)
@@ -362,7 +368,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                 for label in PokerConfig.CONFIG['labels_per_subdivision'][subdivision]:
                     point_ids = [point.point_id_ for point in self.validation_population() if PokerConfig.CONFIG['attributes_per_subdivision'][subdivision](point) == label]
                     if metric == 'score':
-                        sorting_criteria_per_label = lambda x: x.extra_metrics_['validation_points'][subdivision][label]
+                        sorting_criteria_per_label = lambda x: numpy.mean([x.results_per_points_for_validation_[point_id] for point_id in point_ids])
                     if metric == 'hands_played':
                         sorting_criteria_per_label = lambda x: numpy.mean([x.extra_metrics_['hands_played_or_not_per_point'][point_id] for point_id in point_ids])
                     if metric == 'hands_won':
