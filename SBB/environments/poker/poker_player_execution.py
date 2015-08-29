@@ -116,7 +116,7 @@ class PokerPlayerExecution():
         socket_tmp.close()
 
         if inputs_type and inputs_type == 'all':
-            PokerEnvironment._update_opponent_model_and_chips(player, opponent, point, previous_messages+partial_messages, debug_file, previous_action)
+            PokerPlayerExecution._update_opponent_model_and_chips(player, opponent, point, previous_messages+partial_messages, debug_file, previous_action)
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file.write("The end.\n\n")
