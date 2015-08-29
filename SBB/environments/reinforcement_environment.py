@@ -43,7 +43,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.point_class = point_class
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
-        self.opponent_names_for_training_ = [str(opponent_class) for opponent_class in self.coded_opponents_for_training_] # TODO: refactor
+        self.opponent_names_for_training_ = [c.OPPONENT_ID for c in self.coded_opponents_for_training_]
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             self.opponent_names_for_training_.append('hall_of_fame')
         self.opponent_names_for_validation_ = [c.OPPONENT_ID for c in self.coded_opponents_for_validation_]
@@ -116,7 +116,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
     def _initialize_opponent_population(self):
         self.opponent_population_ = {}
         for opponent_class in self.coded_opponents_for_training_:
-            self.opponent_population_[str(opponent_class)] = [self._instantiate_coded_opponent(opponent_class)]
+            self.opponent_population_[opponent_class.OPPONENT_ID] = [self._instantiate_coded_opponent(opponent_class)]
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             self.opponent_population_['hall_of_fame'] = []
 

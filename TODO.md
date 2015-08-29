@@ -36,7 +36,6 @@ implementar + testar:
 - testar apenas armazenar teams no hall of fame, mas nao usa-los no training?
 
 enquanto isso:
-- conferir TODOs
 - conferir 'least regreat', usado pela University of Alberta?
 - repassar comentairos do paper sobre NCD para o doc
 - ajeitar README dos outros projetos no github
