@@ -6,7 +6,6 @@ import numpy
 from opponent_model import OpponentModel
 from match_state import MatchState
 from poker_config import PokerConfig
-from poker_metrics import PokerMetrics
 from ...config import Config
 
 class PokerPlayerExecution():
@@ -116,7 +115,7 @@ class PokerPlayerExecution():
         socket_tmp.close()
 
         if inputs_type and inputs_type == 'all':
-            PokerPlayerExecution._update_opponent_model_and_chips(player, opponent, point, previous_messages+partial_messages, debug_file, previous_action)
+            PokerPlayerExecution._update_opponent_model(player, opponent, point, previous_messages+partial_messages, debug_file, previous_action)
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file.write("The end.\n\n")
@@ -125,16 +124,16 @@ class PokerPlayerExecution():
 
     @staticmethod
     def _calculate_chips_input(player, opponent):
-        chips = PokerPlayerExecution._get_chips(player, opponent)
+        chips = PokerPlayerExecution.get_chips(player, opponent)
         if len(chips) == 0:
             chips = 0.5
         else:
-            chips = PokerMetrics.normalize_winning(numpy.mean(chips))
+            chips = numpy.mean(chips)
         chips = chips*Config.RESTRICTIONS['multiply_normalization_by']
         return chips
 
     @staticmethod
-    def _get_chips(player, opponent):
+    def get_chips(player, opponent):
         opponent_id = PokerPlayerExecution._get_opponent_id(opponent)
         if opponent_id not in player.chips:
             player.chips[opponent_id] = []
@@ -149,39 +148,24 @@ class PokerPlayerExecution():
 
     @staticmethod
     def _get_opponent_id(opponent):
-        if opponent.opponent_id == "hall_of_fame" or opponent.opponent_id == "sbb":
+        if opponent.opponent_id == "hall_of_fame":
             opponent_id = opponent.team_id_
         else:
             opponent_id = opponent.opponent_id
         return opponent_id
 
     @staticmethod
-    def _update_opponent_model_and_chips(player, opponent, point, messages, debug_file, previous_action):
+    def _update_opponent_model(player, opponent, point, messages, debug_file, previous_action):
         for partial_msg in reversed(messages):
             if partial_msg:
                 partial_match_state = MatchState(partial_msg, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'])
                 self_actions, opponent_actions = partial_match_state.actions_per_player()
                 if partial_match_state.is_showdown():
                     if Config.USER['reinforcement_parameters']['debug_matches']:
-                        debug_file.write("partial_msg: "+str(partial_msg)+", previous_action: "+str(previous_action)+"\n\n")
-                        print player.__repr__()+": partial_msg: "+str(partial_msg)+", previous_action: "+str(previous_action)+"\n"
+                        debug_file.write("partial_msg: "+str(partial_msg)+", showdown\n\n")
+                        print player.__repr__()+": partial_msg: "+str(partial_msg)+", showdown\n"
                     self_folded = False
                     opponent_folded = False
-                    winner = point.winner_of_showdown()
-                    if Config.USER['reinforcement_parameters']['debug_matches'] and winner is None:
-                        debug_file.write("showdown, draw\n\n")
-                        print player.__repr__()+": showdown, draw\n"
-                    else:
-                        if winner == partial_match_state.position:
-                            if Config.USER['reinforcement_parameters']['debug_matches']:
-                                debug_file.write("showdown, I won\n\n")
-                                print player.__repr__()+": showdown, I won\n"
-                            PokerPlayerExecution._get_chips(player, opponent).append(+(partial_match_state.calculate_pot()))
-                        else:
-                            if Config.USER['reinforcement_parameters']['debug_matches']:
-                                debug_file.write("showdown, I lost\n\n")
-                                print player.__repr__()+": showdown, I lost\n"
-                            PokerPlayerExecution._get_chips(player, opponent).append(-(partial_match_state.calculate_pot()))
                 else:
                     last_player = partial_match_state.last_player_to_act()
                     if last_player == partial_match_state.position:
@@ -191,14 +175,12 @@ class PokerPlayerExecution():
                                 print player.__repr__()+": partial_msg: "+str(partial_msg)+", I folded\n"
                             self_folded = True
                             opponent_folded = False
-                            PokerPlayerExecution._get_chips(player, opponent).append(-(partial_match_state.calculate_pot()))
                     elif opponent_actions and opponent_actions[-1] == 'f':
                         if Config.USER['reinforcement_parameters']['debug_matches']:
                             debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded\n\n")
                             print player.__repr__()+": partial_msg: "+str(partial_msg)+", opponent folded\n"
                         self_folded = False
                         opponent_folded = True
-                        PokerPlayerExecution._get_chips(player, opponent).append(+(partial_match_state.calculate_pot()))
                     else:
                         raise ValueError("An unexpected behavior occured during the poker match!")
                 PokerPlayerExecution._get_opponent_model(player, opponent).update_overall_agressiveness(len(partial_match_state.rounds), self_actions, opponent_actions, self_folded, opponent_folded, previous_action)

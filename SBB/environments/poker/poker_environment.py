@@ -125,9 +125,17 @@ class PokerEnvironment(ReinforcementEnvironment):
         players = splitted_score[1].split("|")
         if players[0] == 'sbb':
             sbb_position = 0
+            opponent_position = 1
         else:
             sbb_position = 1
+            opponent_position = 0
+
         normalized_value = PokerMetrics.normalize_winning(float(scores[sbb_position]))
+        
+        PokerPlayerExecution.get_chips(team, opponent).append(normalized_value)
+        if opponent.opponent_id == "hall_of_fame":
+            PokerPlayerExecution.get_chips(opponent, team).append(PokerMetrics.normalize_winning(float(scores[opponent_position])))
+
         if not is_training:
             if mode == Config.RESTRICTIONS['mode']['validation']:
                 self._update_team_extra_metrics_for_poker(team, point, normalized_value, 'validation')

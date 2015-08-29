@@ -23,19 +23,20 @@ minor fixes (added subdivisions to accumulative curve per hands won and played)
 minor fixes (added all subdivisions to all accumulative curve metrics)
 minor fixes (moved files to folder 'core' and examples to 'tools')
 minor fixes (refactored some of the poker code)
+minor fix (fixed bug with formula for chips)
 ---
 implementar + testar:
 - implementar NCD using state information (hand type+position) + testar
 - 10 ou 20 instructions? ou 15?
 - testar apenas armazenar teams no hall of fame, mas nao usa-los no training?
 
+enquanto isso:
 - conferir TODOs
-- obter chips to resultado final da match quando for mudar de hand, ao inves de usar o valor temporario?
-- accumulative curve per opponent type
-
-extra:
 - conferir 'least regreat', usado pela University of Alberta?
 - repassar comentairos do paper sobre NCD para o doc
+
+antes disso:
+- accumulative curve per opponent type
 
 scp -r source_file_name username@destination_host:destination_folder
 scp -r username@destination_host:destination_folder source_file_name
