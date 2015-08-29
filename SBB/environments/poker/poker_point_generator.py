@@ -7,15 +7,15 @@ import socket
 from socket import error as socket_error
 import subprocess
 import threading
-from SBB.environments.poker.match_state import MatchState
-from SBB.environments.poker.poker_config import PokerConfig
-from SBB.environments.poker.tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
-from SBB.environments.poker.tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
-from SBB.environments.poker.poker_metrics import *
-from SBB.utils.helpers import available_ports, round_value
-from SBB.config import Config
+from match_state import MatchState
+from poker_config import PokerConfig
+from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
+from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
+from poker_metrics import PokerMetrics
+from ...utils.helpers import available_ports, round_value
+from ...config import Config
 
-def test_execution(point, port, full_deck, hole_cards_based_on_equity):
+def test_execution(point, port, full_deck):
     socket_tmp = socket.socket()
 
     total = 10
@@ -45,14 +45,13 @@ def test_execution(point, port, full_deck, hole_cards_based_on_equity):
             send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
             socket_tmp.send(send_msg)
             round_id = len(match_state.rounds)
-            s = calculate_hand_strength(match_state.current_hole_cards, match_state.board_cards, full_deck)
+            s = PokerMetrics.calculate_hand_strength(match_state.current_hole_cards, match_state.board_cards, full_deck)
             if round_id == 2 or round_id == 3:
-                # p = calculate_hand_potential(match_state.current_hole_cards, match_state.board_cards, round_id, full_deck, hole_cards_based_on_equity)
-                p = calculate_hand_potential_without_heuristics(match_state.current_hole_cards, match_state.board_cards, round_id, full_deck)
+                p = PokerMetrics.calculate_hand_potential_without_heuristics(match_state.current_hole_cards, match_state.board_cards, round_id, full_deck)
             else:
                 p = 0
-            e = calculate_equity(match_state.current_hole_cards)
-            ep = calculate_ep(s, e, p, round_id)
+            e = PokerMetrics.calculate_equity(match_state.current_hole_cards)
+            ep = PokerMetrics.calculate_ep(s, e, p, round_id)
             point['str'][round_id-1] = round_value(s*Config.RESTRICTIONS['multiply_normalization_by'], 3)
             # point['pot'][round_id-1] = round_value(p, 3)
             # point['eq'] = round_value(e)
@@ -67,7 +66,7 @@ def test_execution(point, port, full_deck, hole_cards_based_on_equity):
     point['board_cards'] = match_state.board_cards
     point['p'] = match_state.position
 
-def initialize_metrics(seed, port_pos0, port_pos1, full_deck, hole_cards_based_on_equity):
+def initialize_metrics(seed, port_pos0, port_pos1, full_deck):
     point_pos0 = {}
     point_pos1 = {}
     point_pos0['str'] = [-1] * 4
@@ -77,8 +76,8 @@ def initialize_metrics(seed, port_pos0, port_pos1, full_deck, hole_cards_based_o
     point_pos0['ep'] = [-1] * 4
     point_pos1['ep'] = [-1] * 4
 
-    t1 = threading.Thread(target=test_execution, args=[point_pos0, port_pos0, full_deck, hole_cards_based_on_equity])
-    t2 = threading.Thread(target=test_execution, args=[point_pos1, port_pos1, full_deck, hole_cards_based_on_equity])
+    t1 = threading.Thread(target=test_execution, args=[point_pos0, port_pos0, full_deck])
+    t2 = threading.Thread(target=test_execution, args=[point_pos1, port_pos1, full_deck])
     args = [PokerConfig.CONFIG['acpc_path']+'dealer', 
             PokerConfig.CONFIG['acpc_path']+'outputs/match_output', 
             PokerConfig.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
@@ -117,8 +116,7 @@ if __name__ == "__main__":
 
     print "starting"
     start_time = time.time()
-    full_deck = initialize_deck()
-    hole_cards_based_on_equity = initialize_hole_cards_based_on_equity()
+    full_deck = PokerMetrics.initialize_deck()
     port0, port1 = available_ports()
     if not os.path.exists('hand_types'):
         os.makedirs('hand_types')
@@ -128,7 +126,7 @@ if __name__ == "__main__":
     for x in range(4):
         files.append(open(path+'/hands_type_'+str(x)+'.json','a'))
     for seed in range(15000, 20000):
-        point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck, hole_cards_based_on_equity)
+        point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck)
         point_pos0['id'] = seed
         point_pos1['id'] = seed
         point_pos0.pop('hole_cards')
