@@ -27,10 +27,10 @@ minor fix (fixed bug with formula for chips)
 minor fix (implemented accumulative curve per opponent type + minor refactoring of poker code)
 minor fix (refactored TODOs)
 implemented option to use hall of fame without using it as opponents
+minor fix (saving action_sequence as letters instead of numbers + fixed bug with hall of fame metrics)
 ---
 antes disso:
 - implementar option para NCD using state information (hand type+position)
-- salvar letras ao inves de numeros como as actions?
 
 testar:
 - NCD using state information (hand type+position)

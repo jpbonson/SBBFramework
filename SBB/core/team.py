@@ -168,9 +168,11 @@ class Team(DefaultOpponent):
         if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
             msg += "\nlast opponent played against (training): "+self.extra_metrics_['last_training_opponent']
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':
-                msg += self._hand_player_metrics('validation')
-                if self.extra_metrics_['total_hands']['champion'] > 0:
-                    msg += self._hand_player_metrics('champion')
+                if 'total_hands' in self.extra_metrics_:
+                    if self.extra_metrics_['total_hands']['validation'] > 0:
+                        msg += self._hand_player_metrics('validation')
+                    if self.extra_metrics_['total_hands']['champion'] > 0:
+                        msg += self._hand_player_metrics('champion')
                 if 'agressiveness' in self.extra_metrics_:
                     msg += "\n\nagressiveness: "+str(self.extra_metrics_['agressiveness'])
                     msg += "\nvolatility: "+str(self.extra_metrics_['volatility'])
@@ -178,9 +180,10 @@ class Team(DefaultOpponent):
                     msg += "\nagressiveness (champion): "+str(self.extra_metrics_['agressiveness_champion'])
                     msg += "\nvolatility (champion): "+str(self.extra_metrics_['volatility_champion'])
 
-                msg += "\n\nscore per point (validation): "
-                for key in self.extra_metrics_['validation_points']:
-                    msg += "\n"+key+": "+str(dict(self.extra_metrics_['validation_points'][key]))
+                if 'validation_points' in self.extra_metrics_:
+                    msg += "\n\nscore per point (validation): "
+                    for key in self.extra_metrics_['validation_points']:
+                        msg += "\n"+key+": "+str(dict(self.extra_metrics_['validation_points'][key]))
 
                 if 'champion_score' in self.extra_metrics_:
                     msg += "\n\nscore per point (champion): "
@@ -195,7 +198,7 @@ class Team(DefaultOpponent):
             if Config.USER['task'] == 'classification' and self.extra_metrics_:
                 msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
                 msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])
-            if Config.USER['task'] == 'reinforcement' and 'validation_score'in self.extra_metrics_:
+            if Config.USER['task'] == 'reinforcement' and 'validation_score' in self.extra_metrics_:
                 msg += "\n\nscore per opponent (validation): "+str(self.extra_metrics_['validation_score'])
                 for key in self.extra_metrics_['validation_opponents']:
                     msg += "\n"+key+": "+str(self.extra_metrics_['validation_opponents'][key])
