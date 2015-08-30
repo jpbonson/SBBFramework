@@ -286,8 +286,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(PokerConfig.CONFIG['action_mapping'])
         msg += "\npositions: "+str(PokerConfig.CONFIG['positions'])
-        msg += "\ntraining opponents: "+str([c.__name__ for c in self.coded_opponents_for_training_])
-        msg += "\nvalidation opponents: "+str([c.__name__ for c in self.coded_opponents_for_validation_])
+        msg += "\ntraining opponents: "+str(self.opponent_names_for_training_)
+        msg += "\nvalidation opponents: "+str(self.opponent_names_for_validation_)
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             msg += "\nhall of fame size: "+str(Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
         return msg

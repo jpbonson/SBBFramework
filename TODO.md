@@ -26,14 +26,19 @@ minor fixes (refactored some of the poker code)
 minor fix (fixed bug with formula for chips)
 minor fix (implemented accumulative curve per opponent type + minor refactoring of poker code)
 minor fix (refactored TODOs)
+implemented option to use hall of fame without using it as opponents
 ---
 antes disso:
 - implementar option para NCD using state information (hand type+position)
+- salvar letras ao inves de numeros como as actions?
 
-implementar + testar:
-- implementar NCD using state information (hand type+position) + testar
+testar:
+- NCD using state information (hand type+position)
 - 10 ou 20 instructions? ou 15?
 - testar apenas armazenar teams no hall of fame, mas nao usa-los no training?
+- Dummy Opponents vs Loose Opponents
+- the two ways of balancing the point population
+- ?
 
 enquanto isso:
 - conferir 'least regreat', usado pela University of Alberta?

@@ -22,6 +22,7 @@ class Config():
             'hall_of_fame': {
                 'size': 5,
                 'enabled': True,
+                'use_as_opponents': True,
                 'diversity': 'normalized_compression_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
@@ -132,9 +133,13 @@ class Config():
                 sys.stderr.write("Error: Can't calculate 'normalized_compression_distance' for a classification task!\n")
                 raise SystemExit
 
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:
-            if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity'] not in Config.RESTRICTIONS['diversity_options']:
-                sys.stderr.write("Error: Invalid 'diversity' for 'hall_of_fame' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['diversity_options'])+"\n")
+        if Config.USER['task'] == 'reinforcement':
+            if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:
+                if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity'] not in Config.RESTRICTIONS['diversity_options']:
+                    sys.stderr.write("Error: Invalid 'diversity' for 'hall_of_fame' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['diversity_options'])+"\n")
+                    raise SystemExit
+            if not Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
+                sys.stderr.write("Error: For hall of fame, 'use_as_opponents' can't be True if 'enabled' is False\n")
                 raise SystemExit
 
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] not in Config.RESTRICTIONS['environment_types']:

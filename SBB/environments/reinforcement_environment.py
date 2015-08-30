@@ -44,7 +44,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         self.opponent_names_for_training_ = [c.OPPONENT_ID for c in self.coded_opponents_for_training_]
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
             self.opponent_names_for_training_.append('hall_of_fame')
         self.opponent_names_for_validation_ = [c.OPPONENT_ID for c in self.coded_opponents_for_validation_]
         self.team_to_add_to_hall_of_fame_ = None
@@ -78,13 +78,13 @@ class ReinforcementEnvironment(DefaultEnvironment):
         return self.validation_point_population_
 
     def champion_population(self):
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.opponent_population_['hall_of_fame']) == Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] and len(self.opponent_population_['hall_of_fame']) == Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
             return self.champion_point_population_ + self.champion_point_population_for_hall_of_fame_
         else:
             return self.champion_point_population_
 
     def champion_opponent_population(self):
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.opponent_population_['hall_of_fame']) == Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] and len(self.opponent_population_['hall_of_fame']) == Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
             temp = self.opponent_population_['hall_of_fame']*self.matches_per_hall_of_fame_opponent_
             return self.champion_opponent_population_ + temp
         else:
@@ -96,7 +96,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.point_population_ = []
         self.team_to_add_to_hall_of_fame_ = None
         self.validation_point_population_ = self._initialize_random_population_of_points(Config.USER['reinforcement_parameters']['validation_population'])
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
             size = Config.USER['reinforcement_parameters']['champion_population'] + Config.USER['reinforcement_parameters']['hall_of_fame']['size']*self.matches_per_hall_of_fame_opponent_
             population = self._initialize_random_population_of_points(size)
             self.champion_point_population_ = population[:Config.USER['reinforcement_parameters']['champion_population']]
@@ -176,8 +176,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
         # define current opponent population
         options = self.opponent_population_.keys()
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and len(self.opponent_population_['hall_of_fame']) < Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
-            options.remove('hall_of_fame')
+        if 'hall_of_fame' in options:
+            if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] and len(self.opponent_population_['hall_of_fame']) < Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
+                options.remove('hall_of_fame')
+            if not Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
+                options.remove('hall_of_fame')
         if len(options) > 1 and self.previous_population_type_:
             options.remove(self.previous_population_type_)
         self.current_opponent_type_ = random.choice(options)

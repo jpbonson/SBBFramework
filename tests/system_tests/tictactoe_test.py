@@ -11,6 +11,7 @@ TEST_CONFIG = {
         'hall_of_fame': {
             'size': 6,
             'enabled': False,
+            'use_as_opponents': False,
             'diversity': None,
         },
         'debug_matches': False, # use this option to debug
@@ -76,6 +77,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 2
         config['advanced_training_parameters']['seed'] = 1
@@ -93,6 +95,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
@@ -110,6 +113,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = ['genotype_distance', 'fitness_sharing']
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
@@ -127,6 +131,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype_distance']
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
@@ -144,6 +149,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['use_and_show'] = ['fitness_sharing']
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
@@ -161,6 +167,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['use_and_show'] = ['normalized_compression_distance']
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
@@ -178,6 +185,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype_distance', 'fitness_sharing']
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
@@ -195,6 +203,25 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = True
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = True
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
+        config['training_parameters']['runs_total'] = 1
+        config['advanced_training_parameters']['seed'] = [1]
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame_not_used_as_opponents(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['diversity']['only_show'] = []
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = True
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
@@ -212,6 +239,7 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = True
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = True
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = 'normalized_compression_distance'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
