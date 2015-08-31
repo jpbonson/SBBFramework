@@ -162,6 +162,9 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         point.teams_results_.append(normalized_value)
 
+        team.action_sequence_.append(str(point.seed_))
+        team.action_sequence_.append(str(point.position_))
+
         return normalized_value
 
     def _update_team_extra_metrics_for_poker(self, team, point, normalized_value, mode_label):

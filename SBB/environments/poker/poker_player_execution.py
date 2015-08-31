@@ -91,6 +91,7 @@ class PokerPlayerExecution():
                             player.extra_metrics_['played_last_hand'] = False
                     action = PokerConfig.CONFIG['action_mapping'][action]
                     if is_sbb and is_training:
+                        player.action_sequence_.append(str(''.join(match_state.board_cards)))
                         player.action_sequence_.append(str(action))
                     previous_action = action
                     send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"

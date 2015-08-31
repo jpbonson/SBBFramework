@@ -28,25 +28,36 @@ minor fix (implemented accumulative curve per opponent type + minor refactoring 
 minor fix (refactored TODOs)
 implemented option to use hall of fame without using it as opponents
 minor fix (saving action_sequence as letters instead of numbers + fixed bug with hall of fame metrics)
+modified NCD so now it uses state information (action + seed + position + board)
 ---
 antes disso:
-- implementar option para NCD using state information (hand type+position)
+- conferir se os outputs estao corretos
 
 testar:
-- NCD using state information (hand type+position)
 - 10 ou 20 instructions? ou 15?
 - testar apenas armazenar teams no hall of fame, mas nao usa-los no training?
 - Dummy Opponents vs Loose Opponents
 - the two ways of balancing the point population
+- entropy? genotype? NCD? (mix them? individual?)
 - ?
+
+goals:
+- Find out if the current diversity metrics are being able to maintain diversity, based on the  accumulative performance curves.
+- Find configurations that produce the best results (based on diversity and test score)
+
 
 enquanto isso:
 - conferir 'least regreat', usado pela University of Alberta?
 - repassar comentairos do paper sobre NCD para o doc
 - ajeitar README dos outros projetos no github
+- definir estrutura para capitulo da literature review da thesis + quais os papers principais (e enviar para o malcolm)
+    - Start with what has been done previously with ML and poker, then look at GP and diversity and finish up with SBB and second layer. All this material will find its way into your thesis, and some will be useful for paper writing.
 
 scp -r source_file_name username@destination_host:destination_folder
 scp -r username@destination_host:destination_folder source_file_name
+
+http://academiccalendar.dal.ca/~/Catalog/ViewCatalog.aspx?pageid=viewcatalog&catalogid=2&topicgroupid=1425
+http://academiccalendar.dal.ca/Catalog/ViewCatalog.aspx?pageid=viewcatalog&catalogid=2&chapterid=476&loaduseredits=False
 
 =====================
 Main Goals (next weeks):

@@ -99,8 +99,9 @@ class DiversityMaintenance():
             Gomez, Faustino J. "Sustaining diversity using behavioral information distance." Proceedings of the 
             11th Annual conference on Genetic and evolutionary computation. ACM, 2009.
         """
-        if team.action_sequence_ == other_team.action_sequence_:
-            return 0.0
+        if len(team.action_sequence_) == len(other_team.action_sequence_):
+            if team.action_sequence_ == other_team.action_sequence_:
+                return 0.0
         x_len = len(bz2.compress("".join(team.action_sequence_)))
         y_len = len(bz2.compress("".join(other_team.action_sequence_)))
         xy_len = len(bz2.compress("".join(team.action_sequence_+other_team.action_sequence_)))
@@ -115,8 +116,9 @@ class DiversityMaintenance():
 
     @staticmethod
     def _relative_entropy_distance(team, other_team):
-        if team.action_sequence_ == other_team.action_sequence_:
-            return 0.0
+        if len(team.action_sequence_) == len(other_team.action_sequence_):
+            if team.action_sequence_ == other_team.action_sequence_:
+                return 0.0
         action_sequence = team.action_sequence_
         other_action_sequence = other_team.action_sequence_
         options = Config.RESTRICTIONS['total_actions']
