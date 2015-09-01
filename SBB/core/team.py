@@ -156,11 +156,15 @@ class Team(DefaultOpponent):
             p.remove_team(self)
 
     def metrics(self, full_version = False):
-        active_teams_members_ids = [p.__repr__() for p in self.overall_active_programs_]
-        inactive_programs = list(set(self.programs) - set(self.overall_active_programs_))
+        overall_active_teams_members_ids = [p.__repr__() for p in self.overall_active_programs_]
+        overall_inactive_programs = list(set(self.programs) - set(self.overall_active_programs_))
+        overall_inactive_teams_members_ids = [p.__repr__() for p in overall_inactive_programs]
+        active_teams_members_ids = [p.__repr__() for p in self.active_programs_]
+        inactive_programs = list(set(self.programs) - set(self.active_programs_))
         inactive_teams_members_ids = [p.__repr__() for p in inactive_programs]
         msg = self.__repr__()
-        msg += "\nteam members ("+str(len(self.programs))+"), A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids)
+        msg += "\nteam members ("+str(len(self.programs))+"), A: "+str(overall_active_teams_members_ids)+", I: "+str(overall_inactive_teams_members_ids)
+        msg += "\n- training only, A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids)
         msg += "\nfitness: "+str(round_value(self.fitness_))+", test score: "+str(round_value(self.score_testset_))
         msg += "\ninputs distribution: "+str(self.inputs_distribution())
         if Config.USER['task'] == 'classification' and self.extra_metrics_:

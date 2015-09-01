@@ -1,4 +1,4 @@
-Done:
+Done (since summer report):
 minor fixes (round_value para acc curve, salvars ids na acc curve, time in mins, distribution of inputs per teams)
 minor fixes (fixed -1 in num_lines_per_file_, refatorar update_opponent_model_and_chips)
 minor fixes (fixed bug with diversity across runs metric, fixed unit tests for ttt, checked alfa and beta for poker opponents + fixed bug + removed workaround)
@@ -29,22 +29,40 @@ minor fix (refactored TODOs)
 implemented option to use hall of fame without using it as opponents
 minor fix (saving action_sequence as letters instead of numbers + fixed bug with hall of fame metrics)
 modified NCD so now it uses state information (action + seed + position + board)
+minor fixes (changed label for sbb_sd, now 2 == always worst, 0 == always best + fixed bug were opp_label wasnt using ostr + metric for training-only active programs)
 ---
-antes disso:
-- conferir se os outputs estao corretos
 
-testar:
-- 10 ou 20 instructions? ou 15?
-- testar apenas armazenar teams no hall of fame, mas nao usa-los no training?
+test (first):
 - Dummy Opponents vs Loose Opponents
 - the two ways of balancing the point population
+- variar as seeds?
+
+nims server:
+- hole_cards_strength + dummy: 
+- board_strength + dummy: 
+- hole_cards_strength + loose: 
+- board_strength + loose: 
+
+nims lab:
+- hole_cards_strength + dummy: 
+- board_strength + dummy: 
+- hole_cards_strength + loose: 
+- board_strength + loose: 
+
+---
+
+test (second, for only one of the 4 sets (the one with best diversity/performance)):
+- 10 ou 20 instructions? ou 15?
+- testar apenas armazenar teams no hall of fame, mas nao usa-los no training?
 - entropy? genotype? NCD? (mix them? individual?)
-- ?
+
+---
 
 goals:
-- Find out if the current diversity metrics are being able to maintain diversity, based on the  accumulative performance curves.
+- Find out if the current diversity metrics are being able to maintain diversity, based on the accumulative performance curves.
 - Find configurations that produce the best results (based on diversity and test score)
 
+---
 
 enquanto isso:
 - conferir 'least regreat', usado pela University of Alberta?
@@ -53,18 +71,18 @@ enquanto isso:
 - definir estrutura para capitulo da literature review da thesis + quais os papers principais (e enviar para o malcolm)
     - Start with what has been done previously with ML and poker, then look at GP and diversity and finish up with SBB and second layer. All this material will find its way into your thesis, and some will be useful for paper writing.
 
+Literature Review:
+1. 
+2. 
+3. 
+4. 
+
+---
+
 scp -r source_file_name username@destination_host:destination_folder
 scp -r username@destination_host:destination_folder source_file_name
 
-http://academiccalendar.dal.ca/~/Catalog/ViewCatalog.aspx?pageid=viewcatalog&catalogid=2&topicgroupid=1425
-http://academiccalendar.dal.ca/Catalog/ViewCatalog.aspx?pageid=viewcatalog&catalogid=2&chapterid=476&loaduseredits=False
-
 =====================
-Main Goals (next weeks):
-- Find out if the current diversity metrics are being able to maintain diversity, based on the  accumulative performance curves.
-- Find configurations that produce the best results (based on diversity and test score)
-- (depois, se necessario) pensar em outra behavioral diversity metric (uma evolucao da entropy?)
-
 future work:
 - nos testes, checar se os teams sabem blefar
 - refatorar codigo

@@ -158,6 +158,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 copied_team.team_id_ = team_to_copy.team_id_
                 copied_team.fitness_ = team_to_copy.fitness_
                 copied_team.active_programs_ = list(team_to_copy.active_programs_)
+                copied_team.overall_active_programs_ = list(team_to_copy.overall_active_programs_)
                 copied_team.action_sequence_ = list(team_to_copy.action_sequence_)
                 copied_team.extra_metrics_ = dict(team_to_copy.extra_metrics_)
                 hall_of_fame.append(self._instantiate_sbb_opponent(copied_team, "hall_of_fame"))
