@@ -37,17 +37,17 @@ test (first):
 - the two ways of balancing the point population
 - variar as seeds?
 
-nims server:
-- hole_cards_strength + dummy: 15972, nohup1
-- board_strength + dummy: 
-- hole_cards_strength + loose: 
-- board_strength + loose: 
+nims server (seed 1):
+- hole_cards_strength + dummy: 16041, nohup1
+- board_strength + dummy: 25162, nohup2
+- hole_cards_strength + loose: 6055, nohup3
+- board_strength + loose: 15945, nohup4
 
-nims lab:
-- hole_cards_strength + dummy: 
-- board_strength + dummy: 
-- hole_cards_strength + loose: 
-- board_strength + loose: 
+nims lab (seed 2):
+- hole_cards_strength + dummy: 1
+- board_strength + dummy: 2
+- hole_cards_strength + loose: 3
+- board_strength + loose: 4
 
 ---
 
