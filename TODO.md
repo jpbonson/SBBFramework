@@ -38,7 +38,7 @@ test (first):
 - variar as seeds?
 
 nims server:
-- hole_cards_strength + dummy: 
+- hole_cards_strength + dummy: 15972, nohup1
 - board_strength + dummy: 
 - hole_cards_strength + loose: 
 - board_strength + loose: 

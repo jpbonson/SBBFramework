@@ -1,6 +1,6 @@
 import sys
 import numpy
-from config_examples import thyroid_config, tictactoe_config, poker_config
+# from config_examples import thyroid_config, tictactoe_config, poker_config
 
 class Config():
     """
