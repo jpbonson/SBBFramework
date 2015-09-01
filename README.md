@@ -1,5 +1,5 @@
 # pSBB
-Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming. Developed by the NIMS laboratory, Dalhousie University, Canada. The current implementation can be used to develop teams of programs to solve classification and reinforcement learning tasks. All the teams evolved are saved in .json files, but still can't be reused, this is a future feature.
+Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming and a single layer. Developed by the NIMS laboratory, Dalhousie University, Canada. The current implementation can be used to develop teams of programs to solve classification and reinforcement learning tasks.
 
 # Index
 1. Introduction
@@ -43,12 +43,18 @@ sudo pip install -r requirements.txt
 ```
 Obs.: You also have the option to use Anaconda for Ubuntu.
 
-Obs.: The Poker environment only works with Ubuntu, since the ACPC server only works in Ubuntu. You will need to execute the command 'make' in the ACPC folder to compile the C files for your computer if you want to use the Poker environment.
+Obs.: The Poker environment only works with Ubuntu, since the ACPC server only works in Ubuntu. You will need to execute the command 'make' in the SBB/environments/poker/ACPC folder to compile the C files for your computer if you want to use the Poker environment.
 
 ## 4. How to Run
 
+If not the poker environment:
 ```
 python main.py
+```
+
+For the poker environment:
+```
+python main_for_poker.py
 ```
 
 All configurable options are in the SBB/config.py file, in the variable CONFIG.

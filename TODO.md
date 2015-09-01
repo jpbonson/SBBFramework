@@ -55,6 +55,8 @@ test (second, for only one of the 4 sets (the one with best diversity/performanc
 - 10 ou 20 instructions? ou 15?
 - testar apenas armazenar teams no hall of fame, mas nao usa-los no training?
 - entropy? genotype? NCD? (mix them? individual?)
+- pareto for points?
+- ?
 
 ---
 
