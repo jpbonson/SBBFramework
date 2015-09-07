@@ -1,6 +1,7 @@
 import bz2
 import numpy
 from scipy import stats
+from scipy.spatial.distance import hamming
 from collections import defaultdict
 from ..utils.helpers import round_value
 from ..config import Config
@@ -94,17 +95,56 @@ class DiversityMaintenance():
 
     @staticmethod
     def _normalized_compression_distance(team, other_team):
+        action_sequence = team.action_sequence_['ncd']
+        other_action_sequence = other_team.action_sequence_['ncd']
+        distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
+        return distance
+
+    @staticmethod
+    def _relative_entropy_distance(team, other_team):
+        action_sequence = team.action_sequence_['entropy']
+        other_action_sequence = other_team.action_sequence_['entropy']
+        options = Config.RESTRICTIONS['total_actions']
+        distance = DiversityMaintenance._general_relative_entropy_distance(action_sequence, other_action_sequence, options)
+        return distance
+
+    @staticmethod
+    def _hamming_distance(team, other_team):
+        """
+
+        """
+        return hamming(team.action_sequence_['hamming'], other_team.action_sequence_['hamming'])
+
+    @staticmethod
+    def _ncd_per_hand(team, other_team):
+        action_sequence = list(team.action_sequence_['hamming'])
+        action_sequence = [str(a) for a in action_sequence]
+        other_action_sequence = list(other_team.action_sequence_['hamming'])
+        other_action_sequence = [str(a) for a in other_action_sequence]
+        distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
+        return distance
+
+    @staticmethod
+    def _entropy_per_hand(team, other_team):
+        action_sequence = team.action_sequence_['hamming']
+        other_action_sequence = other_team.action_sequence_['hamming']
+        options = 5
+        distance = DiversityMaintenance._general_relative_entropy_distance(action_sequence, other_action_sequence, options)
+        return distance
+
+    @staticmethod
+    def _general_normalized_compression_distance(action_sequence, other_action_sequence):
         """
         More details in: 
             Gomez, Faustino J. "Sustaining diversity using behavioral information distance." Proceedings of the 
             11th Annual conference on Genetic and evolutionary computation. ACM, 2009.
         """
-        if len(team.action_sequence_['ncd']) == len(other_team.action_sequence_['ncd']):
-            if team.action_sequence_['ncd'] == other_team.action_sequence_['ncd']:
+        if len(action_sequence) == len(other_action_sequence):
+            if action_sequence == other_action_sequence:
                 return 0.0
-        x_len = len(bz2.compress("".join(team.action_sequence_['ncd'])))
-        y_len = len(bz2.compress("".join(other_team.action_sequence_['ncd'])))
-        xy_len = len(bz2.compress("".join(team.action_sequence_['ncd']+other_team.action_sequence_['ncd'])))
+        x_len = len(bz2.compress("".join(action_sequence)))
+        y_len = len(bz2.compress("".join(other_action_sequence)))
+        xy_len = len(bz2.compress("".join(action_sequence+other_action_sequence)))
         distance = (xy_len - min(x_len, y_len))/float(max(x_len, y_len))
         if distance < 0.0:
             # print "Warning! Value lower than 0.0 for NCD! Value: "+str(distance)+" ("+str(x_len)+","+str(y_len)+","+str(xy_len)+")"
@@ -115,15 +155,14 @@ class DiversityMaintenance():
         return distance
 
     @staticmethod
-    def _relative_entropy_distance(team, other_team):
-        if len(team.action_sequence_['entropy']) == len(other_team.action_sequence_['entropy']):
-            if team.action_sequence_['entropy'] == other_team.action_sequence_['entropy']:
+    def _general_relative_entropy_distance(action_sequence, other_action_sequence, options):
+        if len(action_sequence) == len(other_action_sequence):
+            if action_sequence == other_action_sequence:
                 return 0.0
-        action_sequence = team.action_sequence_['entropy']
-        other_action_sequence = other_team.action_sequence_['entropy']
-        options = Config.RESTRICTIONS['total_actions']
-        pdf = DiversityMaintenance._pdf(action_sequence)
-        other_pdf = DiversityMaintenance._pdf(other_action_sequence)
+        action_sequence = action_sequence
+        other_action_sequence = other_action_sequence
+        pdf = DiversityMaintenance._pdf(action_sequence, options)
+        other_pdf = DiversityMaintenance._pdf(other_action_sequence, options)
         temp = 0.0
         for x in range(options):
             temp += pdf[x]*numpy.log(pdf[x]/other_pdf[x])
@@ -136,8 +175,7 @@ class DiversityMaintenance():
         return total/9.21034037197
 
     @staticmethod
-    def _pdf(array):
-        options = Config.RESTRICTIONS['total_actions']
+    def _pdf(array, options):
         probs = [0.0] * options
         for value in array:
             probs[int(value)] += 1.0

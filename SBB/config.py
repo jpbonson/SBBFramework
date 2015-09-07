@@ -17,27 +17,27 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 20, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 40, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 300, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'hall_of_fame': {
                 'size': 10,
                 'enabled': True,
                 'use_as_opponents': True,
-                'diversity': 'normalized_compression_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+                'diversity': 'genotype_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
             'poker': {
-                'balance_based_on': 'hole_cards_strength', # hole_cards_strength or board_strength
+                'balance_based_on': 'board_strength', # hole_cards_strength or board_strength
             },            
         },
 
         'training_parameters': {
             'runs_total': 1,
-            'generations_total': 25,
+            'generations_total': 150,
             'validate_after_each_generation': 25,
             'populations': {
-                'teams': 20,
-                'points': 20,
+                'teams': 100,
+                'points': 100,
             },
             'replacement_rate': {
                 'teams': 0.5,
@@ -73,7 +73,7 @@ class Config():
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {
-                'use_and_show': ['normalized_compression_distance'], # will be applied to fitness and show in the outputs
+                'use_and_show': ['genotype_distance'], # will be applied to fitness and show in the outputs
                 'only_show': [], # will be only show in the outputs
                 'k': 10,
             },
@@ -85,7 +85,7 @@ class Config():
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
         'environment_types': ['tictactoe', 'poker'],
-        'diversity_options': ['genotype_distance', 'fitness_sharing', 'normalized_compression_distance', 'relative_entropy_distance'], #must have the same name as the methods in DiversityMaintenance
+        'diversity_options': ['genotype_distance', 'fitness_sharing', 'normalized_compression_distance', 'relative_entropy_distance', 'hamming_distance', 'ncd_per_hand', 'entropy_per_hand'], #must have the same name as the methods in DiversityMaintenance
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
@@ -132,6 +132,18 @@ class Config():
             if 'normalized_compression_distance' in diversities:
                 sys.stderr.write("Error: Can't calculate 'normalized_compression_distance' for a classification task!\n")
                 raise SystemExit
+            if 'relative_entropy_distance' in diversities:
+                sys.stderr.write("Error: Can't calculate 'relative_entropy_distance' for a classification task!\n")
+                raise SystemExit
+            if 'hamming_distance' in diversities or 'ncd_per_hand' in diversities or 'entropy_per_hand' in diversities:
+                sys.stderr.write("Error: Can't calculate this diversity for a classification task!\n")
+                raise SystemExit
+
+        if Config.USER['task'] == 'reinforcement':
+            if Config.USER['reinforcement_parameters']['environment'] != 'poker':
+                if 'hamming_distance' in diversities or 'ncd_per_hand' in diversities or 'entropy_per_hand' in diversities:
+                    sys.stderr.write("Error: Can't calculate this diversity for a non-poker task!\n")
+                    raise SystemExit
 
         if Config.USER['task'] == 'reinforcement':
             if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:

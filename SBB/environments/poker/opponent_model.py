@@ -30,7 +30,7 @@ class OpponentModel():
     #    'self short-term agressiveness', 'self short-term volatility', 'self long-term volatility', 
     #    'opponent short-term volatility', 'opponent long-term volatility']
     INPUTS = ['opponent long-term agressiveness', 'opponent short-term agressiveness', 'opponent hand agressiveness']
-    AGRESSIVENESS_MAPPING = {'c': 0.0, 'r': 1.0}
+    SINGLE_HAND_AGRESSIVENESS_MAPPING = {'c': 0.0, 'r': 1.0}
 
     def __init__(self):
         self.self_agressiveness = []
@@ -40,44 +40,21 @@ class OpponentModel():
         self.opponent_agressiveness_preflop = []
         self.opponent_agressiveness_postflop = []
 
-    def update_overall_agressiveness(self, total_rounds, self_actions, opponent_actions, self_folded, opponent_folded, previous_action):
-        if self_folded:
-            if self_actions:
-                if self_actions[-1] != 'f':
-                    self_actions.append('f')
-            else:
-                self_actions.append('f')
-        if opponent_folded:
-            if opponent_actions:
-                if opponent_actions[-1] != 'f':
-                    opponent_actions.append('f')
-            else:
-                opponent_actions.append('f')
-            if previous_action:
-                self_actions.append(previous_action)
+    def update_overall_agressiveness(self, total_rounds, self_actions, opponent_actions):
         if len(self_actions) > 0:
-            agressiveness = self._calculate_points(self_actions)/float(len(self_actions))
+            agressiveness = OpponentModel.calculate_points(self_actions)
             self.self_agressiveness.append(agressiveness)
             if total_rounds == 1:
                 self.self_agressiveness_preflop.append(agressiveness)
             else:
                 self.self_agressiveness_postflop.append(agressiveness)
         if len(opponent_actions) > 0:
-            agressiveness = self._calculate_points(opponent_actions)/float(len(opponent_actions))
+            agressiveness = OpponentModel.calculate_points(opponent_actions)
             self.opponent_agressiveness.append(agressiveness)
             if total_rounds == 1:
                 self.opponent_agressiveness_preflop.append(agressiveness)
             else:
                 self.opponent_agressiveness_postflop.append(agressiveness)
-
-    def _calculate_points(self, actions):
-        points = 0.0
-        for action in actions:
-            if action == 'c':
-                points += 0.5
-            if action == 'r':
-                points += 1.0
-        return points
 
     def inputs(self, match_state):
         inputs = [0.5] * len(OpponentModel.INPUTS)
@@ -89,7 +66,7 @@ class OpponentModel():
         if len(opponent_actions) == 0:
             inputs[2] = 0.0
         else:
-            actions = [OpponentModel.AGRESSIVENESS_MAPPING[action] for action in opponent_actions]
+            actions = [OpponentModel.SINGLE_HAND_AGRESSIVENESS_MAPPING[action] for action in opponent_actions]
             inputs[2] = numpy.mean(actions)
 
         # if len(self.self_agressiveness) > 0:
@@ -104,6 +81,19 @@ class OpponentModel():
         
         inputs = [i*Config.RESTRICTIONS['multiply_normalization_by'] for i in inputs]
         return inputs
+
+    @staticmethod
+    def calculate_points(actions):
+        points = 0.0
+        for action in actions:
+            if action == 'c':
+                points += 0.5
+            if action == 'r':
+                points += 1.0
+        if float(len(actions)) > 0:
+            return points/float(len(actions))
+        else:
+            return 0.0
 
     @staticmethod
     def calculate_volatility(agressiveness_postflop, agressiveness_preflop):

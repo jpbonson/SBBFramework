@@ -31,22 +31,23 @@ modified NCD so now it uses state information (action + seed + position + board)
 minor fixes (changed label for sbb_sd, now 2 == always worst, 0 == always best + fixed bug were opp_label wasnt using ostr + metric for training-only active programs)
 -summer_report_fine_tuned
 renamed some metrics, added new doc, added literature review latex, separated action sequence between ncd and entropy
+fixed bug with the aggressiveness formula (affected last action in the sequence)
+implemented hamming distance + ncd and entropy per hand
 ---
 
 - mandar runs com outras diversity metrics?
 - adiantar mais o literature_review
 
-nims pc (loose+board_cards):
-- genotype ()
-- ncd ()
-- entropy ()
+nims pc (loose+board_cards, seed 1):
 - hamming ()
+- ncd_per_hand ()
+- entropy_per_hand ()
 
-nims server (loose+hole_cards):
+nims server (loose+board_cards, seed 1):
+- None ()
 - genotype ()
 - ncd ()
 - entropy ()
-- hamming ()
 
 ---
 
