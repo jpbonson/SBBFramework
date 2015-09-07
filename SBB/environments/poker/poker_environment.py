@@ -167,8 +167,8 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         point.teams_results_.append(normalized_value)
 
-        team.action_sequence_.append(str(point.seed_))
-        team.action_sequence_.append(str(point.position_))
+        team.action_sequence_['ncd'].append(str(point.seed_))
+        team.action_sequence_['ncd'].append(str(point.position_))
 
         return normalized_value
 

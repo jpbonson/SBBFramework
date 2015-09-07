@@ -159,7 +159,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 copied_team.fitness_ = team_to_copy.fitness_
                 copied_team.active_programs_ = list(team_to_copy.active_programs_)
                 copied_team.overall_active_programs_ = list(team_to_copy.overall_active_programs_)
-                copied_team.action_sequence_ = list(team_to_copy.action_sequence_)
+                copied_team.action_sequence_ = copy.deepcopy(team_to_copy.action_sequence_)
                 copied_team.extra_metrics_ = dict(team_to_copy.extra_metrics_)
                 hall_of_fame.append(self._instantiate_sbb_opponent(copied_team, "hall_of_fame"))
                 if len(hall_of_fame) > Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
@@ -250,7 +250,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def evaluate_teams_population_for_training(self, teams_population):
         for team in teams_population:
-            team.action_sequence_ = []
+            team.action_sequence_['ncd'] = []
+            team.action_sequence_['entropy'] = []
             self.evaluate_team(team, Config.RESTRICTIONS['mode']['training'])
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             sorted_teams = sorted(teams_population, key=lambda team: team.fitness_, reverse = True) # better ones first

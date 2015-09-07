@@ -7,7 +7,6 @@ modifed EHS to EP + normalizing values between 0 and 10 + modified ppot
 minor fixes (fixed 2 intron removal bugs)
 minor fixes (min size for programs is 1)
 using new EP input + normalized between 0 and 10 + opponents using HS + fixed bug for swap instruction when len = 1
-- 50 run
 minor fixes (fixed bug where ncd wasnt working for hall of fame + more 1000 hand samples)
 minor fix (added index before input when printing)
 more 5000 hand samples
@@ -30,24 +29,24 @@ implemented option to use hall of fame without using it as opponents
 minor fix (saving action_sequence as letters instead of numbers + fixed bug with hall of fame metrics)
 modified NCD so now it uses state information (action + seed + position + board)
 minor fixes (changed label for sbb_sd, now 2 == always worst, 0 == always best + fixed bug were opp_label wasnt using ostr + metric for training-only active programs)
+-summer_report_fine_tuned
+renamed some metrics, added new doc, added literature review latex, separated action sequence between ncd and entropy
 ---
 
-test (first):
-- Dummy Opponents vs Loose Opponents
-- the two ways of balancing the point population
-- variar as seeds?
+- mandar runs com outras diversity metrics?
+- adiantar mais o literature_review
 
-nims server (seed 1):
-- hole_cards_strength + dummy: 16041, nohup1
-- board_strength + dummy: 25162, nohup2
-- hole_cards_strength + loose: 6055, nohup3
-- board_strength + loose: 15945, nohup4
+nims pc (loose+board_cards):
+- genotype ()
+- ncd ()
+- entropy ()
+- hamming ()
 
-nims lab (seed 2):
-- hole_cards_strength + dummy: 1
-- board_strength + dummy: 2
-- hole_cards_strength + loose: 3
-- board_strength + loose: 4
+nims server (loose+hole_cards):
+- genotype ()
+- ncd ()
+- entropy ()
+- hamming ()
 
 ---
 
@@ -68,16 +67,7 @@ goals:
 
 enquanto isso:
 - conferir 'least regreat', usado pela University of Alberta?
-- repassar comentairos do paper sobre NCD para o doc
 - ajeitar README dos outros projetos no github
-- definir estrutura para capitulo da literature review da thesis + quais os papers principais (e enviar para o malcolm)
-    - Start with what has been done previously with ML and poker, then look at GP and diversity and finish up with SBB and second layer. All this material will find its way into your thesis, and some will be useful for paper writing.
-
-Literature Review:
-1. 
-2. 
-3. 
-4. 
 
 ---
 
@@ -88,6 +78,7 @@ scp -r username@destination_host:destination_folder source_file_name
 future work:
 - nos testes, checar se os teams sabem blefar
 - refatorar codigo
+- usar tournament e crowding?
 - ir testando enquanto implementa:
     - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector, e Bluenose(?))
 

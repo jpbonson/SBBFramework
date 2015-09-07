@@ -89,10 +89,12 @@ class PokerPlayerExecution():
                     if is_sbb and not is_training:
                         if len(match_state.rounds) == 1 and len(match_state.rounds[0]) < 2 and action == 0: # first action of first round is a fold
                             player.extra_metrics_['played_last_hand'] = False
+                    if is_sbb and is_training:
+                        player.action_sequence_['entropy'].append(str(action))
                     action = PokerConfig.CONFIG['action_mapping'][action]
                     if is_sbb and is_training:
-                        player.action_sequence_.append(str(''.join(match_state.board_cards)))
-                        player.action_sequence_.append(str(action))
+                        player.action_sequence_['ncd'].append(str(''.join(match_state.board_cards)))
+                        player.action_sequence_['ncd'].append(str(action))
                     previous_action = action
                     send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
                     try:

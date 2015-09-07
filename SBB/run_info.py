@@ -66,7 +66,7 @@ class RunInfo:
             for key in self.global_diversity_per_validation:
                 msg += "\n"+str(key)+": "+str(self.global_diversity_per_validation[key])
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            msg += "\n\nGlobal Results per Validation"
+            msg += "\n\nGlobal Team Results per Validation" # Global Results per Validation
             for attribute in self.global_result_per_validation:
                 msg += "\n"+str(attribute)+":"
                 for key in self.global_result_per_validation[attribute]:
@@ -77,9 +77,9 @@ class RunInfo:
         msg += "\n\nDistribution of Inputs per Validation (per instruction): "+str(self.inputs_distribution_per_instruction_per_validation)
         msg += "\n\nDistribution of Inputs per Validation (per team): "+str(self.inputs_distribution_per_team_per_validation)
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            msg += "\n\nValidation Population Distribution per Validation: "+str(self.validation_population_distribution_per_validation)
-            msg += "\n\nChampion Population Distribution per Validation: "+str(self.champion_population_distribution_per_validation)
-            msg += "\n\nTraining Population Distribution per Validation"
+            msg += "\n\nPoints Distribution for the Validation Population: "+str(self.validation_population_distribution_per_validation) # Validation Population Distribution per Validation
+            msg += "\n\nPoints Distribution for the Champion Population: "+str(self.champion_population_distribution_per_validation) # Champion Population Distribution per Validation
+            msg += "\n\nPoints Distribution for the Training Population per Validation" # Training Population Distribution per Validation
             for attribute in self.point_population_distribution_per_validation:
                 msg += "\n"+str(attribute)+":"
                 for key in self.point_population_distribution_per_validation[attribute]:

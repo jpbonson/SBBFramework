@@ -99,12 +99,12 @@ class DiversityMaintenance():
             Gomez, Faustino J. "Sustaining diversity using behavioral information distance." Proceedings of the 
             11th Annual conference on Genetic and evolutionary computation. ACM, 2009.
         """
-        if len(team.action_sequence_) == len(other_team.action_sequence_):
-            if team.action_sequence_ == other_team.action_sequence_:
+        if len(team.action_sequence_['ncd']) == len(other_team.action_sequence_['ncd']):
+            if team.action_sequence_['ncd'] == other_team.action_sequence_['ncd']:
                 return 0.0
-        x_len = len(bz2.compress("".join(team.action_sequence_)))
-        y_len = len(bz2.compress("".join(other_team.action_sequence_)))
-        xy_len = len(bz2.compress("".join(team.action_sequence_+other_team.action_sequence_)))
+        x_len = len(bz2.compress("".join(team.action_sequence_['ncd'])))
+        y_len = len(bz2.compress("".join(other_team.action_sequence_['ncd'])))
+        xy_len = len(bz2.compress("".join(team.action_sequence_['ncd']+other_team.action_sequence_['ncd'])))
         distance = (xy_len - min(x_len, y_len))/float(max(x_len, y_len))
         if distance < 0.0:
             # print "Warning! Value lower than 0.0 for NCD! Value: "+str(distance)+" ("+str(x_len)+","+str(y_len)+","+str(xy_len)+")"
@@ -116,11 +116,11 @@ class DiversityMaintenance():
 
     @staticmethod
     def _relative_entropy_distance(team, other_team):
-        if len(team.action_sequence_) == len(other_team.action_sequence_):
-            if team.action_sequence_ == other_team.action_sequence_:
+        if len(team.action_sequence_['entropy']) == len(other_team.action_sequence_['entropy']):
+            if team.action_sequence_['entropy'] == other_team.action_sequence_['entropy']:
                 return 0.0
-        action_sequence = team.action_sequence_
-        other_action_sequence = other_team.action_sequence_
+        action_sequence = team.action_sequence_['entropy']
+        other_action_sequence = other_team.action_sequence_['entropy']
         options = Config.RESTRICTIONS['total_actions']
         pdf = DiversityMaintenance._pdf(action_sequence)
         other_pdf = DiversityMaintenance._pdf(other_action_sequence)
