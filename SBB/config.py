@@ -23,7 +23,7 @@ class Config():
                 'size': 10,
                 'enabled': True,
                 'use_as_opponents': True,
-                'diversity': 'genotype_distance', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+                'diversity': 'ncd_v2', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
             'poker': {
@@ -73,7 +73,7 @@ class Config():
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 1,
             'diversity': {
-                'use_and_show': ['genotype_distance'], # will be applied to fitness and show in the outputs
+                'use_and_show': ['ncd_v2'], # will be applied to fitness and show in the outputs
                 'only_show': [], # will be only show in the outputs
                 'k': 10,
             },
@@ -85,7 +85,7 @@ class Config():
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
         'environment_types': ['tictactoe', 'poker'],
-        'diversity_options': ['genotype_distance', 'fitness_sharing', 'normalized_compression_distance', 'relative_entropy_distance', 'hamming_distance', 'ncd_per_hand', 'entropy_per_hand'], #must have the same name as the methods in DiversityMaintenance
+        'diversity_options': ['genotype_distance', 'fitness_sharing', 'normalized_compression_distance', 'relative_entropy_distance', 'hamming_distance', 'ncd_per_hand', 'entropy_per_hand', 'ncd_v2', 'euclidean_distance'], #must have the same name as the methods in DiversityMaintenance
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
@@ -135,15 +135,14 @@ class Config():
             if 'relative_entropy_distance' in diversities:
                 sys.stderr.write("Error: Can't calculate 'relative_entropy_distance' for a classification task!\n")
                 raise SystemExit
-            if 'hamming_distance' in diversities or 'ncd_per_hand' in diversities or 'entropy_per_hand' in diversities:
+            if 'hamming_distance' in diversities or 'ncd_per_hand' in diversities or 'entropy_per_hand' in diversities or 'ncd_v2' in diversities or 'euclidean_distance' in diversities:
                 sys.stderr.write("Error: Can't calculate this diversity for a classification task!\n")
                 raise SystemExit
 
-        if Config.USER['task'] == 'reinforcement':
-            if Config.USER['reinforcement_parameters']['environment'] != 'poker':
-                if 'hamming_distance' in diversities or 'ncd_per_hand' in diversities or 'entropy_per_hand' in diversities:
-                    sys.stderr.write("Error: Can't calculate this diversity for a non-poker task!\n")
-                    raise SystemExit
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] != 'poker':
+            if 'hamming_distance' in diversities or 'ncd_per_hand' in diversities or 'entropy_per_hand' in diversities or 'ncd_v2' in diversities or 'euclidean_distance' in diversities:
+                sys.stderr.write("Error: Can't calculate this diversity for a non-poker task!\n")
+                raise SystemExit
 
         if Config.USER['task'] == 'reinforcement':
             if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:

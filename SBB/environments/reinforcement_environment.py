@@ -253,6 +253,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             team.action_sequence_['ncd'] = []
             team.action_sequence_['entropy'] = []
             team.action_sequence_['hamming'] = []
+            team.action_sequence_['ncd_v2'] = []
             self.evaluate_team(team, Config.RESTRICTIONS['mode']['training'])
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             sorted_teams = sorted(teams_population, key=lambda team: team.fitness_, reverse = True) # better ones first

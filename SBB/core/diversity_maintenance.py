@@ -1,7 +1,8 @@
 import bz2
+import math
 import numpy
 from scipy import stats
-from scipy.spatial.distance import hamming
+from scipy.spatial.distance import hamming, euclidean
 from collections import defaultdict
 from ..utils.helpers import round_value
 from ..config import Config
@@ -131,6 +132,24 @@ class DiversityMaintenance():
         options = 5
         distance = DiversityMaintenance._general_relative_entropy_distance(action_sequence, other_action_sequence, options)
         return distance
+
+    @staticmethod
+    def _ncd_v2(team, other_team):
+        action_sequence = team.action_sequence_['ncd_v2']
+        other_action_sequence = other_team.action_sequence_['ncd_v2']
+        distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
+        return distance
+
+    @staticmethod
+    def _euclidean_distance(team, other_team):
+        """
+
+        """
+        value = euclidean(team.action_sequence_['hamming'], other_team.action_sequence_['hamming'])
+        options = 5
+        max_value = math.sqrt(((options-1)**2)*Config.USER['training_parameters']['populations']['points'])
+        result = value/float(max_value)
+        return result
 
     @staticmethod
     def _general_normalized_compression_distance(action_sequence, other_action_sequence):

@@ -33,21 +33,30 @@ minor fixes (changed label for sbb_sd, now 2 == always worst, 0 == always best +
 renamed some metrics, added new doc, added literature review latex, separated action sequence between ncd and entropy
 fixed bug with the aggressiveness formula (affected last action in the sequence)
 implemented hamming distance + ncd and entropy per hand
+implemented NCDv2 and euclidean distance
 ---
+
+
+
+nims pc (loose+board_cards, seed 1):
+- hamming (1)
+- ncd_per_hand (2)
+- entropy_per_hand (3)
+- fitness sharing (4) (dont use diversity for hall of fame)
+
+nims server (loose+board_cards, seed 1):
+- None (16165, nohup1)
+- genotype (20362, nohup2)
+- ncd (28531, nohup3)
+- entropy (6994, nohup4)
+- ncd_v2 (pSBB2, , nohup5)
+- euclidean distance (pSBB2, , nohup6)
+
+- quantitizar para 3 grupos, ao inves de 5?
 
 - mandar runs com outras diversity metrics?
 - adiantar mais o literature_review
-
-nims pc (loose+board_cards, seed 1):
-- hamming ()
-- ncd_per_hand ()
-- entropy_per_hand ()
-
-nims server (loose+board_cards, seed 1):
-- None ()
-- genotype ()
-- ncd ()
-- entropy ()
+- depois de decidir as diversity metrics, refatorar (ajeitar restricoes em config, adiciona-las ao ttt e unit tests, ajeitar arrays)
 
 ---
 
@@ -56,6 +65,7 @@ test (second, for only one of the 4 sets (the one with best diversity/performanc
 - testar apenas armazenar teams no hall of fame, mas nao usa-los no training?
 - entropy? genotype? NCD? (mix them? individual?)
 - pareto for points?
+- decidir qual dos 4 sets de configurations
 - ?
 
 ---

@@ -95,6 +95,9 @@ class PokerPlayerExecution():
                     if is_sbb and is_training:
                         player.action_sequence_['ncd'].append(str(''.join(match_state.board_cards)))
                         player.action_sequence_['ncd'].append(str(action))
+                        player.action_sequence_['ncd_v2'].append(str(PokerPlayerExecution._quantitize_value(point.hand_strength_[len(match_state.rounds)-1], is_normalized = True)))
+                        player.action_sequence_['ncd_v2'].append(str(PokerPlayerExecution._quantitize_value(point.ep_[len(match_state.rounds)-1], is_normalized = True)))
+                        player.action_sequence_['ncd_v2'].append(str(action))
                     previous_action = action
                     send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
                     try:
@@ -122,22 +125,31 @@ class PokerPlayerExecution():
             PokerPlayerExecution._update_opponent_model(player, opponent, partial_match_state, player_actions, opponent_actions, debug_file)
             if is_sbb and is_training:
                 points = OpponentModel.calculate_points(player_actions)
-                if points >= 0.0 and points < 0.2:
-                    hamming_label = 0
-                elif points >= 0.2 and points < 0.4:
-                    hamming_label = 1
-                elif points >= 0.4 and points < 0.6:
-                    hamming_label = 2
-                elif points >= 0.6 and points < 0.8:
-                    hamming_label = 3
-                else:
-                    hamming_label = 4
+                hamming_label = PokerPlayerExecution._quantitize_value(points)
                 player.action_sequence_['hamming'].append(hamming_label)
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file.write("The end.\n\n")
             print player.__repr__()+": The end.\n"
             debug_file.close()
+
+    @staticmethod
+    def _quantitize_value(value, is_normalized = False):
+        if is_normalized:
+            normalization_parameter = Config.RESTRICTIONS['multiply_normalization_by']
+        else:
+            normalization_parameter = 1.0
+        if value >= 0.0*normalization_parameter and value < 0.2*normalization_parameter:
+            label = 0
+        elif value >= 0.2*normalization_parameter and value < 0.4*normalization_parameter:
+            label = 1
+        elif value >= 0.4*normalization_parameter and value < 0.6*normalization_parameter:
+            label = 2
+        elif value >= 0.6*normalization_parameter and value < 0.8*normalization_parameter:
+            label = 3
+        else:
+            label = 4
+        return label
 
     @staticmethod
     def _calculate_chips_input(player, opponent):
