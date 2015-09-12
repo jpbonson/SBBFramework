@@ -1,40 +1,108 @@
 - definir estrutura para capitulo da literature review da thesis + quais os papers principais (e enviar para o malcolm)
     - Start with what has been done previously with ML and poker, then look at GP and diversity and finish up with SBB and second layer. All this material will find its way into your thesis, and some will be useful for paper writing.
+---
+Abstract:
+[...]
 
-Literature Review Chapter:
-1. Machine Learning and Poker
-    1. Introduction [overview of machine learning and poker]
+Acknowledgements:
+[...]
+
+Contents:
+[...]
+
+1. Introduction
+    [quick overview of ML and poker]
+    [quick overview of SBB]
+    [thesis goals]
+    [thesis contributions]
+
+(Literature Review)
+2. Machine Learning and Poker
+    1. Machine Learning
+        1. Introduction
+            [overview of machine learning]
+        2. Reinforcement Learning
+            1. Introduction
+                [overview of reinforcement learning]
+                [examples of applications]
+            2. Opponents
+                1. Self-play
+                2. Coevolution
+                    [competitive and cooperative coevolutions]
+                3. Coded opponents
+            3. Opponent Model
+                [why it is necessary]
+                [strategies for opponent modeling]
+            4. Hall of Fame
+                [how it works, why it is necessary]
+                [talk about Evolutionary Forgetting]
+        3. Genetic Programming
+            1. Introduction
+                [explain what it is and why it is useful]
+            2. Diversity Maintenance
+                1. Introduction
+                    [why is it necessary]
+                    [based on genotype and based on phenotype]
+                2. Genotype Distance (eg. euclidean) 
+                3. Hamming distance
+                4. Euclidean distance
+                5. Fitness Sharing
+                6. NCD
+                7. Entropy
+            3. Pareto
+                [what it is]
+                [can be used to select distictions]
+                [can be used to balance fitness and diversity]
     2. Poker
         1. Introduction
-        2. Formulas [HS, potential, EHS]
-        3. Types of Poker [limit/no limit, number of players, Holdem]
-            1. No-Limit Texas Hold’em Poker
+            [overview of poker]
+            [poker as a testbed for AI]
+            [overview of types of poker, limit/no limit, number of players]
+            [explain choice of poker type for this research]
+        2. Texas Hold’em Poker
+            [explain the rules]
+        3. Formulas
+            [HS, potential, EHS, pot odds, aggressiveness...]
         4. Playing Styles
-        5. Exploitative/Near equilibrium
-        6. Inputs
-        7. ACPC
+            [agressive/passive, tight/loose]
+        5. Exploitative and Nash Equilibrium Learning Strategies
+            [explain each one and what are their goals]
+        6. ACPC
+            [what it is]
+            [the protocol]
     3. Previous Works
-        x. papers...
-2. Reinforcement Learning
+        x. [select and explain some interesting papers about machine learning and poker + compare with this research]
+
+3. Symbiotic Bid-based GP (SBB)
     1. Introduction
-    2. Opponent Model
-    3. Hall of Fame [Evolutionary Forgetting]
-    4. Coevolution [competitive? cooperative?] / Self-play / Against coded opponents (fixed opponents) / Head Start
-    5. Inputs [for poker]
-2. Genetic Programming
-    1. Introduction
-    2. Diversity Maintenance
-        1. Introduction [For what it is used? based on genotype and phenotype?]
-        2. Fitness Sharing
-        3. Genotype Distance (eg. euclidean)
-        4. NCD
-        5. Entropy
-        6. Deterministic Crowding
-    3. Pareto [Distictions + to balance fitness and diversity?]
-4. SBB
-    1. Introduction [cite in what other domains SBB has been used]
+        [what it is and how it works]
+        [cite in what other domains SBB has been used]
     2. Program, Team, and Point Populations
-    x. second layer
+        [details of how the coevolution works and the architecture]
+    3. second layer
+        [why use a second layer]
+        [how it is implemented]
+
+(My research)
+4. SBB for Poker
+[...] (what was implemented, how it works, inputs, opponent model, diversities, hand sampling...)
+
+5. Experiments and Results
+[...] (methodology, parametrization, results...)
+
+6. Conclusions, Contributions and Future Work:
+[...]
+
+Appendixes
+[...] (parameters)
+
+Bibliography
+[...]
 
 
 + papers
+
+50-90 pages
+
+head start?
+Deterministic Crowding?
