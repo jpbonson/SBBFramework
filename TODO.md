@@ -29,34 +29,34 @@ implemented option to use hall of fame without using it as opponents
 minor fix (saving action_sequence as letters instead of numbers + fixed bug with hall of fame metrics)
 modified NCD so now it uses state information (action + seed + position + board)
 minor fixes (changed label for sbb_sd, now 2 == always worst, 0 == always best + fixed bug were opp_label wasnt using ostr + metric for training-only active programs)
--summer_report_fine_tuned
+-1. summer_report_fine_tuned
 renamed some metrics, added new doc, added literature review latex, separated action sequence between ncd and entropy
 fixed bug with the aggressiveness formula (affected last action in the sequence)
 implemented hamming distance + ncd and entropy per hand
 implemented NCDv2 and euclidean distance
 ---
 
+TODO:
+NCD (C1), Entropy (C2), NCD (C3, 3 groups), Hamming (C3, 3 groups), NCD (C3, 5 groups), NCD (C4, 3 groups), NCD (C4, 5 groups), Hamming (C3, 5 groups)
+- 300 generations
+- seed 2
+- dont use hall of fame as opponents
 
+
+DONE:
+
+
+DOING:
 
 nims pc (loose+board_cards, seed 1):
-- hamming (1)
-- ncd_per_hand (2)
-- entropy_per_hand (3)
-- fitness sharing (4) (dont use diversity for hall of fame)
+- ...
 
 nims server (loose+board_cards, seed 1):
-- None (16165, nohup1)
-- genotype (20362, nohup2)
-- ncd (28531, nohup3)
-- entropy (6994, nohup4)
-- ncd_v2 (pSBB2, , nohup5)
-- euclidean distance (pSBB2, , nohup6)
+- ...
 
-- quantitizar para 3 grupos, ao inves de 5?
 
-- mandar runs com outras diversity metrics?
 - adiantar mais o literature_review
-- depois de decidir as diversity metrics, refatorar (ajeitar restricoes em config, adiciona-las ao ttt e unit tests, ajeitar arrays)
+- depois de decidir as diversity metrics, refatorar (ajeitar restricoes em config, adiciona-las ao ttt e unit tests, ajeitar arrays, ajeitar metodo q quantifica os values)
 
 ---
 
