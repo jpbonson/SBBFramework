@@ -7,13 +7,13 @@ import socket
 from socket import error as socket_error
 import subprocess
 import threading
-from match_state import MatchState
-from poker_config import PokerConfig
-from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
-from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
-from poker_metrics import PokerMetrics
-from ...utils.helpers import available_ports, round_value
-from ...config import Config
+from SBB.environments.poker.match_state import MatchState
+from SBB.environments.poker.poker_config import PokerConfig
+from SBB.environments.poker.tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
+from SBB.environments.poker.tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
+from SBB.environments.poker.poker_metrics import PokerMetrics
+from SBB.utils.helpers import available_ports, round_value
+from SBB.config import Config
 
 def test_execution(point, port, full_deck):
     socket_tmp = socket.socket()
@@ -108,24 +108,24 @@ if __name__ == "__main__":
     # organizar arquivos pelas labels, uma seed por linha
     # inicialmente, pegar 1000 hands
 
-    path = "hand_types/board_strength"
-    index = 3
+    # path = "hand_types_temp/board_strength"
+    # index = 3
 
-    # path = "hand_types/hole_cards_strength"
-    # index = 0
+    path = "hand_types_temp/hole_cards_strength"
+    index = 0
 
     print "starting"
     start_time = time.time()
     full_deck = PokerMetrics.initialize_deck()
     port0, port1 = available_ports()
-    if not os.path.exists('hand_types'):
-        os.makedirs('hand_types')
+    if not os.path.exists('hand_types_temp'):
+        os.makedirs('hand_types_temp')
     if not os.path.exists(path):
         os.makedirs(path)
     files = []
     for x in range(4):
         files.append(open(path+'/hands_type_'+str(x)+'.json','a'))
-    for seed in range(15000, 20000):
+    for seed in range(24216, 25000):
         point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck)
         point_pos0['id'] = seed
         point_pos1['id'] = seed
