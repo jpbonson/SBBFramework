@@ -34,10 +34,54 @@ renamed some metrics, added new doc, added literature review latex, separated ac
 fixed bug with the aggressiveness formula (affected last action in the sequence)
 implemented hamming distance + ncd and entropy per hand
 implemented NCDv2 and euclidean distance
+-2. poker_report_diversities
+added 10k more hand samples
 ---
 
+- temrinar d eler e organizar o paper
+
+=====
+Meeting notes:
+- I always have to execute the full structure of a host to get the winning action? The result is always a single action? How to evolve such structure? (only add and remove symbionts?) -> It is exact the same thing, the only modification is when an action is called
+- parameters:
+    - increase?
+        2-9 teams, 1-10(5-20?) program size, 1(3?) general purpose register (+ check the overall size of teams and programs (with and without introns), create a metric?)
+        + use uniform probability for selection instead of weighted probability
+        -> perform runs with these new parameters, and also without using hall of fame as opponents, and see if the fitness function is more stable
+    - decrease?
+        team and point population size = 100 
+
+- literature review (ok)
+
+
+- why all diversities start at around the same value? (same seed) Why there is absolutelly no diversity when no diversity metric is used? (check if it keeps like this even for multiple runs)
+
+- perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
+
+- for the second layer, two approaches:
+    - get the teams that most increased the accumulative curve across all the runs
+    - get the teams that most increased the accumulative curve individually for each run
+    - obs.: be careful when selecting the teams what will be action, so the search space is not so big
+    - also, a future work would be to coevolve a population of opponents
+
+- dont use bluenose!
+
+extra:
+- more hand samples?
+- refatorar diversities code
+- before running the 10 runs of all the diversties, define a good generation to stop
+- cancelar runs atuais?
+
+=====
+
+
+- conferir se fitness sharing esta fazendo sentido: o que esta sendo usado para comparar a performance dos teams em cada point?
+- conferir se estou usando uniform probability ou weight probability para selecionar os teams a serem clonados
+- baixar tamanho das populations para 80?
+
+- generalizar o metodo execute em team.py, para poder executar tanto programs como teams? e como fica o mutate?
+
 TODO:
-NCD (C1), Entropy (C2), NCD (C3, 3 groups), Hamming (C3, 3 groups), NCD (C3, 5 groups), NCD (C4, 3 groups), NCD (C4, 5 groups), Hamming (C3, 5 groups)
 - 300 generations
 - seed 2
 - dont use hall of fame as opponents
@@ -49,10 +93,15 @@ DONE:
 DOING:
 
 nims pc (loose+board_cards, seed 1):
-- ...
+NCD (C3, 5 groups) 1
+Hamming (C3, 5 groups) 2
+NCD (C4, 5 groups) 3
 
 nims server (loose+board_cards, seed 1):
-- ...
+NCD (C1) 1, 11425
+NCD (C3, 3 groups) 2, 21595
+Hamming (C3, 3 groups) 3, 29726
+NCD (C4, 3 groups) 4, 6470
 
 
 - adiantar mais o literature_review
@@ -78,7 +127,6 @@ goals:
 
 enquanto isso:
 - conferir 'least regreat', usado pela University of Alberta?
-- ajeitar README dos outros projetos no github
 
 ---
 
@@ -92,6 +140,7 @@ future work:
 - usar tournament e crowding?
 - ir testando enquanto implementa:
     - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector, e Bluenose(?))
+- permitir um player humano jogar contra um time SBB?
 
 - steps:
     3. better opponents
