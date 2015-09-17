@@ -79,6 +79,7 @@ class Config():
                 'total_bins': 5, # used to quantize the distances for the diversity metrics
             },
             'run_initialization_step2': False,
+            'use_weighted_probability_selection': False, # if False, uniform probability will be used
         },
     }
 

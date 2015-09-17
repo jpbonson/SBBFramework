@@ -40,6 +40,7 @@ refactored new diversities code + added unit tests
 added metrics for mean team size and mean program size
 removed print of metrics per run
 added unit tests for all the new diversities
+added option to choose uniform or weighted selection + unit test
 ---
 
 - parameters:
@@ -78,8 +79,6 @@ checar:
 extra:
 - before running the 10 runs of all the diversties, define a good generation to stop
 
-- conferir se fitness sharing esta fazendo sentido: o que esta sendo usado para comparar a performance dos teams em cada point?
-- conferir se estou usando uniform probability ou weight probability para selecionar os teams a serem clonados
 =====
 
 - adiantar mais o literature_review

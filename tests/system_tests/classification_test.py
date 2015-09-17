@@ -54,6 +54,7 @@ TEST_CONFIG = {
             'k': 8,
         },
         'run_initialization_step2': False,
+        'use_weighted_probability_selection': False, # if False, uniform probability will be used
     },
 }
 
