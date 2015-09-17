@@ -17,13 +17,13 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 25, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 50, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 300, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'hall_of_fame': {
-                'size': 5,
+                'size': 10,
                 'enabled': True,
                 'use_as_opponents': False,
-                'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+                'diversity': 'ncd_c3', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
             'poker': {
@@ -33,11 +33,11 @@ class Config():
 
         'training_parameters': {
             'runs_total': 1,
-            'generations_total': 25,
+            'generations_total': 150,
             'validate_after_each_generation': 25,
             'populations': {
-                'teams': 20,
-                'points': 20,
+                'teams': 100,
+                'points': 100,
             },
             'replacement_rate': {
                 'teams': 0.5,
@@ -62,20 +62,20 @@ class Config():
                 'max': 9,
             },
             'program_size': {
-                'min': 1,
-                'max': 10,
+                'min': 5,
+                'max': 20,
             },
         },
 
         'advanced_training_parameters': {
-            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
+            'seed': 2, # default = None, it can be a single seed for all runs, or an array of seeds per run
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
-            'extra_registers': 1,
+            'extra_registers': 3,
             'diversity': {
-                'use_and_show': ['ncd_c4'], # will be applied to fitness and show in the outputs
+                'use_and_show': ['ncd_c3'], # will be applied to fitness and show in the outputs
                 'only_show': [], # will be only show in the outputs
-                'k': 5,
+                'k': 10,
                 'total_bins': 5, # used to quantize the distances for the diversity metrics
             },
             'run_initialization_step2': False,

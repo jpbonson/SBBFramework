@@ -47,42 +47,43 @@ added option to choose uniform or weighted selection + unit test
 ncd_c3
 population: 100
 generation: 150
-seed 1 e 2
 hall of fame as opponents: false
 2-9 teams
+seed 1 / 2
 program size 1-10 / 5-20
-general purpose register 1 / 3
-selection based on uniform probability
+general purpose registers 1 / 3
+selection based on uniform probability True / False
 
-nims pc (loose+board_cards, seed 1):
+nims pc:
+- seed 2, program size 1-10, registers 1, selection True, generation: 150, 1
+- seed 2, program size 5-20, registers 3, selection False, generation: 150, 2
 
-
-nims server (loose+board_cards, seed 1):
-
-
+nims server:
+- seed 1, program size 1-10, registers 1, selection True: 10241, generation: 150, 1
+- seed 1, program size 1-10, registers 1, selection False: 15994, generation: 150, 2
+- seed 1, program size 5-20, registers 3, selection True: 23826, generation: 150, 3
+- seed 1, program size 5-20, registers 3, selection False: 3353, generation: 150, 4
+- seed 1, program size 1-10, registers 1, selection True: 6297, generation: 300, 5
+- seed 1, program size 5-20, registers 3, selection False: 19572, generation: 300, 6
 
 checar:
 - checar se fitness e validation estao mais lineares e estaveis
 - checar tamanho medio dos teams e programs
 
-=====
-- second layer SBB: It is exact the same thing, the only modification is when an action is called
-- perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
-    - dont use bluenose!
+---
 
+- adiantar mais o literature_review
+
+- second layer SBB: It is exact the same thing, the only modification is when an action is called
 - for the second layer, two approaches:
     - get the teams that most increased the accumulative curve across all the runs
     - get the teams that most increased the accumulative curve individually for each run
     - obs.: be careful when selecting the teams what will be action, so the search space is not so big
     - also, a future work would be to coevolve a population of opponents
 
-extra:
 - before running the 10 runs of all the diversties, define a good generation to stop
-
-=====
-
-- adiantar mais o literature_review
-
+- perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
+    - dont use bluenose!
 
 ---
 
