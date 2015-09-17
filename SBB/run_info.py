@@ -43,6 +43,9 @@ class RunInfo:
         self.global_result_per_validation = defaultdict(dict)
         self.point_population_distribution_per_validation = defaultdict(dict)
         self.hall_of_fame_per_validation = []
+        self.mean_team_size_per_validation = []
+        self.mean_program_size_with_introns_per_validation = []
+        self.mean_program_size_without_introns_per_validation = []
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
@@ -87,10 +90,10 @@ class RunInfo:
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             msg += "\n\nHall of Fame per Validation: "+str(self.hall_of_fame_per_validation)
 
-        msg += "\n\n\n##### METRICS FOR THE LAST GENERATION"
-        msg += "\n\nDistribution of Actions: "+str(self.actions_distribution_per_validation[-1])
-        msg += "\n\nDistribution of Inputs (per instruction): "+str(self.inputs_distribution_per_instruction_per_validation[-1])
-        msg += "\n\nDistribution of Inputs (per team): "+str(self.inputs_distribution_per_team_per_validation[-1])
+        msg += "\n\n\n##### METRICS FOR SIZES PER VALIDATION"
+        msg += "\n\nMean Team Sizes: "+str(self.mean_team_size_per_validation)
+        msg += "\n\nMean Program Sizes (with introns): "+str(self.mean_program_size_with_introns_per_validation)
+        msg += "\n\nMean Program Sizes (without introns): "+str(self.mean_program_size_without_introns_per_validation)
 
         msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
         msg += "\n\nGlobal Fitness Score per Training: "+str(self.global_fitness_per_generation)

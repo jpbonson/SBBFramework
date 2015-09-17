@@ -293,6 +293,17 @@ class SBB:
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             run_info.hall_of_fame_per_validation.append([p.__repr__() for p in self.environment.hall_of_fame()])
             print "\nHall of Fame: "+str(run_info.hall_of_fame_per_validation[-1])
+
+        avg_team_size = numpy.mean([len(team.programs) for team in older_teams])
+        avg_program_with_intros_size = round_value(numpy.mean(flatten([[len(program.instructions) for program in team.programs] for team in older_teams])))
+        avg_program_without_intros_size = round_value(numpy.mean(flatten([[len(program.instructions_without_introns_) for program in team.programs] for team in older_teams])))
+        run_info.mean_team_size_per_validation.append(avg_team_size)
+        run_info.mean_program_size_with_introns_per_validation.append(avg_program_with_intros_size)
+        run_info.mean_program_size_without_introns_per_validation.append(avg_program_without_intros_size)
+        print "\nMean Team Sizes: "+str(run_info.mean_team_size_per_validation[-10:])
+        print "Mean Program Sizes (with introns): "+str(run_info.mean_program_size_with_introns_per_validation[-10:])
+        print "Mean Program Sizes (without introns): "+str(run_info.mean_program_size_without_introns_per_validation[-10:])
+
         print "\n<<<<< Generation: "+str(self.current_generation_)+", run: "+str(run_info.run_id)
 
     def _store_per_generation_metrics(self, run_info, teams_population):

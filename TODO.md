@@ -37,27 +37,33 @@ implemented NCDv2 and euclidean distance
 -2. poker_report_diversities
 added 10k more hand samples
 refactored new diversities code + added unit tests
+added metrics for mean team size and mean program size
 ---
 
-- temrinar d eler e organizar o paper
+-remover msg de resultados por run
+
+ncd_c3
+population: 100
+generation: 150
+seed 1 e 2
+hall of fame as opponents: false
+2-9 teams
+program size 1-10 / 5-20
+general purpose register 1 / 3
+selection based on uniform probability
+
+checar:
+    - checar se fitness e validation estao mais lineares e estaveis
+    - checar tamanho medio dos teams e programs
+
+
+- terminar de ler e organizar o paper
+- second layer SBB: It is exact the same thing, the only modification is when an action is called
+- perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
+    - dont use bluenose!
 
 =====
-Meeting notes:
-- I always have to execute the full structure of a host to get the winning action? The result is always a single action? How to evolve such structure? (only add and remove symbionts?) -> It is exact the same thing, the only modification is when an action is called
-- parameters:
-    - increase?
-        2-9 teams, 1-10(5-20?) program size, 1(3?) general purpose register (+ check the overall size of teams and programs (with and without introns), create a metric?)
-        + use uniform probability for selection instead of weighted probability
-        -> perform runs with these new parameters, and also without using hall of fame as opponents, and see if the fitness function is more stable
-    - decrease?
-        team and point population size = 100 
-
-- literature review (ok)
-
-
-- why all diversities start at around the same value? (same seed) Why there is absolutelly no diversity when no diversity metric is used? (check if it keeps like this even for multiple runs)
-
-- perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
++ use uniform probability for selection instead of weighted probability
 
 - for the second layer, two approaches:
     - get the teams that most increased the accumulative curve across all the runs
@@ -65,19 +71,13 @@ Meeting notes:
     - obs.: be careful when selecting the teams what will be action, so the search space is not so big
     - also, a future work would be to coevolve a population of opponents
 
-- dont use bluenose!
-
 extra:
 - before running the 10 runs of all the diversties, define a good generation to stop
-
-=====
-
 
 - conferir se fitness sharing esta fazendo sentido: o que esta sendo usado para comparar a performance dos teams em cada point?
 - conferir se estou usando uniform probability ou weight probability para selecionar os teams a serem clonados
 
-- generalizar o metodo execute em team.py, para poder executar tanto programs como teams? e como fica o mutate?
-
+=====
 
 DONE:
 
