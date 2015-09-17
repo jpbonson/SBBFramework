@@ -38,10 +38,11 @@ implemented NCDv2 and euclidean distance
 added 10k more hand samples
 refactored new diversities code + added unit tests
 added metrics for mean team size and mean program size
+removed print of metrics per run
+added unit tests for all the new diversities
 ---
 
-- fazer unit tests para as diversities novas
-
+- parameters:
 ncd_c3
 population: 100
 generation: 150
@@ -52,18 +53,21 @@ program size 1-10 / 5-20
 general purpose register 1 / 3
 selection based on uniform probability
 
+nims pc (loose+board_cards, seed 1):
+
+
+nims server (loose+board_cards, seed 1):
+
+
+
 checar:
-    - checar se fitness e validation estao mais lineares e estaveis
-    - checar tamanho medio dos teams e programs
+- checar se fitness e validation estao mais lineares e estaveis
+- checar tamanho medio dos teams e programs
 
-
-- terminar de ler e organizar o paper
+=====
 - second layer SBB: It is exact the same thing, the only modification is when an action is called
 - perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
     - dont use bluenose!
-
-=====
-+ use uniform probability for selection instead of weighted probability
 
 - for the second layer, two approaches:
     - get the teams that most increased the accumulative curve across all the runs
@@ -76,20 +80,7 @@ extra:
 
 - conferir se fitness sharing esta fazendo sentido: o que esta sendo usado para comparar a performance dos teams em cada point?
 - conferir se estou usando uniform probability ou weight probability para selecionar os teams a serem clonados
-
 =====
-
-DONE:
-
-
-DOING:
-
-nims pc (loose+board_cards, seed 1):
-
-
-nims server (loose+board_cards, seed 1):
-
-
 
 - adiantar mais o literature_review
 

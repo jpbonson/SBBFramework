@@ -71,7 +71,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                 if match.is_over():
                     result = match.result_for_player(sbb_player)
                     outputs.append(result)
-                    team.action_sequence_['coding3'].append(str(result))
+                    team.action_sequence_['coding3'].append(int(result*2))
                     break
                 player = 2
                 inputs = match.inputs_from_the_point_of_view_of(player)
@@ -86,7 +86,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                 if match.is_over():
                     result = match.result_for_player(sbb_player)
                     outputs.append(result)
-                    team.action_sequence_['coding3'].append(str(result))
+                    team.action_sequence_['coding3'].append(int(result*2))
                     break
         return numpy.mean(outputs)
 
