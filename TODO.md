@@ -40,7 +40,7 @@ refactored new diversities code + added unit tests
 added metrics for mean team size and mean program size
 ---
 
--remover msg de resultados por run
+- fazer unit tests para as diversities novas
 
 ncd_c3
 population: 100

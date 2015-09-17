@@ -95,7 +95,7 @@ class SBB:
                 print "Validating hall of fame..."
                 self.environment.validate(self.current_generation_, self.environment.hall_of_fame())
 
-            self._print_and_store_per_run_metrics(run_info, best_team, teams_population, pareto_front)
+            self._store_per_run_metrics(run_info, best_team, teams_population, pareto_front)
             run_info.elapsed_time = round_value((time.time() - start_time)/60.0)
             print("\nFinished run "+str(run_info.run_id)+", elapsed time: "+str(run_info.elapsed_time)+" mins")
             run_infos.append(run_info)
@@ -332,8 +332,7 @@ class SBB:
             run_info.global_fitness_per_opponent_per_generation[self.environment.previous_population_type_].append(mean_fitness)
             run_info.opponent_type_per_generation.append(self.environment.opponent_names_for_training_.index(self.environment.previous_population_type_))
 
-    def _print_and_store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
-        print("\n########## "+str(run_info.run_id)+" Run's best team: "+best_team.metrics())
+    def _store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         run_info.best_team = best_team
         for team in teams_population:
             if team.generation != self.current_generation_:
