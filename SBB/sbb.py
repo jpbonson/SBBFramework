@@ -294,7 +294,7 @@ class SBB:
             run_info.hall_of_fame_per_validation.append([p.__repr__() for p in self.environment.hall_of_fame()])
             print "\nHall of Fame: "+str(run_info.hall_of_fame_per_validation[-1])
 
-        avg_team_size = numpy.mean([len(team.programs) for team in older_teams])
+        avg_team_size = round_value(numpy.mean([len(team.programs) for team in older_teams]))
         avg_program_with_intros_size = round_value(numpy.mean(flatten([[len(program.instructions) for program in team.programs] for team in older_teams])))
         avg_program_without_intros_size = round_value(numpy.mean(flatten([[len(program.instructions_without_introns_) for program in team.programs] for team in older_teams])))
         run_info.mean_team_size_per_validation.append(avg_team_size)
