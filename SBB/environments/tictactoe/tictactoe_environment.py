@@ -30,6 +30,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
             '[2,0]': 6, '[2,1]': 7, '[2,2]': 8,
         }
+        Config.USER['advanced_training_parameters']['diversity']['total_bins'] = 3
 
     def _play_match(self, team, opponent, point, mode):
         """
@@ -63,11 +64,14 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                 if action is None:
                     action = random.choice(match.valid_actions())
                 if is_training_for_first_player:
-                    first_player.action_sequence_['ncd'].append(str(action))
-                    first_player.action_sequence_['entropy'].append(str(action))
+                    first_player.action_sequence_['coding1'].append(str(action))
+                    first_player.action_sequence_['coding2'].append(str(action))
+                    first_player.action_sequence_['coding4'].append(str(action))
                 match.perform_action(player, action)
                 if match.is_over():
-                    outputs.append(match.result_for_player(sbb_player))
+                    result = match.result_for_player(sbb_player)
+                    outputs.append(result)
+                    team.action_sequence_['coding3'].append(str(result))
                     break
                 player = 2
                 inputs = match.inputs_from_the_point_of_view_of(player)
@@ -75,11 +79,14 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                 if action is None:
                     action = random.choice(match.valid_actions())
                 if is_training_for_second_player:
-                    second_player.action_sequence_['ncd'].append(str(action))
-                    second_player.action_sequence_['entropy'].append(str(action))
+                    second_player.action_sequence_['coding1'].append(str(action))
+                    second_player.action_sequence_['coding2'].append(str(action))
+                    second_player.action_sequence_['coding4'].append(str(action))
                 match.perform_action(player, action)
                 if match.is_over():
-                    outputs.append(match.result_for_player(sbb_player))
+                    result = match.result_for_player(sbb_player)
+                    outputs.append(result)
+                    team.action_sequence_['coding3'].append(str(result))
                     break
         return numpy.mean(outputs)
 

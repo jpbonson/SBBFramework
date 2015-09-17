@@ -36,6 +36,7 @@ implemented hamming distance + ncd and entropy per hand
 implemented NCDv2 and euclidean distance
 -2. poker_report_diversities
 added 10k more hand samples
+refactored new diversities code + added unit tests
 ---
 
 - temrinar d eler e organizar o paper
@@ -67,24 +68,15 @@ Meeting notes:
 - dont use bluenose!
 
 extra:
-- more hand samples?
-- refatorar diversities code
 - before running the 10 runs of all the diversties, define a good generation to stop
-- cancelar runs atuais?
 
 =====
 
 
 - conferir se fitness sharing esta fazendo sentido: o que esta sendo usado para comparar a performance dos teams em cada point?
 - conferir se estou usando uniform probability ou weight probability para selecionar os teams a serem clonados
-- baixar tamanho das populations para 80?
 
 - generalizar o metodo execute em team.py, para poder executar tanto programs como teams? e como fica o mutate?
-
-TODO:
-- 300 generations
-- seed 2
-- dont use hall of fame as opponents
 
 
 DONE:
@@ -93,19 +85,14 @@ DONE:
 DOING:
 
 nims pc (loose+board_cards, seed 1):
-NCD (C3, 5 groups) 1
-Hamming (C3, 5 groups) 2
-NCD (C4, 5 groups) 3
+
 
 nims server (loose+board_cards, seed 1):
-NCD (C1) 1, 11425
-NCD (C3, 3 groups) 2, 21595
-Hamming (C3, 3 groups) 3, 29726
-NCD (C4, 3 groups) 4, 6470
+
 
 
 - adiantar mais o literature_review
-- depois de decidir as diversity metrics, refatorar (ajeitar restricoes em config, adiciona-las ao ttt e unit tests, ajeitar arrays, ajeitar metodo q quantifica os values)
+
 
 ---
 
@@ -115,6 +102,7 @@ test (second, for only one of the 4 sets (the one with best diversity/performanc
 - entropy? genotype? NCD? (mix them? individual?)
 - pareto for points?
 - decidir qual dos 4 sets de configurations
+- balance for board ou por hole cards?
 - ?
 
 ---

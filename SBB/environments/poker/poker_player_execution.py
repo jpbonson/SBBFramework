@@ -90,14 +90,14 @@ class PokerPlayerExecution():
                         if len(match_state.rounds) == 1 and len(match_state.rounds[0]) < 2 and action == 0: # first action of first round is a fold
                             player.extra_metrics_['played_last_hand'] = False
                     if is_sbb and is_training:
-                        player.action_sequence_['entropy'].append(str(action))
+                        player.action_sequence_['coding2'].append(str(action))
                     action = PokerConfig.CONFIG['action_mapping'][action]
                     if is_sbb and is_training:
-                        player.action_sequence_['ncd'].append(str(''.join(match_state.board_cards)))
-                        player.action_sequence_['ncd'].append(str(action))
-                        player.action_sequence_['ncd_v2'].append(str(PokerPlayerExecution._quantitize_value(point.hand_strength_[len(match_state.rounds)-1], is_normalized = True)))
-                        player.action_sequence_['ncd_v2'].append(str(PokerPlayerExecution._quantitize_value(point.ep_[len(match_state.rounds)-1], is_normalized = True)))
-                        player.action_sequence_['ncd_v2'].append(str(action))
+                        player.action_sequence_['coding1'].append(str(''.join(match_state.board_cards)))
+                        player.action_sequence_['coding1'].append(str(action))
+                        player.action_sequence_['coding4'].append(str(PokerPlayerExecution._quantitize_value(point.hand_strength_[len(match_state.rounds)-1], is_normalized = True)))
+                        player.action_sequence_['coding4'].append(str(PokerPlayerExecution._quantitize_value(point.ep_[len(match_state.rounds)-1], is_normalized = True)))
+                        player.action_sequence_['coding4'].append(str(action))
                     previous_action = action
                     send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
                     try:
@@ -126,7 +126,7 @@ class PokerPlayerExecution():
             if is_sbb and is_training:
                 points = OpponentModel.calculate_points(player_actions)
                 hamming_label = PokerPlayerExecution._quantitize_value(points)
-                player.action_sequence_['hamming'].append(hamming_label)
+                player.action_sequence_['coding3'].append(hamming_label)
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file.write("The end.\n\n")
@@ -139,16 +139,26 @@ class PokerPlayerExecution():
             normalization_parameter = Config.RESTRICTIONS['multiply_normalization_by']
         else:
             normalization_parameter = 1.0
-        if value >= 0.0*normalization_parameter and value < 0.2*normalization_parameter:
-            label = 0
-        elif value >= 0.2*normalization_parameter and value < 0.4*normalization_parameter:
-            label = 1
-        elif value >= 0.4*normalization_parameter and value < 0.6*normalization_parameter:
-            label = 2
-        elif value >= 0.6*normalization_parameter and value < 0.8*normalization_parameter:
-            label = 3
+        if Config.USER['advanced_training_parameters']['diversity']['total_bins'] == 5:
+            if value >= 0.0*normalization_parameter and value < 0.2*normalization_parameter:
+                label = 0
+            elif value >= 0.2*normalization_parameter and value < 0.4*normalization_parameter:
+                label = 1
+            elif value >= 0.4*normalization_parameter and value < 0.6*normalization_parameter:
+                label = 2
+            elif value >= 0.6*normalization_parameter and value < 0.8*normalization_parameter:
+                label = 3
+            else:
+                label = 4
+        elif Config.USER['advanced_training_parameters']['diversity']['total_bins'] == 3:
+            if value >= 0.0*normalization_parameter and value < 0.33*normalization_parameter:
+                label = 0
+            elif value >= 0.33*normalization_parameter and value < 0.66*normalization_parameter:
+                label = 1
+            else:
+                label = 2
         else:
-            label = 4
+            raise ValueError("Invalid value for Config.USER['advanced_training_parameters']['diversity']['total_bins']")
         return label
 
     @staticmethod

@@ -69,7 +69,7 @@ class DiversityMaintenance():
             team.diversity_['fitness_sharing'] = round_value(diversity)
 
     @staticmethod
-    def _genotype_distance(team, other_team):
+    def _genotype(team, other_team):
         """
         Calculate the distance between pairs of teams, where the distance is the intersection of active 
         programs divided by the union of active programs. Active programs are the ones who the output 
@@ -95,58 +95,52 @@ class DiversityMaintenance():
         return distance
 
     @staticmethod
-    def _normalized_compression_distance(team, other_team):
-        action_sequence = team.action_sequence_['ncd']
-        other_action_sequence = other_team.action_sequence_['ncd']
+    def _ncd_c1(team, other_team):
+        action_sequence = team.action_sequence_['coding1']
+        other_action_sequence = other_team.action_sequence_['coding1']
         distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
         return distance
 
     @staticmethod
-    def _relative_entropy_distance(team, other_team):
-        action_sequence = team.action_sequence_['entropy']
-        other_action_sequence = other_team.action_sequence_['entropy']
+    def _entropy_c2(team, other_team):
+        action_sequence = team.action_sequence_['coding2']
+        other_action_sequence = other_team.action_sequence_['coding2']
         options = Config.RESTRICTIONS['total_actions']
         distance = DiversityMaintenance._general_relative_entropy_distance(action_sequence, other_action_sequence, options)
         return distance
 
     @staticmethod
-    def _hamming_distance(team, other_team):
-        """
-
-        """
-        return hamming(team.action_sequence_['hamming'], other_team.action_sequence_['hamming'])
+    def _hamming_c3(team, other_team):
+        return hamming(team.action_sequence_['coding3'], other_team.action_sequence_['coding3'])
 
     @staticmethod
-    def _ncd_per_hand(team, other_team):
-        action_sequence = list(team.action_sequence_['hamming'])
+    def _ncd_c3(team, other_team):
+        action_sequence = list(team.action_sequence_['coding3'])
         action_sequence = [str(a) for a in action_sequence]
-        other_action_sequence = list(other_team.action_sequence_['hamming'])
+        other_action_sequence = list(other_team.action_sequence_['coding3'])
         other_action_sequence = [str(a) for a in other_action_sequence]
         distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
         return distance
 
     @staticmethod
-    def _entropy_per_hand(team, other_team):
-        action_sequence = team.action_sequence_['hamming']
-        other_action_sequence = other_team.action_sequence_['hamming']
-        options = 5
+    def _entropy_c3(team, other_team):
+        action_sequence = team.action_sequence_['coding3']
+        other_action_sequence = other_team.action_sequence_['coding3']
+        options = Config.USER['advanced_training_parameters']['diversity']['total_bins']
         distance = DiversityMaintenance._general_relative_entropy_distance(action_sequence, other_action_sequence, options)
         return distance
 
     @staticmethod
-    def _ncd_v2(team, other_team):
-        action_sequence = team.action_sequence_['ncd_v2']
-        other_action_sequence = other_team.action_sequence_['ncd_v2']
+    def _ncd_c4(team, other_team):
+        action_sequence = team.action_sequence_['coding4']
+        other_action_sequence = other_team.action_sequence_['coding4']
         distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
         return distance
 
     @staticmethod
-    def _euclidean_distance(team, other_team):
-        """
-
-        """
-        value = euclidean(team.action_sequence_['hamming'], other_team.action_sequence_['hamming'])
-        options = 5
+    def _euclidean(team, other_team):
+        value = euclidean(team.action_sequence_['coding3'], other_team.action_sequence_['coding3'])
+        options = Config.USER['advanced_training_parameters']['diversity']['total_bins']
         max_value = math.sqrt(((options-1)**2)*Config.USER['training_parameters']['populations']['points'])
         result = value/float(max_value)
         return result
@@ -175,6 +169,9 @@ class DiversityMaintenance():
 
     @staticmethod
     def _general_relative_entropy_distance(action_sequence, other_action_sequence, options):
+        """
+
+        """
         if len(action_sequence) == len(other_action_sequence):
             if action_sequence == other_action_sequence:
                 return 0.0

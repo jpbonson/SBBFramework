@@ -113,7 +113,7 @@ class ClassificationTests(unittest.TestCase):
         """ Checking if everything for classification is still working and producing the same result. """
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype_distance', 'fitness_sharing']
+        config['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype', 'fitness_sharing']
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
