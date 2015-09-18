@@ -57,6 +57,8 @@ selection based on uniform probability True / False
 nims pc:
 - seed 2, program size 1-10, registers 1, selection True, generation: 150, 1
 - seed 2, program size 5-20, registers 3, selection False, generation: 150, 2
+- seed 2, program size 5-20, registers 3, selection True, generation: 150, 3
+- seed 2, program size 1-20, registers 3, selection True, generation: 150, 4
 
 nims server:
 - seed 1, program size 1-10, registers 1, selection True: 10241, generation: 150, 1
@@ -73,6 +75,9 @@ checar:
 ---
 
 - adiantar mais o literature_review
+    - select papers for each section of the literature review
+    - define pages/paragraphs for each section
+    - write
 
 - second layer SBB: It is exact the same thing, the only modification is when an action is called
 - for the second layer, two approaches:
@@ -80,8 +85,20 @@ checar:
     - get the teams that most increased the accumulative curve individually for each run
     - obs.: be careful when selecting the teams what will be action, so the search space is not so big
     - also, a future work would be to coevolve a population of opponents
+- steps:
+    - generalize the call of actions, the definition of actions, and the mapping of actions
+        - add a new class that hands the action calling/definition/mapping
+    - add a .json reader so the saved teams can be instantiated and executed
+        - add a new population of "action teams", so you only instantiate them once
+            - warning: attributes being modified by more than one host
+    - update how the teams are saved in .json files so the actions are saved correctly
+    - select the best saved teams
+    - check if it works as it is
+    - check the notes about the new coevolved opponent population (alfa/beta)
+    - implement the coevolved opponent population
 
-- before running the 10 runs of all the diversties, define a good generation to stop
+
+- before running the 10 runs of all the diversties, define a good generation to stop and the parameters
 - perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
     - dont use bluenose!
 

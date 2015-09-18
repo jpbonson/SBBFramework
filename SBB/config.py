@@ -62,7 +62,7 @@ class Config():
                 'max': 9,
             },
             'program_size': {
-                'min': 5,
+                'min': 1,
                 'max': 20,
             },
         },
@@ -79,7 +79,7 @@ class Config():
                 'total_bins': 5, # used to quantize the distances for the diversity metrics
             },
             'run_initialization_step2': False,
-            'use_weighted_probability_selection': False, # if False, uniform probability will be used
+            'use_weighted_probability_selection': True, # if False, uniform probability will be used
         },
     }
 
