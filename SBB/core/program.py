@@ -147,28 +147,14 @@ class Program:
         return text
 
     @staticmethod
-    def remove_introns(instructions): # move code to C or Cython?
+    def remove_introns(instructions):
         """
         Remove introns (ie. instructions that don't affect the final output)
         """
-        # Run throught the instructions from the first to the last one, for special cases
-        instructions_without_special_cases = []
-        ignore_next_instruction = False
-        for instruction in instructions:
-            if instruction.op == 'if_lesser_than' and instruction.mode == 'read-register' and instruction.source == instruction.target:
-                ignore_next_instruction = True
-            else:
-                if ignore_next_instruction:
-                    if not instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
-                        ignore_next_instruction = False
-                else:
-                    instructions_without_special_cases.append(instruction)
-            
-        # Run throught the instructions from the last to the first one
         instructions_without_introns = []
         relevant_registers = [0]
         ignore_previous_if = True
-        for instruction in reversed(instructions_without_special_cases):
+        for instruction in reversed(instructions):
             if instruction.target in relevant_registers or instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                 if ignore_previous_if and instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                     continue

@@ -61,12 +61,12 @@ class IntronRemovalTests(unittest.TestCase):
         instructions.pop(1)
         self.assertEqual(instructions, instructions_without_introns)
 
-    def test_remove_useless_ifs(self):
+    def test_dont_remove_ifs(self):
         """
         Ensures the algorithm removes useless 'if_lesser_than' instructions.
 
         r[0] = r[0] - i[1]
-        if r[1] < r[1]: # HERE
+        if r[1] < r[1]:
             if r[0] >= i[0]:
                 if r[0] < i[0]:
                     r[0] = cos(r[0])
@@ -80,10 +80,6 @@ class IntronRemovalTests(unittest.TestCase):
         f = Instruction(mode = 'read-input', target = 0, op = '-', source = 1)
         instructions = [a,b,c,d,e,f]
         instructions_without_introns = Program.remove_introns(instructions)
-        instructions.remove(b)
-        instructions.remove(c)
-        instructions.remove(d)
-        instructions.remove(e)
         self.assertEqual(instructions, instructions_without_introns)
 
     def test_remove_introns_for_irrelevant_registers2(self):
@@ -176,6 +172,52 @@ class IntronRemovalTests(unittest.TestCase):
         instructions.append(Instruction(mode = 'read-input', target = 1, op = 'if_lesser_than', source = 19))
         instructions.append(Instruction(mode = 'read-input', target = 1, op = 'if_lesser_than', source = 14))
         instructions.append(Instruction(mode = 'read-register', target = 0, op = '/', source = 0))
+        instructions_without_introns = Program.remove_introns(instructions)
+        self.assertEqual(instructions, instructions_without_introns)
+
+    def test_dont_mess_the_ifs(self):
+        """
+        Ensures the algorithm removes correctly.
+
+        Problem:
+
+        with introns:
+        r[1] = r[1] + i[1]
+        r[0] = r[0] * r[1]
+        if r[1] >= r[1]:
+            if r[1] < r[1]:
+                r[0] = r[0] * i[5]
+        r[1] = exp(r[1])
+        r[1] = r[1] * i[3]
+        r[0] = r[0] + r[1]
+
+        without introns (incorrect):
+        r[1] = r[1] + i[1]
+        r[0] = r[0] * r[1]
+        if r[1] >= r[1]: # HERE: messed the if
+            r[1] = exp(r[1])
+        r[1] = r[1] * i[3]
+        r[0] = r[0] + r[1]
+
+        without introns (correct, dont remove anything):
+        r[1] = r[1] + i[1]
+        r[0] = r[0] * r[1]
+        if r[1] >= r[1]:
+            if r[1] < r[1]:
+                r[0] = r[0] * i[5]
+        r[1] = exp(r[1])
+        r[1] = r[1] * i[3]
+        r[0] = r[0] + r[1]
+        """
+        a = Instruction(mode = 'read-input', target = 1, op = '+', source = 1)
+        b = Instruction(mode = 'read-register', target = 0, op = '*', source = 1)
+        c = Instruction(mode = 'read-register', target = 1, op = 'if_equal_or_higher_than', source = 1)
+        d = Instruction(mode = 'read-register', target = 1, op = 'if_lesser_than', source = 1)
+        e = Instruction(mode = 'read-input', target = 0, op = '*', source = 5)
+        f = Instruction(mode = 'read-register', target = 1, op = 'exp', source = 1)
+        g = Instruction(mode = 'read-input', target = 1, op = '*', source = 3)
+        h = Instruction(mode = 'read-register', target = 0, op = '+', source = 1)
+        instructions = [a,b,c,d,e,f,g,h]
         instructions_without_introns = Program.remove_introns(instructions)
         self.assertEqual(instructions, instructions_without_introns)
 

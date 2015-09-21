@@ -41,6 +41,9 @@ added metrics for mean team size and mean program size
 removed print of metrics per run
 added unit tests for all the new diversities
 added option to choose uniform or weighted selection + unit test
+changed opponent model
+added operations for signal-ifs
+modified introns removal
 ---
 
 parameters to test:
@@ -50,36 +53,8 @@ parameters to test:
 - +inputs?
 - ifs?
 
-- fix bug:
-
-r[1] = r[1] + i[1]
-r[0] = r[0] * r[1]
-if r[1] >= r[1]:
-    r[1] = exp(r[1])
-r[1] = r[1] * i[3]
-r[0] = r[0] + i[9]
-r[0] = r[0] + r[1]
-r[0] = r[0] * i[6]
-
-================
-
-Total instructions: 10
-----------------
-
-r[1] = r[1] + i[1]
-r[0] = r[0] * r[1]
-if r[1] >= r[1]:
-    if r[1] < r[1]:
-        r[0] = r[0] * i[5]
-r[1] = exp(r[1])
-r[1] = r[1] * i[3]
-r[0] = r[0] + i[9]
-r[0] = r[0] + r[1]
-r[0] = r[0] * i[6]
-
-
 - ver se hector esta configurado ok (ACPC server?)
-
+- testar se os 2 casos de introns removal ainda estao quebrados
 
 nims pc (testar se inputs novos estao sendo usados, se nao estiverem, remover do codigo):
 - hall of fame as opponents: false
