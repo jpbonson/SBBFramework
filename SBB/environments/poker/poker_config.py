@@ -34,3 +34,13 @@ class PokerConfig():
             'opponent': lambda x: x.last_validation_opponent_id_,
         },
     }
+
+    @staticmethod
+    def get_hand_strength_label(value):
+        if value >= 9.0:
+            return 0
+        if value >= 7.0:
+            return 1
+        if value >= 4.0:
+            return 2
+        return 3

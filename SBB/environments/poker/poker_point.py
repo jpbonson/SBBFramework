@@ -1,4 +1,4 @@
-from poker_metrics import PokerMetrics
+from poker_config import PokerConfig
 from ..reinforcement_environment import ReinforcementPoint
 from ...config import Config
 
@@ -21,16 +21,16 @@ class PokerPoint(ReinforcementPoint):
         self.opp_hand_strength_ = info['ostr']
         self.opp_ep_ = info['oep']
         if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'hole_cards_strength':
-            self.opp_label_ = PokerMetrics.get_hand_strength_label(info['ostr'][0])
-            self.opp_extra_label_ = PokerMetrics.get_hand_strength_label(info['ostr'][3])
+            self.opp_label_ = PokerConfig.get_hand_strength_label(info['ostr'][0])
+            self.opp_extra_label_ = PokerConfig.get_hand_strength_label(info['ostr'][3])
         else:
-            self.opp_label_ = PokerMetrics.get_hand_strength_label(info['ostr'][3])
-            self.opp_extra_label_ = PokerMetrics.get_hand_strength_label(info['ostr'][0])
+            self.opp_label_ = PokerConfig.get_hand_strength_label(info['ostr'][3])
+            self.opp_extra_label_ = PokerConfig.get_hand_strength_label(info['ostr'][0])
 
         if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'hole_cards_strength':
-            self.sbb_extra_label_ = PokerMetrics.get_hand_strength_label(info['str'][3])
+            self.sbb_extra_label_ = PokerConfig.get_hand_strength_label(info['str'][3])
         else:
-            self.sbb_extra_label_ = PokerMetrics.get_hand_strength_label(info['str'][0])
+            self.sbb_extra_label_ = PokerConfig.get_hand_strength_label(info['str'][0])
 
         if info['r'] == 0.0:
             self.sbb_sd_label_ = 2

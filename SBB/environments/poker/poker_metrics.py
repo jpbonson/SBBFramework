@@ -11,14 +11,6 @@ from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
 class PokerMetrics():
     
     @staticmethod
-    def normalize_winning(value):
-        max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
-        max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
-        max_winning = max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
-        max_losing = -max_winning
-        return (value - max_losing)/float(max_winning - max_losing)
-
-    @staticmethod
     def initialize_deck():
         deck = []
         for rank in PokerConfig.CONFIG['ranks']:
@@ -188,13 +180,3 @@ class PokerMetrics():
     @staticmethod
     def calculate_equity(hole_cards):
         return NORMALIZED_HAND_EQUITY[frozenset(hole_cards)]
-
-    @staticmethod
-    def get_hand_strength_label(value):
-        if value >= 9.0:
-            return 0
-        if value >= 7.0:
-            return 1
-        if value >= 4.0:
-            return 2
-        return 3

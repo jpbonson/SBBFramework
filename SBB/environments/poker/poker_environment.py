@@ -16,7 +16,6 @@ from opponent_model import OpponentModel
 from poker_point import PokerPoint
 from poker_config import PokerConfig
 from match_state import MatchState
-from poker_metrics import PokerMetrics
 from poker_player_execution import PokerPlayerExecution
 from poker_opponents import PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
 from ..reinforcement_environment import ReinforcementEnvironment
@@ -138,11 +137,11 @@ class PokerEnvironment(ReinforcementEnvironment):
             sbb_position = 1
             opponent_position = 0
 
-        normalized_value = PokerMetrics.normalize_winning(float(scores[sbb_position]))
+        normalized_value = self._normalize_winning(float(scores[sbb_position]))
 
         PokerPlayerExecution.get_chips(team, opponent).append(normalized_value)
         if opponent.opponent_id == "hall_of_fame":
-            PokerPlayerExecution.get_chips(opponent, team).append(PokerMetrics.normalize_winning(float(scores[opponent_position])))
+            PokerPlayerExecution.get_chips(opponent, team).append(self._normalize_winning(float(scores[opponent_position])))
 
         if not is_training:
             if mode == Config.RESTRICTIONS['mode']['validation']:
@@ -171,6 +170,13 @@ class PokerEnvironment(ReinforcementEnvironment):
         team.action_sequence_['coding1'].append(str(point.position_))
 
         return normalized_value
+
+    def _normalize_winning(value):
+        max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
+        max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
+        max_winning = max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
+        max_losing = -max_winning
+        return (value - max_losing)/float(max_winning - max_losing)
 
     def _update_team_extra_metrics_for_poker(self, team, point, normalized_value, mode_label):
         team.extra_metrics_['total_hands'][mode_label] += 1

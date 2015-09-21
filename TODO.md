@@ -44,6 +44,7 @@ added option to choose uniform or weighted selection + unit test
 changed opponent model
 added operations for signal-ifs
 modified introns removal
+removed references to PokerMetric to avoid useless import
 ---
 
 parameters to test:
