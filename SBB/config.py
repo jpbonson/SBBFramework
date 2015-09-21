@@ -22,7 +22,7 @@ class Config():
             'hall_of_fame': {
                 'size': 10,
                 'enabled': True,
-                'use_as_opponents': True,
+                'use_as_opponents': False,
                 'diversity': 'ncd_c3', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug

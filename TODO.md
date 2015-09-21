@@ -47,6 +47,7 @@ parameters to test:
 - what diversity? how many groups? mix diversities? (temp: ncd_c3, g5)
 - hall of fame as opponents: false or true? (temp: false)
 - what balance? (temp: board)
+- +inputs?
 
 
 - conferir se introns removal para reg3 funciona ok
