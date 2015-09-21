@@ -83,6 +83,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 2
         config['advanced_training_parameters']['seed'] = 1
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -102,6 +103,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -121,6 +123,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = True
         Config.USER = config
         sbb = SBB()
@@ -140,6 +143,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -159,6 +163,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -178,6 +183,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -197,6 +203,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -216,6 +223,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -235,6 +243,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -254,6 +263,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -273,6 +283,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -292,6 +303,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -311,6 +323,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -330,6 +343,27 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
+        Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_ttt_with_signal_if_instructions(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+        config['advanced_training_parameters']['diversity']['only_show'] = []
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
+        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
+        config['training_parameters']['runs_total'] = 1
+        config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -349,6 +383,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -368,6 +403,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()
@@ -387,6 +423,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = 'ncd_c1'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = False
         Config.USER = config
         sbb = SBB()

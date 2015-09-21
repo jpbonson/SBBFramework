@@ -95,9 +95,10 @@ class Config():
         'genotype_options': {
             'modes': ['read-register', 'read-input'],
             'simple_operations': ['+', '-', '*', '/'],
-            'complex_operations': ['ln', 'exp', 'cos', 'sin', 'if_lesser_than', 'if_equal_or_higher_than'],
+            'complex_operations': ['ln', 'exp', 'cos', 'sin', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'one-operand-instructions': ['ln', 'exp', 'cos', 'sin'],
             'if-instructions': ['if_lesser_than', 'if_equal_or_higher_than'],
+            'if-instructions-for-signal': ['if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'instruction_size': 4,
             'output_registers': 1,
             'total_registers': None, # initialized by sbb.py

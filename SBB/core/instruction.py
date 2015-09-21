@@ -48,6 +48,8 @@ class Instruction:
             text = self._one_op_instruction_to_str()
         elif self.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
             text = self._if_op_instruction_to_str()
+        elif self.op in Config.RESTRICTIONS['genotype_options']['if-instructions-for-signal']:
+            text = self._if_signal_op_instruction_to_str()
         else:
             text = self._two_ops_instruction_to_str()
         return text
@@ -64,6 +66,16 @@ class Instruction:
             return "if r["+str(self.target)+"] < "+source
         else:
             return "if r["+str(self.target)+"] >= "+source
+
+    def _if_signal_op_instruction_to_str(self):
+        if self.mode == 'read-register':
+            source = "r["+str(self.source)+"]:"
+        else:
+            source = "i["+str(self.source)+"]:"
+        if self.op == 'if_lesser_than':
+            return "if r["+str(self.target)+"] < "+source+": -r["+str(self.target)+"]"
+        else:
+            return "if r["+str(self.target)+"] >= "+source+": -r["+str(self.target)+"]"
 
     def _two_ops_instruction_to_str(self):
         instruction_text = "r["+str(self.target)+"] = r["+str(self.target)+"] "+self.op+" "

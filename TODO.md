@@ -48,9 +48,36 @@ parameters to test:
 - hall of fame as opponents: false or true? (temp: false)
 - what balance? (temp: board)
 - +inputs?
+- ifs?
+
+- fix bug:
+
+r[1] = r[1] + i[1]
+r[0] = r[0] * r[1]
+if r[1] >= r[1]:
+    r[1] = exp(r[1])
+r[1] = r[1] * i[3]
+r[0] = r[0] + i[9]
+r[0] = r[0] + r[1]
+r[0] = r[0] * i[6]
+
+================
+
+Total instructions: 10
+----------------
+
+r[1] = r[1] + i[1]
+r[0] = r[0] * r[1]
+if r[1] >= r[1]:
+    if r[1] < r[1]:
+        r[0] = r[0] * i[5]
+r[1] = exp(r[1])
+r[1] = r[1] * i[3]
+r[0] = r[0] + i[9]
+r[0] = r[0] + r[1]
+r[0] = r[0] * i[6]
 
 
-- conferir se introns removal para reg3 funciona ok
 - ver se hector esta configurado ok (ACPC server?)
 
 
@@ -63,6 +90,8 @@ nims pc (testar se inputs novos estao sendo usados, se nao estiverem, remover do
 nims server:
 - seed 1, program size 1-10, registers 1, selection True: 6297, generation: 300, 5 (programs1-10_reg1_selTrue_300)
 - seed 1, program size 5-20, registers 3, selection False: 19572, generation: 300, 6 (programs5-20_reg3_selFalse_300)
+- SBB2: default com ifs-signal
+- SBB2: mix if normal com if-signal
 
 ---
 

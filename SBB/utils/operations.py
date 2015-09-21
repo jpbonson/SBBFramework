@@ -31,6 +31,16 @@ class Operation():
                     result = numpy.cos(target)
                 elif operator == 'sin':
                     result = numpy.sin(target)
+                elif operator == 'if_lesser_than_for_signal':
+                    if (target < source):
+                        return -target
+                    else:
+                        return target
+                elif operator == 'if_equal_or_higher_than_for_signal':
+                    if (target >= source):
+                        return -target
+                    else:
+                        return target
             except ArithmeticError:
                 error = True
             if error or math.isnan(result) or math.isinf(result):

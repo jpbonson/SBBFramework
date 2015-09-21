@@ -178,7 +178,7 @@ class Program:
                     if not instruction.op in Config.RESTRICTIONS['genotype_options']['one-operand-instructions']:
                         if instruction.mode == 'read-register' and instruction.source not in relevant_registers:
                             relevant_registers.append(instruction.source)
-                    if instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
+                    if instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions'] or instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions-for-signal']:
                         if instruction.target not in relevant_registers:
                             relevant_registers.append(instruction.target)
             else:
