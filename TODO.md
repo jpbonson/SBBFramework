@@ -43,41 +43,36 @@ added unit tests for all the new diversities
 added option to choose uniform or weighted selection + unit test
 ---
 
-- parameters:
-ncd_c3
-population: 100
-generation: 150
-hall of fame as opponents: false
-2-9 teams
-seed 1 / 2
-program size 1-10 / 5-20
-general purpose registers 1 / 3
-selection based on uniform probability True / False
+parameters to test:
+- what diversity? how many groups? mix diversities? (temp: ncd_c3, g5)
+- hall of fame as opponents: false or true? (temp: false)
+- what balance? (temp: board)
+
+
+- conferir se introns removal para reg3 funciona ok
+- adicionar input last opponent action? checar como hand agressiveness esta sendo calculado (quando ainda nao completou um round)
+- mandar rodar os runs por diversity?
+    - ver se hector esta configurado ok (ACPC server?)
 
 nims pc:
-- seed 2, program size 1-10, registers 1, selection True, generation: 150, 1
-- seed 2, program size 5-20, registers 3, selection False, generation: 150, 2
-- seed 2, program size 5-20, registers 3, selection True, generation: 150, 3
-- seed 2, program size 1-20, registers 3, selection True, generation: 150, 4
+- ...
 
 nims server:
-- seed 1, program size 1-10, registers 1, selection True: 10241, generation: 150, 1
-- seed 1, program size 1-10, registers 1, selection False: 15994, generation: 150, 2
-- seed 1, program size 5-20, registers 3, selection True: 23826, generation: 150, 3
-- seed 1, program size 5-20, registers 3, selection False: 3353, generation: 150, 4
-- seed 1, program size 1-10, registers 1, selection True: 6297, generation: 300, 5
-- seed 1, program size 5-20, registers 3, selection False: 19572, generation: 300, 6
-
-checar:
-- checar se fitness e validation estao mais lineares e estaveis
-- checar tamanho medio dos teams e programs
+- seed 1, program size 1-10, registers 1, selection True: 6297, generation: 300, 5 (programs1-10_reg1_selTrue_300)
+- seed 1, program size 5-20, registers 3, selection False: 19572, generation: 300, 6 (programs5-20_reg3_selFalse_300)
 
 ---
 
 - adiantar mais o literature_review
     - select papers for each section of the literature review
+        - for all DONE papers, relate them with the sections
+        - for all TODO papers, relate them with the sections
+        - find papers for the sections with no papers (conferir tanto nos papers ja usados como os nao usados)
+        - selecionar references que parecem promissoras (apenas dos papers mais recentes)
     - define pages/paragraphs for each section
-    - write
+    - write (nao necessariamente rpeciso usar todos os papers para cada section)
+
+---
 
 - second layer SBB: It is exact the same thing, the only modification is when an action is called
 - for the second layer, two approaches:
@@ -88,6 +83,8 @@ checar:
 - steps:
     - generalize the call of actions, the definition of actions, and the mapping of actions
         - add a new class that hands the action calling/definition/mapping
+        - metodo get_action_result?
+        - fazer classe Action?
     - add a .json reader so the saved teams can be instantiated and executed
         - add a new population of "action teams", so you only instantiate them once
             - warning: attributes being modified by more than one host
@@ -97,32 +94,11 @@ checar:
     - check the notes about the new coevolved opponent population (alfa/beta)
     - implement the coevolved opponent population
 
+---
 
 - before running the 10 runs of all the diversties, define a good generation to stop and the parameters
 - perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
     - dont use bluenose!
-
----
-
-test (second, for only one of the 4 sets (the one with best diversity/performance)):
-- 10 ou 20 instructions? ou 15?
-- testar apenas armazenar teams no hall of fame, mas nao usa-los no training?
-- entropy? genotype? NCD? (mix them? individual?)
-- pareto for points?
-- decidir qual dos 4 sets de configurations
-- balance for board ou por hole cards?
-- ?
-
----
-
-goals:
-- Find out if the current diversity metrics are being able to maintain diversity, based on the accumulative performance curves.
-- Find configurations that produce the best results (based on diversity and test score)
-
----
-
-enquanto isso:
-- conferir 'least regreat', usado pela University of Alberta?
 
 ---
 
@@ -133,10 +109,10 @@ scp -r username@destination_host:destination_folder source_file_name
 future work:
 - nos testes, checar se os teams sabem blefar
 - refatorar codigo
-- usar tournament e crowding?
 - ir testando enquanto implementa:
-    - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector, e Bluenose(?))
-- permitir um player humano jogar contra um time SBB?
+    - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector)
+- permitir um player humano jogar contra um time SBB? (e outros players de AI tambem)
+- tentar tournament + deterministic crowding? (paper sobre NCD)
 
 - steps:
     3. better opponents

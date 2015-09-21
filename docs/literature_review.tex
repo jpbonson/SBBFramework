@@ -18,7 +18,26 @@ Contents:
 
 (Literature Review)
 2. Machine Learning and Poker
-    1. Machine Learning
+    1. Poker
+        1. Introduction
+            [overview of poker]
+            [poker as a testbed for AI]
+            [overview of types of poker ([7][8] como One Card Poker), limit/no limit, number of players]
+            [explain choice of poker type for this research]
+        2. Texas Hold’em Poker [6]
+            [explain the rules, give exmaple of researches that used it]
+        3. Inputs/Formulas [6]
+            [HS, potential, EHS, pot odds, aggressiveness...]
+        4. Playing Styles [4][5][7][8]
+            [agressive/passive, tight/loose]
+        5. Biasing the hand types [4]
+            [why is it necessary, ways to do it]
+        6. Exploitative and Nash Equilibrium Learning Strategies
+            [explain each one and what are their goals]
+        7. ACPC
+            [what it is]
+            [the protocol]
+    2. Machine Learning
         1. Introduction
             [overview of machine learning]
         2. Reinforcement Learning
@@ -26,52 +45,36 @@ Contents:
                 [overview of reinforcement learning]
                 [examples of applications]
             2. Opponents
-                1. Self-play
-                2. Coevolution
+                1. Self-play [6]?
+                2. Coevolution [2][6]
                     [competitive and cooperative coevolutions]
-                3. Coded opponents
-            3. Opponent Model
+                3. Static opponents [4][5][6]
+            3. Opponent Model [6][7][8]
                 [why it is necessary]
                 [strategies for opponent modeling]
-            4. Hall of Fame
+            4. Hall of Fame [2][6]
                 [how it works, why it is necessary]
                 [talk about Evolutionary Forgetting]
         3. Genetic Programming
             1. Introduction
                 [explain what it is, its applications, and advantages/disadvantages]
             2. Diversity Maintenance
-                1. Introduction
+                1. Introduction [1]
                     [why is it necessary]
                     [based on genotype and based on phenotype]
                 2. Genotype Distance (eg. euclidean) 
-                3. Hamming distance
-                4. Euclidean distance
-                5. Fitness Sharing
-                6. NCD
-                7. Entropy
+                3. Hamming distance [1]
+                4. Euclidean distance [1]
+                5. Fitness Sharing [2]
+                6. NCD [1]
+                7. Entropy [1]
             3. Pareto
                 [what it is]
                 [can be used to select distictions]
                 [can be used to balance fitness and diversity]
-    2. Poker
-        1. Introduction
-            [overview of poker]
-            [poker as a testbed for AI]
-            [overview of types of poker, limit/no limit, number of players]
-            [explain choice of poker type for this research]
-        2. Texas Hold’em Poker
-            [explain the rules]
-        3. Formulas
-            [HS, potential, EHS, pot odds, aggressiveness...]
-        4. Playing Styles
-            [agressive/passive, tight/loose]
-        5. Exploitative and Nash Equilibrium Learning Strategies
-            [explain each one and what are their goals]
-        6. ACPC
-            [what it is]
-            [the protocol]
+
     3. Previous Works
-        x. [select and explain some interesting papers about machine learning and poker + compare with this research]
+        x. +3[6] [select and explain some interesting papers about machine learning and poker + compare with this research]
 
 3. Symbiotic Bid-based GP (SBB)
     1. Introduction
@@ -87,7 +90,7 @@ Contents:
 
 (My research)
 4. SBB for Poker
-[...] (what was implemented, how it works, explain the choices made, inputs, opponent model, opponents, diversities(+coding, quantization, groups), hand sampling/balancing strategy, point population, reward function, pareto, training/validation/champion populations, hall of fame criteria, saving results as .json files(highly compatible with other systems)...)
+[...] (what was implemented, how it works, explain the choices made, inputs[6], opponent model[6][7][8], opponents[4][5][7][8], diversities(+coding, quantization, groups)[1], hand sampling/balancing strategy[4], point population, reward function, pareto, training/validation/champion populations, hall of fame criteria[2][6], saving results as .json files(highly compatible with other systems)...)
 
 5. Experiments and Results
 [...] (methodology, parametrization, results...)
@@ -102,12 +105,79 @@ Bibliography
 [...]
 
 
-+ papers
-
 50-90 pages
 
 head start?
-Deterministic Crowding?
 
+Used papers:
+1. Sustaining Diversity using Behavioral Information Distance, 2009 (Faustino J. Gomez) [DONE, A] (diversities)
+2. New Methods for Competitive Coevolution, 1996 [DONE, B] (fitness sharing, hall of fame, competitive coevolution)
+3. Heads-up limit hold’em poker is solved, 2015 [DONE, C] (university of alberta solution for poker)
+4. Evolving Adaptive Play for Simplified Poker, 1998 [DONE, A] (poker, the four types of strategies/opponents, balance of hand types)
+5. An Adaptive Learning Model for Simplified Poker Using Evolutionary Algorithms, 1999 [DONE, C] (poker, the four types of strategies/opponents, coded opponent)
+6. Countering Evolutionary Forgetting in No-Limit Texas Hold’em Poker Agents, 2012 [DONE, A] (texas holdem, hall of fame, coevolution, inputs)
+7. Bayesian Opponent Modeling in a Simple Poker Environment, 2007 [DONE, A] (poker, the four types of strategies/opponents, defining opponents by alfa/beta, input: last opponent action, opponent model)
+8. Can Opponent Models Aid Poker Player Evolution?, 2008 [DONE, A] (continuacao do [7], com os mesmos topicos)
+
+Extra interesting opponent to implement to play against:
+[5] (o sistema desenvolvido)
+[6] (os benchmarks)
+
+
+Not used papers:
+- 
+
+
+Papers to give a look:
+- Schauenberg, T.: Opponent modelling and search in poker. Master’s thesis. University of
+Alberta (2006) x2
+- A. Teller. Advances in Genetic Programming,
+chapter 9. MIT Press, 1994.
+- Beattie, B., Nicolai, G., Gerhard, D., Hilderman, R.: Pattern classification in No-Limit Poker:
+A head start evolutionary approach. In: Canadian Conference on AI, pp. 204–215 (2007)
+- Billings, D., Davidson, A., Schaeffer, J., Szafron, D.: The challenge of poker. Artificial Intelligence
+134, 201–240 (2002) x2
+- Billings, D.: Algorithms and Assessment in Computer Poker. PHD Dissertation. University
+of Alberta (2006)
+- Booker, L.: A No Limit Texas Hold’em poker playing agent. Master’s Thesis. University of
+London (2004)
+- Johanson, M.: Robust strategies and counter-strategies: Building a champion level computer
+poker player. Master’s thesis. University of Alberta (2007)
+- Billings, D. Burch, N. Davidson, A. Holte, R. Schaeffer, J. Schauenberg
+T, and Szafron, D. Approximating game-theoretic optimal strategies for
+full-scale poker In Proceedings of the eighteenth International Joint
+Conference on Artificial Intelligence 2003, (pp. 661-668).
+- Schaeffer, J. Billings, D. Pefia, L. Szafron, D. Learning to play strong
+poker In ICMLA-99, Proceedings of the 16th International Conference
+on Machine Learning, 1999
+- Billings, D. Papp, D. Schaeffer, J. Szafron, D Opponent modeling in
+poker Proceedings of the fifteenth nationalltenth conference on
+Artificial intelligence/Innovative applications of artificial
+intelligence, 1998, (pp. 493 - 499)
+- Southey, F. Bowling, M.P. Larson, B. Piccione, C. Burch, N. Billings,
+D. Rayner, Bayes' Bluff: Opponent Modelling in Poker. In
+Proceedings of the 21st Annual Conference on Uncertainty in
+Artificial Intelligence (UAI-05), 2005, (pp 550-555)
+- E. Saund, Capturing the infonnation conveyed by opponents' betting
+behaviour in poker. In proceedings of 2006 IEEE Symposium on
+Computational Intelligence and Games (CIG), (pp. 126-133)
+- A Davidson, (1999) Using Artificial Neural Networks to Model
+Opponents in Texas Hold 'Em. [Unpublished manuscript]. Available:
+http://spaz.ca/aaronJpoker/nnpoker.pdf.
+- A Davidson, D. Billings, J. Schaeffer, and D. Szafron, Improved
+Opponent Modeling in Poker. Proceedings of the 2000 International
+Conference on Artificial Intelligence (lCA/'2000). 1999,1467--1473.
+
+poker overview:
+- D. Sklansky, The Theory of Poker. Two Plus Two Publishing, 1992.
+- N. Findler, Studies in Machine Cognition Using the Game of Poker.
+CACM 20(4), pp 230-245, 1977
+- Burns, K. Style in poker, In Proceedings of2006 IEEE Symposium on
+Computational Intelligence and Games (CIG), (pp.257-264)
+
+
+
+- conferir least_regreat, usado pela University of Alberta?
+- head start?
 
 - why all diversities start at around the same value? (same seed) Why there is absolutelly no diversity when no diversity metric is used? (check if it keeps like this even for multiple runs)

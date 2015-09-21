@@ -22,7 +22,7 @@ class Config():
             'hall_of_fame': {
                 'size': 10,
                 'enabled': True,
-                'use_as_opponents': False,
+                'use_as_opponents': True,
                 'diversity': 'ncd_c3', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
@@ -62,13 +62,13 @@ class Config():
                 'max': 9,
             },
             'program_size': {
-                'min': 1,
+                'min': 5,
                 'max': 20,
             },
         },
 
         'advanced_training_parameters': {
-            'seed': 2, # default = None, it can be a single seed for all runs, or an array of seeds per run
+            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
             'extra_registers': 3,
@@ -79,7 +79,7 @@ class Config():
                 'total_bins': 5, # used to quantize the distances for the diversity metrics
             },
             'run_initialization_step2': False,
-            'use_weighted_probability_selection': True, # if False, uniform probability will be used
+            'use_weighted_probability_selection': False, # if False, uniform probability will be used
         },
     }
 
