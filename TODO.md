@@ -51,12 +51,14 @@ parameters to test:
 
 
 - conferir se introns removal para reg3 funciona ok
-- adicionar input last opponent action? checar como hand agressiveness esta sendo calculado (quando ainda nao completou um round)
-- mandar rodar os runs por diversity?
-    - ver se hector esta configurado ok (ACPC server?)
+- ver se hector esta configurado ok (ACPC server?)
 
-nims pc:
-- ...
+
+nims pc (testar se inputs novos estao sendo usados, se nao estiverem, remover do codigo):
+- hall of fame as opponents: false
+- hall of fame as opponents: true
+- + last action, + self aggressiveness
+- + volatility
 
 nims server:
 - seed 1, program size 1-10, registers 1, selection True: 6297, generation: 300, 5 (programs1-10_reg1_selTrue_300)
