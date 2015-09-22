@@ -45,6 +45,7 @@ changed opponent model
 added operations for signal-ifs
 modified introns removal
 removed references to PokerMetric to avoid useless import
+fixed import for introns removal test
 ---
 
 parameters to test:

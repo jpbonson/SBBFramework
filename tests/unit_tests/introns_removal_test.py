@@ -1,6 +1,6 @@
 import unittest
-from pSBB.SBB.program import Program
-from pSBB.SBB.instruction import Instruction
+from pSBB.SBB.core.program import Program
+from pSBB.SBB.core.instruction import Instruction
 
 class IntronRemovalTests(unittest.TestCase):
     def test_dont_remove_nonintrons(self):
@@ -59,27 +59,6 @@ class IntronRemovalTests(unittest.TestCase):
         instructions_without_introns = Program.remove_introns(instructions)
         instructions.pop(1)
         instructions.pop(1)
-        self.assertEqual(instructions, instructions_without_introns)
-
-    def test_dont_remove_ifs(self):
-        """
-        Ensures the algorithm removes useless 'if_lesser_than' instructions.
-
-        r[0] = r[0] - i[1]
-        if r[1] < r[1]:
-            if r[0] >= i[0]:
-                if r[0] < i[0]:
-                    r[0] = cos(r[0])
-        r[0] = r[0] - i[1]
-        """
-        a = Instruction(mode = 'read-input', target = 0, op = '-', source = 1)
-        b = Instruction(mode = 'read-register', target = 1, op = 'if_lesser_than', source = 1)
-        c = Instruction(mode = 'read-input', target = 0, op = 'if_equal_or_higher_than', source = 0)
-        d = Instruction(mode = 'read-input', target = 0, op = 'if_lesser_than', source = 0)
-        e = Instruction(mode = 'read-register', target = 0, op = 'cos', source = 0)
-        f = Instruction(mode = 'read-input', target = 0, op = '-', source = 1)
-        instructions = [a,b,c,d,e,f]
-        instructions_without_introns = Program.remove_introns(instructions)
         self.assertEqual(instructions, instructions_without_introns)
 
     def test_remove_introns_for_irrelevant_registers2(self):
@@ -175,31 +154,31 @@ class IntronRemovalTests(unittest.TestCase):
         instructions_without_introns = Program.remove_introns(instructions)
         self.assertEqual(instructions, instructions_without_introns)
 
-    def test_dont_mess_the_ifs(self):
+    def test_dont_remove_if_lesser_than_when_both_sides_are_equal_1(self):
         """
-        Ensures the algorithm removes correctly.
+        It would make more sense to remove this type of if. But I prefer avoid bugs and keep them.
 
-        Problem:
+        r[0] = r[0] - i[1]
+        if r[1] < r[1]:
+            if r[0] >= i[0]:
+                if r[0] < i[0]:
+                    r[0] = cos(r[0])
+        r[0] = r[0] - i[1]
+        """
+        a = Instruction(mode = 'read-input', target = 0, op = '-', source = 1)
+        b = Instruction(mode = 'read-register', target = 1, op = 'if_lesser_than', source = 1)
+        c = Instruction(mode = 'read-input', target = 0, op = 'if_equal_or_higher_than', source = 0)
+        d = Instruction(mode = 'read-input', target = 0, op = 'if_lesser_than', source = 0)
+        e = Instruction(mode = 'read-register', target = 0, op = 'cos', source = 0)
+        f = Instruction(mode = 'read-input', target = 0, op = '-', source = 1)
+        instructions = [a,b,c,d,e,f]
+        instructions_without_introns = Program.remove_introns(instructions)
+        self.assertEqual(instructions, instructions_without_introns)
 
-        with introns:
-        r[1] = r[1] + i[1]
-        r[0] = r[0] * r[1]
-        if r[1] >= r[1]:
-            if r[1] < r[1]:
-                r[0] = r[0] * i[5]
-        r[1] = exp(r[1])
-        r[1] = r[1] * i[3]
-        r[0] = r[0] + r[1]
+    def test_dont_remove_if_lesser_than_when_both_sides_are_equal_2(self):
+        """
+        It would make more sense to remove this type of if. But I prefer avoid bugs and keep them.
 
-        without introns (incorrect):
-        r[1] = r[1] + i[1]
-        r[0] = r[0] * r[1]
-        if r[1] >= r[1]: # HERE: messed the if
-            r[1] = exp(r[1])
-        r[1] = r[1] * i[3]
-        r[0] = r[0] + r[1]
-
-        without introns (correct, dont remove anything):
         r[1] = r[1] + i[1]
         r[0] = r[0] * r[1]
         if r[1] >= r[1]:
