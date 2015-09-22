@@ -171,7 +171,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         return normalized_value
 
-    def _normalize_winning(value):
+    def _normalize_winning(self, value):
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
         max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
         max_winning = max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2

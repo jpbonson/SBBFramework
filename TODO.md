@@ -46,6 +46,7 @@ added operations for signal-ifs
 modified introns removal
 removed references to PokerMetric to avoid useless import
 fixed import for introns removal test
+fixed dumb bug
 ---
 
 parameters to test:
@@ -56,7 +57,6 @@ parameters to test:
 - ifs?
 
 - ver se hector esta configurado ok (ACPC server?)
-- testar se os 2 casos de introns removal ainda estao quebrados
 
 nims pc (testar se inputs novos estao sendo usados, se nao estiverem, remover do codigo):
 - hall of fame as opponents: false
