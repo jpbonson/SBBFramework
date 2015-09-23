@@ -49,14 +49,16 @@ fixed import for introns removal test
 fixed dumb bug
 ---
 
+- alterar hand played metric: eh played se viu o flop
+- conferir se calculo de agressiveness esta balanceado (para uma hand com fold valer tanto quanto uma cheia de raises)
+
+
 parameters to test:
 - what diversity? how many groups? mix diversities? (temp: ncd_c3, g5)
 - hall of fame as opponents: false or true? (temp: false)
 - what balance? (temp: board)
 - +inputs?
 - ifs?
-
-- ver se hector esta configurado ok (ACPC server?)
 
 nims pc (testar se inputs novos estao sendo usados, se nao estiverem, remover do codigo):
 - hall of fame as opponents: false
@@ -74,7 +76,6 @@ nims server:
 
 - adiantar mais o literature_review
     - select papers for each section of the literature review
-        - for all DONE papers, relate them with the sections
         - for all TODO papers, relate them with the sections
         - find papers for the sections with no papers (conferir tanto nos papers ja usados como os nao usados)
         - selecionar references que parecem promissoras (apenas dos papers mais recentes)
@@ -89,6 +90,8 @@ nims server:
     - get the teams that most increased the accumulative curve individually for each run
     - obs.: be careful when selecting the teams what will be action, so the search space is not so big
     - also, a future work would be to coevolve a population of opponents
+        - try to use pareto to select the teams that perform better against various opponents?
+        - or just one opponent per generation?
 - steps:
     - generalize the call of actions, the definition of actions, and the mapping of actions
         - add a new class that hands the action calling/definition/mapping
@@ -108,6 +111,7 @@ nims server:
 - before running the 10 runs of all the diversties, define a good generation to stop and the parameters
 - perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
     - dont use bluenose!
+    - use the command 'nice'
 
 ---
 
@@ -121,7 +125,8 @@ future work:
 - ir testando enquanto implementa:
     - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector)
 - permitir um player humano jogar contra um time SBB? (e outros players de AI tambem)
-- tentar tournament + deterministic crowding? (paper sobre NCD)
+- tentar tournament + deterministic crowding? (papers [1][12])
+- coded opponents com bluffing e showplaying?
 
 - steps:
     3. better opponents
