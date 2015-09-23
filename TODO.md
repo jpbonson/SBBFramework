@@ -49,10 +49,6 @@ fixed import for introns removal test
 fixed dumb bug
 ---
 
-- alterar hand played metric: eh played se viu o flop
-- conferir se calculo de agressiveness esta balanceado (para uma hand com fold valer tanto quanto uma cheia de raises)
-
-
 parameters to test:
 - what diversity? how many groups? mix diversities? (temp: ncd_c3, g5)
 - hall of fame as opponents: false or true? (temp: false)
@@ -78,7 +74,8 @@ nims server:
     - select papers for each section of the literature review
         - for all TODO papers, relate them with the sections
         - find papers for the sections with no papers (conferir tanto nos papers ja usados como os nao usados)
-        - selecionar references que parecem promissoras (apenas dos papers mais recentes)
+    - dividir capitulos SBB e SBB+poker em sessoes
+    - selecionar references que parecem promissoras (apenas dos papers mais recentes ou mais classicas, ou do Billings)
     - define pages/paragraphs for each section
     - write (nao necessariamente rpeciso usar todos os papers para cada section)
 

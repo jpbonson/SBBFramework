@@ -16,7 +16,7 @@ class PokerPlayerExecution():
     @staticmethod
     def execute_player(player, opponent, point, port, is_training, is_sbb, inputs_type):
         if is_sbb and not is_training:
-            player.extra_metrics_['played_last_hand'] = True
+            player.extra_metrics_['played_last_hand'] = False
 
         socket_tmp = socket.socket()
 
@@ -87,8 +87,8 @@ class PokerPlayerExecution():
                     if action is None:
                         action = 1
                     if is_sbb and not is_training:
-                        if len(match_state.rounds) == 1 and len(match_state.rounds[0]) < 2 and action == 0: # first action of first round is a fold
-                            player.extra_metrics_['played_last_hand'] = False
+                        if len(match_state.rounds) > 1: # the player saw the flop
+                            player.extra_metrics_['played_last_hand'] = True
                     if is_sbb and is_training:
                         player.action_sequence_['coding2'].append(str(action))
                     action = PokerConfig.CONFIG['action_mapping'][action]
