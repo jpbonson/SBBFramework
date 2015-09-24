@@ -49,24 +49,25 @@ fixed import for introns removal test
 fixed dumb bug
 ---
 
+
+- conferir se introns remvoal esta ok nos resultados para mixed ifs
+- fazer mudancas dos detalhes de codigo
+- mandar rodar runs
+- ler por cima thesis do peter
+
+
+
 parameters to test:
 - what diversity? how many groups? mix diversities? (temp: ncd_c3, g5)
-- hall of fame as opponents: false or true? (temp: false)
 - what balance? (temp: board)
-- +inputs?
-- ifs?
+- +inputs? (temp: all, check it better in the next runs)
+- ifs? (only normal ifs, only signal-ifs, or mixed? temp: mixed)
 
-nims pc (testar se inputs novos estao sendo usados, se nao estiverem, remover do codigo):
-- hall of fame as opponents: false
-- hall of fame as opponents: true
-- + last action, + self aggressiveness
-- + volatility
+nims pc:
+- ...
 
 nims server:
-- seed 1, program size 1-10, registers 1, selection True: 6297, generation: 300, 5 (programs1-10_reg1_selTrue_300)
-- seed 1, program size 5-20, registers 3, selection False: 19572, generation: 300, 6 (programs5-20_reg3_selFalse_300)
-- SBB2: default com ifs-signal
-- SBB2: mix if normal com if-signal
+- ...
 
 ---
 

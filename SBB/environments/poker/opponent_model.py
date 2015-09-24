@@ -27,12 +27,10 @@ class OpponentModel():
     (since they probably got better hands?) may this metric be usefull to identify bluffing?
     """
 
-    # INPUTS = ['opponent long-term agressiveness', 'opponent short-term agressiveness', 
-    #     'opponent hand agressiveness', 'opponent last action', 'self long-term agressiveness',
-    #     'self short-term agressiveness', 'self short-term volatility', 'self long-term volatility', 
-    #     'opponent short-term volatility', 'opponent long-term volatility']
     INPUTS = ['opponent long-term agressiveness', 'opponent short-term agressiveness', 
-        'opponent hand agressiveness']
+        'opponent hand agressiveness', 'opponent last action', 'self long-term agressiveness',
+        'self short-term agressiveness', 'self short-term volatility', 'self long-term volatility', 
+        'opponent short-term volatility', 'opponent long-term volatility']
     SINGLE_HAND_AGRESSIVENESS_MAPPING = {'c': 0.0, 'r': 1.0}
 
     def __init__(self):
@@ -74,23 +72,23 @@ class OpponentModel():
             actions = [OpponentModel.SINGLE_HAND_AGRESSIVENESS_MAPPING[action] for action in opponent_actions]
             inputs[2] = numpy.mean(actions)
 
-        # if len(opponent_actions) > 0:
-        #     inputs[3] = OpponentModel.calculate_points([opponent_actions[-1]])
-        # elif self.last_opponent_action_in_last_hand is not None:
-        #     inputs[3] = self.last_opponent_action_in_last_hand
-        # else:
-        #     inputs[3] = 0.5
+        if len(opponent_actions) > 0:
+            inputs[3] = OpponentModel.calculate_points([opponent_actions[-1]])
+        elif self.last_opponent_action_in_last_hand is not None:
+            inputs[3] = self.last_opponent_action_in_last_hand
+        else:
+            inputs[3] = 0.5
 
-        # if len(self.self_agressiveness) > 0:
-        #     inputs[4] = numpy.mean(self.self_agressiveness)
-        #     inputs[5] = numpy.mean(self.self_agressiveness[:10])
+        if len(self.self_agressiveness) > 0:
+            inputs[4] = numpy.mean(self.self_agressiveness)
+            inputs[5] = numpy.mean(self.self_agressiveness[:10])
 
-        # if len(self.self_agressiveness_postflop) > 0 and len(self.self_agressiveness_preflop) > 0:
-        #     inputs[6] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop[:10], self.self_agressiveness_preflop[:10])
-        #     inputs[7] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop, self.self_agressiveness_preflop)
-        # if len(self.opponent_agressiveness_postflop) > 0 and len(self.opponent_agressiveness_preflop) > 0:
-        #     inputs[8] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop[:10], self.opponent_agressiveness_preflop[:10])
-        #     inputs[9] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop, self.opponent_agressiveness_preflop)
+        if len(self.self_agressiveness_postflop) > 0 and len(self.self_agressiveness_preflop) > 0:
+            inputs[6] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop[:10], self.self_agressiveness_preflop[:10])
+            inputs[7] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop, self.self_agressiveness_preflop)
+        if len(self.opponent_agressiveness_postflop) > 0 and len(self.opponent_agressiveness_preflop) > 0:
+            inputs[8] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop[:10], self.opponent_agressiveness_preflop[:10])
+            inputs[9] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop, self.opponent_agressiveness_preflop)
         
         inputs = [i*Config.RESTRICTIONS['multiply_normalization_by'] for i in inputs]
         return inputs
