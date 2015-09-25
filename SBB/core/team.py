@@ -156,30 +156,19 @@ class Team(DefaultOpponent):
             p.remove_team(self)
 
     def prune_partial(self):
-        print "---"
-        print "a"
-        print str(len(self.programs))
         inactive_programs = list(set(self.programs) - set(self.active_programs_))
         while len(inactive_programs) > 0:
             candidate_to_remove = random.choice(inactive_programs)
             if self._is_ok_to_remove(candidate_to_remove):
                 self.remove_program(candidate_to_remove)
-                print str(len(self.programs))
                 return
             else:
                 inactive_programs.remove(candidate_to_remove)
-        print str(len(self.programs))
-        print "---"
 
     def prune_total(self):
-        print "---"
-        print "b"
-        print str(len(self.programs))
         inactive_programs = list(set(self.programs) - set(self.active_programs_))
         for program in inactive_programs:
             self.remove_program(program)
-        print str(len(self.programs))
-        print "---"
 
     def metrics(self, full_version = False):
         overall_active_teams_members_ids = [p.__repr__() for p in self.overall_active_programs_]

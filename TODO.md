@@ -69,9 +69,11 @@ parameters to test:
 
 nims pc:
 - default, seed 1, 1
+- default, seed 1, 2
 
 nims server:
-- default, seed 2, 1 (5947)
+- default, seed 2, pSBB, 1 (5947)
+- default, seed 2, pSBB2, 2 (13600)
 
 ---
 
