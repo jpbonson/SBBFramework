@@ -114,10 +114,10 @@ class Team(DefaultOpponent):
         for program in to_mutate:
             clone = Program(self.generation, copy.deepcopy(program.instructions), program.action)
             clone.mutate()
-            if self._is_ok_to_remove(program):
-                self.remove_program(program)
             self._add_program(clone)
             programs_population.append(clone)
+            if self._is_ok_to_remove(program):
+                self.remove_program(program)
         return programs_population
 
     def _randomly_remove_program(self):
@@ -154,6 +154,32 @@ class Team(DefaultOpponent):
         """
         for p in self.programs:
             p.remove_team(self)
+
+    def prune_partial(self):
+        print "---"
+        print "a"
+        print str(len(self.programs))
+        inactive_programs = list(set(self.programs) - set(self.active_programs_))
+        while len(inactive_programs) > 0:
+            candidate_to_remove = random.choice(inactive_programs)
+            if self._is_ok_to_remove(candidate_to_remove):
+                self.remove_program(candidate_to_remove)
+                print str(len(self.programs))
+                return
+            else:
+                inactive_programs.remove(candidate_to_remove)
+        print str(len(self.programs))
+        print "---"
+
+    def prune_total(self):
+        print "---"
+        print "b"
+        print str(len(self.programs))
+        inactive_programs = list(set(self.programs) - set(self.active_programs_))
+        for program in inactive_programs:
+            self.remove_program(program)
+        print str(len(self.programs))
+        print "---"
 
     def metrics(self, full_version = False):
         overall_active_teams_members_ids = [p.__repr__() for p in self.overall_active_programs_]
@@ -213,7 +239,7 @@ class Team(DefaultOpponent):
 
     def inputs_distribution(self):
         inputs = []
-        for program in self.overall_active_programs_:
+        for program in self.active_programs_:
             inputs += program.inputs_list_
         inputs_distribution = Counter(inputs)
         return inputs_distribution
@@ -252,10 +278,10 @@ class Team(DefaultOpponent):
         text += "\n\n#### METRICS\n"
         text += self.metrics(full_version = True)
         text += "\n\n######## PROGRAMS (ACTIVE)"
-        for p in self.overall_active_programs_:
+        for p in self.active_programs_:
             text += "\n"+str(p)
         text += "\n\n######## PROGRAMS (INACTIVE)"
-        inactive_programs = list(set(self.programs) - set(self.overall_active_programs_))
+        inactive_programs = list(set(self.programs) - set(self.active_programs_))
         if inactive_programs:
             for p in inactive_programs:
                 text += "\n"+str(p)

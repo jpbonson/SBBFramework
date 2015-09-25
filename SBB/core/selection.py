@@ -22,8 +22,9 @@ class Selection:
         keep_teams, remove_teams, pareto_front = self._select_teams_to_keep_and_remove(teams_population, validation)
         teams_to_clone = self._select_teams_to_clone(keep_teams)
         teams_population = self._remove_teams(teams_population, remove_teams)
-        programs_population = self._remove_programs_with_no_teams(programs_population)
+        teams_population = self._prune_teams(teams_population)
         teams_population, programs_population = self._create_mutated_teams(current_generation, teams_to_clone, teams_population, programs_population)
+        programs_population = self._remove_programs_with_no_teams(programs_population)
         self._check_for_bugs(teams_population, programs_population)
         return teams_population, programs_population, pareto_front
 
@@ -79,6 +80,12 @@ class Selection:
             return numpy.random.choice(teams_population, size = new_teams_to_create, replace = False, p = probabilities)
         else:
             return numpy.random.choice(teams_population, size = new_teams_to_create, replace = False)
+
+    def _prune_teams(self, teams_population):
+        for team in teams_population:
+            if len(team.programs) == Config.USER['training_parameters']['team_size']['max']:
+                team.prune_partial()
+        return teams_population
 
     def _remove_programs_with_no_teams(self, programs_population):
         to_remove = []

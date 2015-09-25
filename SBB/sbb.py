@@ -80,6 +80,12 @@ class SBB:
                 # selection
                 teams_population, programs_population, pareto_front = self.selection.run(self.current_generation_, teams_population, programs_population, validation)
 
+                # final pruning
+                if self._stop_criterion():
+                    older_teams = [team for team in teams_population if team.generation != self.current_generation_]
+                    for team in older_teams:
+                        team.prune_total()
+
                 # validation
                 if not validation:
                     print ".",

@@ -41,7 +41,7 @@ added metrics for mean team size and mean program size
 removed print of metrics per run
 added unit tests for all the new diversities
 added option to choose uniform or weighted selection + unit test
-changed opponent model
+changed opponent model (using all inputs)
 added operations for signal-ifs
 modified introns removal
 removed references to PokerMetric to avoid useless import
@@ -49,11 +49,13 @@ fixed import for introns removal test
 fixed dumb bug
 moved files run_info and operations
 merged main and main_for_poker
+implemented pruning
 ---
 
 
-- conferir se introns remvoal esta ok nos resultados para mixed ifs
 - fazer mudancas dos detalhes de codigo (implementar de um jeito que dê para testar com o antigo)
+    - 3.3.2. ...
+    - 3.3.3. ...
 - mandar rodar runs
 - ler por cima thesis do peter
 
@@ -66,10 +68,10 @@ parameters to test:
 - ifs? (only normal ifs, only signal-ifs, or mixed? temp: mixed)
 
 nims pc:
-- ...
+- default, seed 1, 1
 
 nims server:
-- ...
+- default, seed 2, 1 (5947)
 
 ---
 
