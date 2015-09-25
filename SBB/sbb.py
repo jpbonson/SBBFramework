@@ -9,7 +9,6 @@ import sys
 import numpy
 import operator
 from collections import Counter
-from run_info import RunInfo
 from core.program import Program, reset_programs_ids
 from core.team import Team, reset_teams_ids
 from core.instruction import Instruction
@@ -20,6 +19,7 @@ if os.name == 'posix':
 from core.selection import Selection
 from core.diversity_maintenance import DiversityMaintenance
 from utils.helpers import round_value, flatten
+from utils.run_info import RunInfo
 from config import Config
 
 class SBB:

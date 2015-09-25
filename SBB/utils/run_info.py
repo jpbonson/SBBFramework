@@ -1,6 +1,6 @@
 from collections import defaultdict
-from utils.helpers import round_array
-from config import Config
+from helpers import round_array
+from ..config import Config
 
 class RunInfo:
     """

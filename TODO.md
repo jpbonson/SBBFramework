@@ -47,11 +47,12 @@ modified introns removal
 removed references to PokerMetric to avoid useless import
 fixed import for introns removal test
 fixed dumb bug
+moved files run_info and operations
 ---
 
 
 - conferir se introns remvoal esta ok nos resultados para mixed ifs
-- fazer mudancas dos detalhes de codigo
+- fazer mudancas dos detalhes de codigo (implementar de um jeito que dê para testar com o antigo)
 - mandar rodar runs
 - ler por cima thesis do peter
 

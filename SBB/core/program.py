@@ -1,7 +1,7 @@
 import random
 from scipy.special import expit
 from instruction import Instruction
-from ..utils.operations import Operation
+from operations import Operation
 from ..config import Config
 
 def reset_programs_ids():

@@ -73,9 +73,9 @@ class Instruction:
         else:
             source = "i["+str(self.source)+"]:"
         if self.op == 'if_lesser_than':
-            return "if r["+str(self.target)+"] < "+source+": -r["+str(self.target)+"]"
+            return "if r["+str(self.target)+"] < "+source+" -r["+str(self.target)+"]"
         else:
-            return "if r["+str(self.target)+"] >= "+source+": -r["+str(self.target)+"]"
+            return "if r["+str(self.target)+"] >= "+source+" -r["+str(self.target)+"]"
 
     def _two_ops_instruction_to_str(self):
         instruction_text = "r["+str(self.target)+"] = r["+str(self.target)+"] "+self.op+" "
