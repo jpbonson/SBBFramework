@@ -49,15 +49,21 @@ class Team(DefaultOpponent):
         pass
         
     def execute(self, point_id_, inputs, valid_actions, is_training):
-        # test if there are at least one program in the team that is able to provide a valid action
-        # if there is no such program, return None, so that the environment will use a default action
-        actions = [p.action for p in self.programs]
-        possible_action = set(actions).intersection(valid_actions)
-        if len(possible_action) == 0:
+        if not self._actions_are_available(valid_actions):
             return None
 
         # if there is a least one program that can produce a valid action, execute the programs
         if is_training:
+            # update profile
+            if len(Config.RESTRICTIONS['profile']['samples']) < Config.RESTRICTIONS['profile']['samples'].maxlen:
+                # add everything until it is full
+                Config.RESTRICTIONS['profile']['samples'].append(inputs)
+            else:
+                # give a chance of adding or not
+                if random.random() < Config.RESTRICTIONS['profile']['update_chance']:
+                    Config.RESTRICTIONS['profile']['samples'].append(inputs)
+
+            # run the programs
             if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id_ in self.memory_actions_per_points_:
                 return self.memory_actions_per_points_[point_id_]
             else:
@@ -76,6 +82,17 @@ class Team(DefaultOpponent):
                 self.overall_active_programs_.append(selected_program)
             return selected_program.action
 
+    def _actions_are_available(self, valid_actions):
+        """
+        Test if there are at least one program in the team that is able to provide a valid action
+        If there is no such program, return None, so that the environment will use a default action
+        """
+        actions = [p.action for p in self.programs]
+        possible_action = set(actions).intersection(valid_actions)
+        if len(possible_action) == 0:
+            return False
+        return True
+
     def _select_program(self, inputs, valid_actions):
         """
         Generates the outputs for all programs and order them. The team checks if the first 
@@ -90,6 +107,18 @@ class Team(DefaultOpponent):
                 valid_programs.append(program)
         selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
         return selected_program
+
+    def generate_profile(self):
+        profile = []
+        for inputs in Config.RESTRICTIONS['profile']['samples']:
+            partial_outputs = []
+            valid_programs = []
+            for program in self.programs:
+                partial_outputs.append(program.execute(inputs))
+                valid_programs.append(program)
+            selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
+            profile.append(selected_program.action)
+        return profile
 
     def mutate(self, programs_population):
         """

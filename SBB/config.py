@@ -1,5 +1,6 @@
 import sys
 import numpy
+from collections import deque
 # from config_examples import thyroid_config, tictactoe_config, poker_config
 
 class Config():
@@ -91,7 +92,7 @@ class Config():
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
-        'is_nearly_equal_threshold': 0.001,
+        'is_nearly_equal_threshold': 0.0001,
         'genotype_options': {
             'modes': ['read-register', 'read-input'],
             'simple_operations': ['+', '-', '*', '/'],
@@ -115,6 +116,10 @@ class Config():
         },
         'used_diversities': None, # initialized by sbb.py
         'multiply_normalization_by': 10.0,
+        'profile': {
+            'samples': deque(maxlen=int(USER['training_parameters']['populations']['points'])),
+            'update_chance': 0.05,
+        },
     }
 
     @staticmethod

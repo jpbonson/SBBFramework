@@ -50,14 +50,17 @@ fixed dumb bug
 moved files run_info and operations
 merged main and main_for_poker
 implemented pruning
+implemented bid profile + updated is_nearly_equal_threshold + replace = True for cloning
 ---
+
+- mandar rodar 4 runs (metade, 1, x2, parent_only, com ambas as seeds)
 
 
 - fazer mudancas dos detalhes de codigo (implementar de um jeito que dê para testar com o antigo)
-    - 3.3.2. ...
     - 3.3.3. ...
+        - add em Config opcao para ate qual quantidade de extra programs podem ser adicionados?
 - mandar rodar runs
-- ler por cima thesis do peter
+- ler por cima thesis do peter e conferir se ha mais algo q difere
 
 
 
@@ -66,14 +69,21 @@ parameters to test:
 - what balance? (temp: board)
 - +inputs? (temp: all, check it better in the next runs)
 - ifs? (only normal ifs, only signal-ifs, or mixed? temp: mixed)
+- use_weighted_probability_selection? (temp: false)
+- groups 3 or 5? (temp: 5)
+- team size and program size?
 
 nims pc:
-- default, seed 1, 1
-- default, seed 1, 2
+- profile1, seed 1, 1
+- profile05, seed 1, 2
+- profile2, seed 1, 3
+- profile1_parent_only, seed 1, 4
 
 nims server:
-- default, seed 2, pSBB, 1 (5947)
-- default, seed 2, pSBB2, 2 (13600)
+- profile1, seed 2, 1
+- profile05, seed 2, 2
+- profile2, seed 2, 3
+- profile1_parent_only, seed 2, 4
 
 ---
 
@@ -113,6 +123,7 @@ nims server:
 ---
 
 - before running the 10 runs of all the diversties, define a good generation to stop and the parameters
+- no inicio, rodar para apenas G3 ou G5, nao para os dois (provavelmente apenas um iria para um paper anyway)
 - perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
     - dont use bluenose!
     - use the command 'nice'

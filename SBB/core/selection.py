@@ -77,9 +77,9 @@ class Selection:
                     fitness.append(team.fitness_)
             total_fitness = sum(fitness)
             probabilities = [f/float(total_fitness) for f in fitness]
-            return numpy.random.choice(teams_population, size = new_teams_to_create, replace = False, p = probabilities)
+            return numpy.random.choice(teams_population, size = new_teams_to_create, replace = True, p = probabilities)
         else:
-            return numpy.random.choice(teams_population, size = new_teams_to_create, replace = False)
+            return numpy.random.choice(teams_population, size = new_teams_to_create, replace = True)
 
     def _prune_teams(self, teams_population):
         for team in teams_population:
@@ -102,20 +102,35 @@ class Selection:
         Create new mutated teams, cloning the old ones and mutating. New programs are be added to the program population 
         for the mutated programs in the new teams.
         """
+        bid_profiles = self._generate_bid_profiles(teams_to_clone)
+        teams_population, programs_population = self._clone_teams(current_generation, teams_to_clone, teams_population, programs_population, bid_profiles)
+        return teams_population, programs_population
+
+    def _generate_bid_profiles(self, teams_to_clone):
+        bid_profiles = []
         for team in teams_to_clone:
+            bid_profiles.append(team.generate_profile())
+        return bid_profiles
+
+    def _clone_teams(self, current_generation, teams_to_clone, teams_population, programs_population, bid_profiles):
+        for team, parent_profile in zip(teams_to_clone, bid_profiles):
             clone = Team(current_generation, team.programs)
-            if len(clone.programs) == Config.USER['training_parameters']['team_size']['max']:
-                # remove programs that were never used by the parent team
-                to_remove = []
-                for program in clone.programs:
-                    if program not in team.active_programs_:
-                        to_remove.append(program)
-                for program in to_remove:
-                    if clone._is_ok_to_remove(program):
-                        clone.remove_program(program)
             programs_population = clone.mutate(programs_population)
+            child_profile = clone.generate_profile()
+            while parent_profile == child_profile:
+                programs_population = clone.mutate(programs_population)
+                child_profile = clone.generate_profile()
+            while not self._team_has_different_bid_profile_overall(child_profile, bid_profiles):
+                programs_population = clone.mutate(programs_population)
+                child_profile = clone.generate_profile()
             teams_population.append(clone)
         return teams_population, programs_population
+
+    def _team_has_different_bid_profile_overall(self, team_profile, bid_profiles):
+        for other_profile in bid_profiles:
+            if team_profile == other_profile:
+                return False
+        return True
 
     def _check_for_bugs(self, teams_population, programs_population):
         if len(teams_population) != Config.USER['training_parameters']['populations']['teams']:
