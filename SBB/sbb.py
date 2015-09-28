@@ -7,7 +7,6 @@ import time
 import os
 import sys
 import numpy
-import operator
 from collections import Counter
 from core.program import Program, reset_programs_ids
 from core.team import Team, reset_teams_ids
@@ -174,9 +173,14 @@ class SBB:
             for team in teams_population:
                 programs_to_add = random.randrange(0, programs_range+1)
                 for index in range(programs_to_add):
-                    program = random.choice(programs_population)
-                    if program not in team.programs:
-                        team._add_program(program)
+                    candidates = []
+                    for count in range(5):
+                        program = random.choice(programs_population)
+                        if program not in team.programs:
+                            candidates.append(program)
+                    references = [len(p.teams_) for p in candidates]
+                    selected_program = candidates[references.index(max(references))]
+                    team._add_program(selected_program)
 
         return teams_population, programs_population
 

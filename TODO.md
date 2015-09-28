@@ -51,17 +51,12 @@ moved files run_info and operations
 merged main and main_for_poker
 implemented pruning
 implemented bid profile + updated is_nearly_equal_threshold + replace = True for cloning
+fixed run_initialization_step2 + added unit test + fixed unit tests
 ---
 
-- mandar rodar 4 runs (metade, 1, x2, parent_only, com ambas as seeds)
-
-
-- fazer mudancas dos detalhes de codigo (implementar de um jeito que dê para testar com o antigo)
-    - 3.3.3. ...
-        - add em Config opcao para ate qual quantidade de extra programs podem ser adicionados?
-- mandar rodar runs
 - ler por cima thesis do peter e conferir se ha mais algo q difere
-
+- rodar outros testes
+- implementar second layer
 
 
 parameters to test:
@@ -70,6 +65,7 @@ parameters to test:
 - +inputs? (temp: all, check it better in the next runs)
 - ifs? (only normal ifs, only signal-ifs, or mixed? temp: mixed)
 - use_weighted_probability_selection? (temp: false)
+- run_initialization_step2? (temp: false)
 - groups 3 or 5? (temp: 5)
 - team size and program size?
 
@@ -80,10 +76,10 @@ nims pc:
 - profile1_parent_only, seed 1, 4
 
 nims server:
-- profile1, seed 2, 1
-- profile05, seed 2, 2
-- profile2, seed 2, 3
-- profile1_parent_only, seed 2, 4
+- profile1, seed 2, 1, 17353
+- profile05, seed 2, 2, 13600
+- profile2, seed 2, 3, 28158
+- profile1_parent_only, seed 2, 4, 12742
 
 ---
 
