@@ -1,5 +1,4 @@
 import random
-from scipy.special import expit
 from instruction import Instruction
 from operations import Operation
 from ..config import Config
@@ -56,9 +55,7 @@ class Program:
                     source =  input_registers[instruction.source]
                 general_registers[instruction.target] = Operation.execute(instruction.op, general_registers[instruction.target], source)
 
-        output = general_registers[0] # get action output
-        membership_outputs = expit(output) # apply sigmoid function before getting the output action
-        return membership_outputs
+        return general_registers[0] # get action output
 
     def _inputs_list(self):
         inputs = []

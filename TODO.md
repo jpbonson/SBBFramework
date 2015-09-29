@@ -53,22 +53,14 @@ implemented pruning
 implemented bid profile + updated is_nearly_equal_threshold + replace = True for cloning
 fixed run_initialization_step2 + added unit test + fixed unit tests
 added option to use agressive mutations team add/remove mutations + added unit tests
+removed sigmoid function
 ---
 
 - ler paper de ML (1.1-1.5) + atualizar anotacoes com slides?
 - conferir runs
 - implementar tasks do second layer (separar tasks entre second layer e opponent population)
 - se nos testes intermediarios volatility nao estiver sendo usado o suficiente, remover antes de fazer os testes com diversity
-    - 
 
-- email Malcolm (finished modification+read peter thesis+modified mutation), curious about sigmoid function: Due to float precision, for example, for all values bigger than 37, the result is 1.0, and for lower than -746 it is 0.0. And with inputs normalized between 0 and 10, I think that an output bigger than 37 is not uncommon. So why is better to use the sigmoid function instead of the raw output of the programs?
-    - Peter's thesis states that it is used to encourage individuals to compete over a common range of bids
-- And just for me to understand it better, about using pareto to find points that provide distinctions. If I remember correctly pareto was used this way in the Java implementation of SBB, but both Peter's thesis and the paper "Symbiosis, Complexification and Simplicity under GP" argued against using pareto this way and provided an anternative, more efficient, algorithm. I personally liked this algorithm better than the one with pareto, and I was thinking about using it in the point population of the second layer, where the points are opponents that are coevolved. So, I would like to know which version of the point removal algorithm is the one currently more accepted
-in what paper pareto was started to be used to obtain distinctions? Because in Peter's thesis he seems to argue against using pareto-dominance for point removal in 3.2.6
-- added pruning
-- added check using bid profile so the children are different than the parent and than the other hosts
-- testing if I use initialization_step2 or not
-- testing if I use agressive_mutations or not
 
 
 
@@ -88,6 +80,7 @@ nims pc:
 - profile05, seed 1, 2
 - profile2, seed 1, 3
 - profile1_parent_only, seed 1, 4
+- default_no_sigmoid, seed 1, 5
 
 nims server:
 - profile1, seed 2, 1, 17353
@@ -99,9 +92,9 @@ nims server:
 - SBB3, use_agressive_mutations True, seed 2, 7, 11181
 
 hector server:
-- run_initialization_step2 True, seed 1, 
-- use_weighted_probability_selection True, seed 1, 
-- use_agressive_mutations True, seed 1,  
+- run_initialization_step2 True, seed 1, 4314
+- use_weighted_probability_selection True, seed 1, 8142
+- use_agressive_mutations True, seed 1,  12209
 - default-atual sem volatility?
 
 ---
@@ -261,6 +254,28 @@ num_registers: 8
 pdelete, padd = 0.5
 pmutate, pswap = 1.0
 max program size = 48
+
+=================================================
+
+Notes 29/09/2015
+
+Then, I read the SBB description in Peter's thesis and in the paper "Symbiosis, Complexification and Simplicity under GP" again, to ensure that there wasn't anymore minor details missing. The things that pSBB and Peter's SBB differ are below. I will show up at the lab this week to get your signature in the add/drop form, so we may talk about these points in the lab instead of by email (I am available any day by the afternoon).
+
+-------------
+
+- prunings of inactive programs  (3.3.1. in Peter's thesis): I added this feature to the default run of pSBB (it didn't change the results much, but now the final teams are around half the size).
+
+- use bid profile to ensure that children have a bid profile different from all the teams currently in the population  (3.3.2. in Peter's thesis): Added to the default run of pSBB (I am performing runs to find the best value for the profile size (between profile pop. size == point pop. size, ==point pop. size*2, and point pop. size/2), and I still don't have results if it indeed improved the diversity).
+
+- second step of initialization (3.3.3. in Peter's thesis): I added it as an optional parameter. My initial results suggest that it increased the runtime without really improving the results, it also seems against the idea that the hosts should start simple and then complexify. So I will test it a bit more, but I probably will not use it.
+
+- mutations (algorithms 3.3 and 3.4 in Peter's thesis): In pSBB the add/remove mutations may occur just once, with a probability of 0.7. In Peter's version there is always at least one add/remove mutation, and more than one may happen with a decreasing probability of 0.7. I added Peter's mutations as an optional feature called 'agressive mutations'. I am still testing these options, but the 'agressive mutations' seems to be too disruptive and I will probably end up with my version of mutations.
+
+- point removal (3.2.6. in Peter's): Currently the point removal is performed using only uniform probability. I had performed some tests using pareto to identify distinctions but they didn't produce good results. I thought that Peter had used pareto, but he actually used a different algorithm and argued against pareto. I think this algorithm still isn't useful for the first layer anyway, since it would reinforce points that are being mostly folded, but I will try to use it to control the point population based on opponents for the second layer.
+
+- sigmoid function: I am using the sigmoid function as described in the paper's but I was analyzing it and it seems to have a problem: Any value bigger than 37 is rounded to 1.0, and any value lower than -746 is rounded to 0.0 (due to float point precision). Since the inputs are normalized between 0 and 10, and some of the available operations are +,*, and exp, and I am pretty sure that outputs greater than 37 are very common, and when it happens with more than one bid, the winning bid is arbitrary. Peter states that '[sigmoid] is used to encourage individuals to compete over a common range of bids', but I think that all values greater than 37 being converted to 1.0 is probably losing useful information. To work around this problem, I will test always divide the ouput of the program by 10000000 before applying the sigmoid, to artificially increase the input range from [-746, 37] to [-7460000000, 370000000](the only thing that I lose doing it is that float outputs will be truncated after the 8th position, instead of after the 15h position).
+
+- parameters: the previous works with SBB had a point/host population slightly bigger, and considerable bigger team size, program size, and more registers. Since as it is right now pSBB for poker already is slow enough, I will keep my current parameters as they are, but I intend to try with larger parameters after I get overall results for the current ones.
 
 =================================================
 NOTES:

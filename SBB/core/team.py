@@ -272,8 +272,8 @@ class Team(DefaultOpponent):
         inputs = []
         for program in self.active_programs_:
             inputs += program.inputs_list_
-        inputs_distribution = Counter(inputs)
-        return inputs_distribution
+        inputs_dist = Counter(inputs)
+        return inputs_dist
 
     def _hand_player_metrics(self, mode):
         msg = ""
