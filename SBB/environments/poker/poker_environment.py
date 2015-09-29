@@ -33,9 +33,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_inputs = len(PokerConfig.CONFIG['inputs'])
         total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
 
-        # coded_opponents_for_training = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-        # coded_opponents_for_validation = [PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent]
-
         coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         

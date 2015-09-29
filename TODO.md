@@ -52,17 +52,23 @@ merged main and main_for_poker
 implemented pruning
 implemented bid profile + updated is_nearly_equal_threshold + replace = True for cloning
 fixed run_initialization_step2 + added unit test + fixed unit tests
+added option to use agressive mutations team add/remove mutations + added unit tests
 ---
 
-- alterar mutation? (deixar o add/remove/mutate identicos ao do peter)
 - ler paper de ML (1.1-1.5) + atualizar anotacoes com slides?
 - conferir runs
-- implementar tasks do second layer
+- implementar tasks do second layer (separar tasks entre second layer e opponent population)
+- se nos testes intermediarios volatility nao estiver sendo usado o suficiente, remover antes de fazer os testes com diversity
+    - 
 
 - email Malcolm (finished modification+read peter thesis+modified mutation), curious about sigmoid function: Due to float precision, for example, for all values bigger than 37, the result is 1.0, and for lower than -746 it is 0.0. And with inputs normalized between 0 and 10, I think that an output bigger than 37 is not uncommon. So why is better to use the sigmoid function instead of the raw output of the programs?
     - Peter's thesis states that it is used to encourage individuals to compete over a common range of bids
 - And just for me to understand it better, about using pareto to find points that provide distinctions. If I remember correctly pareto was used this way in the Java implementation of SBB, but both Peter's thesis and the paper "Symbiosis, Complexification and Simplicity under GP" argued against using pareto this way and provided an anternative, more efficient, algorithm. I personally liked this algorithm better than the one with pareto, and I was thinking about using it in the point population of the second layer, where the points are opponents that are coevolved. So, I would like to know which version of the point removal algorithm is the one currently more accepted
 in what paper pareto was started to be used to obtain distinctions? Because in Peter's thesis he seems to argue against using pareto-dominance for point removal in 3.2.6
+- added pruning
+- added check using bid profile so the children are different than the parent and than the other hosts
+- testing if I use initialization_step2 or not
+- testing if I use agressive_mutations or not
 
 
 
@@ -75,7 +81,7 @@ parameters to test:
 - use_weighted_probability_selection? (temp: false)
 - run_initialization_step2? (temp: false)
 - groups 3 or 5? (temp: 5)
-- team size and program size?
+- team size and program size? (testar apos obter reusltados para diversities?)
 
 nims pc:
 - profile1, seed 1, 1
@@ -90,6 +96,13 @@ nims server:
 - profile1_parent_only, seed 2, 4, 12742
 - SBB2, run_initialization_step2 True, seed 2, 5, 28113
 - SBB2, use_weighted_probability_selection True, seed 2, 6, 2835
+- SBB3, use_agressive_mutations True, seed 2, 7, 11181
+
+hector server:
+- run_initialization_step2 True, seed 1, 
+- use_weighted_probability_selection True, seed 1, 
+- use_agressive_mutations True, seed 1,  
+- default-atual sem volatility?
 
 ---
 
@@ -122,6 +135,7 @@ nims server:
         - add a new class that hands the action calling/definition/mapping
         - metodo get_action_result?
         - fazer classe Action?
+        - no lugares onde action eh repassado (team mutation), conferir se precisar usar deepcopy ou apenas por referencia esta ok
     - add a .json reader so the saved teams can be instantiated and executed
         - add a new population of "action teams", so you only instantiate them once
             - warning: attributes being modified by more than one host

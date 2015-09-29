@@ -124,15 +124,26 @@ class Team(DefaultOpponent):
         """
         Generates mutation chances and mutate the team if it is a valid mutation.
         """
-        if len(self.programs) > Config.USER['training_parameters']['team_size']['min']:
-            mutation_chance = random.random()
-            if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['remove_program']:
+        if Config.USER['advanced_training_parameters']['use_agressive_mutations']:
+            mutation_chance = 1
+            while mutation_chance > random.random() and len(self.programs) > Config.USER['training_parameters']['team_size']['min']:
                 self._randomly_remove_program()
+                mutation_chance = mutation_chance * Config.USER['training_parameters']['mutation']['team']['remove_program']
 
-        if len(self.programs) < Config.USER['training_parameters']['team_size']['max']:
-            mutation_chance = random.random()
-            if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['add_program']:
+            mutation_chance = 1
+            while mutation_chance > random.random() and len(self.programs) < Config.USER['training_parameters']['team_size']['max']:
                 self._randomly_add_program(programs_population)
+                mutation_chance = mutation_chance * Config.USER['training_parameters']['mutation']['team']['add_program']
+        else:
+            if len(self.programs) > Config.USER['training_parameters']['team_size']['min']:
+                mutation_chance = random.random()
+                if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['remove_program']:
+                    self._randomly_remove_program()
+
+            if len(self.programs) < Config.USER['training_parameters']['team_size']['max']:
+                mutation_chance = random.random()
+                if mutation_chance <= Config.USER['training_parameters']['mutation']['team']['add_program']:
+                    self._randomly_add_program(programs_population)
 
         to_mutate = []
         while len(to_mutate) == 0:
@@ -167,7 +178,9 @@ class Team(DefaultOpponent):
         return False
 
     def _randomly_add_program(self, programs_population):
-        self._add_program(random.choice(programs_population))
+        candidate_program = random.choice(programs_population)
+        if candidate_program not in self.programs:
+            self._add_program(candidate_program)
 
     def remove_program(self, program):
         program.remove_team(self)
