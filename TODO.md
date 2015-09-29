@@ -54,9 +54,17 @@ implemented bid profile + updated is_nearly_equal_threshold + replace = True for
 fixed run_initialization_step2 + added unit test + fixed unit tests
 ---
 
-- ler por cima thesis do peter e conferir se ha mais algo q difere
-- rodar outros testes
-- implementar second layer
+- alterar mutation? (deixar o add/remove/mutate identicos ao do peter)
+- ler paper de ML (1.1-1.5) + atualizar anotacoes com slides?
+- conferir runs
+- implementar tasks do second layer
+
+- email Malcolm (finished modification+read peter thesis+modified mutation), curious about sigmoid function: Due to float precision, for example, for all values bigger than 37, the result is 1.0, and for lower than -746 it is 0.0. And with inputs normalized between 0 and 10, I think that an output bigger than 37 is not uncommon. So why is better to use the sigmoid function instead of the raw output of the programs?
+    - Peter's thesis states that it is used to encourage individuals to compete over a common range of bids
+- And just for me to understand it better, about using pareto to find points that provide distinctions. If I remember correctly pareto was used this way in the Java implementation of SBB, but both Peter's thesis and the paper "Symbiosis, Complexification and Simplicity under GP" argued against using pareto this way and provided an anternative, more efficient, algorithm. I personally liked this algorithm better than the one with pareto, and I was thinking about using it in the point population of the second layer, where the points are opponents that are coevolved. So, I would like to know which version of the point removal algorithm is the one currently more accepted
+in what paper pareto was started to be used to obtain distinctions? Because in Peter's thesis he seems to argue against using pareto-dominance for point removal in 3.2.6
+
+
 
 
 parameters to test:
@@ -80,6 +88,8 @@ nims server:
 - profile05, seed 2, 2, 13600
 - profile2, seed 2, 3, 28158
 - profile1_parent_only, seed 2, 4, 12742
+- SBB2, run_initialization_step2 True, seed 2, 5, 28113
+- SBB2, use_weighted_probability_selection True, seed 2, 6, 2835
 
 ---
 
@@ -102,6 +112,11 @@ nims server:
     - also, a future work would be to coevolve a population of opponents
         - try to use pareto to select the teams that perform better against various opponents?
         - or just one opponent per generation?
+        - usar algoritmo da pagina 99 para gerar oponentes? (ver em sbb_papers) como selecionar fitness dos oponentes? pareto de distinctions? ou uniform probability? tomar cuidado com class balance?
+            - removal: usar pareto com distinctions
+            - selection para clonar: usar uniform probability
+        - thesis do peter: Pages 103-108: outra maneira de remover points baseado em distinctions, sem ser pareto
+            - tamblem no paper "complexification", em "points removal" (ver em sbb_papers)
 - steps:
     - generalize the call of actions, the definition of actions, and the mapping of actions
         - add a new class that hands the action calling/definition/mapping
@@ -111,6 +126,8 @@ nims server:
         - add a new population of "action teams", so you only instantiate them once
             - warning: attributes being modified by more than one host
     - update how the teams are saved in .json files so the actions are saved correctly
+        - save a file actions.json with a mapping from the action to the team? and assume that if there is not such a file, then the action is atomic?
+        - must have a way to save the action in order to know if they should be read from a file or if they are atomic
     - select the best saved teams
     - check if it works as it is
     - check the notes about the new coevolved opponent population (alfa/beta)
