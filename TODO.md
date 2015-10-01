@@ -56,15 +56,17 @@ added option to use agressive mutations team add/remove mutations + added unit t
 removed sigmoid function
 ---
 
-- ler paper de ML (1.1-1.5) + atualizar anotacoes com slides?
+results:
+- profile2
+
+
 - conferir runs
-- implementar tasks do second layer (separar tasks entre second layer e opponent population)
-- se nos testes intermediarios volatility nao estiver sendo usado o suficiente, remover antes de fazer os testes com diversity
+- implementar tasks do second layer
 
 
 
 
-
+---
 parameters to test:
 - what diversity? how many groups? mix diversities? (temp: ncd_c3, g5)
 - what balance? (temp: board)
@@ -76,11 +78,9 @@ parameters to test:
 - team size and program size? (testar apos obter reusltados para diversities?)
 
 nims pc:
-- profile1, seed 1, 1
-- profile05, seed 1, 2
-- profile2, seed 1, 3
-- profile1_parent_only, seed 1, 4
-- default_no_sigmoid, seed 1, 5
+- default_no_sigmoid, seed 1, 1
+- default_no_sigmoid_profile5, seed 1, 2
+- default_no_sigmoid_profile5, seed 2, 3
 
 nims server:
 - profile1, seed 2, 1, 17353
@@ -92,13 +92,35 @@ nims server:
 - SBB3, use_agressive_mutations True, seed 2, 7, 11181
 
 hector server:
-- run_initialization_step2 True, seed 1, 4314
-- use_weighted_probability_selection True, seed 1, 8142
-- use_agressive_mutations True, seed 1,  12209
-- default-atual sem volatility?
+- run_initialization_step2 True, seed 1, 1, 4314
+- use_weighted_probability_selection True, seed 1, 2, 8142
+- use_agressive_mutations True, seed 1, 3, 12209
+- default_no_sigmoid, seed 2, 4, 4739
+
 
 ---
+- second layer:
+    - second layer SBB: It is exact the same thing, the only modification is when an action is called
+    - for the second layer, two approaches:
+        - get the teams that most increased the accumulative curve across all the runs
+        - get the teams that most increased the accumulative curve individually for each run
+        - obs.: be careful when selecting the teams what will be action, so the search space is not so big
+    - steps:
+        - generalize the call of actions, the definition of actions, and the mapping of actions
+            - add a new class that hands the action calling/definition/mapping
+            - metodo get_action_result?
+            - fazer classe Action?
+            - no lugares onde action eh repassado (team mutation), conferir se precisar usar deepcopy ou apenas por referencia esta ok
+        - add a .json reader so the saved teams can be instantiated and executed
+            - add a new population of "action teams", so you only instantiate them once
+        - update how the teams are saved in .json files so the actions are saved correctly
+            - save a file actions.json with a mapping from the action to the team? and assume that if there is not such a file, then the action is atomic?
+            - must have a way to save the action in order to know if they should be read from a file or if they are atomic
+        - select the best saved teams
+        - check if it works as it is
+        - quando escolher time spara o second layer, conferir se todos os inputs estao sendo usados! e que os teams variam as behaviors!
 
+---
 - adiantar mais o literature_review
     - select papers for each section of the literature review
         - for all TODO papers, relate them with the sections
@@ -109,39 +131,30 @@ hector server:
     - write (nao necessariamente rpeciso usar todos os papers para cada section)
 
 ---
-
-- second layer SBB: It is exact the same thing, the only modification is when an action is called
-- for the second layer, two approaches:
-    - get the teams that most increased the accumulative curve across all the runs
-    - get the teams that most increased the accumulative curve individually for each run
-    - obs.: be careful when selecting the teams what will be action, so the search space is not so big
-    - also, a future work would be to coevolve a population of opponents
-        - try to use pareto to select the teams that perform better against various opponents?
-        - or just one opponent per generation?
-        - usar algoritmo da pagina 99 para gerar oponentes? (ver em sbb_papers) como selecionar fitness dos oponentes? pareto de distinctions? ou uniform probability? tomar cuidado com class balance?
-            - removal: usar pareto com distinctions
-            - selection para clonar: usar uniform probability
-        - thesis do peter: Pages 103-108: outra maneira de remover points baseado em distinctions, sem ser pareto
-            - tamblem no paper "complexification", em "points removal" (ver em sbb_papers)
-- steps:
-    - generalize the call of actions, the definition of actions, and the mapping of actions
-        - add a new class that hands the action calling/definition/mapping
-        - metodo get_action_result?
-        - fazer classe Action?
-        - no lugares onde action eh repassado (team mutation), conferir se precisar usar deepcopy ou apenas por referencia esta ok
-    - add a .json reader so the saved teams can be instantiated and executed
-        - add a new population of "action teams", so you only instantiate them once
-            - warning: attributes being modified by more than one host
-    - update how the teams are saved in .json files so the actions are saved correctly
-        - save a file actions.json with a mapping from the action to the team? and assume that if there is not such a file, then the action is atomic?
-        - must have a way to save the action in order to know if they should be read from a file or if they are atomic
-    - select the best saved teams
-    - check if it works as it is
+- coevolved opponents population:
+    - Competitive coevolution, host-parasite
+    - freeze SBB while evolve opponents, then freeze opponent, then SBB, etc...?
+    - use what version of SBB? layer 1? layer 2? layer 3? (preference for keep evolving layer 2)
+    - opponents evolving as alfa/beta from the paper poker_evolutionary_bayesian_opponent_model 2007 and 2008
+        - or the poker_evolutionary 1998 and 1999?
+        - preference for the earlier one
     - check the notes about the new coevolved opponent population (alfa/beta)
-    - implement the coevolved opponent population
+    - try to use pareto to select the teams that perform better against various opponents?
+    - or just one opponent per generation?
+    - usar algoritmo da pagina 99 para gerar oponentes? (ver em sbb_papers) como selecionar fitness dos oponentes? pareto de distinctions? ou uniform probability? tomar cuidado com class balance?
+        - removal: usar pareto com distinctions
+        - selection para clonar: usar uniform probability
+    - thesis do peter: Pages 103-108: outra maneira de remover points baseado em distinctions, sem ser pareto
+        - tamblem no paper "complexification", em "points removal" (ver em sbb_papers)
 
 ---
+(optional?) final opponents
+- ver o q papers de poker recente usaram para validar/como oponente final
+- implement static opponents so the best team can go against and check if they have strong poker strategies
+    - [5](o sistema desenvolvido)
+    - [6](os benchmarks)
 
+---
 - before running the 10 runs of all the diversties, define a good generation to stop and the parameters
 - no inicio, rodar para apenas G3 ou G5, nao para os dois (provavelmente apenas um iria para um paper anyway)
 - perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
@@ -149,7 +162,6 @@ hector server:
     - use the command 'nice'
 
 ---
-
 scp -r source_file_name username@destination_host:destination_folder
 scp -r username@destination_host:destination_folder source_file_name
 
