@@ -63,10 +63,9 @@ results:
 - profile2
 
 
-- mandar rodar dois runs com hall of fame as opponent = True (melhorar diversity?)
-- Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers
 - conferir runs
 - implementar tasks do second layer
+- Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers
 
 
 
@@ -87,17 +86,18 @@ nims pc:
 - default_no_sigmoid_profile5, seed 1, 2
 - default_no_sigmoid_profile5, seed 2, 3
 - default_with_new_outputs, seed 1, 4
-- 5, quick_run
 
 nims server:
-- profile1, seed 2, 1, 17353
-- profile05, seed 2, 2, 13600
-- profile2, seed 2, 3, 28158
-- profile1_parent_only, seed 2, 4, 12742
-- SBB2, run_initialization_step2 True, seed 2, 5, 28113
+- profile1, seed 2, 1, 17353 [DONE]
+- profile05, seed 2, 2, 13600 [DONE]
+- profile2, seed 2, 3, 28158 [DONE]
+- profile1_parent_only, seed 2, 4, 12742 [DONE]
+- SBB2, run_initialization_step2 True, seed 2, 5, 28113 [DONE]
 - SBB2, use_weighted_probability_selection True, seed 2, 6, 2835
 - SBB3, use_agressive_mutations True, seed 2, 7, 11181
 - SBB4, default_with_new_outputs, seed 2, 8, 11333
+- SBB5, default_with_new_outputs_with_hall_of_fame, seed 1, 9, 8837
+- SBB5, default_with_new_outputs_with_hall_of_fame, seed 2, 10, 17846
 
 hector server:
 - run_initialization_step2 True, seed 1, 1, 4314

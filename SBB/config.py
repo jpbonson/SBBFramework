@@ -83,8 +83,8 @@ class Config():
             'use_weighted_probability_selection': False, # if False, uniform probability will be used
             'use_agressive_mutations': False,
             'second_layer': {
-                'enabled': False,
-                'path': 'default',
+                'enabled': True,
+                'path': 'actions_reference/default',
             },
         },
     }

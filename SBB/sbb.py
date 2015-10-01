@@ -137,11 +137,11 @@ class SBB:
         return environment
 
     def _initialize_actions_for_second_layer(self):
-        if not os.path.exists("action_reference/"):
-            os.makedirs("action_reference/")
-        if not os.path.exists("action_reference/default/"):
-            os.makedirs("action_reference/default/")
-        path = "action_reference/"+Config.USER['advanced_training_parameters']['second_layer']['path']+'/*.json'   
+        if not os.path.exists("actions_reference/"):
+            os.makedirs("actions_reference/")
+        if not os.path.exists("actions_reference/default/"):
+            os.makedirs("actions_reference/default/")
+        path = Config.USER['advanced_training_parameters']['second_layer']['path']+'/*.json'   
         files = glob.glob(path)
         Config.RESTRICTIONS['second_layer']['short_action_mapping'] = {}
         Config.RESTRICTIONS['second_layer']['action_mapping'] = {}
@@ -159,7 +159,7 @@ class SBB:
 
     def _read_team_from_json(self, team_descriptor):
         programs = []
-        for program_descriptor in team_descriptor:
+        for program_descriptor in team_descriptor['programs']:
             instructions = []
             for instruction_descriptor in program_descriptor['instructions']:
                 instruction = Instruction(mode = instruction_descriptor['mode'], 
