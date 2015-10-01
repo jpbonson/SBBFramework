@@ -46,6 +46,7 @@ class RunInfo:
         self.mean_team_size_per_validation = []
         self.mean_program_size_with_introns_per_validation = []
         self.mean_program_size_without_introns_per_validation = []
+        self.final_teams_validations = []
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
@@ -64,6 +65,7 @@ class RunInfo:
             msg += "\n\nGlobal Opponent Results per Validation"
             for key in self.global_opponent_results_per_validation[-1]:
                 msg += "\n"+str(key)+": "+str([item[key] if key in item else 0.0 for item in self.global_opponent_results_per_validation])
+            msg += "\n\nFinal Teams Validations: "+str(self.final_teams_validations)
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
             msg += "\n\nGlobal Diversities per Validation"
             for key in self.global_diversity_per_validation:

@@ -56,12 +56,15 @@ added option to use agressive mutations team add/remove mutations + added unit t
 removed sigmoid function
 -
 implemented json reader json for teams
+added metric for final team validations
 ---
 
 results:
 - profile2
 
 
+- mandar rodar dois runs com hall of fame as opponent = True (melhorar diversity?)
+- Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers
 - conferir runs
 - implementar tasks do second layer
 
@@ -83,6 +86,8 @@ nims pc:
 - default_no_sigmoid, seed 1, 1
 - default_no_sigmoid_profile5, seed 1, 2
 - default_no_sigmoid_profile5, seed 2, 3
+- default_with_new_outputs, seed 1, 4
+- 5, quick_run
 
 nims server:
 - profile1, seed 2, 1, 17353
@@ -92,6 +97,7 @@ nims server:
 - SBB2, run_initialization_step2 True, seed 2, 5, 28113
 - SBB2, use_weighted_probability_selection True, seed 2, 6, 2835
 - SBB3, use_agressive_mutations True, seed 2, 7, 11181
+- SBB4, default_with_new_outputs, seed 2, 8, 11333
 
 hector server:
 - run_initialization_step2 True, seed 1, 1, 4314
@@ -113,11 +119,6 @@ hector server:
             - metodo get_action_result?
             - fazer classe Action?
             - no lugares onde action eh repassado (team mutation), conferir se precisar usar deepcopy ou apenas por referencia esta ok
-        - add a .json reader so the saved teams can be instantiated and executed
-            - add a new population of "action teams", so you only instantiate them once
-        - update how the teams are saved in .json files so the actions are saved correctly
-            - save a file actions.json with a mapping from the action to the team? and assume that if there is not such a file, then the action is atomic?
-            - must have a way to save the action in order to know if they should be read from a file or if they are atomic
         - select the best saved teams
         - check if it works as it is
         - quando escolher time spara o second layer, conferir se todos os inputs estao sendo usados! e que os teams variam as behaviors!
@@ -158,6 +159,7 @@ hector server:
     - [6](os benchmarks)
 
 ---
+- usar pop 80 ao inves de 100?
 - before running the 10 runs of all the diversties, define a good generation to stop and the parameters
 - no inicio, rodar para apenas G3 ou G5, nao para os dois (provavelmente apenas um iria para um paper anyway)
 - perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)

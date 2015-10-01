@@ -267,6 +267,7 @@ class SBB:
             print "score per opponent (validation): "+str(best_team.extra_metrics_['validation_score'])+" (global: "+str(validation_score_mean)+")"
             for key in best_team.extra_metrics_['validation_opponents']:
                 print key+": "+str(best_team.extra_metrics_['validation_opponents'][key])+" (global: "+str(opponent_means[key])+")"
+            run_info.final_teams_validations = [team.extra_metrics_['validation_score'] for team in older_teams]
         if Config.USER['task'] == 'classification':
             validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
             run_info.global_validation_score_per_validation.append(validation_score_mean)
