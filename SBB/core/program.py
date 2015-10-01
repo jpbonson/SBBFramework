@@ -13,20 +13,23 @@ def get_program_id():
     return next_program_id
 
 class Program:
-    def __init__(self, generation, instructions, action):
+    def __init__(self, generation, instructions, action, program_id = None):
         self.generation = generation
         self.instructions = instructions
         self.action = action
-        self.program_id_ = get_program_id()     
+        if program_id is None:
+            self.program_id_ = get_program_id()
+        else:
+            self.program_id_ = program_id
         self.teams_ = []
-        self.instructions_without_introns_ = None
+        self.instructions_without_introns_ = []
         self.inputs_list_ = None
 
     def execute(self, input_registers):
         """
         Execute code for each input
         """
-        if not self.instructions_without_introns_:
+        if len(self.instructions_without_introns_) == 0:
             self.instructions_without_introns_ = Program.remove_introns(self.instructions)
             self.inputs_list_ = self._inputs_list()
         instructions = self.instructions_without_introns_
@@ -105,7 +108,9 @@ class Program:
 
     def dict(self):
         save = {}
+        save['program_id'] = self.program_id_
         save['action'] = self.action
+        save['action_type'] = 'atomic'
         save['instructions'] = []
         for instruction in self.instructions:
             save['instructions'].append(instruction.dict())

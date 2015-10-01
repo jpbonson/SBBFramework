@@ -67,6 +67,10 @@ TEST_CONFIG = {
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used
         'use_agressive_mutations': False,
+        'second_layer': {
+            'enabled': False,
+            'action_file': None, # if using layered SBB, must provie a reference file for the actions
+        },
     },
 }
 

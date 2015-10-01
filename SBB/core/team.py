@@ -17,13 +17,16 @@ def get_team_id():
     return next_team_id
 
 class Team(DefaultOpponent):
-    def __init__(self, generation, programs):
+    def __init__(self, generation, programs, team_id = None):
         super(Team, self).__init__("sbb")
         self.generation = generation
         self.programs = []
         for program in programs:
             self._add_program(program)
-        self.team_id_ = get_team_id()
+        if team_id is None:
+            self.team_id_ = get_team_id()
+        else:
+            self.team_id_ = team_id
         self.fitness_ = 0
         self.score_testset_ = 0
         self.extra_metrics_ = {}
@@ -296,10 +299,13 @@ class Team(DefaultOpponent):
         return msg
 
     def json(self):
+        info = {}
+        info['team_id'] = self.team_id_
         programs_json = []
         for program in self.programs:
             programs_json.append(program.dict())
-        return json.dumps(programs_json)
+        info['programs'] = programs_json
+        return json.dumps(info)
 
     def __repr__(self): 
         return "("+str(self.team_id_)+"-"+str(self.generation)+")"

@@ -54,6 +54,8 @@ implemented bid profile + updated is_nearly_equal_threshold + replace = True for
 fixed run_initialization_step2 + added unit test + fixed unit tests
 added option to use agressive mutations team add/remove mutations + added unit tests
 removed sigmoid function
+-
+implemented json reader json for teams
 ---
 
 results:
@@ -119,6 +121,7 @@ hector server:
         - select the best saved teams
         - check if it works as it is
         - quando escolher time spara o second layer, conferir se todos os inputs estao sendo usados! e que os teams variam as behaviors!
+        - add unit tests for ttt
 
 ---
 - adiantar mais o literature_review

@@ -82,6 +82,10 @@ class Config():
             'run_initialization_step2': False,
             'use_weighted_probability_selection': False, # if False, uniform probability will be used
             'use_agressive_mutations': False,
+            'second_layer': {
+                'enabled': False,
+                'path': 'default',
+            },
         },
     }
 
@@ -120,6 +124,10 @@ class Config():
         'profile': {
             'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*2.0)),
             'update_chance': 0.05,
+        },
+        'second_layer': {
+            'action_mapping': {}, # initialized by sbb.py
+            'short_action_mapping': {}, # initialized by sbb.py
         },
     }
 

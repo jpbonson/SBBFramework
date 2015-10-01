@@ -7,6 +7,9 @@ import time
 import os
 import sys
 import numpy
+import glob
+import json
+import ntpath
 from collections import Counter
 from core.program import Program, reset_programs_ids
 from core.team import Team, reset_teams_ids
@@ -40,7 +43,7 @@ class SBB:
                 self.seeds_per_run_.append(random.randint(0, Config.RESTRICTIONS['max_seed']))
         Config.RESTRICTIONS['used_diversities'] = list(set(Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show']))
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
-
+    
     def run(self):
         print "\n### Starting pSBB"
 
@@ -117,14 +120,56 @@ class SBB:
             self._save_teams_data_per_generation(run_infos)
 
     def _initialize_environment(self):
+        environment = None
         if Config.USER['task'] == 'classification':
-            return ClassificationEnvironment()
+            environment = ClassificationEnvironment()
         if Config.USER['task'] == 'reinforcement':
             if Config.USER['reinforcement_parameters']['environment'] == 'tictactoe':
-                return TictactoeEnvironment()
+                environment = TictactoeEnvironment()
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':
-                return PokerEnvironment()
-        raise ValueError("No environment exists for "+str(Config.USER['task']))
+                environment = PokerEnvironment()
+        if environment is None:
+            raise ValueError("No environment exists for "+str(Config.USER['task']))
+
+        if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
+            self._initialize_actions_for_second_layer()
+
+        return environment
+
+    def _initialize_actions_for_second_layer(self):
+        if not os.path.exists("action_reference/"):
+            os.makedirs("action_reference/")
+        if not os.path.exists("action_reference/default/"):
+            os.makedirs("action_reference/default/")
+        path = "action_reference/"+Config.USER['advanced_training_parameters']['second_layer']['path']+'/*.json'   
+        files = glob.glob(path)
+        Config.RESTRICTIONS['second_layer']['short_action_mapping'] = {}
+        Config.RESTRICTIONS['second_layer']['action_mapping'] = {}
+        temp_actions_as_dicts = {}
+        for index, name in enumerate(sorted(files)):
+            with open(name) as f:
+                data = json.load(f)
+            team_id = ntpath.split(name)[-1].replace('.json', '')
+            Config.RESTRICTIONS['second_layer']['short_action_mapping'][index] = team_id
+            temp_actions_as_dicts[index] = data
+
+        for action, team_descriptor in temp_actions_as_dicts.iteritems():
+            team = self._read_team_from_json(team_descriptor)
+            Config.RESTRICTIONS['second_layer']['action_mapping'][action] = team
+
+    def _read_team_from_json(self, team_descriptor):
+        programs = []
+        for program_descriptor in team_descriptor:
+            instructions = []
+            for instruction_descriptor in program_descriptor['instructions']:
+                instruction = Instruction(mode = instruction_descriptor['mode'], 
+                    target = instruction_descriptor['target'], op = instruction_descriptor['op'], 
+                    source = instruction_descriptor['source'])
+                instructions.append(instruction)
+            program = Program(-1, instructions, program_descriptor['action'], 
+                program_id = program_descriptor['program_id'])
+            programs.append(program)
+        return Team(-1, programs, team_id = team_descriptor['team_id'])
 
     def _set_seed(self, seed):
         random.seed(seed)
