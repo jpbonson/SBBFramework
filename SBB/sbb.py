@@ -133,6 +133,7 @@ class SBB:
 
         if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
             self._initialize_actions_for_second_layer()
+            Config.RESTRICTIONS['total_actions'] = len(Config.RESTRICTIONS['second_layer']['action_mapping'])
 
         return environment
 

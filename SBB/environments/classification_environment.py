@@ -34,6 +34,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         self.total_inputs_ = len(self.train_population_[0].inputs)
         self.trainset_per_action_ = self._get_data_per_action(self.train_population_)
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
+        Config.RESTRICTIONS['total_raw_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         Config.RESTRICTIONS['use_memmory_for_actions'] = True # since for the same input, the output label is always the same
         # ensures that the point population will be balanced:
@@ -225,7 +226,7 @@ class ClassificationEnvironment(DefaultEnvironment):
 
         outputs = []
         for point in population:
-            output = team.execute(point.point_id_, point.inputs, range(Config.RESTRICTIONS['total_actions']), is_training)
+            output = team.execute(point.point_id_, point.inputs, range(Config.RESTRICTIONS['total_raw_actions']), is_training)
             outputs.append(output)
             if is_training:
                 if output == point.output:

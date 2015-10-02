@@ -18,8 +18,8 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 300, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 30, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 100, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'hall_of_fame': {
                 'size': 10,
                 'enabled': True,
@@ -34,11 +34,11 @@ class Config():
 
         'training_parameters': {
             'runs_total': 1,
-            'generations_total': 150,
+            'generations_total': 25,
             'validate_after_each_generation': 25,
             'populations': {
-                'teams': 100,
-                'points': 100,
+                'teams': 20,
+                'points': 20,
             },
             'replacement_rate': {
                 'teams': 0.5,
@@ -83,7 +83,7 @@ class Config():
             'use_weighted_probability_selection': True, # if False, uniform probability will be used
             'use_agressive_mutations': False,
             'second_layer': {
-                'enabled': False,
+                'enabled': True,
                 'path': 'actions_reference/default',
             },
         },
@@ -109,7 +109,8 @@ class Config():
             'output_registers': 1,
             'total_registers': None, # initialized by sbb.py
         },
-        'total_actions': -1, # initialized by the environment
+        'total_actions': -1, # initialized by the environment, can be meta or atomic actions
+        'total_raw_actions': -1, # initialized by the environment, are the atomic actions performed in the environment
         'total_inputs': -1, # initialized by the environment
         'action_mapping': {}, # initialized by the environment
         'use_memmory_for_actions': False, # initialized by the environment

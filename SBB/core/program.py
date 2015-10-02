@@ -58,7 +58,7 @@ class Program:
                     source =  input_registers[instruction.source]
                 general_registers[instruction.target] = Operation.execute(instruction.op, general_registers[instruction.target], source)
 
-        return general_registers[0] # get action output
+        return general_registers[0] # get bid output
 
     def _inputs_list(self):
         inputs = []
@@ -67,6 +67,28 @@ class Program:
                 if instruction.source not in inputs:
                     inputs.append(instruction.source)
         return inputs
+
+    def _get_action_result(self, point_id, inputs, valid_actions, is_training):
+        if self._is_meta_action():
+            team = Config.RESTRICTIONS['second_layer']['action_mapping'][self.action]
+            return team.execute(point_id, inputs, valid_actions, is_training, update_profile = False)
+        else:
+            return self.action
+
+    def _is_meta_action(self):
+        if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
+            if self.generation > -1:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def get_raw_actions(self):
+        meta_action = self.action
+        team = Config.RESTRICTIONS['second_layer']['action_mapping'][meta_action]
+        actions = [p.action for p in team.programs]
+        return actions
 
     def mutate(self):
         mutation_chance = random.random()
@@ -110,7 +132,10 @@ class Program:
         save = {}
         save['program_id'] = self.program_id_
         save['action'] = self.action
-        save['action_type'] = 'atomic'
+        if self._is_meta_action():
+            save['action_type'] = 'meta'
+        else:
+            save['action_type'] = 'atomic'
         save['instructions'] = []
         for instruction in self.instructions:
             save['instructions'].append(instruction.dict())

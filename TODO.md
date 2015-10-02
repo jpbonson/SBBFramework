@@ -57,16 +57,29 @@ removed sigmoid function
 -
 implemented json reader json for teams
 added metric for final team validations
+finished implementing the second layer (needs further testing)
 ---
 
 results:
+- pruning ok
+- no sigmoid ok
 - profile2 (?)
 - use_weighted_probability_selection_True
 - run_initialization_step2_False
 
 
 - implementar tasks do second layer
-- fazer run no diversity
+    - for the second layer, two approaches:
+        - get the teams that most increased the accumulative curve across all the runs
+        - get the teams that most increased the accumulative curve individually for each run
+        - obs.: be careful when selecting the teams what will be action, so the search space is not so big
+    - steps:
+        - conferir prints e outputs se esta sem bugs
+        - select the best saved teams
+        - check if it works as it is
+        - quando escolher time spara o second layer, conferir se todos os inputs estao sendo usados! e que os teams variam as behaviors!
+        - add unit tests for ttt
+- ler reviews de ML
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers
 
 
@@ -99,27 +112,9 @@ hector server:
 - use_weighted_probability_selection True, seed 1, 2, 8142
 - use_agressive_mutations True, seed 1, 3, 12209
 - default_no_sigmoid, seed 2, 4, 4739
-- default_newest_best_no_diversity_seed1, 5, 
-- default_newest_best_no_diversity_seed2, 6, 
+- default_newest_best_no_diversity_seed1, 5, 1403
+- default_newest_best_no_diversity_seed2, 6, 5939
 
-
----
-- second layer:
-    - second layer SBB: It is exact the same thing, the only modification is when an action is called
-    - for the second layer, two approaches:
-        - get the teams that most increased the accumulative curve across all the runs
-        - get the teams that most increased the accumulative curve individually for each run
-        - obs.: be careful when selecting the teams what will be action, so the search space is not so big
-    - steps:
-        - generalize the call of actions, the definition of actions, and the mapping of actions
-            - add a new class that hands the action calling/definition/mapping
-            - metodo get_action_result?
-            - fazer classe Action?
-            - no lugares onde action eh repassado (team mutation), conferir se precisar usar deepcopy ou apenas por referencia esta ok
-        - select the best saved teams
-        - check if it works as it is
-        - quando escolher time spara o second layer, conferir se todos os inputs estao sendo usados! e que os teams variam as behaviors!
-        - add unit tests for ttt
 
 ---
 - adiantar mais o literature_review

@@ -42,6 +42,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.coded_opponents_for_validation_ = coded_opponents_for_validation
         self.point_class = point_class
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
+        Config.RESTRICTIONS['total_raw_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         self.opponent_names_for_training_ = [c.OPPONENT_ID for c in self.coded_opponents_for_training_]
         if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:

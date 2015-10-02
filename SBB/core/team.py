@@ -4,7 +4,7 @@ import json
 from collections import Counter, defaultdict
 from program import Program
 from ..environments.default_opponent import DefaultOpponent
-from ..utils.helpers import round_value, round_array
+from ..utils.helpers import round_value, round_array, flatten
 from ..config import Config
 
 def reset_teams_ids():
@@ -51,29 +51,29 @@ class Team(DefaultOpponent):
         """
         pass
         
-    def execute(self, point_id_, inputs, valid_actions, is_training):
+    def execute(self, point_id, inputs, valid_actions, is_training, update_profile = True):
         if not self._actions_are_available(valid_actions):
             return None
 
         # if there is a least one program that can produce a valid action, execute the programs
         if is_training:
-            # update profile
-            if len(Config.RESTRICTIONS['profile']['samples']) < Config.RESTRICTIONS['profile']['samples'].maxlen:
-                # add everything until it is full
-                Config.RESTRICTIONS['profile']['samples'].append(inputs)
-            else:
-                # give a chance of adding or not
-                if random.random() < Config.RESTRICTIONS['profile']['update_chance']:
+            if update_profile:
+                if len(Config.RESTRICTIONS['profile']['samples']) < Config.RESTRICTIONS['profile']['samples'].maxlen:
+                    # add everything until it is full
                     Config.RESTRICTIONS['profile']['samples'].append(inputs)
+                else:
+                    # give a chance of adding or not
+                    if random.random() < Config.RESTRICTIONS['profile']['update_chance']:
+                        Config.RESTRICTIONS['profile']['samples'].append(inputs)
 
             # run the programs
-            if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id_ in self.memory_actions_per_points_:
-                return self.memory_actions_per_points_[point_id_]
+            if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id in self.memory_actions_per_points_:
+                return self.memory_actions_per_points_[point_id]
             else:
                 selected_program = self._select_program(inputs, valid_actions)
-                output_class = selected_program.action
+                output_class = selected_program._get_action_result(point_id, inputs, valid_actions, is_training)
                 if Config.RESTRICTIONS['use_memmory_for_actions']:
-                    self.memory_actions_per_points_[point_id_] = output_class
+                    self.memory_actions_per_points_[point_id] = output_class
                 if selected_program not in self.active_programs_:
                     self.active_programs_.append(selected_program)
                 if selected_program not in self.overall_active_programs_:
@@ -83,18 +83,30 @@ class Team(DefaultOpponent):
             selected_program = self._select_program(inputs, valid_actions)
             if selected_program not in self.overall_active_programs_:
                 self.overall_active_programs_.append(selected_program)
-            return selected_program.action
+            return selected_program._get_action_result(point_id, inputs, valid_actions, is_training)
 
     def _actions_are_available(self, valid_actions):
         """
         Test if there are at least one program in the team that is able to provide a valid action
         If there is no such program, return None, so that the environment will use a default action
         """
-        actions = [p.action for p in self.programs]
+        if self._is_meta_team():
+            actions = flatten([p.get_raw_actions() for p in self.programs])
+        else:
+            actions = [p.action for p in self.programs]
         possible_action = set(actions).intersection(valid_actions)
         if len(possible_action) == 0:
             return False
         return True
+
+    def _is_meta_team(self):
+        if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
+            if self.generation > -1:
+                return True
+            else:
+                return False
+        else:
+            return False
 
     def _select_program(self, inputs, valid_actions):
         """
@@ -102,14 +114,26 @@ class Team(DefaultOpponent):
         action is valid before submitting it to the environment. If it is not valid, then 
         the second best action will be tried, and so on until a valid action is obtained.
         """
-        partial_outputs = []
-        valid_programs = []
-        for program in self.programs:
-            if program.action in valid_actions:
-                partial_outputs.append(program.execute(inputs))
-                valid_programs.append(program)
-        selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
-        return selected_program
+        if self._is_meta_team():
+            partial_outputs = []
+            valid_programs = []
+            for program in self.programs:
+                actions = program.get_raw_actions()
+                possible_action = set(actions).intersection(valid_actions)
+                if len(possible_action) > 0:
+                    partial_outputs.append(program.execute(inputs))
+                    valid_programs.append(program)
+            selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
+            return selected_program
+        else:
+            partial_outputs = []
+            valid_programs = []
+            for program in self.programs:
+                if program.action in valid_actions:
+                    partial_outputs.append(program.execute(inputs))
+                    valid_programs.append(program)
+            selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
+            return selected_program
 
     def generate_profile(self):
         profile = []
@@ -120,7 +144,9 @@ class Team(DefaultOpponent):
                 partial_outputs.append(program.execute(inputs))
                 valid_programs.append(program)
             selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
-            profile.append(selected_program.action)
+            action_result = selected_program._get_action_result(point_id = -1, inputs = inputs, 
+                valid_actions = range(Config.RESTRICTIONS['total_actions']), is_training = False)
+            profile.append(action_result)
         return profile
 
     def mutate(self, programs_population):

@@ -105,7 +105,7 @@ class DiversityMaintenance():
     def _entropy_c2(team, other_team):
         action_sequence = team.action_sequence_['coding2']
         other_action_sequence = other_team.action_sequence_['coding2']
-        options = Config.RESTRICTIONS['total_actions']
+        options = Config.RESTRICTIONS['total_raw_actions']
         distance = DiversityMaintenance._general_relative_entropy_distance(action_sequence, other_action_sequence, options)
         return distance
 
