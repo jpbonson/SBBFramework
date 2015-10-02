@@ -60,11 +60,13 @@ added metric for final team validations
 ---
 
 results:
-- profile2
+- profile2 (?)
+- use_weighted_probability_selection_True
+- run_initialization_step2_False
 
 
-- conferir runs
 - implementar tasks do second layer
+- fazer run no diversity
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers
 
 
@@ -76,34 +78,29 @@ parameters to test:
 - what balance? (temp: board)
 - +inputs? (temp: all, check it better in the next runs)
 - ifs? (only normal ifs, only signal-ifs, or mixed? temp: mixed)
-- use_weighted_probability_selection? (temp: false)
-- run_initialization_step2? (temp: false)
 - groups 3 or 5? (temp: 5)
 - team size and program size? (testar apos obter reusltados para diversities?)
 
 nims pc:
-- default_no_sigmoid, seed 1, 1
-- default_no_sigmoid_profile5, seed 1, 2
-- default_no_sigmoid_profile5, seed 2, 3
-- default_with_new_outputs, seed 1, 4
+- default_no_sigmoid_profile5, seed 1, 1
+- default_no_sigmoid_profile5, seed 2, 2
+- default_with_new_outputs, seed 1, 3
 
 nims server:
-- profile1, seed 2, 1, 17353 [DONE]
-- profile05, seed 2, 2, 13600 [DONE]
-- profile2, seed 2, 3, 28158 [DONE]
-- profile1_parent_only, seed 2, 4, 12742 [DONE]
-- SBB2, run_initialization_step2 True, seed 2, 5, 28113 [DONE]
-- SBB2, use_weighted_probability_selection True, seed 2, 6, 2835
 - SBB3, use_agressive_mutations True, seed 2, 7, 11181
 - SBB4, default_with_new_outputs, seed 2, 8, 11333
 - SBB5, default_with_new_outputs_with_hall_of_fame, seed 1, 9, 8837
 - SBB5, default_with_new_outputs_with_hall_of_fame, seed 2, 10, 17846
+- SBB1, default_newest_best_seed1, 1, 7627
+- SBB1, default_newest_best_seed2, 2, 13261
 
 hector server:
 - run_initialization_step2 True, seed 1, 1, 4314
 - use_weighted_probability_selection True, seed 1, 2, 8142
 - use_agressive_mutations True, seed 1, 3, 12209
 - default_no_sigmoid, seed 2, 4, 4739
+- default_newest_best_no_diversity_seed1, 5, 
+- default_newest_best_no_diversity_seed2, 6, 
 
 
 ---
