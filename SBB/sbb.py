@@ -53,6 +53,7 @@ class SBB:
 
         overall_info = ""
         overall_info += "\n### CONFIG: "+str(Config.USER)+"\n"
+        overall_info += "\n### RESTRICTIONS: "+str(Config.RESTRICTIONS)+"\n"
         overall_info += self.environment.metrics()
         overall_info += "\nSeeds per run: "+str(self.seeds_per_run_)
         overall_info += "\nDiversities: "+str(Config.RESTRICTIONS['used_diversities'])

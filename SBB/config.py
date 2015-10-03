@@ -81,9 +81,9 @@ class Config():
             },
             'run_initialization_step2': False,
             'use_weighted_probability_selection': True, # if False, uniform probability will be used
-            'use_agressive_mutations': True,
+            'use_agressive_mutations': False,
             'second_layer': {
-                'enabled': False,
+                'enabled': True,
                 'path': 'actions_reference/overall_best',
             },
         },

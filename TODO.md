@@ -58,6 +58,7 @@ removed sigmoid function
 implemented json reader json for teams
 added metric for final team validations
 finished implementing the second layer (needs further testing)
+minor changes in outputs
 ---
 
 results:
@@ -67,25 +68,24 @@ results:
 - use_weighted_probability_selection_True
 - run_initialization_step2_False
 - 3use_agressive_mutations (?)
+- second layer: first-best ou overall-best? quantas actions escolher? 
 
 
-
-- fazer violin plot com resultado dos quick runs
-    - all/first-best/overall-best
-- fazer testes com prints to second layer
+- conferir runs
+- mandar rodar runs longos com second layer (assim que sair resultados com os outputs modificados)
 - implementar tasks do second layer
-    - for the second layer, two approaches:
+    - select the best saved teams
         - get the teams that most increased the accumulative curve across all the runs
         - get the teams that most increased the accumulative curve individually for each run
+            - the first best
+            - the overall best
         - obs.: be careful when selecting the teams what will be action, so the search space is not so big
-    - steps:
-        - conferir prints e outputs se esta sem bugs
-        - select the best saved teams
-        - check if it works as it is
         - quando escolher time spara o second layer, conferir se todos os inputs estao sendo usados! e que os teams variam as behaviors!
-        - add unit tests for ttt
+    - check if it works as it is
+    - add unit tests for ttt
 - ler reviews de ML
-- Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers
+- Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
+- planejar opponent population OU continuar a literature review 
 
 
 
@@ -114,8 +114,8 @@ nims server:
 hector server:
 - default_newest_best_no_diversity_seed1, 5, 1403
 - default_newest_best_no_diversity_seed2, 6, 5939
-- default_newest_best_use_agressive_mutations_seed1, , 
-- default_newest_best_use_agressive_mutations_seed2, , 
+- default_newest_best_use_agressive_mutations_seed1, 7, 26222
+- default_newest_best_use_agressive_mutations_seed2, 8, 29556
 
 ---
 - adiantar mais o literature_review

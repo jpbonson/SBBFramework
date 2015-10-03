@@ -31,7 +31,7 @@ class Team(DefaultOpponent):
         self.score_testset_ = 0
         self.extra_metrics_ = {}
         self.active_programs_ = [] # only for training, used for genotype diversity
-        self.overall_active_programs_ = [] # for training and validation
+        self.validation_active_programs_ = [] # for training and validation
         self.memory_actions_per_points_ = {}
         self.results_per_points_ = {}
         self.results_per_points_for_validation_ = {}
@@ -76,13 +76,11 @@ class Team(DefaultOpponent):
                     self.memory_actions_per_points_[point_id] = output_class
                 if selected_program not in self.active_programs_:
                     self.active_programs_.append(selected_program)
-                if selected_program not in self.overall_active_programs_:
-                    self.overall_active_programs_.append(selected_program)
                 return output_class
         else: # just run the code without changing the attributes or using memmory
             selected_program = self._select_program(inputs, valid_actions)
-            if selected_program not in self.overall_active_programs_:
-                self.overall_active_programs_.append(selected_program)
+            if selected_program not in self.validation_active_programs_:
+                self.validation_active_programs_.append(selected_program)
             return selected_program._get_action_result(point_id, inputs, valid_actions, is_training)
 
     def _actions_are_available(self, valid_actions):
@@ -216,8 +214,8 @@ class Team(DefaultOpponent):
         self.programs.remove(program)
         if program in self.active_programs_:
             self.active_programs_.remove(program)
-        if program in self.overall_active_programs_:
-            self.overall_active_programs_.remove(program)
+        if program in self.validation_active_programs_:
+            self.validation_active_programs_.remove(program)
 
     def remove_references(self):
         """
@@ -242,15 +240,15 @@ class Team(DefaultOpponent):
             self.remove_program(program)
 
     def metrics(self, full_version = False):
-        overall_active_teams_members_ids = [p.__repr__() for p in self.overall_active_programs_]
-        overall_inactive_programs = list(set(self.programs) - set(self.overall_active_programs_))
-        overall_inactive_teams_members_ids = [p.__repr__() for p in overall_inactive_programs]
+        validation_active_teams_members_ids = [p.__repr__() for p in self.validation_active_programs_]
+        validation_inactive_programs = list(set(self.programs) - set(self.validation_active_programs_))
+        validation_inactive_teams_members_ids = [p.__repr__() for p in validation_inactive_programs]
         active_teams_members_ids = [p.__repr__() for p in self.active_programs_]
         inactive_programs = list(set(self.programs) - set(self.active_programs_))
         inactive_teams_members_ids = [p.__repr__() for p in inactive_programs]
         msg = self.__repr__()
-        msg += "\nteam members ("+str(len(self.programs))+"), A: "+str(overall_active_teams_members_ids)+", I: "+str(overall_inactive_teams_members_ids)
-        msg += "\n- training only, A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids)
+        msg += "\nteam members ("+str(len(self.programs))+"), A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids)
+        msg += "\n- validation: A: "+str(validation_active_teams_members_ids)+", I: "+str(validation_inactive_teams_members_ids)
         msg += "\nfitness: "+str(round_value(self.fitness_))+", test score: "+str(round_value(self.score_testset_))
         msg += "\ninputs distribution: "+str(self.inputs_distribution())
         if Config.USER['task'] == 'classification' and self.extra_metrics_:
