@@ -66,8 +66,13 @@ results:
 - profile2 (?)
 - use_weighted_probability_selection_True
 - run_initialization_step2_False
+- 3use_agressive_mutations (?)
 
 
+
+- fazer violin plot com resultado dos quick runs
+    - all/first-best/overall-best
+- fazer testes com prints to second layer
 - implementar tasks do second layer
     - for the second layer, two approaches:
         - get the teams that most increased the accumulative curve across all the runs
@@ -100,21 +105,17 @@ nims pc:
 - default_with_new_outputs, seed 1, 3
 
 nims server:
-- SBB3, use_agressive_mutations True, seed 2, 7, 11181
 - SBB4, default_with_new_outputs, seed 2, 8, 11333
 - SBB5, default_with_new_outputs_with_hall_of_fame, seed 1, 9, 8837
 - SBB5, default_with_new_outputs_with_hall_of_fame, seed 2, 10, 17846
-- SBB1, default_newest_best_seed1, 1, 7627
-- SBB1, default_newest_best_seed2, 2, 13261
+- SBB1, default_newest_best_seed1, 1, 7627 (with weighted)
+- SBB1, default_newest_best_seed2, 2, 13261 (with weighted)
 
 hector server:
-- run_initialization_step2 True, seed 1, 1, 4314
-- use_weighted_probability_selection True, seed 1, 2, 8142
-- use_agressive_mutations True, seed 1, 3, 12209
-- default_no_sigmoid, seed 2, 4, 4739
 - default_newest_best_no_diversity_seed1, 5, 1403
 - default_newest_best_no_diversity_seed2, 6, 5939
-
+- default_newest_best_use_agressive_mutations_seed1, , 
+- default_newest_best_use_agressive_mutations_seed2, , 
 
 ---
 - adiantar mais o literature_review
