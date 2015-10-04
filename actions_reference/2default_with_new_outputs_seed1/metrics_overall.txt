@@ -1,0 +1,56 @@
+
+### CONFIG: {'classification_parameters': {'dataset': 'thyroid'}, 'task': 'reinforcement', 'advanced_training_parameters': {'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'], 'extra_registers': 3, 'seed': 1, 'diversity': {'k': 10, 'use_and_show': ['ncd_c3'], 'total_bins': 5, 'only_show': []}, 'use_weighted_probability_selection': False, 'use_agressive_mutations': False, 'second_layer': {'path': 'default', 'enabled': False}, 'use_pareto_for_point_population_selection': False, 'run_initialization_step2': False}, 'training_parameters': {'team_size': {'max': 9, 'min': 2}, 'program_size': {'max': 20, 'min': 5}, 'mutation': {'program': {'change_action': 0.1, 'change_instruction': 1.0, 'add_instruction': 0.5, 'swap_instructions': 1.0, 'remove_instruction': 0.5}, 'team': {'add_program': 0.7, 'mutate_program': 0.2, 'remove_program': 0.7}}, 'populations': {'points': 100, 'teams': 100}, 'replacement_rate': {'points': 0.2, 'teams': 0.5}, 'generations_total': 150, 'validate_after_each_generation': 25, 'runs_total': 1}, 'reinforcement_parameters': {'poker': {'balance_based_on': 'board_strength'}, 'hall_of_fame': {'diversity': 'ncd_c3', 'use_as_opponents': False, 'enabled': True, 'size': 10}, 'debug_matches': False, 'champion_population': 1000, 'environment': 'poker', 'validation_population': 300}}
+
+### Environment Info:
+ports: [58218, 53549]
+total inputs: 18
+inputs: ['0: hand strength', '1: effective potential', '2: pot', '3: bet', '4: pot odds', '5: betting position', '6: round', '7: chips', '8: opponent long-term agressiveness', '9: opponent short-term agressiveness', '10: opponent hand agressiveness', '11: opponent last action', '12: self long-term agressiveness', '13: self short-term agressiveness', '14: self short-term volatility', '15: self long-term volatility', '16: opponent short-term volatility', '17: opponent long-term volatility']
+total actions: 3
+actions mapping: {0: 'f', 1: 'c', 2: 'r'}
+positions: 2
+training opponents: ['loose_agressive', 'loose_passive']
+validation opponents: ['loose_agressive', 'loose_passive']
+hall of fame size: 10
+Seeds per run: [577090034]
+Diversities: ['ncd_c3']
+
+
+#################### OVERALL RESULTS ####################
+
+
+##### BEST TEAM METRICS
+
+Best Team Validation Score per Run: [0.63771]
+mean: 0.63771
+std. deviation: 0.0
+best run: 1
+
+Best Team Train Score per Validation across Runs:
+mean: [0.64093, 0.65625, 0.64708, 0.68604, 0.68062, 0.67072, 0.64802]
+std. deviation: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+Best Team Validation Score per Validation across Runs:
+mean: [0.63986, 0.64765, 0.65696, 0.65548, 0.65192, 0.65303, 0.63771]
+std. deviation: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+
+##### GLOBAL METRICS
+
+Global Validation Score per Run: [0.59887]
+mean: 0.59887
+std. deviation: 0.0
+best run: 1
+
+Global Train Score per Validation across Runs:
+mean: [0.54243, 0.60718, 0.61032, 0.64352, 0.64551, 0.62753, 0.64859]
+std. deviation: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+Global Validation Score per Validation across Runs:
+mean: [0.5342, 0.58098, 0.60231, 0.59806, 0.60002, 0.58702, 0.59887]
+std. deviation: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+Mean Diversity per Validation across Runs (ncd_c3):
+mean: [0.093, 0.333, 0.373, 0.378, 0.373, 0.371, 0.311]
+std. deviation: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+Finished execution, total elapsed time: 3301.34977 mins (mean: 3301.34977, std: 0.0)

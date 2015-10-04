@@ -64,14 +64,17 @@ minor changes in outputs
 results:
 - pruning ok
 - no sigmoid ok
-- profile2 (?)
+- profile2 (5 parece ser levemente melhor, mas a mudanca e' muito pequena para valer a pena refazer os runs apenas para isso)
 - use_weighted_probability_selection_True
 - run_initialization_step2_False
 - 3use_agressive_mutations (?)
 - second layer: first-best ou overall-best? quantas actions escolher? 
 
 
+- conferir bug com acc curve de hand_played e hand_won?
+- automatizar lista com os teams que mais melhoram a diversity, rankeada (apenas os que melhoram no minimo 75%)
 - conferir runs
+- mandar rodar run de 300 gen no layer1? checar de performance e diversity melhoram ou pioram?
 - mandar rodar runs longos com second layer (assim que sair resultados com os outputs modificados)
 - implementar tasks do second layer
     - select the best saved teams
@@ -79,6 +82,7 @@ results:
         - get the teams that most increased the accumulative curve individually for each run
             - the first best
             - the overall best
+        - by score or by hands won/played?
         - obs.: be careful when selecting the teams what will be action, so the search space is not so big
         - quando escolher time spara o second layer, conferir se todos os inputs estao sendo usados! e que os teams variam as behaviors!
     - check if it works as it is
@@ -100,9 +104,7 @@ parameters to test:
 - team size and program size? (testar apos obter reusltados para diversities?)
 
 nims pc:
-- default_no_sigmoid_profile5, seed 1, 1
-- default_no_sigmoid_profile5, seed 2, 2
-- default_with_new_outputs, seed 1, 3
+- ...
 
 nims server:
 - SBB4, default_with_new_outputs, seed 2, 8, 11333

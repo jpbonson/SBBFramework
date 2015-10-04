@@ -84,7 +84,7 @@ class Config():
             'use_agressive_mutations': False,
             'second_layer': {
                 'enabled': True,
-                'path': 'actions_reference/overall_best',
+                'path': 'actions_reference/2default_with_new_outputs_seed1/overall_6',
             },
         },
     }

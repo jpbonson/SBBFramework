@@ -8,4 +8,3 @@ SBB/environments/poker/ACPC/example_player
 SBB/environments/poker/ACPC/outputs
 tools/r_scripts/*.gif
 tools/r_scripts/data/*
-actions_reference/*

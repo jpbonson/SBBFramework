@@ -1,0 +1,151 @@
+TEAM (7666-149)
+
+#### METRICS
+(7666-149)
+team members (3), A: ['(9612:58, 2)', '(20600:147, 1)', '(18851:132, 0)'], I: []
+- training only, A: ['(9612:58, 2)', '(20600:147, 1)', '(18851:132, 0)'], I: []
+fitness: 0.60822, test score: 0.60576
+inputs distribution: Counter({0: 3, 1: 1, 12: 1, 6: 1, 16: 1})
+last opponent played against (training): loose_agressive
+
+hands (validation):
+total: 300, played: 0.82, won: 0.56504
+sbb_extra_label, 0 (48): played: 1.0, won: 0.66666
+sbb_extra_label, 1 (62): played: 1.0, won: 0.58064
+sbb_extra_label, 2 (82): played: 1.0, won: 0.64634
+sbb_extra_label, 3 (108): played: 0.5, won: 0.33333
+position, 0 (164): played: 0.77439, won: 0.60629
+position, 1 (136): played: 0.875, won: 0.521
+sbb_sd, 0 (182): played: 0.87362, won: 0.87421
+sbb_sd, 1 (6): played: 0.83333, won: 0.0
+sbb_sd, 2 (112): played: 0.73214, won: 0.0
+sbb_label, 0 (75): played: 0.88, won: 0.84848
+sbb_label, 1 (75): played: 0.89333, won: 0.70149
+sbb_label, 2 (75): played: 0.78666, won: 0.49152
+sbb_label, 3 (75): played: 0.72, won: 0.12962
+
+agressiveness: 0.682948350751
+volatility: 0.799821403987
+
+score per point (validation): 
+sbb_sd: {0: 0.80145, 1: 0.42187, 2: 0.29761}
+sbb_label: {0: 0.82958, 1: 0.68736, 2: 0.50527, 3: 0.40083}
+opp_label: {0: 0.27987, 1: 0.51059, 2: 0.67512, 3: 0.70503}
+sbb_extra_label: {0: 0.68055, 1: 0.61122, 2: 0.69664, 3: 0.50038}
+position: {0: 0.60435, 1: 0.60746}
+opp_extra_label: {0: 0.61647, 1: 0.58737, 2: 0.55543, 3: 0.6414}
+
+score per opponent (validation): 0.60576
+loose_agressive: 0.60826
+loose_passive: 0.60326
+
+ncd_c3: 0.41563
+
+######## PROGRAMS (ACTIVE)
+
+#### Program (9612:58, 2)
+Participate in the teams (3): ['(3377-65)', '(3377-65)', '(7666-149)']
+================
+
+Total instructions (without introns): 6
+Inputs used: [1, 6, 0]
+----------------
+
+r[0] = r[0] + i[1]
+r[0] = r[0] + r[0]
+r[3] = r[3] + i[6]
+r[3] = r[3] + r[3]
+r[3] = r[3] - i[0]
+r[0] = r[0] - r[3]
+
+================
+
+Total instructions: 14
+----------------
+
+r[1] = r[1] / i[10]
+r[0] = r[0] + i[1]
+if r[2] >= r[3]:
+    if r[1] >= r[0]: -r[1]
+r[0] = r[0] + r[0]
+r[3] = r[3] + i[6]
+r[2] = ln(r[2])
+if r[1] < r[0]:
+    r[2] = r[2] / r[1]
+r[3] = r[3] + r[3]
+r[3] = r[3] - i[0]
+r[0] = r[0] - r[3]
+if r[2] >= r[3]:
+    r[2] = r[2] + i[17]
+
+################
+
+#### Program (20600:147, 1)
+Participate in the teams (1): ['(7666-149)']
+================
+
+Total instructions (without introns): 3
+Inputs used: [0]
+----------------
+
+r[0] = exp(r[0])
+if r[1] >= i[0]:
+    r[0] = exp(r[0])
+
+================
+
+Total instructions: 9
+----------------
+
+r[3] = r[3] / r[1]
+r[0] = exp(r[0])
+r[2] = ln(r[2])
+r[3] = r[3] / r[3]
+r[3] = cos(r[3])
+if r[1] >= i[0]:
+    r[0] = exp(r[0])
+r[2] = cos(r[2])
+if r[1] >= r[2]: -r[1]
+
+################
+
+#### Program (18851:132, 0)
+Participate in the teams (7): ['(7248-141)', '(7472-145)', '(7664-149)', '(7666-149)', '(7710-150)', '(7725-150)', '(7741-150)']
+================
+
+Total instructions (without introns): 7
+Inputs used: [16, 12, 0]
+----------------
+
+r[0] = cos(r[0])
+r[1] = ln(r[1])
+r[0] = cos(r[0])
+r[0] = exp(r[0])
+r[0] = r[0] + i[16]
+if r[1] < i[12]:
+    r[0] = r[0] / i[0]
+
+================
+
+Total instructions: 14
+----------------
+
+r[0] = cos(r[0])
+if r[2] >= i[15]:
+    r[3] = cos(r[3])
+r[1] = ln(r[1])
+r[0] = cos(r[0])
+r[0] = exp(r[0])
+if r[3] < r[0]:
+    if r[1] >= i[10]:
+        r[2] = r[2] * r[1]
+r[2] = r[2] / i[10]
+r[0] = r[0] + i[16]
+r[3] = r[3] - r[0]
+if r[1] < i[12]:
+    r[0] = r[0] / i[0]
+
+################
+
+######## PROGRAMS (INACTIVE)
+[No inactive programs]
