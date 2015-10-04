@@ -104,7 +104,8 @@ parameters to test:
 - team size and program size? (testar apos obter reusltados para diversities?)
 
 nims pc:
-- ...
+- overall_6, seed 1, 1
+- overall_13, seed 1, 2
 
 nims server:
 - SBB4, default_with_new_outputs, seed 2, 8, 11333
@@ -118,6 +119,8 @@ hector server:
 - default_newest_best_no_diversity_seed2, 6, 5939
 - default_newest_best_use_agressive_mutations_seed1, 7, 26222
 - default_newest_best_use_agressive_mutations_seed2, 8, 29556
+- overall_6, seed 2, 1, 13980
+- overall_13, seed 2, 1, 
 
 ---
 - adiantar mais o literature_review
