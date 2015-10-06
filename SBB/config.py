@@ -69,7 +69,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 4, # default = None, it can be a single seed for all runs, or an array of seeds per run
+            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'extra_registers': 3,
@@ -123,7 +123,7 @@ class Config():
         'used_diversities': None, # initialized by sbb.py
         'multiply_normalization_by': 10.0,
         'profile': {
-            'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*2.0)),
+            'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*5.0)),
             'update_chance': 0.05,
         },
         'second_layer': {

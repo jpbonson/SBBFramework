@@ -21,15 +21,14 @@ results:
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
 - ler reviews de ML
 - conferir runs
-- (esperar resultados de agressive_mutations) mandar rodar os runs para as diversities (fazer 1 run de cada, e selecionar se os g3 ou g5 vao ate os 10 runs)
-    - rodar com profile5
+- mandar rodar os runs para as diversities (fazer 1 run de cada, e selecionar se os g3 ou g5 vao ate os 10 runs)
     - fazer plot com box plot, pelo menos 10 runs de cada diversity
-    - mandar rodar, como only_show genotype diversity para todas as diversities
 - implementar tasks do second layer
     - select the best saved teams
     - mandar rodar layer 1 e layer 2 com seeds diferentes? para o validation set ser diferente?
     - check if it works as it is
 - planejar opponent population OU planejar final opponents OU continuar a literature review 
+- mandar email para malcolm
 
 
 
@@ -51,6 +50,7 @@ nims pc:
 - overall_and_subcat_22, seed 1, 5 **
 - best_config_layer1_ncd_c3_g5_seed3, 6
 - best_config_layer1_ncd_c3_g5_seed4, 7
+- ttt_test_case, 8
 - best_config_layer1_ncd_c3_g5_seed1, ?
 - best_config_layer1_ncd_c3_g5_seed2, ?
 
@@ -59,6 +59,9 @@ nims server:
 - SBB2, default_newest_best_seed2_longer, 4, 23672 (with weighted)
 - SBB3, seed2_overall_6, seed 22, 5, 19382
 - SBB3, seed2_overall_11, seed 22, 6, 23520
+- SBB, best_config_layer1_no_diversity_seed1, 1, 32429
+- SBB, best_config_layer1_genotype_seed1, 2, 9813
+- SBB, best_config_layer1_fitness_sharing_seed1, 7, 26011
 
 hector server:
 - overall_6, seed 2, 1, 9501 *
@@ -66,6 +69,9 @@ hector server:
 - overall_and_subcat_6, seed 2, 3, 8257 **
 - overall_and_subcat_13, seed 2, 4, 15360
 - overall_and_subcat_22, seed 2, 9, 23806 *
+- best_config_layer1_ncd_c1_seed1, 5, 1179
+- best_config_layer1_entropy_c2_seed1, 6, 6421
+- best_config_layer1_hamming_c3_seed1, 7, 13139
 
 ---
 - adiantar mais o literature_review
