@@ -49,6 +49,10 @@ nims pc:
 - overall_and_subcat_6, seed 1, 3 *
 - overall_and_subcat_13, seed 1, 4
 - overall_and_subcat_22, seed 1, 5 **
+- best_config_layer1_ncd_c3_g5_seed3, 6
+- best_config_layer1_ncd_c3_g5_seed4, 7
+- best_config_layer1_ncd_c3_g5_seed1, ?
+- best_config_layer1_ncd_c3_g5_seed2, ?
 
 nims server:
 - SBB2, default_newest_best_seed1_longer, 3, 19679 (with weighted)
