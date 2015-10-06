@@ -1,64 +1,9 @@
-Done (since summer report):
-minor fixes (round_value para acc curve, salvars ids na acc curve, time in mins, distribution of inputs per teams)
-minor fixes (fixed -1 in num_lines_per_file_, refatorar update_opponent_model_and_chips)
-minor fixes (fixed bug with diversity across runs metric, fixed unit tests for ttt, checked alfa and beta for poker opponents + fixed bug + removed workaround)
-minor fixes (refactored evaluate_point_population)
-modifed EHS to EP + normalizing values between 0 and 10 + modified ppot
-minor fixes (fixed 2 intron removal bugs)
-minor fixes (min size for programs is 1)
-using new EP input + normalized between 0 and 10 + opponents using HS + fixed bug for swap instruction when len = 1
-minor fixes (fixed bug where ncd wasnt working for hall of fame + more 1000 hand samples)
-minor fix (added index before input when printing)
-more 5000 hand samples
-minor fix (apply 'normalize_by' to classification and ttt)
-minor fix (remove poker code from reinforcement learning environment (evaluate_team))
-minor fix (storing in team metrics the last opponent they played against)
-minor fix (refactored PokerConfig)
-more 5000 hand samples
-minor fix (store the fitness for the generations with the same diversity/opponents)
-refactored calculate_accumulative_performances
-minor fixes (fixed bug when no diversity is being used + accumulative curve per hands won and played (without subdivisions))
-minor fixes (added subdivisions to accumulative curve per hands won and played)
-minor fixes (added all subdivisions to all accumulative curve metrics)
-minor fixes (moved files to folder 'core' and examples to 'tools')
-minor fixes (refactored some of the poker code)
-minor fix (fixed bug with formula for chips)
-minor fix (implemented accumulative curve per opponent type + minor refactoring of poker code)
-minor fix (refactored TODOs)
-implemented option to use hall of fame without using it as opponents
-minor fix (saving action_sequence as letters instead of numbers + fixed bug with hall of fame metrics)
-modified NCD so now it uses state information (action + seed + position + board)
-minor fixes (changed label for sbb_sd, now 2 == always worst, 0 == always best + fixed bug were opp_label wasnt using ostr + metric for training-only active programs)
--1. summer_report_fine_tuned
-renamed some metrics, added new doc, added literature review latex, separated action sequence between ncd and entropy
-fixed bug with the aggressiveness formula (affected last action in the sequence)
-implemented hamming distance + ncd and entropy per hand
-implemented NCDv2 and euclidean distance
--2. poker_report_diversities
-added 10k more hand samples
-refactored new diversities code + added unit tests
-added metrics for mean team size and mean program size
-removed print of metrics per run
-added unit tests for all the new diversities
-added option to choose uniform or weighted selection + unit test
-changed opponent model (using all inputs)
-added operations for signal-ifs
-modified introns removal
-removed references to PokerMetric to avoid useless import
-fixed import for introns removal test
-fixed dumb bug
-moved files run_info and operations
-merged main and main_for_poker
-implemented pruning
-implemented bid profile + updated is_nearly_equal_threshold + replace = True for cloning
-fixed run_initialization_step2 + added unit test + fixed unit tests
-added option to use agressive mutations team add/remove mutations + added unit tests
-removed sigmoid function
--
+Done (most recent):
 implemented json reader json for teams
 added metric for final team validations
 finished implementing the second layer (needs further testing)
 minor changes in outputs
+automated selection of best teams for second layer
 ---
 
 results:
@@ -68,28 +13,25 @@ results:
 - use_weighted_probability_selection_True
 - run_initialization_step2_False
 - 3use_agressive_mutations (?)
-- second layer: first-best ou overall-best? quantas actions escolher? 
+- hall_of_fame_as_opponents False (at least not for layer1, the fitness curve goes crazy)
+- second layer: como selecionar os teams? quantas actions escolher? 
 
 
-- conferir bug com acc curve de hand_played e hand_won?
-- automatizar lista com os teams que mais melhoram a diversity, rankeada (apenas os que melhoram no minimo 75%)
+- mandar rodar layer 1 e layer 2 com seeds diferentes? para o validation set ser diferente? (afinal, as teams do layer1 foram selecionados baseado no validation set)
+- mandar rodar um com todos os +1 de diferenca overall e overall+subcat para seed2 (com as subcats principais e todas as subcats) + len dos teams selecionados + rank com o valor que eles aumentaram 
+- add unit tests for ttt
+- mandar rodar os runs para as diversities (fazer 1 run de cada, e selecionar se os g3 ou g5 vao ate os 10 runs)
+    - fazer plot com box plot, pelo menos 10 runs de cada diversity
+    - mandar rodar, como only_show genotype diversity para todas as diversities
 - conferir runs
-- mandar rodar run de 300 gen no layer1? checar de performance e diversity melhoram ou pioram?
-- mandar rodar runs longos com second layer (assim que sair resultados com os outputs modificados)
 - implementar tasks do second layer
     - select the best saved teams
         - get the teams that most increased the accumulative curve across all the runs
         - get the teams that most increased the accumulative curve individually for each run
-            - the first best
-            - the overall best
-        - by score or by hands won/played?
-        - obs.: be careful when selecting the teams what will be action, so the search space is not so big
-        - quando escolher time spara o second layer, conferir se todos os inputs estao sendo usados! e que os teams variam as behaviors!
     - check if it works as it is
-    - add unit tests for ttt
 - ler reviews de ML
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
-- planejar opponent population OU continuar a literature review 
+- planejar opponent population OU planejar final opponents OU continuar a literature review 
 
 
 
@@ -104,23 +46,25 @@ parameters to test:
 - team size and program size? (testar apos obter reusltados para diversities?)
 
 nims pc:
-- overall_6, seed 1, 1
-- overall_13, seed 1, 2
+- overall_6, seed 1, 1 *
+- overall_13, seed 1, 2 *
+- overall_and_subcat_6, seed 1, 3 *
+- overall_and_subcat_13, seed 1, 4
+- overall_and_subcat_22, seed 1, 5 **
 
 nims server:
-- SBB4, default_with_new_outputs, seed 2, 8, 11333
-- SBB5, default_with_new_outputs_with_hall_of_fame, seed 1, 9, 8837
-- SBB5, default_with_new_outputs_with_hall_of_fame, seed 2, 10, 17846
-- SBB1, default_newest_best_seed1, 1, 7627 (with weighted)
-- SBB1, default_newest_best_seed2, 2, 13261 (with weighted)
+- SBB2, default_newest_best_seed1_longer, 3, 19679 (with weighted)
+- SBB2, default_newest_best_seed2_longer, 4, 23672 (with weighted)
+- ... os 2 ou 3 melhores de layer2 apenas com seed2
 
 hector server:
-- default_newest_best_no_diversity_seed1, 5, 1403
-- default_newest_best_no_diversity_seed2, 6, 5939
 - default_newest_best_use_agressive_mutations_seed1, 7, 26222
 - default_newest_best_use_agressive_mutations_seed2, 8, 29556
-- overall_6, seed 2, 1, 13980
-- overall_13, seed 2, 1, 
+- overall_6, seed 2, 1, 9501 *
+- overall_13, seed 2, 2, 22990 *
+- overall_and_subcat_6, seed 2, 3, 8257 **
+- overall_and_subcat_13, seed 2, 4, 15360
+- overall_and_subcat_22, seed 2, 9, 23806 *
 
 ---
 - adiantar mais o literature_review
@@ -152,17 +96,9 @@ hector server:
 ---
 (optional?) final opponents
 - ver o q papers de poker recente usaram para validar/como oponente final
+    - oponentes static dos 4 tipos?
 - implement static opponents so the best team can go against and check if they have strong poker strategies
-    - [5](o sistema desenvolvido)
-    - [6](os benchmarks)
-
----
-- usar pop 80 ao inves de 100?
-- before running the 10 runs of all the diversties, define a good generation to stop and the parameters
-- no inicio, rodar para apenas G3 ou G5, nao para os dois (provavelmente apenas um iria para um paper anyway)
-- perform various runs on hector for the different diversities, at least 10 of each (an plot them with a box plot)
-    - dont use bluenose!
-    - use the command 'nice'
+    - conferir doc com oponentes e charts
 
 ---
 scp -r source_file_name username@destination_host:destination_folder
@@ -171,12 +107,13 @@ scp -r username@destination_host:destination_folder source_file_name
 =====================
 future work:
 - nos testes, checar se os teams sabem blefar
-- refatorar codigo
+- refatorar codigo (separar poker_environment em mais arquivo, etc)
 - ir testando enquanto implementa:
     - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector)
 - permitir um player humano jogar contra um time SBB? (e outros players de AI tambem)
 - tentar tournament + deterministic crowding? (papers [1][12])
 - coded opponents com bluffing e showplaying?
+- ler mais sobre como a solucao de poker da universidade de alberta funciona? qual oponente e' usado?
 
 - steps:
     3. better opponents

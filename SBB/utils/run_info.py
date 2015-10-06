@@ -47,6 +47,7 @@ class RunInfo:
         self.mean_program_size_with_introns_per_validation = []
         self.mean_program_size_without_introns_per_validation = []
         self.final_teams_validations = []
+        self.accumulative_performance_summary = {}
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
@@ -117,7 +118,18 @@ class RunInfo:
                 msg += "\n\nDiversity Type per Training: "+str(self.novelty_type_per_generation)
         
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE"
+            msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE (summary)"
+            for metric in self.accumulative_performance_summary['overall']:
+                msg += "\n\n==="
+                msg += "\nOverall Accumulative Results ("+str(metric)+"):"
+                msg += "\noverall "+str(len(self.accumulative_performance_summary['overall'][metric]['ids_only']))+":"
+                msg += "\n- Rank: "+str(self.accumulative_performance_summary['overall'][metric]['rank'])
+                msg += "\n- Team ids: "+str(self.accumulative_performance_summary['overall'][metric]['ids_only'])
+                msg += "\noverall+main_subcats "+str(len(self.accumulative_performance_summary['overall+main_subcats'][metric]['ids_only']))+":"
+                msg += "\n- Rank: "+str(self.accumulative_performance_summary['overall+main_subcats'][metric]['rank'])
+                msg += "\n- Team ids: "+str(self.accumulative_performance_summary['overall+main_subcats'][metric]['ids_only'])
+
+            msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE (full)"
             for metric in self.individual_performance_in_last_generation:
                 msg += "\n\n==="
                 msg += "\nOverall Accumulative Results ("+str(metric)+"):"

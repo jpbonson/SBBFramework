@@ -399,6 +399,7 @@ class SBB:
         run_info.hall_of_fame_in_last_generation = self.environment.hall_of_fame()
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             self.environment.calculate_accumulative_performances(run_info, teams_population, self.current_generation_)
+            self.environment.summarize_accumulative_performances(run_info)
 
     def _generate_overall_metrics_output(self, run_infos):       
         msg = "\n\n\n#################### OVERALL RESULTS ####################"
