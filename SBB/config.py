@@ -17,7 +17,7 @@ class Config():
             'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
-            'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
+            'environment': 'tictactoe', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
             'validation_population': 300, # at a validated generation, all the teams with be tested against this population, the best one is the champion
             'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'hall_of_fame': {
@@ -75,16 +75,16 @@ class Config():
             'extra_registers': 3,
             'diversity': {
                 'use_and_show': ['ncd_c3'], # will be applied to fitness and show in the outputs
-                'only_show': [], # will be only show in the outputs
+                'only_show': ['genotype'], # will be only show in the outputs
                 'k': 10,
                 'total_bins': 5, # used to quantize the distances for the diversity metrics
             },
             'run_initialization_step2': False,
             'use_weighted_probability_selection': True, # if False, uniform probability will be used
-            'use_agressive_mutations': False,
+            'use_agressive_mutations': True,
             'second_layer': {
                 'enabled': False,
-                'path': 'actions_reference/2default_with_new_outputs_seed1/overall_and_subcat_22',
+                'path': 'actions_reference/2default_with_new_outputs_seed2/overall_6',
             },
         },
     }

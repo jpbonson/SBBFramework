@@ -12,25 +12,23 @@ results:
 - profile2 (5 parece ser levemente melhor, mas a mudanca e' muito pequena para valer a pena refazer os runs apenas para isso)
 - use_weighted_probability_selection_True
 - run_initialization_step2_False
-- 3use_agressive_mutations (?)
+- 3use_agressive_mutations (yes, slightly improvement and easier to explain)
 - hall_of_fame_as_opponents False (at least not for layer1, the fitness curve goes crazy)
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 
-- mandar rodar layer 1 e layer 2 com seeds diferentes? para o validation set ser diferente? (afinal, as teams do layer1 foram selecionados baseado no validation set)
-- mandar rodar um com todos os +1 de diferenca overall e overall+subcat para seed2 (com as subcats principais e todas as subcats) + len dos teams selecionados + rank com o valor que eles aumentaram 
 - add unit tests for ttt
-- mandar rodar os runs para as diversities (fazer 1 run de cada, e selecionar se os g3 ou g5 vao ate os 10 runs)
+- Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
+- ler reviews de ML
+- conferir runs
+- (esperar resultados de agressive_mutations) mandar rodar os runs para as diversities (fazer 1 run de cada, e selecionar se os g3 ou g5 vao ate os 10 runs)
+    - rodar com profile5
     - fazer plot com box plot, pelo menos 10 runs de cada diversity
     - mandar rodar, como only_show genotype diversity para todas as diversities
-- conferir runs
 - implementar tasks do second layer
     - select the best saved teams
-        - get the teams that most increased the accumulative curve across all the runs
-        - get the teams that most increased the accumulative curve individually for each run
+    - mandar rodar layer 1 e layer 2 com seeds diferentes? para o validation set ser diferente?
     - check if it works as it is
-- ler reviews de ML
-- Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
 - planejar opponent population OU planejar final opponents OU continuar a literature review 
 
 
@@ -55,11 +53,10 @@ nims pc:
 nims server:
 - SBB2, default_newest_best_seed1_longer, 3, 19679 (with weighted)
 - SBB2, default_newest_best_seed2_longer, 4, 23672 (with weighted)
-- ... os 2 ou 3 melhores de layer2 apenas com seed2
+- SBB3, seed2_overall_6, seed 22, 5, 19382
+- SBB3, seed2_overall_11, seed 22, 6, 23520
 
 hector server:
-- default_newest_best_use_agressive_mutations_seed1, 7, 26222
-- default_newest_best_use_agressive_mutations_seed2, 8, 29556
 - overall_6, seed 2, 1, 9501 *
 - overall_13, seed 2, 2, 22990 *
 - overall_and_subcat_6, seed 2, 3, 8257 **
@@ -78,6 +75,10 @@ hector server:
 
 ---
 - coevolved opponents population:
+    - ou variar entre quais populatiosn dar freeze, e ambas receberem score por quao bem derrotam os points
+    - ou evoluir as duas ao mesmo tempo, mas com o score dos opponents sendo baseado nas distinctions
+    - na validation usar os 4 static opponents?
+    - usar hall of fame as opponents too?
     - Competitive coevolution, host-parasite
     - freeze SBB while evolve opponents, then freeze opponent, then SBB, etc...?
     - use what version of SBB? layer 1? layer 2? layer 3? (preference for keep evolving layer 2)
@@ -95,6 +96,7 @@ hector server:
 
 ---
 (optional?) final opponents
+- fazer torneios (100 runs?), sem balanced cards, do melhor player contra os 4 static oponentes?
 - ver o q papers de poker recente usaram para validar/como oponente final
     - oponentes static dos 4 tipos?
 - implement static opponents so the best team can go against and check if they have strong poker strategies
@@ -106,6 +108,7 @@ scp -r username@destination_host:destination_folder source_file_name
 
 =====================
 future work:
+- more players in the table?
 - nos testes, checar se os teams sabem blefar
 - refatorar codigo (separar poker_environment em mais arquivo, etc)
 - ir testando enquanto implementa:
