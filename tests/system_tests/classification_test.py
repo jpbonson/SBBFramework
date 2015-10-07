@@ -59,7 +59,7 @@ TEST_CONFIG = {
         'use_agressive_mutations': False,
         'second_layer': {
             'enabled': False,
-            'action_file': None, # if using layered SBB, must provie a reference file for the actions
+            'path': None, # if using layered SBB, must provie a reference file for the actions
         },
     },
 }
@@ -67,6 +67,7 @@ TEST_CONFIG = {
 class ClassificationTests(unittest.TestCase):
     def setUp(self):
         Config.RESTRICTIONS['write_output_files'] = False
+        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['points']*1.0))
 
     def test_classification_for_iris_without_pareto_and_without_diversity_maintenance_for_three_runs(self):
         """ Checking if everything for classification is still working and producing the same result. """
@@ -77,7 +78,6 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 3
         config['advanced_training_parameters']['run_initialization_step2'] = False
-        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['points']*1.0))
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -94,7 +94,6 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
-        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['points']*1.0))
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -111,7 +110,6 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = True
-        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['points']*1.0))
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -128,7 +126,6 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
-        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['points']*1.0))
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -145,7 +142,6 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
-        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['points']*1.0))
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -162,7 +158,6 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'thyroid'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
-        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['points']*1.0))
         Config.USER = config
         sbb = SBB()
         sbb.run()

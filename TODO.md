@@ -4,6 +4,7 @@ added metric for final team validations
 finished implementing the second layer (needs further testing)
 minor changes in outputs
 automated selection of best teams for second layer
+add system tests for second layer
 ---
 
 results:
@@ -17,7 +18,6 @@ results:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 
-- add unit tests for ttt
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
 - ler reviews de ML
 - conferir runs
@@ -59,9 +59,10 @@ nims server:
 - SBB2, default_newest_best_seed2_longer, 4, 23672 (with weighted)
 - SBB3, seed2_overall_6, seed 22, 5, 19382
 - SBB3, seed2_overall_11, seed 22, 6, 23520
-- SBB, best_config_layer1_no_diversity_seed1, 1, 32429
-- SBB, best_config_layer1_genotype_seed1, 2, 9813
-- SBB, best_config_layer1_fitness_sharing_seed1, 7, 26011
+- SBB, best_config_layer1_no_diversity_seed1, 1, 606
+- SBB, best_config_layer1_genotype_seed1, 2, 5904
+- SBB, best_config_layer1_fitness_sharing_seed1, 7, 14685
+- SBB, best_config_layer1_ncd_c1_seed1, 8, 23737
 
 hector server:
 - overall_6, seed 2, 1, 9501 *
@@ -69,9 +70,10 @@ hector server:
 - overall_and_subcat_6, seed 2, 3, 8257 **
 - overall_and_subcat_13, seed 2, 4, 15360
 - overall_and_subcat_22, seed 2, 9, 23806 *
-- best_config_layer1_ncd_c1_seed1, 5, 1179
-- best_config_layer1_entropy_c2_seed1, 6, 6421
-- best_config_layer1_hamming_c3_seed1, 7, 13139
+- best_config_layer1_entropy_c2_seed1, 6, 9164
+- best_config_layer1_hamming_c3_seed1, 7, 13216
+- best_config_layer1_ncd_c3_seed1, 8, 17829
+- best_config_layer1_entropy_c3_seed1, 9, 23117
 
 ---
 - adiantar mais o literature_review
