@@ -57,16 +57,16 @@ class MatchState():
 
     def last_player_to_act(self):
         if len(self.rounds[-1]) == 0:
-            acted_round = self.rounds[-2]
+            last_acted_round = self.rounds[-2]
         else:
-            acted_round = self.rounds[-1]
-        if acted_round == self.rounds[0]: # since the game uses reverse blinds
-            if len(acted_round) % 2 == 0:
+            last_acted_round = self.rounds[-1]
+        if last_acted_round == self.rounds[0]: # since the game uses reverse blinds
+            if len(last_acted_round) % 2 == 0:
                 last_player = 0
             else:
                 last_player = 1
         else: # cc/cr/rr 10/01/01
-            if len(acted_round) % 2 == 0:
+            if len(last_acted_round) % 2 == 0:
                 last_player = 1
             else:
                 last_player = 0
@@ -86,14 +86,9 @@ class MatchState():
             return False
 
     def actions_per_player(self):
-        # check the other cases
         self_actions = []
         opponent_actions = []
         for round_index, actions in enumerate(self.rounds):
-            if round_index == 0 or round_index == 1:
-                bet = self.small_bet
-            else:
-                bet = self.big_bet
             for action_index, action in enumerate(actions):
                 if round_index == 0:
                     if self.position == 0:

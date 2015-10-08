@@ -5,31 +5,19 @@ finished implementing the second layer (needs further testing)
 minor changes in outputs
 automated selection of best teams for second layer
 add system tests for second layer
+fixed bug for special case in poker match state
 ---
 
-results:
-- pruning ok
-- no sigmoid ok
-- profile2 (5 parece ser levemente melhor, mas a mudanca e' muito pequena para valer a pena refazer os runs apenas para isso)
-- use_weighted_probability_selection_True
-- run_initialization_step2_False
-- 3use_agressive_mutations (yes, slightly improvement and easier to explain)
-- hall_of_fame_as_opponents False (at least not for layer1, the fitness curve goes crazy)
-- second layer: como selecionar os teams? quantas actions escolher? 
-
-
+- conferir runs
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
 - ler reviews de ML
-- conferir runs
 - mandar rodar os runs para as diversities (fazer 1 run de cada, e selecionar se os g3 ou g5 vao ate os 10 runs)
     - fazer plot com box plot, pelo menos 10 runs de cada diversity
-- implementar tasks do second layer
-    - select the best saved teams
-    - mandar rodar layer 1 e layer 2 com seeds diferentes? para o validation set ser diferente?
-    - check if it works as it is
-- planejar opponent population OU planejar final opponents OU continuar a literature review 
-- mandar email para malcolm
-
+- definir melhor criterio para selecao de teams
+    - 1 run per 10 seed for layer 1
+    - X runs for the various criterias later
+- implementar opponent population
+- continuar a literature review 
 
 
 
@@ -37,20 +25,16 @@ results:
 parameters to test:
 - what diversity? how many groups? mix diversities? (temp: ncd_c3, g5)
 - what balance? (temp: board)
-- +inputs? (temp: all, check it better in the next runs)
+- inputs? (temp: all, check it better in the next runs)
 - ifs? (only normal ifs, only signal-ifs, or mixed? temp: mixed)
 - groups 3 or 5? (temp: 5)
 - team size and program size? (testar apos obter reusltados para diversities?)
+- hall_of_fame_as_opponents False (at least not for layer1, the fitness curve goes crazy)
+- second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- overall_6, seed 1, 1 *
-- overall_13, seed 1, 2 *
-- overall_and_subcat_6, seed 1, 3 *
-- overall_and_subcat_13, seed 1, 4
-- overall_and_subcat_22, seed 1, 5 **
-- best_config_layer1_ncd_c3_g5_seed3, 6
-- best_config_layer1_ncd_c3_g5_seed4, 7
-- ttt_test_case, 8
+- best_config_layer1_ncd_c3_g5_seed3, 1
+- best_config_layer1_ncd_c3_g5_seed4, 2
 - best_config_layer1_ncd_c3_g5_seed1, ?
 - best_config_layer1_ncd_c3_g5_seed2, ?
 
@@ -65,11 +49,6 @@ nims server:
 - SBB, best_config_layer1_ncd_c1_seed1, 8, 23737
 
 hector server:
-- overall_6, seed 2, 1, 9501 *
-- overall_13, seed 2, 2, 22990 *
-- overall_and_subcat_6, seed 2, 3, 8257 **
-- overall_and_subcat_13, seed 2, 4, 15360
-- overall_and_subcat_22, seed 2, 9, 23806 *
 - best_config_layer1_entropy_c2_seed1, 6, 9164
 - best_config_layer1_hamming_c3_seed1, 7, 13216
 - best_config_layer1_ncd_c3_seed1, 8, 17829
@@ -105,6 +84,7 @@ hector server:
         - selection para clonar: usar uniform probability
     - thesis do peter: Pages 103-108: outra maneira de remover points baseado em distinctions, sem ser pareto
         - tamblem no paper "complexification", em "points removal" (ver em sbb_papers)
+    - add a way to classify the opponents and teams in the current population according to tight/loose and passive/agressive
 
 ---
 (optional?) final opponents
