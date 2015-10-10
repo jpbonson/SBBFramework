@@ -33,6 +33,7 @@ class PokerConfig():
             'sbb_sd': lambda x: x.sbb_sd_label_,
             'opponent': lambda x: x.last_validation_opponent_id_,
         },
+        'main_subcategories': ['sbb_label', 'opp_label', 'position', 'opponent'],
     }
 
     @staticmethod

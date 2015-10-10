@@ -6,9 +6,21 @@ minor changes in outputs
 automated selection of best teams for second layer
 add system tests for second layer
 fixed bug for special case in poker match state
+- (antes: os runs de seed 1 para diversity e 5 runs de layer 1)
+plot violin plot of validation score per dimension of score + show list of criterias individually
 ---
 
+
+- conferir bug com acc curve para hands won e hands played
+- conferir runs + mandar rodar runs
+- implementar max fitness e max global validation
+- como fazer no caso do primeiro elemento da subcategoria? comparar se ele e' diferente dos proximos?
+
+- poker unit tests? com 2 gens?
+- permitir que no second layer, existe a chance aleatoria da action ser atomica? so even if the teams see new things, they are still able to adapt to them easily? (eg.: new opponent styles, hall of fame) and use the appropriete inputs accordindly?
 - conferir runs
+    - fazer run longo do layer 2
+        - get rid of criteria 1
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
 - ler reviews de ML
 - mandar rodar os runs para as diversities (fazer 1 run de cada, e selecionar se os g3 ou g5 vao ate os 10 runs)
@@ -17,6 +29,10 @@ fixed bug for special case in poker match state
     - 1 run per 10 seed for layer 1
     - X runs for the various criterias later
 - implementar opponent population
+    - hall of fame:
+        - not only to avoid evolutionary forgetting, but also to provide opponent that use opponent models themselves, so that the inputs that enable unpredictability can be useful and used by the teams
+        - fazer o hall of fame ter o memso tamanho do smapling de oponentes
+    - opponent that bluff
 - continuar a literature review 
 
 
@@ -33,26 +49,35 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- best_config_layer1_ncd_c3_g5_seed3, 1
-- best_config_layer1_ncd_c3_g5_seed4, 2
-- best_config_layer1_ncd_c3_g5_seed1, ?
-- best_config_layer1_ncd_c3_g5_seed2, ?
+- best_config_layer1_ncd_c3_g5_seed1, 1
+- best_config_layer1_ncd_c3_g5_seed2, 2
+- best_config_layer1_ncd_c3_g5_seed5, 3
+- best_config_layer1_ncd_c3_g5_seed3, [DONE]
+- best_config_layer1_ncd_c3_g5_seed4, [DONE]
 
 nims server:
 - SBB2, default_newest_best_seed1_longer, 3, 19679 (with weighted)
 - SBB2, default_newest_best_seed2_longer, 4, 23672 (with weighted)
-- SBB3, seed2_overall_6, seed 22, 5, 19382
-- SBB3, seed2_overall_11, seed 22, 6, 23520
+- SBB3, seed2_overall_6, seed 22, 5, 19382 [DONE]
+- SBB3, seed2_overall_11, seed 22, 6, 23520 [DONE]
 - SBB, best_config_layer1_no_diversity_seed1, 1, 606
 - SBB, best_config_layer1_genotype_seed1, 2, 5904
 - SBB, best_config_layer1_fitness_sharing_seed1, 7, 14685
 - SBB, best_config_layer1_ncd_c1_seed1, 8, 23737
+- SBB4, best_config_layer1_entropy_c3_g3_seed1, 9, 26088
+- SBB4, best_config_layer1_ncd_c4_g3_seed1, 10, 31921
 
 hector server:
-- best_config_layer1_entropy_c2_seed1, 6, 9164
-- best_config_layer1_hamming_c3_seed1, 7, 13216
-- best_config_layer1_ncd_c3_seed1, 8, 17829
-- best_config_layer1_entropy_c3_seed1, 9, 23117
+- best_config_layer1_entropy_c2_seed1, 6, 9164 [DONE]
+- best_config_layer1_hamming_c3_seed1, 7, 13216 [DONE]
+- best_config_layer1_entropy_c3_seed1, 9, 23117 [DONE]
+- best_config_layer1_ncd_c4_seed1, 8, 30674
+- best_config_layer1_euclidean_seed1, 10, 4850
+- best_config_layer1_ncd_c3_g3_seed1, 11, 1464
+- best_config_layer1_hamming_c3_g3_seed1, 12, 6513
+- best_config_layer1_euclidean_g3_seed1, 13, 23807
+
+
 
 ---
 - adiantar mais o literature_review
@@ -109,6 +134,8 @@ future work:
 - tentar tournament + deterministic crowding? (papers [1][12])
 - coded opponents com bluffing e showplaying?
 - ler mais sobre como a solucao de poker da universidade de alberta funciona? qual oponente e' usado?
+- tables com 4 ou 5 players?
+- a funding de novembro, posso usar se eu trabalhar a distancia no brasil?
 
 - steps:
     3. better opponents

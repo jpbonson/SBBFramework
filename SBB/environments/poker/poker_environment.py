@@ -355,7 +355,12 @@ class PokerEnvironment(ReinforcementEnvironment):
         for label in labels:
             run_info.champion_population_distribution_per_validation[key][label] = len(point_per_distribution[label])
 
-    def calculate_accumulative_performances(self, run_info, teams_population, current_generation):
+    def calculate_final_validation_metrics(self, run_info, teams_population, current_generation):
+        self._calculate_accumulative_performances(run_info, teams_population, current_generation)
+        self._summarize_accumulative_performances(run_info)
+        self._get_validation_scores_per_subcategory(run_info, teams_population, current_generation)
+
+    def _calculate_accumulative_performances(self, run_info, teams_population, current_generation):
         older_teams = [team for team in teams_population if team.generation != current_generation]
         metrics = ['score', 'hands_played', 'hands_won']
 
@@ -409,29 +414,71 @@ class PokerEnvironment(ReinforcementEnvironment):
         teams_ids = [t.__repr__() for t in sorted_teams]
         return individual_performance, accumulative_performance, teams_ids
 
-    def summarize_accumulative_performances(self, run_info):
+    def _summarize_accumulative_performances(self, run_info):
         metrics = ['score', 'hands_played', 'hands_won']
-        main_subcats = ['sbb_label', 'opp_label', 'position', 'opponent']
         run_info.accumulative_performance_summary = {}
-        run_info.accumulative_performance_summary['overall'] = {}
-        run_info.accumulative_performance_summary['overall+main_subcats'] = {}
         for metric in metrics:
+            run_info.accumulative_performance_summary[metric] = {}
             list_scores = list(run_info.accumulative_performance_in_last_generation[metric])
             list_ids = list(run_info.ids_for_acc_performance_in_last_generation[metric])
             rank = self._rank_teams_by_accumulative_score(list_scores, list_ids)
-            run_info.accumulative_performance_summary['overall'][metric] = {}
-            run_info.accumulative_performance_summary['overall'][metric]['rank'] = rank
-            run_info.accumulative_performance_summary['overall'][metric]['ids_only'] = sorted([r[0] for r in rank])
+            run_info.accumulative_performance_summary[metric]['overall'] = {}
+            run_info.accumulative_performance_summary[metric]['overall']['rank'] = rank
+            run_info.accumulative_performance_summary[metric]['overall']['ids_only'] = sorted([r[0] for r in rank])
 
-            for subdivision in main_subcats:
+            for subdivision in PokerConfig.CONFIG['main_subcategories']:
                 for label in PokerConfig.CONFIG['labels_per_subdivision'][subdivision]:
-                    list_scores += run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][label]
-                    list_ids += run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][label]
+                    acc_score = run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][label]
+                    ids = run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][label]
+
+                    rank = self._rank_teams_by_accumulative_score(acc_score, ids)
+                    run_info.accumulative_performance_summary[metric]['subcat_'+subdivision+'_'+str(label)] = {}
+                    run_info.accumulative_performance_summary[metric]['subcat_'+subdivision+'_'+str(label)]['rank'] = rank
+                    run_info.accumulative_performance_summary[metric]['subcat_'+subdivision+'_'+str(label)]['ids_only'] = sorted([r[0] for r in rank])
+
+                    list_scores += acc_score
+                    list_ids += ids
 
             rank = self._rank_teams_by_accumulative_score(list_scores, list_ids)
-            run_info.accumulative_performance_summary['overall+main_subcats'][metric] = {}
-            run_info.accumulative_performance_summary['overall+main_subcats'][metric]['rank'] = rank
-            run_info.accumulative_performance_summary['overall+main_subcats'][metric]['ids_only'] = sorted([r[0] for r in rank])
+            run_info.accumulative_performance_summary[metric]['overall+subcats'] = {}
+            run_info.accumulative_performance_summary[metric]['overall+subcats']['rank'] = rank
+            run_info.accumulative_performance_summary[metric]['overall+subcats']['ids_only'] = sorted([r[0] for r in rank])
+
+    def _get_validation_scores_per_subcategory(self, run_info, teams_population, current_generation):
+        older_teams = [team for team in teams_population if team.generation != current_generation]
+        run_info.final_teams_validations_ids = [team.__repr__() for team in older_teams]
+        for subcategory in PokerConfig.CONFIG['main_subcategories']:
+            for subdivision in PokerConfig.CONFIG['labels_per_subdivision'][subcategory]:
+                run_info.final_teams_validations_per_subcategory[subcategory][subdivision] = []
+                for team in older_teams:
+                    if subcategory == 'opponent':
+                        scores = team.extra_metrics_['opponents'][subdivision]
+                    else:
+                        scores = team.extra_metrics_['points'][subcategory][subdivision]
+                    mean_score = numpy.mean(scores)
+                    if not math.isnan(mean_score):
+                        mean_score = round_value(mean_score)
+                    run_info.final_teams_validations_per_subcategory[subcategory][subdivision].append(mean_score)
+
+    def _initialize_extra_metrics_for_points(self):
+        extra_metrics_points = {}
+        extra_metrics_points['position'] = defaultdict(list)
+        extra_metrics_points['sbb_label'] = defaultdict(list)
+        extra_metrics_points['sbb_extra_label'] = defaultdict(list)
+        extra_metrics_points['sbb_sd'] = defaultdict(list)
+        extra_metrics_points['opp_label'] = defaultdict(list)
+        extra_metrics_points['opp_extra_label'] = defaultdict(list)
+        return extra_metrics_points
+
+    def _update_extra_metrics_for_points(self, extra_metrics_points, point, result):
+        extra_metrics_points['position'][point.position_].append(result)
+        extra_metrics_points['sbb_label'][point.label_].append(result)
+        extra_metrics_points['sbb_extra_label'][point.sbb_extra_label_].append(result)
+        extra_metrics_points['sbb_sd'][point.sbb_sd_label_].append(result)
+        extra_metrics_points['opp_label'][point.opp_label_].append(result)
+        extra_metrics_points['opp_extra_label'][point.opp_extra_label_].append(result)
+        return extra_metrics_points
+
 
     def _rank_teams_by_accumulative_score(self, list_scores, list_ids):
         previous_score = 0.0

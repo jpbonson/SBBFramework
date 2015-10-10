@@ -11,13 +11,13 @@ class OpponentModel():
     inputs[0] = opponent long-term agressiveness
     inputs[1] = opponent short-term agressiveness (last 10 hands)
     inputs[2] = opponent hand agressiveness
-    # inputs[3] = opponent last action
-    # inputs[4] = self long-term agressiveness
-    # inputs[5] = self short-term agressiveness (last 10 hands)
-    # inputs[6] = self short-term volatility (last 10 hands)
-    # inputs[7] = self long-term volatility
-    # inputs[8] = opponent short-term volatility (last 10 hands)
-    # inputs[9] = opponent long-term volatility
+    inputs[3] = opponent last action
+    inputs[4] = self long-term agressiveness
+    inputs[5] = self short-term agressiveness (last 10 hands)
+    inputs[6] = self short-term volatility (last 10 hands)
+    inputs[7] = self long-term volatility
+    inputs[8] = opponent short-term volatility (last 10 hands)
+    inputs[9] = opponent long-term volatility
     reference for agressiveness: "Countering Evolutionary Forgetting in No-Limit Texas Hold'em Poker Agents"
 
     volatility: how frequently the opponent changes its behaviors between pre-flop and post-flop
@@ -25,6 +25,19 @@ class OpponentModel():
         where 0.5: no volatility, 0.0: get less agressive, 1.0: get more agressive)
     question: isn't expected that most opponents will be less agressive pre-flop and more agressive post-flop? 
     (since they probably got better hands?) may this metric be usefull to identify bluffing?
+
+    volatility hand tests:
+    (tight aggressive): (1.0-0.1 + 1.0)/2.0 = 0.95
+    (loose aggressive): (1.0-0.9 + 1.0)/2.0 = 0.55
+    (tight passive): (0.5-0.1 + 1.0)/2.0 = 0.7
+    (loose passive): (0.5-0.4 + 1.0)/2.0 = 0.55
+    (dumb): (0.1-1.0 + 1.0)/2.0 = 0.05
+
+    aggressiveness hand tests:
+    (tight aggressive): 0.66, ffffffffrrrrrrrrrrrrrrrr
+    (loose aggressive): 0.98, ffrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
+    (tight passive): 0.25, ffffffffcccccccc
+    (loose passive): 0.47, ffcccccccccccccccccccccccccccccccc
     """
 
     INPUTS = ['opponent long-term agressiveness', 'opponent short-term agressiveness', 

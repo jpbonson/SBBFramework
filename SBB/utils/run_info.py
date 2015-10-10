@@ -47,6 +47,8 @@ class RunInfo:
         self.mean_program_size_with_introns_per_validation = []
         self.mean_program_size_without_introns_per_validation = []
         self.final_teams_validations = []
+        self.final_teams_validations_per_subcategory = defaultdict(dict)
+        self.final_teams_validations_ids = []
         self.accumulative_performance_summary = {}
         
     def __str__(self):
@@ -66,7 +68,6 @@ class RunInfo:
             msg += "\n\nGlobal Opponent Results per Validation"
             for key in self.global_opponent_results_per_validation[-1]:
                 msg += "\n"+str(key)+": "+str([item[key] if key in item else 0.0 for item in self.global_opponent_results_per_validation])
-            msg += "\n\nFinal Teams Validations: "+str(self.final_teams_validations)
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
             msg += "\n\nGlobal Diversities per Validation"
             for key in self.global_diversity_per_validation:
@@ -77,6 +78,17 @@ class RunInfo:
                 msg += "\n"+str(attribute)+":"
                 for key in self.global_result_per_validation[attribute]:
                     msg += "\n- "+str(key)+": "+str(self.global_result_per_validation[attribute][key])
+
+        msg += "\n\n\n##### FINAL TEAM METRICS"
+        if Config.USER['task'] == 'reinforcement':
+            msg += "\n\nFinal Teams Validations: "+str(self.final_teams_validations)
+            msg += "\nFinal Teams Ids: "+str(self.final_teams_validations_ids)
+            if Config.USER['reinforcement_parameters']['environment'] == 'poker':
+                for subdivision in self.final_teams_validations_per_subcategory:
+                    msg += "\n---"
+                    msg += "\n"+str(subdivision)+":"
+                    for key in self.final_teams_validations_per_subcategory[subdivision]:
+                        msg += "\n"+str(key)+": "+str(self.final_teams_validations_per_subcategory[subdivision][key])
 
         msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
         msg += "\n\nDistribution of Actions per Validation: "+str(self.actions_distribution_per_validation)
@@ -119,19 +131,26 @@ class RunInfo:
         
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE (summary)"
-            for metric in self.accumulative_performance_summary['overall']:
+            for metric in self.accumulative_performance_summary:
                 msg += "\n\n==="
                 msg += "\nOverall Accumulative Results ("+str(metric)+"):"
-                msg += "\noverall "+str(len(self.accumulative_performance_summary['overall'][metric]['ids_only']))+":"
-                msg += "\n- Rank: "+str(self.accumulative_performance_summary['overall'][metric]['rank'])
-                msg += "\n- Team ids: "+str(self.accumulative_performance_summary['overall'][metric]['ids_only'])
-                msg += "\noverall+main_subcats "+str(len(self.accumulative_performance_summary['overall+main_subcats'][metric]['ids_only']))+":"
-                msg += "\n- Rank: "+str(self.accumulative_performance_summary['overall+main_subcats'][metric]['rank'])
-                msg += "\n- Team ids: "+str(self.accumulative_performance_summary['overall+main_subcats'][metric]['ids_only'])
+                msg += "\noverall+subcats (len: "+str(len(self.accumulative_performance_summary[metric]['overall+subcats']['ids_only']))+"):"
+                msg += "\n- Rank: "+str(self.accumulative_performance_summary[metric]['overall+subcats']['rank'])
+                msg += "\n- Team ids: "+str(self.accumulative_performance_summary[metric]['overall+subcats']['ids_only'])
+                msg += "\noverall (len: "+str(len(self.accumulative_performance_summary[metric]['overall']['ids_only']))+"):"
+                msg += "\n- Rank: "+str(self.accumulative_performance_summary[metric]['overall']['rank'])
+                msg += "\n- Team ids: "+str(self.accumulative_performance_summary[metric]['overall']['ids_only'])
+                keys = list(self.accumulative_performance_summary[metric])
+                keys.remove('overall+subcats')
+                keys.remove('overall')
+                for key in keys:
+                    msg += "\n"+key+" (len: "+str(len(self.accumulative_performance_summary[metric][key]['ids_only']))+"):"
+                    msg += "\n- Rank: "+str(self.accumulative_performance_summary[metric][key]['rank'])
+                    msg += "\n- Team ids: "+str(self.accumulative_performance_summary[metric][key]['ids_only'])
 
             msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE (full)"
             for metric in self.individual_performance_in_last_generation:
-                msg += "\n\n==="
+                msg += "\n\n\n\n====="
                 msg += "\nOverall Accumulative Results ("+str(metric)+"):"
                 msg += "\n- Individual Team Performance: "+str(self.individual_performance_in_last_generation[metric])
                 msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation[metric])
