@@ -46,34 +46,37 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- best_config_layer1_ncd_c3_g5_seed1, [DONE]
-- best_config_layer1_ncd_c3_g5_seed2, [DONE]
-- best_config_layer1_ncd_c3_g5_seed5, [DONE]
-- best_config_layer1_ncd_c3_g5_seed3, [DONE]
-- best_config_layer1_ncd_c3_g5_seed4, [DONE]
+- best_config_layer1_ncd_c3_g5_seed6
+- best_config_layer1_ncd_c3_g5_seed7
+- best_config_layer1_ncd_c3_g5_seed8
+- best_config_layer1_ncd_c3_g5_seed9
+- best_config_layer1_ncd_c3_g5_seed10
+- best_config_layer1_ncd_c3_g5_seed2
 
 nims server:
 - SBB2, default_newest_best_seed1_longer, 3, 19679 (with weighted)
 - SBB2, default_newest_best_seed2_longer, 4, 23672 (with weighted)
-- SBB3, seed2_overall_6, seed 22, 5, 19382 [DONE]
-- SBB3, seed2_overall_11, seed 22, 6, 23520 [DONE]
-- SBB, best_config_layer1_no_diversity_seed1, 1, 606
-- SBB, best_config_layer1_genotype_seed1, 2, 5904
-- SBB, best_config_layer1_fitness_sharing_seed1, 7, 14685
-- SBB, best_config_layer1_ncd_c1_seed1, 8, 23737
 - SBB4, best_config_layer1_entropy_c3_g3_seed1, 9, 26088
 - SBB4, best_config_layer1_ncd_c4_g3_seed1, 10, 31921
+- ...
 
 hector server:
-- best_config_layer1_entropy_c2_seed1, 6, 9164 [DONE]
-- best_config_layer1_hamming_c3_seed1, 7, 13216 [DONE]
-- best_config_layer1_entropy_c3_seed1, 9, 23117 [DONE]
-- best_config_layer1_ncd_c4_seed1, 8, 30674
-- best_config_layer1_euclidean_seed1, 10, 4850
-- best_config_layer1_ncd_c3_g3_seed1, 11, 1464
-- best_config_layer1_hamming_c3_g3_seed1, 12, 6513
-- best_config_layer1_euclidean_g3_seed1, 13, 23807
+- ...
 
+TODO
+- best_config_layer1_no_diversity_seed2, 
+- best_config_layer1_genotype_seed2, 
+- best_config_layer1_fitness_sharing_seed2, 
+- best_config_layer1_ncd_c1_seed2, 
+- best_config_layer1_entropy_c2_seed2, 
+- best_config_layer1_hamming_c3_g5_seed2, 
+
+- best_config_layer1_entropy_c3_g5_seed2, 
+- best_config_layer1_ncd_c4_g5_seed2, 
+- best_config_layer1_euclidean_g5_seed2, 
+- best_config_layer1_ncd_c3_g3_seed2, 
+- best_config_layer1_hamming_c3_g3_seed2, 
+- best_config_layer1_euclidean_g3_seed2, 
 
 
 ---

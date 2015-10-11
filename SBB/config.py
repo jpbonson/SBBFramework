@@ -69,7 +69,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
+            'seed': 2, # default = None, it can be a single seed for all runs, or an array of seeds per run
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'extra_registers': 3,
