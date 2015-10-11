@@ -28,11 +28,14 @@ class RunInfo:
         self.inputs_distribution_per_instruction_per_validation = []
         self.inputs_distribution_per_team_per_validation = []
         self.global_diversity_per_validation = defaultdict(list)
-        self.global_fitness_score_per_validation = []
-        self.global_validation_score_per_validation = []
+        self.global_mean_fitness_score_per_validation = []
+        self.global_max_fitness_score_per_validation = []
+        self.global_mean_validation_score_per_validation = []
+        self.global_max_validation_score_per_validation = []
         self.global_opponent_results_per_validation = []
         self.info_per_team_per_generation = []
-        self.global_fitness_per_generation = []
+        self.global_mean_fitness_per_generation = []
+        self.global_max_fitness_per_generation = []
         self.global_fitness_per_diversity_per_generation = defaultdict(list)
         self.global_fitness_per_opponent_per_generation = defaultdict(list)
         self.global_diversity_per_generation = defaultdict(list)
@@ -62,8 +65,10 @@ class RunInfo:
             msg += "\n\nBest Team Recall per Action per Validation: "+str(self.recall_per_validation)
 
         msg += "\n\n\n##### GLOBAL METRICS PER VALIDATION"
-        msg += "\n\nGlobal Fitness Score per Validation: "+str(self.global_fitness_score_per_validation)
-        msg += "\n\nGlobal Validation Score per Validation: "+str(self.global_validation_score_per_validation)
+        msg += "\n\nGlobal Mean Fitness Score per Validation: "+str(self.global_mean_fitness_score_per_validation)
+        msg += "\n\nGlobal Max. Fitness Score per Validation: "+str(self.global_max_fitness_score_per_validation)
+        msg += "\n\nGlobal Mean Validation Score per Validation: "+str(self.global_mean_validation_score_per_validation)
+        msg += "\n\nGlobal Max. Validation Score per Validation: "+str(self.global_max_validation_score_per_validation)
         if Config.USER['task'] == 'reinforcement':
             msg += "\n\nGlobal Opponent Results per Validation"
             for key in self.global_opponent_results_per_validation[-1]:
@@ -111,7 +116,8 @@ class RunInfo:
         msg += "\n\nMean Program Sizes (without introns): "+str(self.mean_program_size_without_introns_per_validation)
 
         msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
-        msg += "\n\nGlobal Fitness Score per Training: "+str(self.global_fitness_per_generation)
+        msg += "\n\nGlobal Mean Fitness Score per Training: "+str(self.global_mean_fitness_per_generation)
+        msg += "\n\nGlobal Max. Fitness Score per Training: "+str(self.global_max_fitness_per_generation)
         msg += "\n\nGlobal Fitness Score per Training (per diversity):"
         if len(Config.RESTRICTIONS['used_diversities']) > 1:
             for key in self.global_fitness_per_diversity_per_generation:

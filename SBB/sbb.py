@@ -264,7 +264,8 @@ class SBB:
                 opponent_means[key] = round_value(numpy.mean([t.extra_metrics_['validation_opponents'][key] for t in older_teams]))    
             if 'hall_of_fame' in best_team.extra_metrics_['champion_opponents']:
                 opponent_means['hall_of_fame(champion)'] = best_team.extra_metrics_['champion_opponents']['hall_of_fame']
-            run_info.global_validation_score_per_validation.append(validation_score_mean)
+            run_info.global_mean_validation_score_per_validation.append(validation_score_mean)
+            run_info.global_max_validation_score_per_validation.append(round_value(max([team.extra_metrics_['validation_score'] for team in older_teams])))
             run_info.global_opponent_results_per_validation.append(opponent_means)               
             print "score per opponent (validation): "+str(best_team.extra_metrics_['validation_score'])+" (global: "+str(validation_score_mean)+")"
             for key in best_team.extra_metrics_['validation_opponents']:
@@ -272,7 +273,7 @@ class SBB:
             run_info.final_teams_validations = [team.extra_metrics_['validation_score'] for team in older_teams]
         if Config.USER['task'] == 'classification':
             validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
-            run_info.global_validation_score_per_validation.append(validation_score_mean)
+            run_info.global_mean_validation_score_per_validation.append(validation_score_mean)
 
         print
         for key in best_team.diversity_:
@@ -281,7 +282,8 @@ class SBB:
 
         print "\n### Global Metrics:"
 
-        run_info.global_fitness_score_per_validation.append(fitness_score_mean)
+        run_info.global_mean_fitness_score_per_validation.append(fitness_score_mean)
+        run_info.global_max_fitness_score_per_validation.append(round_value(max([team.fitness_ for team in older_teams])))
         print "\nfitness (global): "+str(fitness_score_mean)
 
         actions_distribution = Counter([p.action for p in programs_population])
@@ -316,7 +318,7 @@ class SBB:
         run_info.inputs_distribution_per_team_per_validation.append(inputs_distribution_per_team_array)
 
         print
-        print "Global Fitness (last 10 gen.): "+str(run_info.global_fitness_per_generation[-10:])
+        print "Global Fitness (last 10 gen.): "+str(run_info.global_mean_fitness_per_generation[-10:])
         
         if Config.USER['task'] == 'reinforcement':
             print "Opponent Type (last 10 gen.): "+str(run_info.opponent_type_per_generation[-10:])
@@ -380,7 +382,8 @@ class SBB:
             generation_info.append(team_info)
         run_info.info_per_team_per_generation.append(generation_info)
         mean_fitness = round_value(numpy.mean([team.fitness_ for team in older_teams]), 3)
-        run_info.global_fitness_per_generation.append(mean_fitness)
+        run_info.global_mean_fitness_per_generation.append(mean_fitness)
+        run_info.global_max_fitness_per_generation.append(round_value(max([team.fitness_ for team in older_teams])))
         for diversity in Config.RESTRICTIONS['used_diversities']:
             run_info.global_diversity_per_generation[diversity].append(round_value(numpy.mean([t.diversity_[diversity] for t in older_teams]), 3))
         if len(Config.RESTRICTIONS['used_diversities']) > 1 and self.selection.previous_diversity_:
@@ -425,19 +428,19 @@ class SBB:
         msg += "\nstd. deviation: "+str(score_stds)
 
         msg += "\n\n\n##### GLOBAL METRICS"
-        final_scores = [run.global_validation_score_per_validation[-1] for run in run_infos]
+        final_scores = [run.global_mean_validation_score_per_validation[-1] for run in run_infos]
         msg += "\n\nGlobal Validation Score per Run: "+str(final_scores)
         msg += "\nmean: "+str(round_value(numpy.mean(final_scores)))
         msg += "\nstd. deviation: "+str(round_value(numpy.std(final_scores)))
         best_run = run_infos[final_scores.index(max(final_scores))]
         msg += "\nbest run: "+str(best_run.run_id)
 
-        score_means, score_stds = self._process_scores([run.global_fitness_score_per_validation for run in run_infos])
+        score_means, score_stds = self._process_scores([run.global_mean_fitness_score_per_validation for run in run_infos])
         msg += "\n\nGlobal Train Score per Validation across Runs:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
-        score_means, score_stds = self._process_scores([run.global_validation_score_per_validation for run in run_infos])
+        score_means, score_stds = self._process_scores([run.global_mean_validation_score_per_validation for run in run_infos])
         msg += "\n\nGlobal Validation Score per Validation across Runs:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
