@@ -419,27 +419,29 @@ class PokerEnvironment(ReinforcementEnvironment):
         run_info.accumulative_performance_summary = {}
         for metric in metrics:
             run_info.accumulative_performance_summary[metric] = {}
-            list_scores = list(run_info.accumulative_performance_in_last_generation[metric])
-            list_ids = list(run_info.ids_for_acc_performance_in_last_generation[metric])
-            rank = self._rank_teams_by_accumulative_score(list_scores, list_ids)
+            ind_score = run_info.individual_performance_in_last_generation[metric]
+            acc_score = run_info.accumulative_performance_in_last_generation[metric]
+            ids = run_info.ids_for_acc_performance_in_last_generation[metric]
+            rank = self._rank_teams_by_accumulative_score(ind_score, acc_score, ids)
             run_info.accumulative_performance_summary[metric]['overall'] = {}
             run_info.accumulative_performance_summary[metric]['overall']['rank'] = rank
             run_info.accumulative_performance_summary[metric]['overall']['ids_only'] = sorted([r[0] for r in rank])
+            ranks = []
+            ranks += rank
 
             for subdivision in PokerConfig.CONFIG['main_subcategories']:
                 for label in PokerConfig.CONFIG['labels_per_subdivision'][subdivision]:
+                    ind_score = run_info.individual_performance_per_label_in_last_generation[metric][subdivision][label]
                     acc_score = run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][label]
                     ids = run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][label]
 
-                    rank = self._rank_teams_by_accumulative_score(acc_score, ids)
+                    rank = self._rank_teams_by_accumulative_score(ind_score, acc_score, ids)
                     run_info.accumulative_performance_summary[metric]['subcat_'+subdivision+'_'+str(label)] = {}
                     run_info.accumulative_performance_summary[metric]['subcat_'+subdivision+'_'+str(label)]['rank'] = rank
                     run_info.accumulative_performance_summary[metric]['subcat_'+subdivision+'_'+str(label)]['ids_only'] = sorted([r[0] for r in rank])
+                    ranks += rank
 
-                    list_scores += acc_score
-                    list_ids += ids
-
-            rank = self._rank_teams_by_accumulative_score(list_scores, list_ids)
+            rank = self._get_highest_ranks(ranks)
             run_info.accumulative_performance_summary[metric]['overall+subcats'] = {}
             run_info.accumulative_performance_summary[metric]['overall+subcats']['rank'] = rank
             run_info.accumulative_performance_summary[metric]['overall+subcats']['ids_only'] = sorted([r[0] for r in rank])
@@ -479,18 +481,36 @@ class PokerEnvironment(ReinforcementEnvironment):
         extra_metrics_points['opp_extra_label'][point.opp_extra_label_].append(result)
         return extra_metrics_points
 
-
-    def _rank_teams_by_accumulative_score(self, list_scores, list_ids):
-        previous_score = 0.0
+    def _rank_teams_by_accumulative_score(self, ind_scores, acc_scores, list_ids):
+        if len(ind_scores) == 0:
+            return []
         best_teams = {}
-        for score, team_id in zip(list_scores, list_ids):
+        # check if first score is good enough (must be better than the others by at least 1.0 point)
+        for score in ind_scores:
+            if (ind_scores[0] - score) > 1.0:
+                best_teams[list_ids[0]] = acc_scores[0]
+        # check if the other scores are good enough
+        previous_score = acc_scores[0]
+        for score, team_id in zip(acc_scores, list_ids):
             score_improvement = score - previous_score
-            if score_improvement >= 1.0:
+            if score_improvement > 1.0:
                 if team_id not in best_teams:
-                    best_teams[team_id] = score_improvement
+                    best_teams[team_id] = round_value(score_improvement)
                 else:
                     if score_improvement > best_teams[team_id]:
-                        best_teams[team_id] = score_improvement
+                        best_teams[team_id] = round_value(score_improvement)
             previous_score = score
+        # sort the best scores
+        rank = sorted(best_teams.items(), key=operator.itemgetter(1), reverse=True)
+        return rank
+
+    def _get_highest_ranks(self, rank):
+        best_teams = {}
+        for team_id, score in rank:
+            if team_id not in best_teams:
+                best_teams[team_id] = score
+            else:
+                if score > best_teams[team_id]:
+                    best_teams[team_id] = score
         rank = sorted(best_teams.items(), key=operator.itemgetter(1), reverse=True)
         return rank

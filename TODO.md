@@ -9,7 +9,9 @@ fixed bug for special case in poker match state
 - (antes: os runs de seed 1 para diversity e 5 runs de layer 1)
 plot violin plot of validation score per dimension of score + show list of criterias individually
 implemented max fitness and max global validation
+- (antes: os runs de seed 2 para diversity)
 added error trace for error during poker execution for seed 7
+fixed bug where the criteria for selecting poker teams was wrong
 ---
 
 
@@ -47,12 +49,8 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- best_config_layer1_ncd_c3_g5_seed6
-- best_config_layer1_ncd_c3_g5_seed7
-- best_config_layer1_ncd_c3_g5_seed8
-- best_config_layer1_ncd_c3_g5_seed9
-- best_config_layer1_ncd_c3_g5_seed10
-- best_config_layer1_ncd_c3_g5_seed2
+- best_config_layer1_ncd_c3_g5_seed3
+- ...
 
 nims server:
 - SBB, best_config_layer1_no_diversity_seed2, 1, 3815
@@ -71,6 +69,13 @@ hector server:
 - best_config_layer1_euclidean_g5_seed2, 6, 29591
 
 TODO
+- best_config_layer1_ncd_c3_g5_seed3
+- best_config_layer1_ncd_c3_g5_seed4
+- best_config_layer1_ncd_c3_g5_seed5
+- best_config_layer1_ncd_c3_g5_seed6
+- best_config_layer1_ncd_c3_g5_seed7
+- best_config_layer1_ncd_c3_g5_seed8
+
 - best_config_layer1_entropy_c2_seed3, 
 
 
