@@ -216,6 +216,7 @@ class PokerPlayerExecution():
                 else:
                     self_folded = False
                     opponent_folded = True
+                print "'warning: poker special case'",
             else:
                 last_player = last_match_state.last_player_to_act()
                 if last_player == last_match_state.position and player_actions and player_actions[-1] == 'f':
@@ -231,5 +232,12 @@ class PokerPlayerExecution():
                     self_folded = False
                     opponent_folded = True
                 else:
-                    raise ValueError("An unexpected behavior occured during the poker match!")
+                    msg = "\nERROR: An unexpected behavior occured during the poker match! Info: "
+                    msg += "\nlast_match_state: "+str(last_match_state)
+                    msg += "\nplayer_actions: "+str(player_actions)
+                    msg += "\nopponent_actions: "+str(opponent_actions)
+                    msg += "\nplayer: "+str(player)
+                    msg += "\nopponent: "+str(opponent)
+                    msg += "\n"
+                    raise ValueError(msg)
         PokerPlayerExecution._get_opponent_model(player, opponent).update_overall_agressiveness(len(last_match_state.rounds), player_actions, opponent_actions)

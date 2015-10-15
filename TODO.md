@@ -9,6 +9,7 @@ fixed bug for special case in poker match state
 - (antes: os runs de seed 1 para diversity e 5 runs de layer 1)
 plot violin plot of validation score per dimension of score + show list of criterias individually
 implemented max fitness and max global validation
+added error trace for error during poker execution for seed 7
 ---
 
 
@@ -54,29 +55,23 @@ nims pc:
 - best_config_layer1_ncd_c3_g5_seed2
 
 nims server:
-- SBB2, default_newest_best_seed1_longer, 3, 19679 (with weighted)
-- SBB2, default_newest_best_seed2_longer, 4, 23672 (with weighted)
-- SBB4, best_config_layer1_entropy_c3_g3_seed1, 9, 26088
-- SBB4, best_config_layer1_ncd_c4_g3_seed1, 10, 31921
-- ...
+- SBB, best_config_layer1_no_diversity_seed2, 1, 3815
+- SBB, best_config_layer1_genotype_seed2, 2, 9665
+- SBB, best_config_layer1_ncd_c3_g3_seed2, 5, 10577
+- SBB, best_config_layer1_hamming_c3_g3_seed2, 6, 29298
+- SBB, best_config_layer1_euclidean_g3_seed2, 7, 20017
+- SBB, best_config_layer1_entropy_c3_g3_seed2, 8, 1440
+- SBB, best_config_layer1_ncd_c4_g3_seed2, 11, 12510
 
 hector server:
-- ...
+- best_config_layer1_ncd_c1_seed2, 1, 4246
+- best_config_layer1_hamming_c3_g5_seed2, 3, 10959
+- best_config_layer1_entropy_c3_g5_seed2, 4, 14597
+- best_config_layer1_ncd_c4_g5_seed2, 5, 19292
+- best_config_layer1_euclidean_g5_seed2, 6, 29591
 
 TODO
-- best_config_layer1_no_diversity_seed2, 
-- best_config_layer1_genotype_seed2, 
-- best_config_layer1_fitness_sharing_seed2, 
-- best_config_layer1_ncd_c1_seed2, 
-- best_config_layer1_entropy_c2_seed2, 
-- best_config_layer1_hamming_c3_g5_seed2, 
-
-- best_config_layer1_entropy_c3_g5_seed2, 
-- best_config_layer1_ncd_c4_g5_seed2, 
-- best_config_layer1_euclidean_g5_seed2, 
-- best_config_layer1_ncd_c3_g3_seed2, 
-- best_config_layer1_hamming_c3_g3_seed2, 
-- best_config_layer1_euclidean_g3_seed2, 
+- best_config_layer1_entropy_c2_seed3, 
 
 
 ---
