@@ -50,33 +50,38 @@ parameters to test:
 
 nims pc:
 - best_config_layer1_ncd_c3_g5_seed3
-- ...
-
-nims server:
-- SBB, best_config_layer1_no_diversity_seed2, 1, 3815
-- SBB, best_config_layer1_genotype_seed2, 2, 9665
-- SBB, best_config_layer1_ncd_c3_g3_seed2, 5, 10577
-- SBB, best_config_layer1_hamming_c3_g3_seed2, 6, 29298
-- SBB, best_config_layer1_euclidean_g3_seed2, 7, 20017
-- SBB, best_config_layer1_entropy_c3_g3_seed2, 8, 1440
-- SBB, best_config_layer1_ncd_c4_g3_seed2, 11, 12510
-
-hector server:
-- best_config_layer1_ncd_c1_seed2, 1, 4246
-- best_config_layer1_hamming_c3_g5_seed2, 3, 10959
-- best_config_layer1_entropy_c3_g5_seed2, 4, 14597
-- best_config_layer1_ncd_c4_g5_seed2, 5, 19292
-- best_config_layer1_euclidean_g5_seed2, 6, 29591
-
-TODO
-- best_config_layer1_ncd_c3_g5_seed3
 - best_config_layer1_ncd_c3_g5_seed4
 - best_config_layer1_ncd_c3_g5_seed5
 - best_config_layer1_ncd_c3_g5_seed6
 - best_config_layer1_ncd_c3_g5_seed7
 - best_config_layer1_ncd_c3_g5_seed8
 
-- best_config_layer1_entropy_c2_seed3, 
+nims server:
+
+
+hector server:
+- best_config_layer1_ncd_c3_g5_seed1, 1, 31192
+- best_config_layer1_ncd_c3_g5_seed2, 2, 2655
+- best_config_layer1_ncd_c3_g5_seed9, 9, 8566
+- best_config_layer1_ncd_c3_g5_seed10, 10, 13161
+- best_config_layer1_entropy_c2_seed3, 3, 26030
+- best_config_layer1_ncd_c1_seed3, 4, 6594
+- best_config_layer1_fitness_sharing_seed2, 5, 27528
+
+
+TODO
+- best_config_layer1_hamming_c3_g5_seed3, 
+- best_config_layer1_entropy_c3_g5_seed3, 
+- best_config_layer1_ncd_c4_g5_seed3, 
+- best_config_layer1_euclidean_g5_seed3, 
+- SBB, best_config_layer1_no_diversity_seed3, 1, 3815 [DONE]
+- SBB, best_config_layer1_genotype_seed3, 2, 9665 [DONE]
+- SBB, best_config_layer1_ncd_c3_g3_seed3, 5, 10577 [DONE]
+- SBB, best_config_layer1_hamming_c3_g3_seed3, 6, 29298 [DONE]
+- SBB, best_config_layer1_euclidean_g3_seed3, 7, 20017 [DONE]
+- SBB, best_config_layer1_entropy_c3_g3_seed3, 8, 1440 [DONE]
+- SBB, best_config_layer1_ncd_c4_g3_seed3, 11, 12510 [DONE]
+- best_config_layer1_fitness_sharing_seed3, 5, 27528
 
 
 ---
