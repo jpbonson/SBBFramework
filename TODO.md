@@ -14,7 +14,6 @@ added error trace for error during poker execution for seed 7
 fixed bug where the criteria for selecting poker teams was wrong
 ---
 
-
 - conferir runs + mandar rodar runs
 - poker unit tests? com 2 gens?
 - permitir que no second layer, existe a chance aleatoria da action ser atomica? so even if the teams see new things, they are still able to adapt to them easily? (eg.: new opponent styles, hall of fame) and use the appropriete inputs accordindly?
@@ -49,39 +48,43 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- best_config_layer1_ncd_c3_g5_seed3
-- best_config_layer1_ncd_c3_g5_seed4
-- best_config_layer1_ncd_c3_g5_seed5
-- best_config_layer1_ncd_c3_g5_seed6
-- best_config_layer1_ncd_c3_g5_seed7
-- best_config_layer1_ncd_c3_g5_seed8
+- best_config_layer1_ncd_c3_g5_seed3_all
+- best_config_layer1_ncd_c3_g5_seed3_top15
+- best_config_layer1_ncd_c3_g5_seed3_top10
+- best_config_layer1_ncd_c3_g5_seed3_top5
+- best_config_layer1_ncd_c3_g5_seed4_all
+- best_config_layer1_ncd_c3_g5_seed4_top15
 
 nims server:
-
+- best_config_layer1_no_diversity_seed3, 1, 24348
+- best_config_layer1_genotype_seed3, 2, 29665
+- best_config_layer1_ncd_c4_g5_seed3, 3, 9056
+- best_config_layer1_ncd_c4_g3_seed3, 4, 18560
+- best_config_layer1_ncd_c3_g3_seed3, 5, 28863
+- best_config_layer1_hamming_c3_g3_seed3, 6, 8233
+- best_config_layer1_euclidean_g3_seed3, 7, 28976
+- best_config_layer1_entropy_c3_g3_seed3, 8, 9967
 
 hector server:
-- best_config_layer1_ncd_c3_g5_seed1, 1, 31192
-- best_config_layer1_ncd_c3_g5_seed2, 2, 2655
-- best_config_layer1_ncd_c3_g5_seed9, 9, 8566
-- best_config_layer1_ncd_c3_g5_seed10, 10, 13161
-- best_config_layer1_entropy_c2_seed3, 3, 26030
-- best_config_layer1_ncd_c1_seed3, 4, 6594
 - best_config_layer1_fitness_sharing_seed2, 5, 27528
-
+- best_config_layer1_fitness_sharing_seed3, 6, 26562
+- best_config_layer1_ncd_c3_g5_seed4_top10
+- best_config_layer1_ncd_c3_g5_seed4_top5
+- best_config_layer1_ncd_c3_g5_seed5_all
+- best_config_layer1_ncd_c3_g5_seed5_top15
+- best_config_layer1_ncd_c3_g5_seed5_top10
+- best_config_layer1_ncd_c3_g5_seed5_top5
 
 TODO
-- best_config_layer1_hamming_c3_g5_seed3, 
-- best_config_layer1_entropy_c3_g5_seed3, 
-- best_config_layer1_ncd_c4_g5_seed3, 
-- best_config_layer1_euclidean_g5_seed3, 
-- SBB, best_config_layer1_no_diversity_seed3, 1, 3815 [DONE]
-- SBB, best_config_layer1_genotype_seed3, 2, 9665 [DONE]
-- SBB, best_config_layer1_ncd_c3_g3_seed3, 5, 10577 [DONE]
-- SBB, best_config_layer1_hamming_c3_g3_seed3, 6, 29298 [DONE]
-- SBB, best_config_layer1_euclidean_g3_seed3, 7, 20017 [DONE]
-- SBB, best_config_layer1_entropy_c3_g3_seed3, 8, 1440 [DONE]
-- SBB, best_config_layer1_ncd_c4_g3_seed3, 11, 12510 [DONE]
-- best_config_layer1_fitness_sharing_seed3, 5, 27528
+- ...
+
+DONE
+- best_config_layer1_ncd_c3_g5_seed1, 1, 31192 [DONE]
+- best_config_layer1_ncd_c3_g5_seed2, 2, 2655 [DONE]
+- best_config_layer1_ncd_c3_g5_seed9, 9, 8566 [DONE]
+- best_config_layer1_ncd_c3_g5_seed10, 10, 13161 [DONE]
+- best_config_layer1_entropy_c2_seed3, 3, 26030 [DONE]
+- best_config_layer1_ncd_c1_seed3, 4, 6594 [DONE]
 
 
 ---
