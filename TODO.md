@@ -48,37 +48,56 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- best_config_layer1_ncd_c3_g5_seed3_all
-- best_config_layer1_ncd_c3_g5_seed3_top15
-- best_config_layer1_ncd_c3_g5_seed3_top10
-- best_config_layer1_ncd_c3_g5_seed3_top5
-- best_config_layer1_ncd_c3_g5_seed4_all
-- best_config_layer1_ncd_c3_g5_seed4_top15
+- best_config_layer1_ncd_c3_g5_seed6_all_seed61
+- best_config_layer1_ncd_c3_g5_seed6_top15_seed61
+- best_config_layer1_ncd_c3_g5_seed6_top10_seed61
+- best_config_layer1_ncd_c3_g5_seed6_top5_seed61
 
 nims server:
-- best_config_layer1_no_diversity_seed3, 1, 24348
-- best_config_layer1_genotype_seed3, 2, 29665
-- best_config_layer1_ncd_c4_g5_seed3, 3, 9056
-- best_config_layer1_ncd_c4_g3_seed3, 4, 18560
-- best_config_layer1_ncd_c3_g3_seed3, 5, 28863
-- best_config_layer1_hamming_c3_g3_seed3, 6, 8233
-- best_config_layer1_euclidean_g3_seed3, 7, 28976
-- best_config_layer1_entropy_c3_g3_seed3, 8, 9967
+- best_config_layer1_no_diversity_seed4, 1, 18327
+- best_config_layer1_genotype_seed4, 2, 24288
+- best_config_layer1_ncd_c4_g5_seed4, 3, 13271
+- best_config_layer1_ncd_c3_g3_seed4, 4, 28019
+- best_config_layer1_ncd_c4_g3_seed4, 5, 6285
+- best_config_layer1_hamming_c3_g3_seed4, 6, 19296
+- best_config_layer1_euclidean_g3_seed4, 7, 865
+- best_config_layer1_entropy_c3_g3_seed4, 8, 13828
+- best_config_layer1_entropy_c2_seed4, 9, 31486
 
 hector server:
-- best_config_layer1_fitness_sharing_seed2, 5, 27528
-- best_config_layer1_fitness_sharing_seed3, 6, 26562
-- best_config_layer1_ncd_c3_g5_seed4_top10
-- best_config_layer1_ncd_c3_g5_seed4_top5
-- best_config_layer1_ncd_c3_g5_seed5_all
-- best_config_layer1_ncd_c3_g5_seed5_top15
-- best_config_layer1_ncd_c3_g5_seed5_top10
-- best_config_layer1_ncd_c3_g5_seed5_top5
+- best_config_layer1_ncd_c1_seed4, 9, 14538 (SBB2)
+- best_config_layer1_fitness_sharing_seed4, 10, 19372 (SBB2)
 
 TODO
 - ...
 
 DONE
+
+- best_config_layer1_ncd_c3_g5_seed3_all_seed31 [DONE]
+- best_config_layer1_ncd_c3_g5_seed3_top15_seed31 [DONE]
+- best_config_layer1_ncd_c3_g5_seed3_top10_seed31 [DONE]
+- best_config_layer1_ncd_c3_g5_seed3_top5_seed31 [DONE]
+- best_config_layer1_ncd_c3_g5_seed4_all_seed41 [DONE]
+- best_config_layer1_ncd_c3_g5_seed4_top15_seed41 [DONE]
+
+- best_config_layer1_ncd_c3_g5_seed4_top10_seed41, 1, 23238 (SBB2) [DONE]
+- best_config_layer1_ncd_c3_g5_seed4_top5_seed41, 2, 26217 (SBB2) [DONE]
+- best_config_layer1_ncd_c3_g5_seed5_all_seed51, 3, 31825 (SBB2) [DONE]
+- best_config_layer1_ncd_c3_g5_seed5_top15_seed51, 4, 3531 (SBB2) [DONE]
+- best_config_layer1_ncd_c3_g5_seed5_top10_seed51, 7, 8614 (SBB2) [DONE]
+- best_config_layer1_ncd_c3_g5_seed5_top5_seed51, 8, 13441 (SBB2) [DONE]
+
+- best_config_layer1_no_diversity_seed3, 1, 24348 [DONE]
+- best_config_layer1_genotype_seed3, 2, 29665 [DONE]
+- best_config_layer1_ncd_c4_g5_seed3, 3, 9056 [DONE]
+- best_config_layer1_ncd_c4_g3_seed3, 4, 18560 [DONE]
+- best_config_layer1_ncd_c3_g3_seed3, 5, 28863 [DONE]
+- best_config_layer1_hamming_c3_g3_seed3, 6, 8233 [DONE]
+- best_config_layer1_euclidean_g3_seed3, 7, 28976 [DONE]
+- best_config_layer1_entropy_c3_g3_seed3, 8, 9967 [DONE]
+
+- best_config_layer1_fitness_sharing_seed2, 5, 27528 [DONE]
+- best_config_layer1_fitness_sharing_seed3, 6, 26562 [DONE]
 - best_config_layer1_ncd_c3_g5_seed1, 1, 31192 [DONE]
 - best_config_layer1_ncd_c3_g5_seed2, 2, 2655 [DONE]
 - best_config_layer1_ncd_c3_g5_seed9, 9, 8566 [DONE]
