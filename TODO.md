@@ -17,6 +17,8 @@ fixed bug with unexpected poker behaviors (rollback)
 
 - conferir se teste ok + commitar bug corrigido + mandar rerodar as runs que deram erro, e ver se falharam
 
+- organizar pastas das diversities
+- mandar rodar mais runs de diversity
 
 - atualizar: charts de violin plot de layers + charts de diversity
     - escolher qual o melhor criterio
@@ -50,22 +52,17 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- ...
+- best_config_layer1_ncd_c3_g5_seed9, 5, 18883 FAIL?
 
 nims server:
-- best_config_layer1_no_diversity_seed4, 1, 18327 [DONE]
-- best_config_layer1_genotype_seed4, 2, 24288 [DONE]
-- best_config_layer1_ncd_c4_g5_seed4, 3, 13271 [DONE]
-- best_config_layer1_ncd_c3_g3_seed4, 4, 28019 [DONE]
-- best_config_layer1_ncd_c4_g3_seed4, 5, 6285 [DONE]
-- best_config_layer1_hamming_c3_g3_seed4, 6, 19296 [DONE]
-- best_config_layer1_euclidean_g3_seed4, 7, 865 [DONE]
-- best_config_layer1_entropy_c3_g3_seed4, 8, 13828 [DONE]
-- best_config_layer1_entropy_c2_seed4, 9, 31486 [DONE]
+- ...
 
 hector server:
 - best_config_layer1_ncd_c3_g5_seed7_all_seed71, 1, 28871
 - best_config_layer1_ncd_c3_g5_seed10, 6, 2153
+- best_config_layer1_ncd_c3_g5_seed7_top15_seed71, 2, 31292 FAIL?
+- best_config_layer1_ncd_c3_g5_seed7_top10_seed71, 3, 1674 FAIL?
+- best_config_layer1_ncd_c3_g5_seed7_top5_seed71, 4, 5212 FAIL?
 
 TODO ?
 - best_config_layer1_ncd_c3_g5_seedx_all_seedx1
@@ -95,6 +92,17 @@ DONE
 - best_config_layer1_ncd_c3_g5_seed10, 10, 13161 [DONE]
 - best_config_layer1_entropy_c2_seed3, 3, 26030 [DONE]
 - best_config_layer1_ncd_c1_seed3, 4, 6594 [DONE]
+
+temp nims2:
+- best_config_layer1_no_diversity_seed4, 1, 18327 [DONE]
+- best_config_layer1_genotype_seed4, 2, 24288 [DONE]
+- best_config_layer1_ncd_c4_g5_seed4, 3, 13271 [DONE]
+- best_config_layer1_ncd_c3_g3_seed4, 4, 28019 [DONE]
+- best_config_layer1_ncd_c4_g3_seed4, 5, 6285 [DONE]
+- best_config_layer1_hamming_c3_g3_seed4, 6, 19296 [DONE]
+- best_config_layer1_euclidean_g3_seed4, 7, 865 [DONE]
+- best_config_layer1_entropy_c3_g3_seed4, 8, 13828 [DONE]
+- best_config_layer1_entropy_c2_seed4, 9, 31486 [DONE]
 
 
 ---

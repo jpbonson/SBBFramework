@@ -18,8 +18,8 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 30, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 100, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 300, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'hall_of_fame': {
                 'size': 10,
                 'enabled': True,
@@ -34,11 +34,11 @@ class Config():
 
         'training_parameters': {
             'runs_total': 1,
-            'generations_total': 2,
-            'validate_after_each_generation': 2,
+            'generations_total': 150,
+            'validate_after_each_generation': 25,
             'populations': {
-                'teams': 20,
-                'points': 20,
+                'teams': 100,
+                'points': 100,
             },
             'replacement_rate': {
                 'teams': 0.5,
@@ -69,7 +69,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 71, # default = None, it can be a single seed for all runs, or an array of seeds per run
+            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'extra_registers': 3,
@@ -83,7 +83,7 @@ class Config():
             'use_weighted_probability_selection': True, # if False, uniform probability will be used
             'use_agressive_mutations': True,
             'second_layer': {
-                'enabled': True,
+                'enabled': False,
                 'path': 'actions_reference/11layers/seed7/all',
             },
         },
