@@ -12,7 +12,15 @@ implemented max fitness and max global validation
 - (antes: os runs de seed 2 para diversity)
 added error trace for error during poker execution for seed 7
 fixed bug where the criteria for selecting poker teams was wrong
+fixed bug with unexpected poker behaviors (rollback)
 ---
+
+- conferir se teste ok + commitar bug corrigido + mandar rerodar as runs que deram erro, e ver se falharam
+
+
+- atualizar: charts de violin plot de layers + charts de diversity
+    - escolher qual o melhor criterio
+    - atualizar folder de diversities
 
 - conferir runs + mandar rodar runs
 - poker unit tests? com 2 gens?
@@ -21,12 +29,6 @@ fixed bug where the criteria for selecting poker teams was wrong
     - fazer run longo do layer 2
         - get rid of criteria 1
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
-- ler reviews de ML
-- mandar rodar os runs para as diversities (fazer 1 run de cada, e selecionar se os g3 ou g5 vao ate os 10 runs)
-    - fazer plot com box plot, pelo menos 10 runs de cada diversity
-- definir melhor criterio para selecao de teams
-    - 1 run per 10 seed for layer 1
-    - X runs for the various criterias later
 - implementar opponent population
     - hall of fame:
         - not only to avoid evolutionary forgetting, but also to provide opponent that use opponent models themselves, so that the inputs that enable unpredictability can be useful and used by the teams
@@ -48,44 +50,33 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- best_config_layer1_ncd_c3_g5_seed6_all_seed61
-- best_config_layer1_ncd_c3_g5_seed6_top15_seed61
-- best_config_layer1_ncd_c3_g5_seed6_top10_seed61
-- best_config_layer1_ncd_c3_g5_seed6_top5_seed61
+- ...
 
 nims server:
-- best_config_layer1_no_diversity_seed4, 1, 18327
-- best_config_layer1_genotype_seed4, 2, 24288
-- best_config_layer1_ncd_c4_g5_seed4, 3, 13271
-- best_config_layer1_ncd_c3_g3_seed4, 4, 28019
-- best_config_layer1_ncd_c4_g3_seed4, 5, 6285
-- best_config_layer1_hamming_c3_g3_seed4, 6, 19296
-- best_config_layer1_euclidean_g3_seed4, 7, 865
-- best_config_layer1_entropy_c3_g3_seed4, 8, 13828
-- best_config_layer1_entropy_c2_seed4, 9, 31486
+- best_config_layer1_no_diversity_seed4, 1, 18327 [DONE]
+- best_config_layer1_genotype_seed4, 2, 24288 [DONE]
+- best_config_layer1_ncd_c4_g5_seed4, 3, 13271 [DONE]
+- best_config_layer1_ncd_c3_g3_seed4, 4, 28019 [DONE]
+- best_config_layer1_ncd_c4_g3_seed4, 5, 6285 [DONE]
+- best_config_layer1_hamming_c3_g3_seed4, 6, 19296 [DONE]
+- best_config_layer1_euclidean_g3_seed4, 7, 865 [DONE]
+- best_config_layer1_entropy_c3_g3_seed4, 8, 13828 [DONE]
+- best_config_layer1_entropy_c2_seed4, 9, 31486 [DONE]
 
 hector server:
-- best_config_layer1_ncd_c1_seed4, 9, 14538 (SBB2)
-- best_config_layer1_fitness_sharing_seed4, 10, 19372 (SBB2)
+- best_config_layer1_ncd_c3_g5_seed7_all_seed71, 1, 28871
+- best_config_layer1_ncd_c3_g5_seed10, 6, 2153
 
-TODO
-- ...
+TODO ?
+- best_config_layer1_ncd_c3_g5_seedx_all_seedx1
+- best_config_layer1_ncd_c3_g5_seedx_top15_seedx1
+- best_config_layer1_ncd_c3_g5_seedx_top10_seedx1
+- best_config_layer1_ncd_c3_g5_seedx_top5_seedx1
 
 DONE
 
-- best_config_layer1_ncd_c3_g5_seed3_all_seed31 [DONE]
-- best_config_layer1_ncd_c3_g5_seed3_top15_seed31 [DONE]
-- best_config_layer1_ncd_c3_g5_seed3_top10_seed31 [DONE]
-- best_config_layer1_ncd_c3_g5_seed3_top5_seed31 [DONE]
-- best_config_layer1_ncd_c3_g5_seed4_all_seed41 [DONE]
-- best_config_layer1_ncd_c3_g5_seed4_top15_seed41 [DONE]
-
-- best_config_layer1_ncd_c3_g5_seed4_top10_seed41, 1, 23238 (SBB2) [DONE]
-- best_config_layer1_ncd_c3_g5_seed4_top5_seed41, 2, 26217 (SBB2) [DONE]
-- best_config_layer1_ncd_c3_g5_seed5_all_seed51, 3, 31825 (SBB2) [DONE]
-- best_config_layer1_ncd_c3_g5_seed5_top15_seed51, 4, 3531 (SBB2) [DONE]
-- best_config_layer1_ncd_c3_g5_seed5_top10_seed51, 7, 8614 (SBB2) [DONE]
-- best_config_layer1_ncd_c3_g5_seed5_top5_seed51, 8, 13441 (SBB2) [DONE]
+- best_config_layer1_ncd_c1_seed4, 9, 14538 (SBB2) [DONE]
+- best_config_layer1_fitness_sharing_seed4, 10, 19372 (SBB2) [DONE]
 
 - best_config_layer1_no_diversity_seed3, 1, 24348 [DONE]
 - best_config_layer1_genotype_seed3, 2, 29665 [DONE]
