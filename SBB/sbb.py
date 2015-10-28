@@ -134,8 +134,11 @@ class SBB:
 
         if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
             self._initialize_actions_for_second_layer()
-            Config.RESTRICTIONS['total_actions'] = len(Config.RESTRICTIONS['second_layer']['action_mapping'])
-
+            total_team_actions = len(Config.RESTRICTIONS['second_layer']['action_mapping'])
+            if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
+                Config.RESTRICTIONS['total_actions'] += total_team_actions
+            else:
+                Config.RESTRICTIONS['total_actions'] = total_team_actions
         return environment
 
     def _initialize_actions_for_second_layer(self):
@@ -152,8 +155,12 @@ class SBB:
             with open(name) as f:
                 data = json.load(f)
             team_id = ntpath.split(name)[-1].replace('.json', '')
-            Config.RESTRICTIONS['second_layer']['short_action_mapping'][index] = team_id
-            temp_actions_as_dicts[index] = data
+            if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
+                actual_index = index + Config.RESTRICTIONS['total_actions']
+            else:
+                actual_index = index
+            Config.RESTRICTIONS['second_layer']['short_action_mapping'][actual_index] = team_id
+            temp_actions_as_dicts[actual_index] = data
 
         for action, team_descriptor in temp_actions_as_dicts.iteritems():
             team = self._read_team_from_json(team_descriptor)

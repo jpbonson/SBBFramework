@@ -88,23 +88,11 @@ class Team(DefaultOpponent):
         Test if there are at least one program in the team that is able to provide a valid action
         If there is no such program, return None, so that the environment will use a default action
         """
-        if self._is_meta_team():
-            actions = flatten([p.get_raw_actions() for p in self.programs])
-        else:
-            actions = [p.action for p in self.programs]
+        actions = flatten([p.get_raw_actions() for p in self.programs])
         possible_action = set(actions).intersection(valid_actions)
         if len(possible_action) == 0:
             return False
         return True
-
-    def _is_meta_team(self):
-        if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
-            if self.generation > -1:
-                return True
-            else:
-                return False
-        else:
-            return False
 
     def _select_program(self, inputs, valid_actions):
         """
@@ -112,26 +100,16 @@ class Team(DefaultOpponent):
         action is valid before submitting it to the environment. If it is not valid, then 
         the second best action will be tried, and so on until a valid action is obtained.
         """
-        if self._is_meta_team():
-            partial_outputs = []
-            valid_programs = []
-            for program in self.programs:
-                actions = program.get_raw_actions()
-                possible_action = set(actions).intersection(valid_actions)
-                if len(possible_action) > 0:
-                    partial_outputs.append(program.execute(inputs))
-                    valid_programs.append(program)
-            selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
-            return selected_program
-        else:
-            partial_outputs = []
-            valid_programs = []
-            for program in self.programs:
-                if program.action in valid_actions:
-                    partial_outputs.append(program.execute(inputs))
-                    valid_programs.append(program)
-            selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
-            return selected_program
+        partial_outputs = []
+        valid_programs = []
+        for program in self.programs:
+            actions = program.get_raw_actions()
+            possible_action = set(actions).intersection(valid_actions)
+            if len(possible_action) > 0:
+                partial_outputs.append(program.execute(inputs))
+                valid_programs.append(program)
+        selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
+        return selected_program
 
     def generate_profile(self):
         profile = []

@@ -11,7 +11,7 @@ def get_program_id():
     global next_program_id
     next_program_id += 1
     return next_program_id
-
+ 
 class Program:
     def __init__(self, generation, instructions, action, program_id = None):
         self.generation = generation
@@ -69,26 +69,35 @@ class Program:
         return inputs
 
     def _get_action_result(self, point_id, inputs, valid_actions, is_training):
-        if self._is_meta_action():
+        if self.is_atomic_action():
+            return self.action
+        else:
             team = Config.RESTRICTIONS['second_layer']['action_mapping'][self.action]
             return team.execute(point_id, inputs, valid_actions, is_training, update_profile = False)
-        else:
-            return self.action
 
-    def _is_meta_action(self):
-        if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
-            if self.generation > -1:
-                return True
-            else:
-                return False
+    def is_atomic_action(self):
+        if not Config.USER['advanced_training_parameters']['second_layer']['enabled']:
+            return True
         else:
-            return False
+            if self.generation == -1:
+                return True # WARNING: Incompatible for more than 2 layers
+            else:
+                if not Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
+                    return False
+                else:
+                    if self.action in range(Config.RESTRICTIONS['total_raw_actions']):
+                        return True
+                    else:
+                        return False
 
     def get_raw_actions(self):
-        meta_action = self.action
-        team = Config.RESTRICTIONS['second_layer']['action_mapping'][meta_action]
-        actions = [p.action for p in team.programs]
-        return actions
+        if self.is_atomic_action():
+            return [self.action]
+        else:
+            meta_action = self.action
+            team = Config.RESTRICTIONS['second_layer']['action_mapping'][meta_action]
+            actions = [p.action for p in team.programs]
+            return actions
 
     def mutate(self):
         mutation_chance = random.random()
@@ -132,10 +141,10 @@ class Program:
         save = {}
         save['program_id'] = self.program_id_
         save['action'] = self.action
-        if self._is_meta_action():
-            save['action_type'] = 'meta'
-        else:
+        if self.is_atomic_action():
             save['action_type'] = 'atomic'
+        else:
+            save['action_type'] = 'meta'
         save['instructions'] = []
         for instruction in self.instructions:
             save['instructions'].append(instruction.dict())

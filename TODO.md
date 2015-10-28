@@ -13,16 +13,13 @@ implemented max fitness and max global validation
 added error trace for error during poker execution for seed 7
 fixed bug where the criteria for selecting poker teams was wrong
 fixed bug with unexpected poker behaviors (rollback)
+added option to keep using atomic action along with meta actions
 ---
 
-- layer2:
-    - tentar runs de layer2 permitindo acoes atomicas?
 
 - apos o fim dos runs de seed 5 de diversity, dar uma pausa? (para ter mais espaco para rodar os outros testes)
-
 - conferir runs + mandar rodar runs
 - poker unit tests? com 2 gens?
-- permitir que no second layer, existe a chance aleatoria da action ser atomica? so even if the teams see new things, they are still able to adapt to them easily? (eg.: new opponent styles, hall of fame) and use the appropriete inputs accordindly?
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
 - implementar opponent population
     - approach 1
