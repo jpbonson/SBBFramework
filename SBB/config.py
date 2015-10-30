@@ -1,7 +1,6 @@
 import sys
 import numpy
 from collections import deque
-# from config_examples import thyroid_config, tictactoe_config, poker_config
 
 class Config():
     """
@@ -12,24 +11,9 @@ class Config():
 
     # user configurable options
     USER = {
-        'task': 'reinforcement',
+        'task': 'classification',
         'classification_parameters': { # only used if 'task' is 'classification'
             'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
-        },
-        'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
-            'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 300, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
-            'hall_of_fame': {
-                'size': 10,
-                'enabled': True,
-                'use_as_opponents': False,
-                'diversity': 'ncd_c3', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-            },
-            'debug_matches': False, # use this option to debug
-            'poker': {
-                'balance_based_on': 'pstr_ostr', # one of the folders in SBB\environments\poker\hand_types
-            },            
         },
 
         'training_parameters': {
@@ -82,19 +66,12 @@ class Config():
             'run_initialization_step2': False,
             'use_weighted_probability_selection': True, # if False, uniform probability will be used
             'use_agressive_mutations': True,
-            'second_layer': {
-                'enabled': False,
-                'use_atomic_actions': True,
-                'path': 'actions_reference/11layers/seed6/top5',
-            },
         },
     }
 
     # restrictions used to validate CONFIG and to control the system low-level configurations
     RESTRICTIONS = {
-        'task_types': ['classification', 'reinforcement'],
-        'environment_types': ['tictactoe', 'poker'],
-        'diversity_options': ['genotype', 'fitness_sharing', 'ncd_c1', 'entropy_c2', 'hamming_c3', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
+        'diversity_options': ['genotype', 'fitness_sharing'], # must have the same name as the methods in DiversityMaintenance
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
@@ -127,10 +104,6 @@ class Config():
             'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*5.0)),
             'update_chance': 0.05,
         },
-        'second_layer': {
-            'action_mapping': {}, # initialized by sbb.py
-            'short_action_mapping': {}, # initialized by sbb.py
-        },
     }
 
     @staticmethod
@@ -138,9 +111,6 @@ class Config():
         """
         Check if the parameters in CONFIG are valid using RESTRICTIONS
         """
-        if Config.USER['task'] not in Config.RESTRICTIONS['task_types']:
-            sys.stderr.write("Error: Invalid 'task' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['task_types'])+"\n")
-            raise SystemExit
 
         diversities = Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show']
         
@@ -153,19 +123,6 @@ class Config():
             if 'ncd_c1' in diversities or 'entropy_c2' in diversities or 'hamming_c3' in diversities or 'ncd_c3' in diversities or 'entropy_c3' in diversities or 'ncd_c4' in diversities or 'euclidean' in diversities:
                 sys.stderr.write("Error: Can't calculate this diversity for a classification task!\n")
                 raise SystemExit
-
-        if Config.USER['task'] == 'reinforcement':
-            if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:
-                if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity'] not in Config.RESTRICTIONS['diversity_options']:
-                    sys.stderr.write("Error: Invalid 'diversity' for 'hall_of_fame' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['diversity_options'])+"\n")
-                    raise SystemExit
-            if not Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
-                sys.stderr.write("Error: For hall of fame, 'use_as_opponents' can't be True if 'enabled' is False\n")
-                raise SystemExit
-
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] not in Config.RESTRICTIONS['environment_types']:
-            sys.stderr.write("Error: Invalid 'environment' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['environment_types'])+"\n")
-            raise SystemExit
 
         valid_operations = Config.RESTRICTIONS['genotype_options']['simple_operations'] + Config.RESTRICTIONS['genotype_options']['complex_operations']
         for op in Config.USER['advanced_training_parameters']['use_operations']:  
@@ -181,8 +138,3 @@ class Config():
             if len(Config.USER['advanced_training_parameters']['seed']) != Config.USER['training_parameters']['runs_total']:
                 sys.stderr.write("Error: If you are using an array of seeds, the size of the array must be equal to the total of runs.\n")
                 raise SystemExit
-
-# To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
-# Config.USER = thyroid_config.THYROID_REGISTERS2
-# Config.USER = tictactoe_config.TICTACTOE_DEFAULT
-# Config.USER = poker_config.POKER_DEFAULT_ENTROPY_1
