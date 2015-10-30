@@ -16,10 +16,10 @@ class PokerConfig():
         'rule_based_opponents': ['loose_agressive', 'loose_passive', 'tight_agressive', 'tight_passive'],
         'point_cache_size': 50,
         'labels_per_subdivision': {
-            'sbb_label': [0, 1, 2, 3],
-            'sbb_extra_label': [0, 1, 2, 3],
-            'opp_label': [0, 1, 2, 3],
-            'opp_extra_label': [0, 1, 2, 3],
+            'sbb_label': [0, 1, 2],
+            'sbb_extra_label': [0, 1, 2],
+            'opp_label': [0, 1, 2],
+            'opp_extra_label': [0, 1, 2],
             'position': [0, 1],
             'sbb_sd': [0, 1, 2],
             'opponent': [], # setup in poker environment
@@ -38,10 +38,8 @@ class PokerConfig():
 
     @staticmethod
     def get_hand_strength_label(value):
-        if value >= 9.0:
+        if value >= 8.0:
             return 0
-        if value >= 7.0:
+        if value >= 5.0:
             return 1
-        if value >= 4.0:
-            return 2
-        return 3
+        return 2

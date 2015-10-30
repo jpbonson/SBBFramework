@@ -28,7 +28,7 @@ class Config():
             },
             'debug_matches': False, # use this option to debug
             'poker': {
-                'balance_based_on': 'board_strength', # hole_cards_strength or board_strength
+                'balance_based_on': 'pstr_ostr', # one of the folders in SBB\environments\poker\hand_types
             },            
         },
 
@@ -85,7 +85,7 @@ class Config():
             'second_layer': {
                 'enabled': False,
                 'use_atomic_actions': True,
-                'path': 'actions_reference/11layers/seed3/top5',
+                'path': 'actions_reference/11layers/seed6/top5',
             },
         },
     }

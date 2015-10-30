@@ -31,7 +31,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_actions = 3 # fold, call, raise
         PokerConfig.CONFIG['inputs'] = PokerPoint.INPUTS+MatchState.INPUTS+['chips']+OpponentModel.INPUTS
         total_inputs = len(PokerConfig.CONFIG['inputs'])
-        total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])*len(PokerConfig.CONFIG['labels_per_subdivision']['opp_label'])
 
         coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
@@ -125,8 +125,14 @@ class PokerEnvironment(ReinforcementEnvironment):
         score = out.split("\n")[1]
         score = score.replace("SCORE:", "")
         splitted_score = score.split(":")
-        scores = splitted_score[0].split("|")
-        players = splitted_score[1].split("|")
+        try:
+            scores = splitted_score[0].split("|")
+            players = splitted_score[1].split("|")
+        except IndexError as e:
+            print "Error: IndexError during poker execution."
+            print "scores: "+str(scores)
+            print "players: "+str(players)
+            raise
         if players[0] == 'sbb':
             sbb_position = 0
             opponent_position = 1

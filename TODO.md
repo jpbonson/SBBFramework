@@ -16,8 +16,9 @@ fixed bug with unexpected poker behaviors (rollback)
 added option to keep using atomic action along with meta actions
 ---
 
+- Do you think that would be interesting to give a try balancing the point population by 2 attributes, with 9 total combinations? (3 for the player's hand strength (weak, intermediate, strong), and 3 for the opponent's (weak, intermediate, strong)).
+- I will take a few days to see if I can increase the parallelism, in order to be able to test the runs faster.
 
-- apos o fim dos runs de seed 5 de diversity, dar uma pausa? (para ter mais espaco para rodar os outros testes)
 - conferir runs + mandar rodar runs
 - poker unit tests? com 2 gens?
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
@@ -44,38 +45,58 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- ...
+- best_config_layer1_ncd_c3_g5_seed3_top5_seed31_atomic, 1
+- best_config_layer1_ncd_c3_g5_seed3_top10_seed31_atomic, 2
+- best_config_layer1_ncd_c3_g5_seed4_top5_seed41_atomic, 3
+- best_config_layer1_ncd_c3_g5_seed4_top10_seed41_atomic, 4
+- best_config_layer1_ncd_c3_g5_seed5_top5_seed51_atomic, 5
+- best_config_layer1_ncd_c3_g5_seed5_top10_seed51_atomic, 6
 
 nims server:
-- best_config_layer1_entropy_c2_seed5, 1, 23366
-- best_config_layer1_entropy_c3_g3_seed5, 2, 27602
-- best_config_layer1_euclidean_g3_seed5, 3, 2836
-- best_config_layer1_fitness_sharing_seed5, 4, 10352
-- best_config_layer1_genotype_seed5, 5, 18809
-- best_config_layer1_hamming_c3_g3_seed5, 6, 28966
-- best_config_layer1_ncd_c1_seed5, 7, 6784
-- best_config_layer1_ncd_c4_g5_seed5, 8 19788
-- best_config_layer1_no_diversity_seed5, 9, 31940
-- best_config_layer1_ncd_c3_g5_seed6_top15_seed61_gen300, 10, 13266
+pSBB
 - best_config_layer1_ncd_c3_g5_seed6_top10_seed61_gen300, 11, 22198
-- best_config_layer1_ncd_c3_g5_seed6_top5_seed61_gen300, 12, 28246
+- best_config_layer1_ncd_c3_g5_seed6_top5_seed61_gen300, 12, 28246 [FAIL]
+pSBB2
+- best_config_layer1_ncd_c3_g5_seed3_more50m, 1, 13996 [FAIL]
+- best_config_layer1_ncd_c3_g5_seed4_more50m, 2, 20370
+- best_config_layer1_ncd_c3_g5_seed5_more50m, 3, 24556 [FAIL]
+- best_config_layer1_ncd_c3_g5_seed6_more50m, 4, 29551
+- best_config_layer1_ncd_c3_g5_seed7_more50m, 5, 7968
+- best_config_layer1_ncd_c3_g5_seed3_more100m, 6, 1288
+- best_config_layer1_ncd_c3_g5_seed4_more100m, 7, 9793
+- best_config_layer1_ncd_c3_g5_seed5_more100m, 8, 18197
+- best_config_layer1_ncd_c3_g5_seed6_more100m, 9, 27431 [FAIL]
+- best_config_layer1_ncd_c3_g5_seed7_more100m, 10, 8233
 
 hector server:
 - best_config_layer1_ncd_c3_g5_seed7_top15_seed71, 1, 11191
 - best_config_layer1_ncd_c3_g5_seed7_top10_seed71, 2, 13453
 - best_config_layer1_ncd_c3_g5_seed7_top5_seed71, 3, 15955
-- best_config_layer1_ncd_c3_g5_seed3_top15_seed31_gen300, 4, 32101
 - best_config_layer1_ncd_c3_g5_seed3_top10_seed31_gen300, 5, 5427
 - best_config_layer1_ncd_c3_g5_seed3_top5_seed31_gen300, 6, 9963
-- best_config_layer1_ncd_c3_g5_seed4_top15_seed41_gen300, 7, 20239
 - best_config_layer1_ncd_c3_g5_seed4_top10_seed41_gen300, 8, 3931
 - best_config_layer1_ncd_c3_g5_seed4_top5_seed41_gen300, 9, 8864
-- best_config_layer1_ncd_c3_g5_seed5_top15_seed51_gen300, 10, 12779
 - best_config_layer1_ncd_c3_g5_seed5_top10_seed51_gen300, 11, 19237
 - best_config_layer1_ncd_c3_g5_seed5_top5_seed51_gen300, 12, 26283
+- best_config_layer1_ncd_c3_g5_seed6_top5_seed61_atomic, 13, 12017
+- best_config_layer1_ncd_c3_g5_seed6_top10_seed61_atomic, 14, 20016
 
 TODO
 - ...
+
+layer vs layer2:
+- top15?
+
+diversity:
+- best_config_layer1_entropy_c2_seed5, 1, 
+- best_config_layer1_entropy_c3_g3_seed5, 2, 
+- best_config_layer1_euclidean_g3_seed5, 3, 
+- best_config_layer1_fitness_sharing_seed5, 4, 
+- best_config_layer1_genotype_seed5, 5, 
+- best_config_layer1_hamming_c3_g3_seed5, 6, 
+- best_config_layer1_ncd_c1_seed5, 7, 
+- best_config_layer1_ncd_c4_g5_seed5, 8 
+- best_config_layer1_no_diversity_seed5, 9, 
 
 
 
