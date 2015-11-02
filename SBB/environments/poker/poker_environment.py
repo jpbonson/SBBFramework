@@ -31,7 +31,18 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_actions = 3 # fold, call, raise
         PokerConfig.CONFIG['inputs'] = PokerPoint.INPUTS+MatchState.INPUTS+['chips']+OpponentModel.INPUTS
         total_inputs = len(PokerConfig.CONFIG['inputs'])
-        total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])*len(PokerConfig.CONFIG['labels_per_subdivision']['opp_label'])
+        if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'pstr_ostr':
+            total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])*len(PokerConfig.CONFIG['labels_per_subdivision']['opp_label'])
+            PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'] = [0, 1, 2]
+            PokerConfig.CONFIG['labels_per_subdivision']['sbb_extra_label'] = [0, 1, 2]
+            PokerConfig.CONFIG['labels_per_subdivision']['opp_label'] = [0, 1, 2]
+            PokerConfig.CONFIG['labels_per_subdivision']['opp_extra_label'] = [0, 1, 2]
+        else:
+            total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+            PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'] = [0, 1, 2, 3]
+            PokerConfig.CONFIG['labels_per_subdivision']['sbb_extra_label'] = [0, 1, 2, 3]
+            PokerConfig.CONFIG['labels_per_subdivision']['opp_label'] = [0, 1, 2, 3]
+            PokerConfig.CONFIG['labels_per_subdivision']['opp_extra_label'] = [0, 1, 2, 3]
 
         coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
@@ -129,9 +140,16 @@ class PokerEnvironment(ReinforcementEnvironment):
             scores = splitted_score[0].split("|")
             players = splitted_score[1].split("|")
         except IndexError as e:
-            print "Error: IndexError during poker execution."
-            print "scores: "+str(scores)
-            print "players: "+str(players)
+            print "---Error: IndexError during poker execution."
+            print "opponent.opponent_id: "+str(opponent.opponent_id)
+            print "player1: "+str(player1)
+            print "player2: "+str(player2)
+            print "mode: "+str(mode)
+            print "out: "+str(out)
+            print "err: "+str(err)
+            print "score: "+str(score)
+            print "splitted_score: "+str(splitted_score)
+            print "---"
             raise
         if players[0] == 'sbb':
             sbb_position = 0

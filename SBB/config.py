@@ -84,8 +84,8 @@ class Config():
             'use_agressive_mutations': True,
             'second_layer': {
                 'enabled': False,
-                'use_atomic_actions': True,
-                'path': 'actions_reference/11layers/seed6/top5',
+                'use_atomic_actions': False,
+                'path': 'actions_reference/11layers/seed5/top10',
             },
         },
     }

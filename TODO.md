@@ -18,8 +18,15 @@ fixed bug with unexpected poker behaviors (rollback)
 added option to keep using atomic action along with meta actions
 ---
 
-- Do you think that would be interesting to give a try balancing the point population by 2 attributes, with 9 total combinations? (3 for the player's hand strength (weak, intermediate, strong), and 3 for the opponent's (weak, intermediate, strong)).
+- geral grande quantidade de pstr_ostr
+- obter e checar profile
+- commit: added messages to track bugs
+- volatility -1?
+- remover sbb_extra_label e opp_extra_label
+- implementar stateful
+- runs with balance pstr_ostr
 - I will take a few days to see if I can increase the parallelism, in order to be able to test the runs faster.
+- limpar pSBB_sklearn
 
 - conferir runs + mandar rodar runs
 - poker unit tests? com 2 gens?
@@ -47,44 +54,21 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- best_config_layer1_ncd_c3_g5_seed3_top5_seed31_atomic, 1
-- best_config_layer1_ncd_c3_g5_seed3_top10_seed31_atomic, 2
-- best_config_layer1_ncd_c3_g5_seed4_top5_seed41_atomic, 3
-- best_config_layer1_ncd_c3_g5_seed4_top10_seed41_atomic, 4
-- best_config_layer1_ncd_c3_g5_seed5_top5_seed51_atomic, 5
-- best_config_layer1_ncd_c3_g5_seed5_top10_seed51_atomic, 6
+- ...
 
 nims server:
-pSBB
-- best_config_layer1_ncd_c3_g5_seed6_top10_seed61_gen300, 11, 22198
-- best_config_layer1_ncd_c3_g5_seed6_top5_seed61_gen300, 12, 28246 [FAIL]
-pSBB2
-- best_config_layer1_ncd_c3_g5_seed3_more50m, 1, 13996 [FAIL]
-- best_config_layer1_ncd_c3_g5_seed4_more50m, 2, 20370
-- best_config_layer1_ncd_c3_g5_seed5_more50m, 3, 24556 [FAIL]
-- best_config_layer1_ncd_c3_g5_seed6_more50m, 4, 29551
-- best_config_layer1_ncd_c3_g5_seed7_more50m, 5, 7968
-- best_config_layer1_ncd_c3_g5_seed3_more100m, 6, 1288
-- best_config_layer1_ncd_c3_g5_seed4_more100m, 7, 9793
-- best_config_layer1_ncd_c3_g5_seed5_more100m, 8, 18197
-- best_config_layer1_ncd_c3_g5_seed6_more100m, 9, 27431 [FAIL]
-- best_config_layer1_ncd_c3_g5_seed7_more100m, 10, 8233
+- ...
 
 hector server:
-- best_config_layer1_ncd_c3_g5_seed7_top15_seed71, 1, 11191
-- best_config_layer1_ncd_c3_g5_seed7_top10_seed71, 2, 13453
-- best_config_layer1_ncd_c3_g5_seed7_top5_seed71, 3, 15955
-- best_config_layer1_ncd_c3_g5_seed3_top10_seed31_gen300, 5, 5427
-- best_config_layer1_ncd_c3_g5_seed3_top5_seed31_gen300, 6, 9963
-- best_config_layer1_ncd_c3_g5_seed4_top10_seed41_gen300, 8, 3931
-- best_config_layer1_ncd_c3_g5_seed4_top5_seed41_gen300, 9, 8864
-- best_config_layer1_ncd_c3_g5_seed5_top10_seed51_gen300, 11, 19237
-- best_config_layer1_ncd_c3_g5_seed5_top5_seed51_gen300, 12, 26283
-- best_config_layer1_ncd_c3_g5_seed6_top5_seed61_atomic, 13, 12017
-- best_config_layer1_ncd_c3_g5_seed6_top10_seed61_atomic, 14, 20016
+- ...
 
 TODO
-- ...
+- compare stateless x stateful
+- compare board_strength x pstr_ostr (?)
+- compare matches x 50more_matches x 100more_matches
+- compare 2layer_150gen x 2layer_300gen
+- compare 2layer_without_atomic x 2layer_with_atomic
+- run diversities again (start with seed 6)
 
 layer vs layer2:
 - top15?

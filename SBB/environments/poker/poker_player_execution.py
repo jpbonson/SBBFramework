@@ -56,7 +56,16 @@ class PokerPlayerExecution():
             previous_messages = list(partial_messages)
             partial_messages = message.split("MATCHSTATE")
             last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-            match_state = MatchState(last_message, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'])
+            try:
+                match_state = MatchState(last_message, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'])
+            except ValueError as e:
+                print "---ERROR in initialization of MatchState:"
+                print "last_message: "+str(last_message)
+                print "partial_messages: "+str(partial_messages)
+                print "message: "+str(message)
+                print "previous_messages: "+str(previous_messages)
+                print "---"
+                raise
             if match_state.is_showdown():
                 previous_action = None
                 if Config.USER['reinforcement_parameters']['debug_matches']:
@@ -120,19 +129,26 @@ class PokerPlayerExecution():
                     print player.__repr__()+":nothing to do\n"
         socket_tmp.close()
 
+        warning = False
         if inputs_type and inputs_type == 'all':
             last_match_state = PokerPlayerExecution._last_match_state(previous_messages+partial_messages)
             player_actions, opponent_actions = last_match_state.actions_per_player()
-            PokerPlayerExecution._update_opponent_model(player, opponent, last_match_state, player_actions, opponent_actions, previous_action, debug_file)
+            warning = PokerPlayerExecution._update_opponent_model(player, opponent, last_match_state, player_actions, opponent_actions, previous_action, debug_file)
+            if warning:
+                print "test1: "+str((port, is_training, is_sbb, inputs_type))
             if is_sbb and is_training:
                 points = OpponentModel.calculate_points(player_actions)
                 hamming_label = PokerPlayerExecution._quantitize_value(points)
                 player.action_sequence_['coding3'].append(hamming_label)
+            if warning:
+                print "test2"
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
             debug_file.write("The end.\n\n")
             print player.__repr__()+": The end.\n"
             debug_file.close()
+        if warning:
+            print "test3"
 
     @staticmethod
     def _quantitize_value(value, is_normalized = False):
@@ -202,38 +218,54 @@ class PokerPlayerExecution():
 
     @staticmethod
     def _update_opponent_model(player, opponent, last_match_state, player_actions, opponent_actions, previous_action, debug_file):
+        warning = False
         if last_match_state.is_showdown():
             if Config.USER['reinforcement_parameters']['debug_matches']:
-                debug_file.write("partial_msg: "+str(partial_msg)+", showdown\n\n")
-                print player.__repr__()+": partial_msg: "+str(partial_msg)+", showdown\n"
+                debug_file.write("last_match_state: "+str(last_match_state)+", showdown\n\n")
+                print player.__repr__()+": last_match_state: "+str(last_match_state)+", showdown\n"
             self_folded = False
             opponent_folded = False
         else:
             last_player = last_match_state.last_player_to_act()
             if last_player == last_match_state.position and player_actions and player_actions[-1] == 'f':
                 if Config.USER['reinforcement_parameters']['debug_matches']:
-                    debug_file.write("partial_msg: "+str(partial_msg)+", I folded\n\n")
-                    print player.__repr__()+": partial_msg: "+str(partial_msg)+", I folded\n"
+                    debug_file.write("last_match_state: "+str(last_match_state)+", I folded\n\n")
+                    print player.__repr__()+": last_match_state: "+str(last_match_state)+", I folded\n"
                 self_folded = True
                 opponent_folded = False
             elif opponent_actions and opponent_actions[-1] == 'f':
                 if Config.USER['reinforcement_parameters']['debug_matches']:
-                    debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded\n\n")
-                    print player.__repr__()+": partial_msg: "+str(partial_msg)+", opponent folded\n"
+                    debug_file.write("last_match_state: "+str(last_match_state)+", opponent folded\n\n")
+                    print player.__repr__()+": last_match_state: "+str(last_match_state)+", opponent folded\n"
                 self_folded = False
                 opponent_folded = True
             elif previous_action == 'f':
-                print "Warning! (1)"
+                warning = True
+                print "---Warning! (1)"
+                print "INFO:"
+                print "last_match_state: "+str(last_match_state)
+                print "player_actions: "+str(player_actions)
+                print "opponent_actions: "+str(opponent_actions)
+                print "previous_action: "+str(previous_action)
+                print "---"
                 if Config.USER['reinforcement_parameters']['debug_matches']:
-                    debug_file.write("partial_msg: "+str(partial_msg)+", I folded (2)\n\n")
-                    print player.__repr__()+": partial_msg: "+str(partial_msg)+", I folded (2)\n"
+                    debug_file.write("last_match_state: "+str(last_match_state)+", I folded (2)\n\n")
+                    print player.__repr__()+": last_match_state: "+str(last_match_state)+", I folded (2)\n"
                 self_folded = True
                 opponent_folded = False
             else:
-                print "Warning! (2)"
+                warning = True
+                print "---Warning! (2)"
+                print "INFO:"
+                print "last_match_state: "+str(last_match_state)
+                print "player_actions: "+str(player_actions)
+                print "opponent_actions: "+str(opponent_actions)
+                print "previous_action: "+str(previous_action)
+                print "---"
                 if Config.USER['reinforcement_parameters']['debug_matches']:
-                    debug_file.write("partial_msg: "+str(partial_msg)+", opponent folded (2)\n\n")
-                    print player.__repr__()+": partial_msg: "+str(partial_msg)+", opponent folded (2)\n"
+                    debug_file.write("last_match_state: "+str(last_match_state)+", opponent folded (2)\n\n")
+                    print player.__repr__()+": last_match_state: "+str(last_match_state)+", opponent folded (2)\n"
                 self_folded = False
                 opponent_folded = True
         PokerPlayerExecution._get_opponent_model(player, opponent).update_overall_agressiveness(len(last_match_state.rounds), player_actions, opponent_actions)
+        return warning

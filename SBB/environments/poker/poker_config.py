@@ -1,3 +1,5 @@
+from ...config import Config
+
 class PokerConfig():
     """
     
@@ -38,8 +40,17 @@ class PokerConfig():
 
     @staticmethod
     def get_hand_strength_label(value):
-        if value >= 8.0:
-            return 0
-        if value >= 5.0:
-            return 1
-        return 2
+        if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'pstr_ostr':
+            if value >= 8.0:
+                return 0
+            if value >= 5.0:
+                return 1
+            return 2
+        else:
+            if value >= 9.0:
+                return 0
+            if value >= 7.0:
+                return 1
+            if value >= 4.0:
+                return 2
+            return 3
