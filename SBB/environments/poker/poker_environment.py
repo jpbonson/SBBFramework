@@ -31,7 +31,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_actions = 3 # fold, call, raise
         PokerConfig.CONFIG['inputs'] = PokerPoint.INPUTS+MatchState.INPUTS+['chips']+OpponentModel.INPUTS
         total_inputs = len(PokerConfig.CONFIG['inputs'])
-        total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])*len(PokerConfig.CONFIG['labels_per_subdivision']['opp_label'])
+        total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
 
         coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
@@ -50,7 +50,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def _initialize_random_population_of_points(self, population_size, ignore_cache = False):
         if len(self.num_lines_per_file_) == 0:
             for label in range(self.total_labels_):
-                self.num_lines_per_file_.append(sum([1 for line in open("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json")]))
+                self.num_lines_per_file_.append(sum([1 for line in open("SBB/environments/poker/hand_types/hands_type_"+str(label)+".json")]))
         population_size_per_label = population_size/self.total_labels_
         data = self._sample_point_per_label(population_size_per_label, ignore_cache)
         data = flatten(data)
@@ -62,7 +62,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         return self._sample_point_per_label(total_points_to_add_per_label, ignore_cache = False)
 
     def _sample_point_per_label(self, population_size_per_label, ignore_cache = False):
-        blah = self._cache_dont_have_enough_data(population_size_per_label)
         if ignore_cache or self._cache_dont_have_enough_data(population_size_per_label):
             size = population_size_per_label
             if not ignore_cache and size < PokerConfig.CONFIG['point_cache_size']:
@@ -70,7 +69,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             data = []
             for label in range(self.total_labels_):
                 idxs = random.sample(range(1, self.num_lines_per_file_[label]+1), size)
-                result = [linecache.getline("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json", i) for i in idxs]
+                result = [linecache.getline("SBB/environments/poker/hand_types/hands_type_"+str(label)+".json", i) for i in idxs]
                 data.append([PokerPoint(label, json.loads(r)) for r in result])
             if ignore_cache:
                 return data
@@ -275,14 +274,12 @@ class PokerEnvironment(ReinforcementEnvironment):
         extra_metrics_points['position'] = defaultdict(list)
         extra_metrics_points['sbb_label'] = defaultdict(list)
         extra_metrics_points['sbb_sd'] = defaultdict(list)
-        extra_metrics_points['opp_label'] = defaultdict(list)
         return extra_metrics_points
 
     def _update_extra_metrics_for_points(self, extra_metrics_points, point, result):
         extra_metrics_points['position'][point.position_].append(result)
         extra_metrics_points['sbb_label'][point.label_].append(result)
         extra_metrics_points['sbb_sd'][point.sbb_sd_label_].append(result)
-        extra_metrics_points['opp_label'][point.opp_label_].append(result)
         return extra_metrics_points
 
     def validate(self, current_generation, teams_population):
@@ -335,7 +332,6 @@ class PokerEnvironment(ReinforcementEnvironment):
     def _calculate_point_population_metrics_per_validation(self, run_info):
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.position_, 'position', range(PokerConfig.CONFIG['positions']))
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.opp_label_, 'opp_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
 
     def _calculate_point_population_metric_per_validation(self, run_info, get_attribute, key, labels):
@@ -348,7 +344,6 @@ class PokerEnvironment(ReinforcementEnvironment):
     def _calculate_validation_population_metrics_per_validation(self, run_info):
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.position_, 'position', range(PokerConfig.CONFIG['positions']))
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.opp_label_, 'opp_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
 
     def _calculate_validation_population_metric_per_validation(self, run_info, get_attribute, key, labels):
@@ -488,14 +483,12 @@ class PokerEnvironment(ReinforcementEnvironment):
         extra_metrics_points['position'] = defaultdict(list)
         extra_metrics_points['sbb_label'] = defaultdict(list)
         extra_metrics_points['sbb_sd'] = defaultdict(list)
-        extra_metrics_points['opp_label'] = defaultdict(list)
         return extra_metrics_points
 
     def _update_extra_metrics_for_points(self, extra_metrics_points, point, result):
         extra_metrics_points['position'][point.position_].append(result)
         extra_metrics_points['sbb_label'][point.label_].append(result)
         extra_metrics_points['sbb_sd'][point.sbb_sd_label_].append(result)
-        extra_metrics_points['opp_label'][point.opp_label_].append(result)
         return extra_metrics_points
 
     def _rank_teams_by_accumulative_score(self, ind_scores, acc_scores, list_ids):

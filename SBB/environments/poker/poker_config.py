@@ -18,30 +18,26 @@ class PokerConfig():
         'rule_based_opponents': ['loose_agressive', 'loose_passive', 'tight_agressive', 'tight_passive'],
         'point_cache_size': 50,
         'labels_per_subdivision': {
-            'sbb_label': [0, 1, 2],
-            'opp_label': [0, 1, 2],
+            'sbb_label': [0, 1, 2, 3, 4, 5, 6, 7, 8],
             'position': [0, 1],
             'sbb_sd': [0, 1, 2],
             'opponent': [], # setup in poker environment
         },
         'attributes_per_subdivision': {
             'sbb_label': lambda x: x.label_,
-            'opp_label': lambda x: x.opp_label_,
             'position': lambda x: x.position_,
             'sbb_sd': lambda x: x.sbb_sd_label_,
             'opponent': lambda x: x.last_validation_opponent_id_,
         },
-        'main_subcategories': ['sbb_label', 'opp_label', 'position', 'opponent'],
+        'main_subcategories': ['sbb_label', 'position', 'opponent'],
         'label_mapping': {'00': 0, '01': 1, '02': 2, '10': 3, '11': 4, '12': 5, '20': 6, '21': 7, '22': 8},
     }
 
     @staticmethod
     def get_hand_strength_label(value):
-        if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'pstr_ostr':
-            # 10/30/60
-            if value >= 9.0:
-                return 0
-            if value >= 6.0:
-                return 1
-            return 2
-        raise ValueError("No configuration for 'balance_based_on' "+str(Config.USER['reinforcement_parameters']['poker']['balance_based_on']))
+        # 10/30/60
+        if value >= 9.0:
+            return 0
+        if value >= 6.0:
+            return 1
+        return 2

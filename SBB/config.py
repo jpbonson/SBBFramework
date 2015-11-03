@@ -19,7 +19,7 @@ class Config():
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
             'validation_population': 30, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 30, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'champion_population': 60, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'hall_of_fame': {
                 'size': 10,
                 'enabled': True,
@@ -28,7 +28,6 @@ class Config():
             },
             'debug_matches': False, # use this option to debug
             'poker': {
-                'balance_based_on': 'pstr_ostr', # one of the folders in SBB\environments\poker\hand_types
                 'use_tight_opponents': False,
             },
         },

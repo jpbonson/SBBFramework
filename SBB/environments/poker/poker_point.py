@@ -20,7 +20,6 @@ class PokerPoint(ReinforcementPoint):
         self.ep_ = info['ep']
         self.opp_hand_strength_ = info['ostr']
         self.opp_ep_ = info['oep']
-        self.opp_label_ = "x"
 
         if info['r'] == 0.0:
             self.sbb_sd_label_ = 2

@@ -23,9 +23,9 @@ changed volatility default to 0.5
 removed sbb_extra_label and opp_extra_label
 implemented stateful registers for reinforcement tasks
 updated hands to balance pstr_ostr + fixed point cache
+removed balanced_based_on and opp_label_
 ---
 
-- remover opp_label_
 - fazer diversities com grupos de 3?
 - executar os runs (com 2 e com 4 oponentes, e com HF)
 - escolher inputs (baseado nos runs com 4 opps e no com HF)
@@ -49,11 +49,9 @@ updated hands to balance pstr_ostr + fixed point cache
 
 ---
 parameters to test:
-- what diversity? how many groups? mix diversities? (temp: ncd_c3, g5)
-- what balance? (temp: board)
+- what diversity? mix diversities? (temp: ncd_c3, g5)
 - inputs? (temp: all, check it better in the next runs)
 - ifs? (only normal ifs, only signal-ifs, or mixed? temp: mixed)
-- groups 3 or 5? (temp: 5)
 - team size and program size? (testar apos obter reusltados para diversities?)
 - hall_of_fame_as_opponents False (at least not for layer1, the fitness curve goes crazy)
 - second layer: como selecionar os teams? quantas actions escolher? 
