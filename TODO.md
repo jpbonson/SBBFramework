@@ -21,15 +21,17 @@ added more debug messages + changed balance to 10/30/60
 added more inputs to opponent model
 changed volatility default to 0.5
 removed sbb_extra_label and opp_extra_label
+implemented stateful registers for reinforcement tasks
 ---
 
-
+- check if test ok + executar os runs (com 2 e com 4 oponentes)
 - usar os oponentes tight? (talvez apenas para escolher os inputs)
 - escolher inputs
 - investigar bug no point_generator (pode estar relacionado com o bug no codigo principal)
 - gerar grande quantidade de pstr_ostr (fazer append nos arquivos)
 - checar profile
 - implementar stateful (fazer ser ativado se a task for reinforcement)
+    - output register? shared registers? (check email)
 - check if multiprocessing can be improved / increase the parallelism / usar threads ou usar processes? / keep the process alive?
     - tried using threads, pools, processes, and the best one is th eone I already use
     - increase parallelism? (using pool before running teams in training/validation?)

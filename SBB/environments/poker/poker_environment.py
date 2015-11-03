@@ -35,6 +35,9 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
+        if Config.USER['reinforcement_parameters']['poker']['use_tight_opponents']:
+            coded_opponents_for_training += [PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
+            coded_opponents_for_validation += [PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
         
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)

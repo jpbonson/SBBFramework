@@ -24,6 +24,10 @@ class Program:
         self.teams_ = []
         self.instructions_without_introns_ = []
         self.inputs_list_ = None
+        self.general_registers = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
+
+    def reset_registers(self):
+        self.general_registers = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
 
     def execute(self, input_registers):
         """
@@ -33,8 +37,8 @@ class Program:
             self.instructions_without_introns_ = Program.remove_introns(self.instructions)
             self.inputs_list_ = self._inputs_list()
         instructions = self.instructions_without_introns_
-        
-        general_registers = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
+        if Config.USER['task'] == 'classification':
+            self.reset_registers()
         if_instruction = None
         skip_next = False
         for instruction in instructions:
@@ -50,15 +54,15 @@ class Program:
             elif instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                 if_instruction = instruction
             elif instruction.op in Config.RESTRICTIONS['genotype_options']['one-operand-instructions']:
-                general_registers[instruction.target] = Operation.execute(instruction.op, general_registers[instruction.target])
+                self.general_registers[instruction.target] = Operation.execute(instruction.op, self.general_registers[instruction.target])
             else:
                 if instruction.mode == 'read-register':
-                    source =  general_registers[instruction.source]
+                    source =  self.general_registers[instruction.source]
                 else:
                     source =  input_registers[instruction.source]
-                general_registers[instruction.target] = Operation.execute(instruction.op, general_registers[instruction.target], source)
+                self.general_registers[instruction.target] = Operation.execute(instruction.op, self.general_registers[instruction.target], source)
 
-        return general_registers[0] # get bid output
+        return self.general_registers[0] # get bid output
 
     def _inputs_list(self):
         inputs = []

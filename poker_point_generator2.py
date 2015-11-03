@@ -132,7 +132,7 @@ if __name__ == "__main__":
     # inicialmente, pegar 1000 hands
 
     Config.USER['reinforcement_parameters']['poker']['balance_based_on'] = 'pstr_ostr'
-    path = "hand_types_temp/pstr_ostr30000"
+    path = "hand_types_temp/pstr_ostr40000"
     index = 3
     indeces = 9
     mapping = {'00': 0, '01': 1, '02': 2, '10': 3, '11': 4, '12': 5, '20': 6, '21': 7, '22': 8}
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     files = []
     for x in range(indeces):
         files.append(open(path+'/hands_type_'+str(x)+'.json','a'))
-    for seed in range(25000, 30000):
+    for seed in range(35000, 40000):
         point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck)
         point_pos0['id'] = seed
         point_pos1['id'] = seed

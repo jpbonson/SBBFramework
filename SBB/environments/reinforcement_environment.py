@@ -276,6 +276,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             results = []
             for point in point_population:
                 result = self._play_match(team, opponent, point, mode)
+                team.reset_registers()
                 team.results_per_points_[point.point_id_] = result
                 results.append(result)
             team.fitness_ = numpy.mean(results)
@@ -292,6 +293,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             extra_metrics_points = self._initialize_extra_metrics_for_points()
             for point, opponent in zip(point_population, opponent_population):
                 result = self._play_match(team, opponent, point, mode)
+                team.reset_registers()
                 extra_metrics_opponents[opponent.opponent_id].append(result)
                 extra_metrics_points = self._update_extra_metrics_for_points(extra_metrics_points, point, result)
                 if mode == Config.RESTRICTIONS['mode']['validation']:

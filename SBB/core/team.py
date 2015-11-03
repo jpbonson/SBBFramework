@@ -50,6 +50,10 @@ class Team(DefaultOpponent):
         a coded opponent.
         """
         pass
+
+    def reset_registers(self):
+        for program in self.programs:
+            program.reset_registers()
         
     def execute(self, point_id, inputs, valid_actions, is_training, update_profile = True):
         if not self._actions_are_available(valid_actions):
