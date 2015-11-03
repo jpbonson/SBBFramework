@@ -24,9 +24,10 @@ removed sbb_extra_label and opp_extra_label
 implemented stateful registers for reinforcement tasks
 updated hands to balance pstr_ostr + fixed point cache
 removed balanced_based_on and opp_label_
+defined groups for diversity as 3
 ---
 
-- fazer diversities com grupos de 3?
+- rodar outro profiling
 - executar os runs (com 2 e com 4 oponentes, e com HF)
 - escolher inputs (baseado nos runs com 4 opps e no com HF)
 - check if multiprocessing can be improved:

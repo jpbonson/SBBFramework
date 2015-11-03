@@ -30,7 +30,6 @@ class TictactoeEnvironment(ReinforcementEnvironment):
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
             '[2,0]': 6, '[2,1]': 7, '[2,2]': 8,
         }
-        Config.USER['advanced_training_parameters']['diversity']['total_bins'] = 3
 
     def _play_match(self, team, opponent, point, mode):
         """

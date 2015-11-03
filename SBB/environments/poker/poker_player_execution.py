@@ -158,18 +158,7 @@ class PokerPlayerExecution():
             normalization_parameter = Config.RESTRICTIONS['multiply_normalization_by']
         else:
             normalization_parameter = 1.0
-        if Config.USER['advanced_training_parameters']['diversity']['total_bins'] == 5:
-            if value >= 0.0*normalization_parameter and value < 0.2*normalization_parameter:
-                label = 0
-            elif value >= 0.2*normalization_parameter and value < 0.4*normalization_parameter:
-                label = 1
-            elif value >= 0.4*normalization_parameter and value < 0.6*normalization_parameter:
-                label = 2
-            elif value >= 0.6*normalization_parameter and value < 0.8*normalization_parameter:
-                label = 3
-            else:
-                label = 4
-        elif Config.USER['advanced_training_parameters']['diversity']['total_bins'] == 3:
+        if Config.RESTRICTIONS['diversity']['total_bins'] == 3:
             if value >= 0.0*normalization_parameter and value < 0.33*normalization_parameter:
                 label = 0
             elif value >= 0.33*normalization_parameter and value < 0.66*normalization_parameter:
@@ -177,7 +166,7 @@ class PokerPlayerExecution():
             else:
                 label = 2
         else:
-            raise ValueError("Invalid value for Config.USER['advanced_training_parameters']['diversity']['total_bins']")
+            raise ValueError("Invalid value for Config.RESTRICTIONS['diversity']['total_bins']")
         return label
 
     @staticmethod

@@ -62,7 +62,6 @@ TEST_CONFIG = {
             'use_and_show': [], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 8,
-            'total_bins': 5, # used to quantize the distances for the diversity metrics
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used

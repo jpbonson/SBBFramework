@@ -126,7 +126,7 @@ class DiversityMaintenance():
     def _entropy_c3(team, other_team):
         action_sequence = team.action_sequence_['coding3']
         other_action_sequence = other_team.action_sequence_['coding3']
-        options = Config.USER['advanced_training_parameters']['diversity']['total_bins']
+        options = Config.RESTRICTIONS['diversity']['total_bins']
         distance = DiversityMaintenance._general_relative_entropy_distance(action_sequence, other_action_sequence, options)
         return distance
 
@@ -140,7 +140,7 @@ class DiversityMaintenance():
     @staticmethod
     def _euclidean(team, other_team):
         value = euclidean(team.action_sequence_['coding3'], other_team.action_sequence_['coding3'])
-        options = Config.USER['advanced_training_parameters']['diversity']['total_bins']
+        options = Config.RESTRICTIONS['diversity']['total_bins']
         max_value = math.sqrt(((options-1)**2)*Config.USER['training_parameters']['populations']['points'])
         result = value/float(max_value)
         return result

@@ -77,7 +77,6 @@ class Config():
                 'use_and_show': ['ncd_c3'], # will be applied to fitness and show in the outputs
                 'only_show': ['genotype'], # will be only show in the outputs
                 'k': 10,
-                'total_bins': 5, # used to quantize the distances for the diversity metrics
             },
             'run_initialization_step2': False,
             'use_weighted_probability_selection': True, # if False, uniform probability will be used
@@ -94,7 +93,6 @@ class Config():
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
         'environment_types': ['tictactoe', 'poker'],
-        'diversity_options': ['genotype', 'fitness_sharing', 'ncd_c1', 'entropy_c2', 'hamming_c3', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
         'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
@@ -127,6 +125,10 @@ class Config():
             'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*5.0)),
             'update_chance': 0.05,
         },
+        'diversity': {
+            'options': ['genotype', 'fitness_sharing', 'ncd_c1', 'entropy_c2', 'hamming_c3', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
+            'total_bins': 3, # used to quantize the distances for the diversity metrics
+        },
         'second_layer': {
             'action_mapping': {}, # initialized by sbb.py
             'short_action_mapping': {}, # initialized by sbb.py
@@ -145,8 +147,8 @@ class Config():
         diversities = Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show']
         
         for diversity in diversities:
-            if diversity not in Config.RESTRICTIONS['diversity_options']:
-                sys.stderr.write("Error: Invalid '"+diversity+"' diversity in CONFIG! The valid values are "+str(Config.RESTRICTIONS['diversity_options'])+"\n")
+            if diversity not in Config.RESTRICTIONS['diversity']['options']:
+                sys.stderr.write("Error: Invalid '"+diversity+"' diversity in CONFIG! The valid values are "+str(Config.RESTRICTIONS['diversity']['options'])+"\n")
                 raise SystemExit
 
         if Config.USER['task'] == 'classification':
@@ -156,8 +158,8 @@ class Config():
 
         if Config.USER['task'] == 'reinforcement':
             if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:
-                if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity'] not in Config.RESTRICTIONS['diversity_options']:
-                    sys.stderr.write("Error: Invalid 'diversity' for 'hall_of_fame' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['diversity_options'])+"\n")
+                if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity'] not in Config.RESTRICTIONS['diversity']['options']:
+                    sys.stderr.write("Error: Invalid 'diversity' for 'hall_of_fame' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['diversity']['options'])+"\n")
                     raise SystemExit
             if not Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
                 sys.stderr.write("Error: For hall of fame, 'use_as_opponents' can't be True if 'enabled' is False\n")
