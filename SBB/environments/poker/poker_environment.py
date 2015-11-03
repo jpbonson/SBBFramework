@@ -249,8 +249,8 @@ class PokerEnvironment(ReinforcementEnvironment):
                 self_long_term_agressiveness += item.self_agressiveness
                 self_agressiveness_preflop += item.self_agressiveness_preflop
                 self_agressiveness_postflop += item.self_agressiveness_postflop
-            agressiveness = -1
-            volatility = -1
+            agressiveness = 0.5
+            volatility = 0.5
             if len(self_long_term_agressiveness) > 0:
                 agressiveness = numpy.mean(self_long_term_agressiveness)
             if len(self_agressiveness_preflop) > 0 and len(self_agressiveness_postflop) > 0:

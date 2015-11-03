@@ -19,6 +19,7 @@ added option to keep using atomic action along with meta actions
 -
 added more debug messages + changed balance to 10/30/60
 added more inputs to opponent model
+changed volatility default to 0.5
 ---
 
 
@@ -27,7 +28,6 @@ added more inputs to opponent model
 - investigar bug no point_generator (pode estar relacionado com o bug no codigo principal)
 - gerar grande quantidade de pstr_ostr (fazer append nos arquivos)
 - checar profile
-- volatility -1?
 - remover sbb_extra_label e opp_extra_label
 - implementar stateful (fazer ser ativado se a task for reinforcement)
 - check if multiprocessing can be improved / increase the parallelism / usar threads ou usar processes?
