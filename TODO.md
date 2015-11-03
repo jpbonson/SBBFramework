@@ -16,18 +16,20 @@ added error trace for error during poker execution for seed 7
 fixed bug where the criteria for selecting poker teams was wrong
 fixed bug with unexpected poker behaviors (rollback)
 added option to keep using atomic action along with meta actions
+-
+added more debug messages + changed balance to 10/30/60
+added more inputs to opponent model
 ---
 
-added more debug messages + changed balance to 10/30/60
 
-- inputs melhores? reorganizar inputs?
+- usar os oponentes tight? (talvez apenas para escolher os inputs)
+- escolher inputs
 - investigar bug no point_generator (pode estar relacionado com o bug no codigo principal)
-- gerar grande quantidade de pstr_ostr
+- gerar grande quantidade de pstr_ostr (fazer append nos arquivos)
 - checar profile
 - volatility -1?
 - remover sbb_extra_label e opp_extra_label
 - implementar stateful (fazer ser ativado se a task for reinforcement)
-- runs with balance pstr_ostr
 - check if multiprocessing can be improved / increase the parallelism / usar threads ou usar processes?
     - testar com o point_generator
 - limpar pSBB_sklearn
