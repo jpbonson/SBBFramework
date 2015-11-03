@@ -16,7 +16,7 @@ class PokerConfig():
         'big_bet': 20,
         'positions': 2,
         'rule_based_opponents': ['loose_agressive', 'loose_passive', 'tight_agressive', 'tight_passive'],
-        'point_cache_size': 20,
+        'point_cache_size': 50,
         'labels_per_subdivision': {
             'sbb_label': [0, 1, 2],
             'opp_label': [0, 1, 2],
@@ -32,6 +32,7 @@ class PokerConfig():
             'opponent': lambda x: x.last_validation_opponent_id_,
         },
         'main_subcategories': ['sbb_label', 'opp_label', 'position', 'opponent'],
+        'label_mapping': {'00': 0, '01': 1, '02': 2, '10': 3, '11': 4, '12': 5, '20': 6, '21': 7, '22': 8},
     }
 
     @staticmethod

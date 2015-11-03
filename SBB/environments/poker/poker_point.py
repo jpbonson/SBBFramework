@@ -14,13 +14,13 @@ class PokerPoint(ReinforcementPoint):
         self.label_ = label
         self.seed_ = info['id']
         self.position_ = info['p']
+        self.point_id_ = str(self.seed_)+"-"+str(self.position_)
         self.showdown_result_ = info['r']
         self.hand_strength_ = info['str']
         self.ep_ = info['ep']
-
         self.opp_hand_strength_ = info['ostr']
         self.opp_ep_ = info['oep']
-        self.opp_label_ = PokerConfig.get_hand_strength_label(info['ostr'][3])
+        self.opp_label_ = "x"
 
         if info['r'] == 0.0:
             self.sbb_sd_label_ = 2
@@ -64,5 +64,8 @@ class PokerPoint(ReinforcementPoint):
             return self.position_
         raise ValueError("Bug! The code should have finished in the lines above!")        
 
+    def __repr__(self):
+        return "("+str(self.point_id_)+":"+str(self.label_)+")"
+
     def __str__(self):
-        return "("+str(self.point_id_)+","+str(self.seed_)+","+str(self.position_)+","+str(self.label_)+")"
+        return "("+str(self.point_id_)+":"+str(self.label_)+")"

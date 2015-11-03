@@ -22,23 +22,19 @@ added more inputs to opponent model
 changed volatility default to 0.5
 removed sbb_extra_label and opp_extra_label
 implemented stateful registers for reinforcement tasks
+updated hands to balance pstr_ostr + fixed point cache
 ---
 
-- check if test ok + executar os runs (com 2 e com 4 oponentes)
-- usar os oponentes tight? (talvez apenas para escolher os inputs)
-- escolher inputs
-- investigar bug no point_generator (pode estar relacionado com o bug no codigo principal)
-- gerar grande quantidade de pstr_ostr (fazer append nos arquivos)
-- checar profile
-- implementar stateful (fazer ser ativado se a task for reinforcement)
-    - output register? shared registers? (check email)
-- check if multiprocessing can be improved / increase the parallelism / usar threads ou usar processes? / keep the process alive?
-    - tried using threads, pools, processes, and the best one is th eone I already use
+- remover opp_label_
+- fazer diversities com grupos de 3?
+- executar os runs (com 2 e com 4 oponentes, e com HF)
+- escolher inputs (baseado nos runs com 4 opps e no com HF)
+- check if multiprocessing can be improved:
     - increase parallelism? (using pool before running teams in training/validation?)
-- limpar pSBB_sklearn
+    - wrap the ACPC code? (C for Python)
+- limpar pSBB_sklearn (+ add license?)
 
 - conferir runs + mandar rodar runs
-- poker unit tests? com 2 gens?
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
 - implementar opponent population
     - approach 1
@@ -66,7 +62,12 @@ nims pc:
 - ...
 
 nims server:
-- ...
+- default_seed1, 1, 
+- loose_seed1, 2, 
+- loose+HF_seed1, 3, 
+- default_seed2, 4, 
+- loose_seed2, 5, 
+- loose+HF_seed2, 6, 
 
 hector server:
 - ...

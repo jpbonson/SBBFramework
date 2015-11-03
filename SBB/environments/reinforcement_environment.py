@@ -96,14 +96,14 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self._initialize_opponent_population()
         self.point_population_ = []
         self.team_to_add_to_hall_of_fame_ = None
-        self.validation_point_population_ = self._initialize_random_population_of_points(Config.USER['reinforcement_parameters']['validation_population'])
+        self.validation_point_population_ = self._initialize_random_population_of_points(Config.USER['reinforcement_parameters']['validation_population'], ignore_cache = True)
         if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
             size = Config.USER['reinforcement_parameters']['champion_population'] + Config.USER['reinforcement_parameters']['hall_of_fame']['size']*self.matches_per_hall_of_fame_opponent_
-            population = self._initialize_random_population_of_points(size)
+            population = self._initialize_random_population_of_points(size, ignore_cache = True)
             self.champion_point_population_ = population[:Config.USER['reinforcement_parameters']['champion_population']]
             self.champion_point_population_for_hall_of_fame_ = population[Config.USER['reinforcement_parameters']['champion_population']:]
         else:
-            self.champion_point_population_ = self._initialize_random_population_of_points(Config.USER['reinforcement_parameters']['champion_population'])
+            self.champion_point_population_ = self._initialize_random_population_of_points(Config.USER['reinforcement_parameters']['champion_population'], ignore_cache = True)
         self.validation_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
@@ -111,7 +111,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.current_opponent_type_ = None
         self.current_opponent_ = None
 
-    def _initialize_random_population_of_points(self, population_size):
+    def _initialize_random_population_of_points(self, population_size, ignore_cache = False):
         return [self.point_class() for index in range(population_size)]
 
     def _initialize_opponent_population(self):
@@ -136,7 +136,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         # initialize point population
         if self.first_sampling_:
             self.first_sampling_ = False
-            population = self._initialize_random_population_of_points(Config.USER['training_parameters']['populations']['points'])
+            population = self._initialize_random_population_of_points(Config.USER['training_parameters']['populations']['points'], ignore_cache = False)
             subsets_per_label = self._get_data_per_label(population)
             total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_labels_
             balanced_subsets = []

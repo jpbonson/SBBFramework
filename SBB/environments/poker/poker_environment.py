@@ -45,35 +45,51 @@ class PokerEnvironment(ReinforcementEnvironment):
         port1, port2 = available_ports()
         PokerConfig.CONFIG['available_ports'] = [port1, port2]
         self.num_lines_per_file_ = []
-        self.backup_points_per_label =[]
+        self.backup_points_per_label = None
 
-    def _initialize_random_population_of_points(self, population_size):
+    def _initialize_random_population_of_points(self, population_size, ignore_cache = False):
         if len(self.num_lines_per_file_) == 0:
             for label in range(self.total_labels_):
                 self.num_lines_per_file_.append(sum([1 for line in open("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json")]))
         population_size_per_label = population_size/self.total_labels_
-        data = self._sample_point_per_label(population_size_per_label)
+        data = self._sample_point_per_label(population_size_per_label, ignore_cache)
         data = flatten(data)
         random.shuffle(data)
         return data
 
     def _points_to_add_per_label(self, total_points_to_add):
         total_points_to_add_per_label = total_points_to_add/self.total_labels_
-        return self._sample_point_per_label(total_points_to_add_per_label)
+        return self._sample_point_per_label(total_points_to_add_per_label, ignore_cache = False)
 
-    def _sample_point_per_label(self, population_size_per_label):
-        if len(self.backup_points_per_label) == 0:
+    def _sample_point_per_label(self, population_size_per_label, ignore_cache = False):
+        blah = self._cache_dont_have_enough_data(population_size_per_label)
+        if ignore_cache or self._cache_dont_have_enough_data(population_size_per_label):
+            size = population_size_per_label
+            if not ignore_cache and size < PokerConfig.CONFIG['point_cache_size']:
+                size = PokerConfig.CONFIG['point_cache_size']
             data = []
             for label in range(self.total_labels_):
-                idxs = random.sample(range(1, self.num_lines_per_file_[label]+1), population_size_per_label*PokerConfig.CONFIG['point_cache_size'])
+                idxs = random.sample(range(1, self.num_lines_per_file_[label]+1), size)
                 result = [linecache.getline("SBB/environments/poker/hand_types/"+Config.USER['reinforcement_parameters']['poker']['balance_based_on']+"/hands_type_"+str(label)+".json", i) for i in idxs]
                 data.append([PokerPoint(label, json.loads(r)) for r in result])
+            if ignore_cache:
+                return data
             self.backup_points_per_label = data
         data = []
+        temp = []
         for sample in self.backup_points_per_label:
             data.append(sample[:population_size_per_label])
-            sample = sample[population_size_per_label:]
+            temp.append(sample[population_size_per_label:])
+        self.backup_points_per_label = temp
         return data
+
+    def _cache_dont_have_enough_data(self, population_size_per_label):
+        if self.backup_points_per_label is None:
+            return True
+        for data in self.backup_points_per_label:
+            if len(data) < population_size_per_label:
+                return True
+        return False
 
     def _play_match(self, team, opponent, point, mode):
         """
