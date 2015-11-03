@@ -48,10 +48,10 @@ class OpponentModel():
     (loose passive): 0.47, ffcccccccccccccccccccccccccccccccc
 
     tight/loose hand tests:
-
+    ...
 
     passive/aggressive hand tests:
-
+    ...
 
     """
 

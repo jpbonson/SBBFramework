@@ -19,18 +19,14 @@ class PokerConfig():
         'point_cache_size': 20,
         'labels_per_subdivision': {
             'sbb_label': [0, 1, 2],
-            'sbb_extra_label': [0, 1, 2],
             'opp_label': [0, 1, 2],
-            'opp_extra_label': [0, 1, 2],
             'position': [0, 1],
             'sbb_sd': [0, 1, 2],
             'opponent': [], # setup in poker environment
         },
         'attributes_per_subdivision': {
             'sbb_label': lambda x: x.label_,
-            'sbb_extra_label': lambda x: x.sbb_extra_label_,
             'opp_label': lambda x: x.opp_label_,
-            'opp_extra_label': lambda x: x.opp_extra_label_,
             'position': lambda x: x.position_,
             'sbb_sd': lambda x: x.sbb_sd_label_,
             'opponent': lambda x: x.last_validation_opponent_id_,

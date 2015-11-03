@@ -31,18 +31,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_actions = 3 # fold, call, raise
         PokerConfig.CONFIG['inputs'] = PokerPoint.INPUTS+MatchState.INPUTS+['chips']+OpponentModel.INPUTS
         total_inputs = len(PokerConfig.CONFIG['inputs'])
-        if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'pstr_ostr':
-            total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])*len(PokerConfig.CONFIG['labels_per_subdivision']['opp_label'])
-            PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'] = [0, 1, 2]
-            PokerConfig.CONFIG['labels_per_subdivision']['sbb_extra_label'] = [0, 1, 2]
-            PokerConfig.CONFIG['labels_per_subdivision']['opp_label'] = [0, 1, 2]
-            PokerConfig.CONFIG['labels_per_subdivision']['opp_extra_label'] = [0, 1, 2]
-        else:
-            total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-            PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'] = [0, 1, 2, 3]
-            PokerConfig.CONFIG['labels_per_subdivision']['sbb_extra_label'] = [0, 1, 2, 3]
-            PokerConfig.CONFIG['labels_per_subdivision']['opp_label'] = [0, 1, 2, 3]
-            PokerConfig.CONFIG['labels_per_subdivision']['opp_extra_label'] = [0, 1, 2, 3]
+        total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])*len(PokerConfig.CONFIG['labels_per_subdivision']['opp_label'])
 
         coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
         coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent]
@@ -203,19 +192,16 @@ class PokerEnvironment(ReinforcementEnvironment):
         team.extra_metrics_['total_hands'][mode_label] += 1
         team.extra_metrics_['total_hands_per_point_type'][mode_label]['position'][point.position_] += 1
         team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
-        team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_extra_label'][point.sbb_extra_label_] += 1
         team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
         if team.extra_metrics_['played_last_hand']:
             team.extra_metrics_['hand_played'][mode_label] += 1
             team.extra_metrics_['hand_played_per_point_type'][mode_label]['position'][point.position_] += 1
             team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
-            team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_extra_label'][point.sbb_extra_label_] += 1
             team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
             if normalized_value > 0.5:
                 team.extra_metrics_['won_hands'][mode_label] += 1
                 team.extra_metrics_['won_hands_per_point_type'][mode_label]['position'][point.position_] += 1
                 team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
-                team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_extra_label'][point.sbb_extra_label_] += 1
                 team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
 
     def reset(self):
@@ -269,19 +255,15 @@ class PokerEnvironment(ReinforcementEnvironment):
         extra_metrics_points = {}
         extra_metrics_points['position'] = defaultdict(list)
         extra_metrics_points['sbb_label'] = defaultdict(list)
-        extra_metrics_points['sbb_extra_label'] = defaultdict(list)
         extra_metrics_points['sbb_sd'] = defaultdict(list)
         extra_metrics_points['opp_label'] = defaultdict(list)
-        extra_metrics_points['opp_extra_label'] = defaultdict(list)
         return extra_metrics_points
 
     def _update_extra_metrics_for_points(self, extra_metrics_points, point, result):
         extra_metrics_points['position'][point.position_].append(result)
         extra_metrics_points['sbb_label'][point.label_].append(result)
-        extra_metrics_points['sbb_extra_label'][point.sbb_extra_label_].append(result)
         extra_metrics_points['sbb_sd'][point.sbb_sd_label_].append(result)
         extra_metrics_points['opp_label'][point.opp_label_].append(result)
-        extra_metrics_points['opp_extra_label'][point.opp_extra_label_].append(result)
         return extra_metrics_points
 
     def validate(self, current_generation, teams_population):
@@ -289,7 +271,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             self._clear_hall_of_fame_memory()
 
         keys = ['validation', 'champion']
-        subkeys = ['position', 'sbb_label', 'sbb_extra_label', 'sbb_sd']
+        subkeys = ['position', 'sbb_label', 'sbb_sd']
         metrics_with_counts = ['total_hands', 'hand_played', 'won_hands']
         metrics_with_dicts = ['total_hands_per_point_type', 'hand_played_per_point_type', 'won_hands_per_point_type']
         for team in teams_population:
@@ -335,8 +317,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.position_, 'position', range(PokerConfig.CONFIG['positions']))
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.opp_label_, 'opp_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_extra_label_, 'sbb_extra_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.opp_extra_label_, 'opp_extra_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
 
     def _calculate_point_population_metric_per_validation(self, run_info, get_attribute, key, labels):
@@ -350,8 +330,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.position_, 'position', range(PokerConfig.CONFIG['positions']))
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.opp_label_, 'opp_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_extra_label_, 'sbb_extra_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.opp_extra_label_, 'opp_extra_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
 
     def _calculate_validation_population_metric_per_validation(self, run_info, get_attribute, key, labels):
@@ -490,19 +468,15 @@ class PokerEnvironment(ReinforcementEnvironment):
         extra_metrics_points = {}
         extra_metrics_points['position'] = defaultdict(list)
         extra_metrics_points['sbb_label'] = defaultdict(list)
-        extra_metrics_points['sbb_extra_label'] = defaultdict(list)
         extra_metrics_points['sbb_sd'] = defaultdict(list)
         extra_metrics_points['opp_label'] = defaultdict(list)
-        extra_metrics_points['opp_extra_label'] = defaultdict(list)
         return extra_metrics_points
 
     def _update_extra_metrics_for_points(self, extra_metrics_points, point, result):
         extra_metrics_points['position'][point.position_].append(result)
         extra_metrics_points['sbb_label'][point.label_].append(result)
-        extra_metrics_points['sbb_extra_label'][point.sbb_extra_label_].append(result)
         extra_metrics_points['sbb_sd'][point.sbb_sd_label_].append(result)
         extra_metrics_points['opp_label'][point.opp_label_].append(result)
-        extra_metrics_points['opp_extra_label'][point.opp_extra_label_].append(result)
         return extra_metrics_points
 
     def _rank_teams_by_accumulative_score(self, ind_scores, acc_scores, list_ids):
