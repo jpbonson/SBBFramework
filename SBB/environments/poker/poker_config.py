@@ -41,16 +41,10 @@ class PokerConfig():
     @staticmethod
     def get_hand_strength_label(value):
         if Config.USER['reinforcement_parameters']['poker']['balance_based_on'] == 'pstr_ostr':
-            if value >= 8.0:
-                return 0
-            if value >= 5.0:
-                return 1
-            return 2
-        else:
+            # 10/30/60
             if value >= 9.0:
                 return 0
-            if value >= 7.0:
+            if value >= 6.0:
                 return 1
-            if value >= 4.0:
-                return 2
-            return 3
+            return 2
+        raise ValueError("No configuration for 'balance_based_on' "+str(Config.USER['reinforcement_parameters']['poker']['balance_based_on']))

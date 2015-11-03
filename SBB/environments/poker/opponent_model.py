@@ -38,6 +38,13 @@ class OpponentModel():
     (loose aggressive): 0.98, ffrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
     (tight passive): 0.25, ffffffffcccccccc
     (loose passive): 0.47, ffcccccccccccccccccccccccccccccccc
+
+    loose-tight hand tests:
+
+
+    aggressive-passive hand tests:
+    
+
     """
 
     INPUTS = ['opponent long-term agressiveness', 'opponent short-term agressiveness', 

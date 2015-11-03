@@ -18,14 +18,18 @@ fixed bug with unexpected poker behaviors (rollback)
 added option to keep using atomic action along with meta actions
 ---
 
-- geral grande quantidade de pstr_ostr
-- obter e checar profile
-- commit: added messages to track bugs
+added more debug messages + changed balance to 10/30/60
+
+- inputs melhores? reorganizar inputs?
+- investigar bug no point_generator (pode estar relacionado com o bug no codigo principal)
+- gerar grande quantidade de pstr_ostr
+- checar profile
 - volatility -1?
 - remover sbb_extra_label e opp_extra_label
-- implementar stateful
+- implementar stateful (fazer ser ativado se a task for reinforcement)
 - runs with balance pstr_ostr
-- I will take a few days to see if I can increase the parallelism, in order to be able to test the runs faster.
+- check if multiprocessing can be improved / increase the parallelism / usar threads ou usar processes?
+    - testar com o point_generator
 - limpar pSBB_sklearn
 
 - conferir runs + mandar rodar runs

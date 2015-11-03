@@ -49,6 +49,7 @@ class PokerPlayerExecution():
                 if e.errno == errno.ECONNRESET:
                     break
                 else:
+                    print "socket_error (1): "+str(e)
                     raise e
             if not message:
                 break
@@ -114,6 +115,7 @@ class PokerPlayerExecution():
                     except socket_error as e:
                         if e.errno == errno.ECONNRESET:
                             break
+                        print "socket_error (2): "+str(e)
                     if Config.USER['reinforcement_parameters']['debug_matches']:
                         debug_file.write("match_state: "+str(match_state)+"\n\n")
                         debug_file.write("inputs: "+str(inputs)+"\n\n")

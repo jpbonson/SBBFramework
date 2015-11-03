@@ -40,7 +40,16 @@ def test_execution(point, port, full_deck):
             partial_messages = message.split("MATCHSTATE")
             if partial_messages[-1]:
                 last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-            match_state = MatchState(last_message, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'])
+            try:
+                match_state = MatchState(last_message, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'])
+            except ValueError as e:
+                print "---ERROR in initialization of MatchState:"
+                print "last_message: "+str(last_message)
+                print "partial_messages: "+str(partial_messages)
+                print "message: "+str(message)
+                print "previous_messages: "+str(previous_messages)
+                print "---"
+                raise
             action = "c"
             send_msg = "MATCHSTATE"+last_message+":"+action+"\r\n"
             socket_tmp.send(send_msg)
@@ -58,13 +67,27 @@ def test_execution(point, port, full_deck):
             point['ep'][round_id-1] = round_value(ep*Config.RESTRICTIONS['multiply_normalization_by'], 3)
             point['final'] = s
     except socket_error as e:
+        print "socket_error: "+str(e)
         if e.errno != errno.ECONNRESET and e.errno != errno.EPIPE:
             raise ValueError("Error: "+str(e))
     socket_tmp.close()
 
-    point['hole_cards'] = match_state.current_hole_cards
-    point['board_cards'] = match_state.board_cards
-    point['p'] = match_state.position
+    try:
+        point['hole_cards'] = match_state.current_hole_cards
+        point['board_cards'] = match_state.board_cards
+        point['p'] = match_state.position
+    except:
+        print "--- ERROR:"
+        print "socket_tmp: "+str(socket_tmp)
+        print "total: "+str(total)
+        print "attempt: "+str(attempt)
+        print "point: "+str(point)
+        print "port: "+str(port)
+        print "full_deck: "+str(full_deck)
+        if message:
+            print "message: "+str(message)
+        print "---"
+        raise
 
 def initialize_metrics(seed, port_pos0, port_pos1, full_deck):
     point_pos0 = {}
@@ -108,7 +131,8 @@ if __name__ == "__main__":
     # organizar arquivos pelas labels, uma seed por linha
     # inicialmente, pegar 1000 hands
 
-    path = "hand_types_temp/pstr_ostr"
+    Config.USER['reinforcement_parameters']['poker']['balance_based_on'] = 'pstr_ostr'
+    path = "hand_types_temp/pstr_ostr30000"
     index = 3
     indeces = 9
     mapping = {'00': 0, '01': 1, '02': 2, '10': 3, '11': 4, '12': 5, '20': 6, '21': 7, '22': 8}
@@ -124,7 +148,7 @@ if __name__ == "__main__":
     files = []
     for x in range(indeces):
         files.append(open(path+'/hands_type_'+str(x)+'.json','a'))
-    for seed in range(11719, 15000):
+    for seed in range(25000, 30000):
         point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck)
         point_pos0['id'] = seed
         point_pos1['id'] = seed
