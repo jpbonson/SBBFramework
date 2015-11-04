@@ -32,7 +32,6 @@ defined groups for diversity as 3
 - escolher inputs (baseado nos runs com 4 opps e no com HF)
 - check if multiprocessing can be improved:
     - increase parallelism? (using pool before running teams in training/validation?)
-    - wrap the ACPC code? (C for Python)
 - limpar pSBB_sklearn (+ add license?)
 
 - conferir runs + mandar rodar runs
@@ -58,7 +57,10 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- ...
+- profile, 1
+- default_seed1, 2
+- loose_seed1, 3
+- loose+HF_seed1, 4 
 
 nims server:
 - default_seed1, 1, 

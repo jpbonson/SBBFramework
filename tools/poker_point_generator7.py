@@ -2,8 +2,12 @@ import os
 import json
 import random
 import time
+import sys
 import errno
+from cStringIO import StringIO
 import socket
+import numpy as np
+import ctypes
 from socket import error as socket_error
 import subprocess
 import threading
@@ -30,12 +34,10 @@ def test_execution(point, port, full_deck):
                 time.sleep(1)
             if attempt > total:
                 raise ValueError("Could not connect to port "+str(port))
-
     socket_tmp.send("VERSION:2.0.0\r\n")
-
     try:
         while True:
-            message = socket_tmp.recv(1000)
+            message = socket_tmp.recv(100)
             message = message.replace("\r\n", "")
             partial_messages = message.split("MATCHSTATE")
             if partial_messages[-1]:
@@ -71,7 +73,6 @@ def test_execution(point, port, full_deck):
         if e.errno != errno.ECONNRESET and e.errno != errno.EPIPE:
             raise ValueError("Error: "+str(e))
     socket_tmp.close()
-
     try:
         point['hole_cards'] = match_state.current_hole_cards
         point['board_cards'] = match_state.board_cards
@@ -89,7 +90,7 @@ def test_execution(point, port, full_deck):
         print "---"
         raise
 
-def initialize_metrics(seed, port_pos0, port_pos1, full_deck):
+def initialize_metrics(seed, port_pos0, port_pos1, full_deck, dealer):
     point_pos0 = {}
     point_pos1 = {}
     point_pos0['str'] = [-1] * 4
@@ -101,20 +102,57 @@ def initialize_metrics(seed, port_pos0, port_pos1, full_deck):
 
     t1 = threading.Thread(target=test_execution, args=[point_pos0, port_pos0, full_deck])
     t2 = threading.Thread(target=test_execution, args=[point_pos1, port_pos1, full_deck])
-    args = [PokerConfig.CONFIG['acpc_path']+'dealer', 
-            PokerConfig.CONFIG['acpc_path']+'outputs/match_output', 
-            PokerConfig.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
-            "1", # total hands 
-            str(seed),
-            'pos0', 'pos1', 
-            '-p', str(port_pos0)+","+str(port_pos1),
-            '-l']
-    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # args = [PokerConfig.CONFIG['acpc_path']+'dealer', 
+    #         PokerConfig.CONFIG['acpc_path']+'outputs/match_output', 
+    #         PokerConfig.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
+    #         "1", # total hands 
+    #         str(seed),
+    #         'pos0', 'pos1', 
+    #         '-p', str(port_pos0)+","+str(port_pos1),
+    #         '-l']
+    # p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
     t1.start()
     t2.start()
-    out, err = p.communicate()
+
+    # old_stdout = sys.stdout
+    # sys.stdout = mystdout = StringIO()
+    # old_stderr = sys.stderr
+    # sys.stderr = mystderr = StringIO()
+
+    myargv = ctypes.c_char_p*11
+    names = myargv()
+    names[0] = 'dealer'
+    names[1] = PokerConfig.CONFIG['acpc_path']+'outputs/match_output'
+    names[2] = PokerConfig.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game'
+    names[3] = "1" # total hands 
+    names[4] = str(seed)
+    names[5] = 'pos0'
+    names[6] = 'pos1'
+    names[7] = '-p'
+    names[8] = str(port_pos0)+","+str(port_pos1)
+    names[9] = '-l'
+    names[10] = '-q'
+    a = dealer.main(11, names)
+
+
+
+    # sys.stdout = old_stdout
+    # sys.stderr = old_stderr
+
+    # out, err = p.communicate()
     t1.join()
     t2.join()
+    print "BLEHHHHHHH: "+str(a)
+
+    point_pos0['str'] = [-1, -1, -1, -1]
+    point_pos0['ep'] = [-1, -1, -1, -1]
+    point_pos0['hole_cards'] = [-1, -1, -1, -1]
+    point_pos0['board_cards'] = [-1, -1, -1, -1]
+    point_pos1['str'] = [-1, -1, -1, -1]
+    point_pos1['ep'] = [-1, -1, -1, -1]
+    point_pos1['hole_cards'] = [-1, -1, -1, -1]
+    point_pos1['board_cards'] = [-1, -1, -1, -1]
 
     # print str(point_pos0['str'])+", "+str(point_pos0['ep'])+", "+str(point_pos0['hole_cards']+point_pos0['board_cards'])
     # print str(point_pos1['str'])+", "+str(point_pos1['ep'])+", "+str(point_pos1['hole_cards']+point_pos1['board_cards'])
@@ -132,7 +170,7 @@ if __name__ == "__main__":
     # inicialmente, pegar 1000 hands
 
     Config.USER['reinforcement_parameters']['poker']['balance_based_on'] = 'pstr_ostr'
-    path = "hand_types_temp/pstr_ostr5000"
+    path = "hand_types_temp2/pstr_ostr5000"
     index = 3
     indeces = 9
     mapping = {'00': 0, '01': 1, '02': 2, '10': 3, '11': 4, '12': 5, '20': 6, '21': 7, '22': 8}
@@ -148,8 +186,9 @@ if __name__ == "__main__":
     files = []
     for x in range(indeces):
         files.append(open(path+'/hands_type_'+str(x)+'.json','a'))
+    dealer = ctypes.cdll.LoadLibrary(PokerConfig.CONFIG['acpc_path']+"dealer.so")
     for seed in range(1, 1):
-        point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck)
+        point_pos0, point_pos1 = initialize_metrics(seed, port0, port1, full_deck, dealer)
         point_pos0['id'] = seed
         point_pos1['id'] = seed
         point_pos0.pop('hole_cards')

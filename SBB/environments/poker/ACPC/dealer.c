@@ -1283,6 +1283,12 @@ int main( int argc, char **argv )
   if( logFile != NULL ) {
     fclose( logFile );
   }
+
+  for( i = 0; i < game->numPlayers; ++i ) {
+    shutdown( seatFD[ i ], 2);
+    close( seatFD[ i ]);
+  }
+
   free( game );
 
   return EXIT_SUCCESS;
