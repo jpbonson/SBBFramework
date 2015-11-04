@@ -27,6 +27,7 @@ removed balanced_based_on and opp_label_
 defined groups for diversity as 3
 ---
 
+- ver se esta mais rapido agora q nao estou super lotando os pcs
 - rodar outro profiling
 - executar os runs (com 2 e com 4 oponentes, e com HF)
 - escolher inputs (baseado nos runs com 4 opps e no com HF)
@@ -63,23 +64,28 @@ nims pc:
 - loose+HF_seed1, 4 
 
 nims server:
-- default_seed1, 1, 
-- loose_seed1, 2, 
-- loose+HF_seed1, 3, 
-- default_seed2, 4, 
-- loose_seed2, 5, 
-- loose+HF_seed2, 6, 
+- default_seed2, 1, 1042
+- loose_seed2, 2, 4934
+- loose+HF_seed2, 3, 10099
+- default_seed3, 4, 30152
+- loose_seed3, 5, 25273
+- loose+HF_seed3, 6, 12389
 
 hector server:
-- ...
+- default_seed4, 1, 27642
+- loose_seed4, 2, 29467
+- loose+HF_seed4, 3, 32718
+- default_seed5, 4, 5034
+- loose_seed5, 5, 9778
+- loose+HF_seed5, 6, 13737
 
 TODO
-- compare stateless x stateful
-- compare board_strength x pstr_ostr (?)
 - compare matches x 50more_matches x 100more_matches
 - compare 2layer_150gen x 2layer_300gen
 - compare 2layer_without_atomic x 2layer_with_atomic
 - run diversities again (start with seed 6)
+- oponentes?
+- inputs?
 
 layer vs layer2:
 - top15?
