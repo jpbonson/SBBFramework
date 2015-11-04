@@ -91,7 +91,8 @@ class DiversityMaintenance():
             distance = 1.0 - (float(num_programs_intersection)/float(num_programs_union))
         else:
             distance = 1.0
-            print "Warning! No union between teams!"
+            print "Error: No union between teams' active programs! Look for bugs."
+            raise SystemExit
         return distance
 
     @staticmethod
