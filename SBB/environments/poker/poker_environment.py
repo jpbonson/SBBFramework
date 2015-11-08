@@ -1,6 +1,7 @@
 import sys
 import gc
 import math
+import time
 import json
 import yappi
 import operator
@@ -91,6 +92,20 @@ class PokerEnvironment(ReinforcementEnvironment):
         return False
 
     def _play_match(self, team, opponent, point, mode):
+        total = 3
+        attempt = 0
+        while True:
+            try:
+                return self._play_match2(team, opponent, point, mode)
+            except IndexError as e:
+                attempt += 1
+                print "Error: IndexError during poker execution. (attempt: "+str(attempt)+")"
+                if attempt > total:
+                    print "Error: Got maximum attempts."
+                    raise
+                time.sleep(1)
+
+    def _play_match2(self, team, opponent, point, mode):
         """
 
         """

@@ -25,16 +25,14 @@ implemented stateful registers for reinforcement tasks
 updated hands to balance pstr_ostr + fixed point cache
 removed balanced_based_on and opp_label_
 defined groups for diversity as 3
+v2: gen100 and no self inputs + bug fix
 ---
 
-- ver se esta mais rapido agora q nao estou super lotando os pcs
-- rodar outro profiling
-- executar os runs (com 2 e com 4 oponentes, e com HF)
-- escolher inputs (baseado nos runs com 4 opps e no com HF)
-- check if multiprocessing can be improved:
-    - increase parallelism? (using pool before running teams in training/validation?)
+- fazer menos generations? checar as curvas de fitness, validation, e champion
+    - ou menos teams? menos alg coisa? 80 teams e 80 points?
+- implementar run standalone para testar a performance do champion no cenario real contra static oponents e human players?
 - limpar pSBB_sklearn (+ add license?)
-
+- escolher inputs (baseado nos runs com 2 e 4 opps e no com HF)
 - conferir runs + mandar rodar runs
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
 - implementar opponent population
@@ -48,6 +46,11 @@ defined groups for diversity as 3
 
 
 
+- parar na gen100
+- fazer run sem os inputs de self? (podem estar mais atrapalahdno do que ajudando? afinal, ha pouco treino contra oponentes com oponent model, entao ha pouca diferenca entre os inputs de self e do oponente)
+- loose+HF tem fitness muito instavel, e HF nao faz muito sentido sem usa ros inputs de self, remover HF?
+- conferir inputs
+
 ---
 parameters to test:
 - what diversity? mix diversities? (temp: ncd_c3, g5)
@@ -58,10 +61,15 @@ parameters to test:
 - second layer: como selecionar os teams? quantas actions escolher? 
 
 nims pc:
-- profile, 1
-- default_seed1, 2
-- loose_seed1, 3
-- loose+HF_seed1, 4 
+- default_seed1, 1
+- loose_seed1, 2
+- loose+HF_seed1, 3 
+- default_seed6, 4
+- loose_seed6, 5
+- loose+HF_seed6, 6 
+- default_seed7, 7
+- loose_seed7, 8
+- loose+HF_seed7, 9 
 
 nims server:
 - default_seed2, 1, 1042
@@ -70,20 +78,31 @@ nims server:
 - default_seed3, 4, 30152
 - loose_seed3, 5, 25273
 - loose+HF_seed3, 6, 12389
+- default_seed8, 7, 25510
+- loose_seed8, 8, 29620
+- loose+HF_seed8, 9, 4335 [FAIL]
+- default_seed9, 10, 12580
+- loose_seed9, 11, 17359
+- loose+HF_seed9, 12, 25335
 
 hector server:
-- default_seed4, 1, 27642
-- loose_seed4, 2, 29467
-- loose+HF_seed4, 3, 32718
-- default_seed5, 4, 5034
-- loose_seed5, 5, 9778
-- loose+HF_seed5, 6, 13737
+- default_seed10, 7, 12428
+- loose_seed10, 8, 18392
+- loose+HF_seed10, 9, 23412
+- v2_default_seed4, 
+- v2_loose_seed4, 
+- v2_default_seed5, 
+- v2_loose_seed5, 
+- v2_default_seed4_80t, 
+- v2_loose_seed4_80t, 
+- v2_default_seed5_80t, 
+- v2_loose_seed5_80t, 
 
 TODO
 - compare matches x 50more_matches x 100more_matches
 - compare 2layer_150gen x 2layer_300gen
 - compare 2layer_without_atomic x 2layer_with_atomic
-- run diversities again (start with seed 6)
+- run diversities again
 - oponentes?
 - inputs?
 

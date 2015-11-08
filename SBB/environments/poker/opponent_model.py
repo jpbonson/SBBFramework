@@ -59,12 +59,13 @@ class OpponentModel():
         'opponent long-term agressiveness (2)', 'opponent short-term agressiveness (3)',
         'opponent long-term volatility (4)', 'opponent short-term volatility (5)',
         'opponent long-term tight/loose (6)', 'opponent short-term tight/loose (7)',
-        'opponent long-term passive/aggressive (8)', 'opponent short-term passive/aggressive (9)',
-        'self long-term agressiveness (10)', 'self short-term agressiveness (11)', 
-        'self long-term volatility (12)', 'self short-term volatility (13)',
-        'self long-term tight/loose (14)', 'self short-term tight/loose (15)',
-        'self long-term passive/aggressive (16)', 'self short-term passive/aggressive (17)',
-    ]
+        'opponent long-term passive/aggressive (8)', 'opponent short-term passive/aggressive (9)']
+    #     ,
+    #     'self long-term agressiveness (10)', 'self short-term agressiveness (11)', 
+    #     'self long-term volatility (12)', 'self short-term volatility (13)',
+    #     'self long-term tight/loose (14)', 'self short-term tight/loose (15)',
+    #     'self long-term passive/aggressive (16)', 'self short-term passive/aggressive (17)',
+    # ]
     SINGLE_HAND_AGRESSIVENESS_MAPPING = {'c': 0.0, 'r': 1.0}
 
     def __init__(self):
@@ -138,21 +139,21 @@ class OpponentModel():
             inputs[8] = numpy.mean(self.opponent_aggressive_passive)
             inputs[9] = numpy.mean(self.opponent_aggressive_passive[:10])
 
-        if len(self.self_agressiveness) > 0:
-            inputs[10] = numpy.mean(self.self_agressiveness)
-            inputs[11] = numpy.mean(self.self_agressiveness[:10])
+        # if len(self.self_agressiveness) > 0:
+        #     inputs[10] = numpy.mean(self.self_agressiveness)
+        #     inputs[11] = numpy.mean(self.self_agressiveness[:10])
 
-        if len(self.self_agressiveness_postflop) > 0 and len(self.self_agressiveness_preflop) > 0:
-            inputs[12] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop, self.self_agressiveness_preflop)
-            inputs[13] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop[:10], self.self_agressiveness_preflop[:10])
+        # if len(self.self_agressiveness_postflop) > 0 and len(self.self_agressiveness_preflop) > 0:
+        #     inputs[12] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop, self.self_agressiveness_preflop)
+        #     inputs[13] = OpponentModel.calculate_volatility(self.self_agressiveness_postflop[:10], self.self_agressiveness_preflop[:10])
 
-        if len(self.self_tight_loose) > 0:
-            inputs[14] = numpy.mean(self.self_tight_loose)
-            inputs[15] = numpy.mean(self.self_tight_loose[:10])
+        # if len(self.self_tight_loose) > 0:
+        #     inputs[14] = numpy.mean(self.self_tight_loose)
+        #     inputs[15] = numpy.mean(self.self_tight_loose[:10])
 
-        if len(self.self_aggressive_passive) > 0:
-            inputs[16] = numpy.mean(self.self_aggressive_passive)
-            inputs[17] = numpy.mean(self.self_aggressive_passive[:10])
+        # if len(self.self_aggressive_passive) > 0:
+        #     inputs[16] = numpy.mean(self.self_aggressive_passive)
+        #     inputs[17] = numpy.mean(self.self_aggressive_passive[:10])
 
         inputs = [i*Config.RESTRICTIONS['multiply_normalization_by'] for i in inputs]
         return inputs

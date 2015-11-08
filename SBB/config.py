@@ -34,8 +34,8 @@ class Config():
 
         'training_parameters': {
             'runs_total': 1,
-            'generations_total': 150,
-            'validate_after_each_generation': 25,
+            'generations_total': 100,
+            'validate_after_each_generation': 20,
             'populations': {
                 'teams': 100,
                 'points': 100,
@@ -69,7 +69,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run
+            'seed': 4, # default = None, it can be a single seed for all runs, or an array of seeds per run
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'extra_registers': 3,
