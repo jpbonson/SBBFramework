@@ -1,6 +1,6 @@
 import unittest
-from pSBB.SBB.core.program import Program
-from pSBB.SBB.core.instruction import Instruction
+from ...core.program import Program
+from ...core.instruction import Instruction
 
 class IntronRemovalTests(unittest.TestCase):
     def test_dont_remove_nonintrons(self):

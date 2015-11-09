@@ -1,7 +1,7 @@
 import unittest
 from collections import deque
-from pSBB.SBB.config import Config
-from pSBB.SBB.sbb import SBB
+from ...config import Config
+from ...sbb import SBB
 
 TEST_CONFIG = {
     'task': 'classification',
