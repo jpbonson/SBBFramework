@@ -1,5 +1,5 @@
 # SBBReinforcementLearner
-Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming (GP). Algorithm developed by the NIMS laboratory, Dalhousie University, Canada. This implementation can be used as a library to apply GP to reinforcement learning tasks.
+Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming (GP). Algorithm developed by the NIMS laboratory, Dalhousie University, Canada. This implementation can be used as an extendable code to apply GP to reinforcement learning tasks.
 
 Work in progress...
 
