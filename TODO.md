@@ -1,5 +1,3 @@
-BLAH
-
 Done (most recent):
 implemented json reader json for teams
 added metric for final team validations
@@ -72,11 +70,11 @@ nims pc:
 - loose+HF_seed7, 9 
 
 nims server:
-- default_seed2, 1, 1042
-- loose_seed2, 2, 4934
+- default_seed2, 1, 1042 [DONE]
+- loose_seed2, 2, 4934 [DONE]
 - loose+HF_seed2, 3, 10099
-- default_seed3, 4, 30152
-- loose_seed3, 5, 25273
+- default_seed3, 4, 30152 [DONE]
+- loose_seed3, 5, 25273 [DONE]
 - loose+HF_seed3, 6, 12389
 - default_seed8, 7, 25510
 - loose_seed8, 8, 29620
@@ -86,17 +84,18 @@ nims server:
 - loose+HF_seed9, 12, 25335
 
 hector server:
-- default_seed10, 7, 12428
-- loose_seed10, 8, 18392
-- loose+HF_seed10, 9, 23412
-- v2_default_seed4, 
-- v2_loose_seed4, 
-- v2_default_seed5, 
-- v2_loose_seed5, 
-- v2_default_seed4_80t, 
-- v2_loose_seed4_80t, 
-- v2_default_seed5_80t, 
-- v2_loose_seed5_80t, 
+- v2_default_seed4, 1, 15612
+- v2_loose_seed4, 2, 18776
+- v2_default_seed5, 3, 23269
+- v2_loose_seed5, 4, 27727
+- v2_default_seed10, 5, 1118
+- v2_loose_seed10, 6, 5963
+- v2_default_seed4_80t, 7, 17553
+- v2_loose_seed4_80t, 8, 25726
+- v2_default_seed5_80t, 9, 3069
+- v2_loose_seed5_80t, 10, 9103
+- v2_default_seed10_80t, 11, 19238
+- v2_loose_seed10_80t, 12, 32562
 
 TODO
 - compare matches x 50more_matches x 100more_matches
