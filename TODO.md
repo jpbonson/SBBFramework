@@ -26,10 +26,30 @@ defined groups for diversity as 3
 v2: gen100 and no self inputs + bug fix
 ---
 
-- gen160
-- matches+50
-- layer2 (top5, top10, top15, atomic?)
+- layer2, no atomic
+    top5
+    - 
+    - 
+    - 
+    top10
+    - 
+    - 
+    - 
+    top15
+    - 
+    - 
+    - 
+- layer2, atomic
+    top5
+    - 
+    - 
+    - 
+    top10
+    - 
+    - 
+    - 
 
+- implementar selecao automatica de top5, top10, top15
 - implementar run standalone para testar a performance do champion no cenario real contra static oponents e human players?
 - conferir runs + mandar rodar runs
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
@@ -65,18 +85,18 @@ nims server:
 - ...
 
 hector server:
-- v2_default_seed4, 1, 15612
-- v2_loose_seed4, 2, 18776
-- v2_default_seed5, 3, 23269
-- v2_loose_seed5, 4, 27727
-- v2_default_seed10, 5, 1118
-- v2_loose_seed10, 6, 5963
-- v2_default_seed4_80t, 7, 17553 [DONE]
-- v2_loose_seed4_80t, 8, 25726 [DONE]
-- v2_default_seed5_80t, 9, 3069 [DONE]
-- v2_loose_seed5_80t, 10, 9103 [DONE]
-- v2_default_seed10_80t, 11, 19238 [DONE]
-- v2_loose_seed10_80t, 12, 32562 [DONE]
+- matches+50 (seeds 4, 5, 10)
+    - 1, 22486
+    - 2, 25905
+    - 3, 29536
+- gen160 (seeds 4, 5, 10)
+    - 4, 7703
+    - 5, 11186
+    - 6, 15139
+- inst+10 (seeds 4, 5, 10)
+    - 7, 25494
+    - 8, 905
+    - 9, 4883
 
 TODO
 - compare matches x 50more_matches x 100more_matches
