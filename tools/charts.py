@@ -18,51 +18,59 @@ use_chart1 = True
 if use_chart1:
 
     d = [
-[0.52488, 0.55502, 0.56436, 0.56215, 0.558, 0.56223, 0.5625],
-[0.52213, 0.55698, 0.55706, 0.55633, 0.55865, 0.55852, 0.56178],
-[0.51783, 0.54462, 0.55485, 0.55533, 0.55693, 0.55725, 0.55791],
+[0.50671, 0.50675, 0.52923, 0.55217, 0.54888, 0.54884],
+[0.51504, 0.53458, 0.53744, 0.54641, 0.55604, 0.55604],
+[0.50183, 0.56039, 0.54653, 0.57023, 0.56104, 0.56393],
+[0.52229, 0.5167, 0.53272, 0.51912, 0.53492, 0.53492],
+[0.49906, 0.53376, 0.55201, 0.55837, 0.56135, 0.56199],
+[0.52347, 0.54, 0.54352, 0.55633, 0.56379, 0.5682],
     ]
 
     data = d[0]
     color = 'r'
     plt.plot(data,color)
-    patches.append(mpatches.Patch(color=color, label='default'))
+    patches.append(mpatches.Patch(color=color, label='4 default'))
 
     data = d[1]
-    color = 'b'
+    # color = 'b'
+    color = '#B00000'
     plt.plot(data,color)
-    patches.append(mpatches.Patch(color=color, label='loose'))
+    patches.append(mpatches.Patch(color=color, label='4 loose'))
 
     data = d[2]
+    # color = 'g'
+    color = 'b'
+    plt.plot(data,color)
+    patches.append(mpatches.Patch(color=color, label='5 default'))
+
+    data = d[3]
+    # color = 'm'
+    color = '#000066'
+    plt.plot(data,color)
+    patches.append(mpatches.Patch(color=color, label='5 loose'))
+
+    data = d[4]
+    # color = 'c'
     color = 'g'
     plt.plot(data,color)
-    patches.append(mpatches.Patch(color=color, label='loose+HF'))
+    patches.append(mpatches.Patch(color=color, label='10 default'))
 
-    # data = d[3]
-    # color = 'm'
-    # plt.plot(data,color)
-    # patches.append(mpatches.Patch(color=color, label='4'))
-
-    # data = d[4]
-    # color = 'c'
-    # plt.plot(data,color)
-    # patches.append(mpatches.Patch(color=color, label='5'))
-
-#     # data = d[5]
-#     # color = 'y'
-#     # plt.plot(data,color)
-#     # patches.append(mpatches.Patch(color=color, label='NCD (C4, 3g)'))
+    data = d[5]
+    # color = 'y'
+    color = '#003300'
+    plt.plot(data,color)
+    patches.append(mpatches.Patch(color=color, label='10 loose'))
 
 #     # data = d[6]
 #     # color = 'k'
 #     # plt.plot(data,color)
 #     # patches.append(mpatches.Patch(color=color, label='NCD (C4, 5g)'))
 
-    plt.title("Champion (seed 5)")
+    plt.title("Champion")
     plt.legend(handles=patches, loc=1)
     # plt.axis([0, 6, 0, 1.0]) # per validation
-    plt.axis([0, 6, 0.4, 0.8]) # per validation
-    # plt.axis([0, 149, 0.4, 0.8]) # per training
+    plt.axis([0, 5, 0.4, 0.8]) # per validation
+    # plt.axis([0, 100, 0.4, 0.8]) # per training
     # plt.axis([0, 149, 0.0, 1.0]) # per training
     # plt.axis([0, 124, 0.4, 0.8]) # per training, diversity
     # plt.axis([0, 99, 0.4, 0.8]) # per training, opponent
