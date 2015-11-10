@@ -26,7 +26,7 @@ defined groups for diversity as 3
 v2: gen100 and no self inputs + bug fix
 ---
 
-- gen140
+- gen160
 - matches+50
 - layer2 (top5, top10, top15, atomic?)
 

@@ -27,9 +27,6 @@ class Config():
                 'diversity': 'ncd_c3', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
-            'poker': {
-                'use_tight_opponents': False,
-            },
         },
 
         'training_parameters': {
@@ -37,7 +34,7 @@ class Config():
             'generations_total': 100,
             'validate_after_each_generation': 20,
             'populations': {
-                'teams': 100,
+                'teams': 80,
                 'points': 100,
             },
             'replacement_rate': {
