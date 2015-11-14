@@ -24,31 +24,15 @@ updated hands to balance pstr_ostr + fixed point cache
 removed balanced_based_on and opp_label_
 defined groups for diversity as 3
 v2: gen100 and no self inputs + bug fix
+v3: updated config + automated top5,top10,top15
 ---
 
-- layer2, no atomic
-    top5
-    - 
-    - 
-    - 
-    top10
-    - 
-    - 
-    - 
-    top15
-    - 
-    - 
-    - 
-- layer2, atomic
-    top5
-    - 
-    - 
-    - 
-    top10
-    - 
-    - 
-    - 
+- conferir runs
+- mandar rodar 5 runs para as melhores diversities:
+    - 'ncd_c3', 'ncd_c4', 'entropy_c3', 'hamming_c3'
+- atomic/non-atomic, top5/top10
 
+- conferir se os teams e points realmente estao evoluindo com o tempo
 - implementar selecao automatica de top5, top10, top15
 - implementar run standalone para testar a performance do champion no cenario real contra static oponents e human players?
 - conferir runs + mandar rodar runs
@@ -61,13 +45,9 @@ v2: gen100 and no self inputs + bug fix
         - fazer o hall of fame ter o memso tamanho do smapling de oponentes
     - opponent that bluff
 - continuar a literature review 
+- remover codigo de classification?
+- traduzir parte do codigo para C?
 
-
-
-- parar na gen100
-- fazer run sem os inputs de self? (podem estar mais atrapalahdno do que ajudando? afinal, ha pouco treino contra oponentes com oponent model, entao ha pouca diferenca entre os inputs de self e do oponente)
-- loose+HF tem fitness muito instavel, e HF nao faz muito sentido sem usa ros inputs de self, remover HF?
-- conferir inputs
 
 ---
 parameters to test:
@@ -79,24 +59,35 @@ parameters to test:
 - oponents: loose + tight
 
 nims pc:
-- ...
+- 'ncd_c3'
+    - s1, 
+    - s2, 
+    - s3, 
+    - s4, 
+    - s5, 
 
 nims server:
-- ...
+- 'hamming_c3'
+    - s1, 
+    - s2, 
+    - s3, 
+    - s4, 
+    - s5, 
+- 'ncd_c4'
+    - s1, 
+    - s2, 
 
 hector server:
-- matches+50 (seeds 4, 5, 10)
-    - 1, 22486
-    - 2, 25905
-    - 3, 29536
-- gen160 (seeds 4, 5, 10)
-    - 4, 7703
-    - 5, 11186
-    - 6, 15139
-- inst+10 (seeds 4, 5, 10)
-    - 7, 25494
-    - 8, 905
-    - 9, 4883
+- 'entropy_c3'
+    - s1, 
+    - s2, 
+    - s3, 
+    - s4, 
+    - s5, 
+- 'ncd_c4'
+    - s3, 
+    - s4, 
+    - s5, 
 
 TODO
 - compare matches x 50more_matches x 100more_matches

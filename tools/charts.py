@@ -18,48 +18,45 @@ use_chart1 = True
 if use_chart1:
 
     d = [
-[0.50671, 0.50675, 0.52923, 0.55217, 0.54888, 0.54884],
-[0.51504, 0.53458, 0.53744, 0.54641, 0.55604, 0.55604],
-[0.50183, 0.56039, 0.54653, 0.57023, 0.56104, 0.56393],
-[0.52229, 0.5167, 0.53272, 0.51912, 0.53492, 0.53492],
-[0.49906, 0.53376, 0.55201, 0.55837, 0.56135, 0.56199],
-[0.52347, 0.54, 0.54352, 0.55633, 0.56379, 0.5682],
+[0.52986, 0.53778, 0.56402, 0.56187, 0.56798, 0.57088],
+[0.52688, 0.54218, 0.53009, 0.56164, 0.5602, 0.55276],
+[0.52838, 0.54773, 0.55893, 0.55893, 0.55891, 0.55536],
     ]
 
     data = d[0]
     color = 'r'
     plt.plot(data,color)
-    patches.append(mpatches.Patch(color=color, label='4 default'))
+    patches.append(mpatches.Patch(color=color, label='4'))
 
     data = d[1]
-    # color = 'b'
-    color = '#B00000'
+    color = 'b'
+    # color = '#B00000'
     plt.plot(data,color)
-    patches.append(mpatches.Patch(color=color, label='4 loose'))
+    patches.append(mpatches.Patch(color=color, label='5'))
 
     data = d[2]
-    # color = 'g'
-    color = 'b'
-    plt.plot(data,color)
-    patches.append(mpatches.Patch(color=color, label='5 default'))
-
-    data = d[3]
-    # color = 'm'
-    color = '#000066'
-    plt.plot(data,color)
-    patches.append(mpatches.Patch(color=color, label='5 loose'))
-
-    data = d[4]
-    # color = 'c'
     color = 'g'
+    # color = 'b'
     plt.plot(data,color)
-    patches.append(mpatches.Patch(color=color, label='10 default'))
+    patches.append(mpatches.Patch(color=color, label='10'))
 
-    data = d[5]
-    # color = 'y'
-    color = '#003300'
-    plt.plot(data,color)
-    patches.append(mpatches.Patch(color=color, label='10 loose'))
+    # data = d[3]
+    # # color = 'm'
+    # color = '#000066'
+    # plt.plot(data,color)
+    # patches.append(mpatches.Patch(color=color, label='5 instr+10'))
+
+    # data = d[4]
+    # # color = 'c'
+    # color = 'g'
+    # plt.plot(data,color)
+    # patches.append(mpatches.Patch(color=color, label='10 default'))
+
+    # data = d[5]
+    # # color = 'y'
+    # color = '#003300'
+    # plt.plot(data,color)
+    # patches.append(mpatches.Patch(color=color, label='10 instr+10'))
 
 #     # data = d[6]
 #     # color = 'k'

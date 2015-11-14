@@ -61,27 +61,27 @@ class Config():
             },
             'program_size': {
                 'min': 5,
-                'max': 20,
+                'max': 30,
             },
         },
 
         'advanced_training_parameters': {
-            'seed': 41, # default = None, it can be a single seed for all runs, or an array of seeds per run
+            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run, WARNING: It not ensures that runs with the same seed will have the same result, just increases the chance
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'extra_registers': 3,
             'diversity': {
-                'use_and_show': ['ncd_c3'], # will be applied to fitness and show in the outputs
+                'use_and_show': ['ncd_c4'], # will be applied to fitness and show in the outputs
                 'only_show': ['genotype'], # will be only show in the outputs
-                'k': 10,
+                'k': 8,
             },
             'run_initialization_step2': False,
             'use_weighted_probability_selection': True, # if False, uniform probability will be used
             'use_agressive_mutations': True,
             'second_layer': {
                 'enabled': False,
-                'use_atomic_actions': False,
-                'path': 'actions_reference/gen100/seed4/top5',
+                'use_atomic_actions': True,
+                'path': 'actions_reference/gen100/seed10/top15',
             },
         },
     }

@@ -161,6 +161,10 @@ class Program:
         text = "\n#### Program "+self.__repr__()
         teams_ids = [t.__repr__() for t in self.teams_]
         text += "\nParticipate in the teams ("+str(len(teams_ids))+"): "+str(teams_ids)
+        if self.is_atomic_action():
+            text += "\nAction Type: atomic"
+        else:
+            text += "\nAction Type: meta"
         text += "\n================\n"
         text += "\nTotal instructions (without introns): "+str(len(self.instructions_without_introns_))
         text += "\nInputs used: "+str(self.inputs_list_)
