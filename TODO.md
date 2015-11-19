@@ -28,9 +28,23 @@ v3: updated config + automated top5,top10,top15
 ---
 
 - conferir runs
-- mandar rodar 5 runs para as melhores diversities:
-    - 'ncd_c3', 'ncd_c4', 'entropy_c3', 'hamming_c3'
-- atomic/non-atomic, top5/top10
+- mandar rodar runs para entropy_c3:
+    - entropy_c3, atomic (seeds 1,2,3,4,5)
+        - top5
+        - top10
+    - entropy_c3, non-atomic (seeds 1,2,3,4,5)
+        - top5
+        - top10
+- implementar tool que permite SBB jogar contra SBB, static, e human, balanced e umbalanced
+- ensure teams and point are really evolving over time
+
+- implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
+
+- Maybe apply sbb for other domain? (de RL)
+- So' adicionar tight opps e/out hard hands apos gen 50?
+- implementar codigo para permitir continuar treinamento de teams
+- Ou começar apenas com o river? Sem oponente?
+- tentar aumentar a dificuldade em partes?
 
 - conferir se os teams e points realmente estao evoluindo com o tempo
 - implementar selecao automatica de top5, top10, top15
@@ -59,46 +73,41 @@ parameters to test:
 - oponents: loose + tight
 
 nims pc:
-- 'ncd_c3'
-    - s1, 
-    - s2, 
-    - s3, 
-    - s4, 
-    - s5, 
+- entropy_c3, atomic (seeds 1)
+    - top5
+    - top10
+- entropy_c3, non-atomic (seeds 1)
+    - top5
+    - top10
 
 nims server:
-- 'hamming_c3'
-    - s1, 
-    - s2, 
-    - s3, 
-    - s4, 
-    - s5, 
-- 'ncd_c4'
-    - s1, 
-    - s2, 
+- entropy_c3, atomic (seeds 2)
+    - top5
+    - top10
+- entropy_c3, non-atomic (seeds 2)
+    - top5
+    - top10
+- entropy_c3, atomic (seeds 3)
+    - top5
+    - top10
+- entropy_c3, non-atomic (seeds 3)
+    - top5
+    - top10
 
 hector server:
-- 'entropy_c3'
-    - s1, 
-    - s2, 
-    - s3, 
-    - s4, 
-    - s5, 
-- 'ncd_c4'
-    - s3, 
-    - s4, 
-    - s5, 
+- entropy_c3, atomic (seeds 4)
+    - top5
+    - top10
+- entropy_c3, non-atomic (seeds 4)
+    - top5
+    - top10
+- entropy_c3, atomic (seeds 5)
+    - top5
+    - top10
+- entropy_c3, non-atomic (seeds 5)
+    - top5
+    - top10
 
-TODO
-- compare matches x 50more_matches x 100more_matches
-- compare 2layer_150gen x 2layer_300gen
-- compare 2layer_without_atomic x 2layer_with_atomic
-- run diversities again
-- oponentes?
-- inputs?
-
-layer vs layer2:
-- top15?
 
 diversity:
 - best_config_layer1_entropy_c2_seed5, 1, 

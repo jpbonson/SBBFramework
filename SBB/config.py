@@ -24,7 +24,7 @@ class Config():
                 'size': 10,
                 'enabled': True,
                 'use_as_opponents': False,
-                'diversity': 'ncd_c3', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+                'diversity': 'entropy_c3', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
         },
@@ -66,12 +66,12 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run, WARNING: It not ensures that runs with the same seed will have the same result, just increases the chance
+            'seed': 11, # default = None, it can be a single seed for all runs, or an array of seeds per run, WARNING: It not ensures that runs with the same seed will have the same result, just increases the chance
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'extra_registers': 3,
             'diversity': {
-                'use_and_show': ['ncd_c4'], # will be applied to fitness and show in the outputs
+                'use_and_show': ['entropy_c3'], # will be applied to fitness and show in the outputs
                 'only_show': ['genotype'], # will be only show in the outputs
                 'k': 8,
             },
@@ -79,9 +79,9 @@ class Config():
             'use_weighted_probability_selection': True, # if False, uniform probability will be used
             'use_agressive_mutations': True,
             'second_layer': {
-                'enabled': False,
-                'use_atomic_actions': True,
-                'path': 'actions_reference/gen100/seed10/top15',
+                'enabled': True,
+                'use_atomic_actions': False,
+                'path': 'actions_reference/v3/1/top5',
             },
         },
     }
