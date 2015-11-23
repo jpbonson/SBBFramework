@@ -27,17 +27,16 @@ v2: gen100 and no self inputs + bug fix
 v3: updated config + automated top5,top10,top15
 ---
 
-- conferir runs
-- mandar rodar runs para entropy_c3:
-    - entropy_c3, atomic (seeds 1,2,3,4,5)
-        - top5
-        - top10
-    - entropy_c3, non-atomic (seeds 1,2,3,4,5)
-        - top5
-        - top10
-- implementar tool que permite SBB jogar contra SBB, static, e human, balanced e umbalanced
-- ensure teams and point are really evolving over time
+- implementar tool que permite SBB jogar contra SBB, static, e human, balanced e umbalanced, e gerar logs/reports
 
+- refatorar classe OpponentModel
+- adicionar na info do team todos os atributos 'self' do oponent model
+- adicionar input 'self' (e 'opp'?) para bleff? (eg.: agressividade/hand_str)
+
+- fazer poker_analysis funcionar para human, outro sbb, e para second layer (.json salvar as teams de cada action?)
+
+- conferir runs
+- ensure teams and point are really evolving over time
 - implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
 
 - Maybe apply sbb for other domain? (de RL)
@@ -47,7 +46,6 @@ v3: updated config + automated top5,top10,top15
 - tentar aumentar a dificuldade em partes?
 
 - conferir se os teams e points realmente estao evoluindo com o tempo
-- implementar selecao automatica de top5, top10, top15
 - implementar run standalone para testar a performance do champion no cenario real contra static oponents e human players?
 - conferir runs + mandar rodar runs
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
@@ -73,40 +71,40 @@ parameters to test:
 - oponents: loose + tight
 
 nims pc:
-- entropy_c3, atomic (seeds 1)
-    - top5
-    - top10
 - entropy_c3, non-atomic (seeds 1)
-    - top5
-    - top10
+    - top5, 1
+    - top10, 2
+- entropy_c3, atomic (seeds 1)
+    - top5, 3
+    - top10, 4
 
 nims server:
-- entropy_c3, atomic (seeds 2)
-    - top5
-    - top10
 - entropy_c3, non-atomic (seeds 2)
-    - top5
-    - top10
-- entropy_c3, atomic (seeds 3)
-    - top5
-    - top10
+    - top5, 1, 23046
+    - top10, 2, 24557
+- entropy_c3, atomic (seeds 2)
+    - top5, 3, 27566
+    - top10, 4, 757
 - entropy_c3, non-atomic (seeds 3)
-    - top5
-    - top10
+    - top5, 5, 14341
+    - top10, 6, 19494
+- entropy_c3, atomic (seeds 3)
+    - top5, 7, 765
+    - top10, 8, 8441
 
 hector server:
-- entropy_c3, atomic (seeds 4)
-    - top5
-    - top10
 - entropy_c3, non-atomic (seeds 4)
-    - top5
-    - top10
-- entropy_c3, atomic (seeds 5)
-    - top5
-    - top10
+    - top5, 1, 14955
+    - top10, 2, 14973
+- entropy_c3, atomic (seeds 4)
+    - top5, 3, 15287
+    - top10, 4, 15669
 - entropy_c3, non-atomic (seeds 5)
-    - top5
-    - top10
+    - top5, 5, 19203
+    - top10, 6, 20120
+- entropy_c3, atomic (seeds 5)
+    - top5, 7, 21722
+    - top10, 8, 23396
 
 
 diversity:

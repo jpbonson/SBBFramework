@@ -72,13 +72,13 @@ class PokerEnvironment(ReinforcementEnvironment):
             if ignore_cache:
                 return data
             self.backup_points_per_label = data
-        data = []
+        data2 = []
         temp = []
         for sample in self.backup_points_per_label:
-            data.append(sample[:population_size_per_label])
+            data2.append(sample[:population_size_per_label])
             temp.append(sample[population_size_per_label:])
         self.backup_points_per_label = temp
-        return data
+        return data2
 
     def _cache_dont_have_enough_data(self, population_size_per_label):
         if self.backup_points_per_label is None:

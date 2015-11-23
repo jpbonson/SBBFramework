@@ -66,7 +66,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 11, # default = None, it can be a single seed for all runs, or an array of seeds per run, WARNING: It not ensures that runs with the same seed will have the same result, just increases the chance
+            'seed': 12, # default = None, it can be a single seed for all runs, or an array of seeds per run, WARNING: It not ensures that runs with the same seed will have the same result, just increases the chance
             'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'extra_registers': 3,
@@ -80,8 +80,8 @@ class Config():
             'use_agressive_mutations': True,
             'second_layer': {
                 'enabled': True,
-                'use_atomic_actions': False,
-                'path': 'actions_reference/v3/1/top5',
+                'use_atomic_actions': True,
+                'path': 'actions_reference/v3/1/top10',
             },
         },
     }

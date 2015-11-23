@@ -65,7 +65,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
         self.matches_per_hall_of_fame_opponent_ = 10
 
-    def _instantiate_coded_opponent(self, opponent_class):
+    def _instantiate_coded_opponent(self, opponent_class): # TODO: refactor? parece que isso nao precisa ser heranca
         return opponent_class()
 
     def _instantiate_sbb_opponent(self, team, opponent_id):

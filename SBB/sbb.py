@@ -22,6 +22,7 @@ from core.selection import Selection
 from core.diversity_maintenance import DiversityMaintenance
 from utils.helpers import round_value, flatten
 from utils.run_info import RunInfo
+from utils.team_reader import read_team_from_json
 from config import Config
 
 class SBB:
@@ -163,22 +164,8 @@ class SBB:
             temp_actions_as_dicts[actual_index] = data
 
         for action, team_descriptor in temp_actions_as_dicts.iteritems():
-            team = self._read_team_from_json(team_descriptor)
+            team = read_team_from_json(team_descriptor)
             Config.RESTRICTIONS['second_layer']['action_mapping'][action] = team
-
-    def _read_team_from_json(self, team_descriptor):
-        programs = []
-        for program_descriptor in team_descriptor['programs']:
-            instructions = []
-            for instruction_descriptor in program_descriptor['instructions']:
-                instruction = Instruction(mode = instruction_descriptor['mode'], 
-                    target = instruction_descriptor['target'], op = instruction_descriptor['op'], 
-                    source = instruction_descriptor['source'])
-                instructions.append(instruction)
-            program = Program(-1, instructions, program_descriptor['action'], 
-                program_id = program_descriptor['program_id'])
-            programs.append(program)
-        return Team(-1, programs, team_id = team_descriptor['team_id'])
 
     def _set_seed(self, seed):
         random.seed(seed)
