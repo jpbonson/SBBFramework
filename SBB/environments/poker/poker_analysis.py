@@ -15,24 +15,19 @@ from ...config import Config
 
 class PokerAnalysis():
 
-    PARAMETERS = {
-        'matches': 100,
-        'balanced': True,
-        # +players
-    }
-
     def __init__(self):
         pass
 
-    # TODO: testar se da para seedar?
-    # TODO: permitir args do run_poker_analysis (goal: esconder codigo do Andrew)
-    #  cofnerir lgos gerados por 'debug_matches'
+    # limpar prints no output com debug
+    # conferir/ajeitar logs gerados por 'debug_matches'
+    # ajeitar nomes ods arquivos para suar id da match, nao a port?
     # conferir se eh comaptivel com o tipo de log o Andrew quer
     # conferir os outros stats que era legal um team ter
         # - adicionar na info do team todos os atributos 'self' do oponent model
         # - adicionar input 'self' (e 'opp'?) para bleff? (eg.: agressividade/hand_str)
+    # printar total de chips ganhos e avg chips ganhos por match
 
-    def run(self):
+    def run(self, matches, balanced, team_file, opponent_type, generate_debug_files, debug_folder, seed = None):
         print "Starting poker analysis tool"
 
         print "Setup the configuration..."
@@ -42,35 +37,47 @@ class PokerAnalysis():
         Config.USER['advanced_training_parameters']['extra_registers'] = 3 # TODO: fazer isso ser definido automaticamente de acordo com o input em .json?
         Config.USER['advanced_training_parameters']['second_layer']['enabled'] = False
         Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions'] = False
-        Config.USER['reinforcement_parameters']['debug_matches'] = False # !!!!!!!!!!!!!!
+        Config.USER['reinforcement_parameters']['debug_matches'] = generate_debug_files
         # TODO: conferir se mais algo precisar ser setado aqui
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
-        print "...finished setup the configuration"
+        if seed is None:
+            seed = random.randint(0, Config.RESTRICTIONS['max_seed'])
+        random.seed(seed)
+        numpy.random.seed(seed)
+        print "...seed = "+str(seed)
+        Config.USER['reinforcement_parameters']['debug_output_path'] = debug_folder
+        print "...finished setup the configuration."
 
         print "Initializing the environment..."
         environment = PokerEnvironment()
         reset_points_ids()
-        if PokerAnalysis.PARAMETERS['balanced']:
-            points = environment._initialize_random_population_of_points(PokerAnalysis.PARAMETERS['matches'], ignore_cache = True)
+        if balanced:
+            if matches < 9:
+                print "Error! For balanced points, the minimum number of matches is 9!"
+                raise SystemExit
+            points = environment._initialize_random_population_of_points(matches, ignore_cache = True)
         else:
-            points = self._create_unbalanced_points(PokerAnalysis.PARAMETERS['matches'])
+            points = self._create_unbalanced_points(matches)
         for point in points:
             point.teams_results_ = []
         print "...created "+str(len(points))+" points."
-        print "...initialized the environment"
+        if len(points) == 0:
+            print "Error! Zero points created!"
+            raise SystemExit
+        print "...initialized the environment."
 
         print "Loading players..."
         # WARNING: The stats are only processed for player1
-        # WARNING: Roght now, only works for player1 = 'sbb' and player2 = 'static'
-        player1 = self._create_player("sbb", json_path="poker_analysis_files/(3902-94).json")
-        player2 = self._create_player("static", classname=PokerLooseAgressiveOpponent)
+        # WARNING: Right now, only works for player1 = 'sbb' and player2 = 'static'
+        player1 = self._create_player("sbb", json_path=team_file)
+        player2 = self._create_player("static", classname=opponent_type)
         self._setup_attributes(player1)
         # self._setup_attributes(player2)
-        print "...finished loading players..."
+        print "...finished loading players."
 
         print "Executing matches..."
         self._evaluate_teams(player1, player2, points, environment)
-        print "...finished executing matches..."
+        print "...finished executing matches."
 
         print
         print "Result: "+str(player1.metrics(full_version=True))
@@ -103,14 +110,14 @@ class PokerAnalysis():
             with open(json_path) as data_file:    
                 data = json.load(data_file)
             player = read_team_from_json(data)
-            print "Loaded 'sbb' player: "+str(player.__repr__()) 
+            print "...loaded 'sbb' player: "+str(player.__repr__()) 
             return player
         elif player_type == "static":
             print "Loading 'static' player"
             if classname is None:
                 print "Error: 'classname' is None"
             player = classname()
-            print "Loaded 'static' player: "+str(player.__repr__())
+            print "...loaded 'static' player: "+str(player.__repr__())
             return player
         elif player_type == "human":
             print "player_type = human still to be developed!"

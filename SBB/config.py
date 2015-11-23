@@ -27,6 +27,7 @@ class Config():
                 'diversity': 'entropy_c3', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug_matches': False, # use this option to debug
+            'debug_output_path': 'SBB/environments/poker/ACPC/',
         },
 
         'training_parameters': {

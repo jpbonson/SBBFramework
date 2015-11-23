@@ -106,13 +106,17 @@ class PokerEnvironment(ReinforcementEnvironment):
         """
 
         """
+
         if mode == Config.RESTRICTIONS['mode']['training']:
             is_training = True
         else:
             is_training = False
 
-        if Config.USER['reinforcement_parameters']['debug_matches'] and not os.path.exists(PokerConfig.CONFIG['acpc_path']+"outputs/"):
-            os.makedirs(PokerConfig.CONFIG['acpc_path']+"outputs/")
+        if Config.USER['reinforcement_parameters']['debug_matches']:
+            if Config.USER['reinforcement_parameters']['debug_output_path'] is None and not os.path.exists(PokerConfig.CONFIG['acpc_path']+"outputs/"):
+                Config.USER['reinforcement_parameters']['debug_output_path'] = PokerConfig.CONFIG['acpc_path']+"outputs/"
+            if not os.path.exists(Config.USER['reinforcement_parameters']['debug_output_path']):
+                os.makedirs(Config.USER['reinforcement_parameters']['debug_output_path'])
 
         if point.position_ == 0:
             sbb_port = PokerConfig.CONFIG['available_ports'][0]
@@ -134,7 +138,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         t1 = threading.Thread(target=PokerPlayerExecution.execute_player, args=[team, opponent, point, sbb_port, is_training, True, 'all'])
         t2 = threading.Thread(target=PokerPlayerExecution.execute_player, args=[opponent, team, point, opponent_port, False, False, opponent_use_inputs])
         args = [PokerConfig.CONFIG['acpc_path']+'dealer', 
-                PokerConfig.CONFIG['acpc_path']+'outputs/match_output', 
+                Config.USER['reinforcement_parameters']['debug_output_path']+'match_output_'+str(team.team_id_)+'_'+str(point.point_id_),
                 PokerConfig.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
                 "1", # total hands 
                 str(point.seed_),
@@ -150,7 +154,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         t2.join()
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
-            with open(PokerConfig.CONFIG['acpc_path']+"outputs/match.log", "w") as text_file:
+            with open(Config.USER['reinforcement_parameters']['debug_output_path']+"match_"+str(team.team_id_)+'_'+str(point.point_id_)+".log", "w") as text_file:
                 text_file.write(str(err))
         score = out.split("\n")[1]
         score = score.replace("SCORE:", "")
@@ -200,6 +204,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                 self._update_team_extra_metrics_for_poker(team, point, normalized_value, 'champion')
 
         if Config.USER['reinforcement_parameters']['debug_matches']:
+            print "---"
             print "scores: "+str(scores)
             print "players: "+str(players)
             print "normalized_value: "+str(normalized_value)

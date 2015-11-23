@@ -35,7 +35,11 @@ class PokerPlayerExecution():
 
         debug_file = None
         if Config.USER['reinforcement_parameters']['debug_matches']:
-            debug_file = open(PokerConfig.CONFIG['acpc_path']+'outputs/player'+str(port)+'.log','w')
+            if is_sbb:
+                player_id = player.team_id_
+            else:
+                player_id = player.opponent_id
+            debug_file = open(Config.USER['reinforcement_parameters']['debug_output_path']+'player_'+str(player_id)+'_'+str(point.point_id_)+'.log','w')
             print player.__repr__()+": started"
         socket_tmp.send("VERSION:2.0.0\r\n")
         previous_action = None
