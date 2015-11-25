@@ -48,10 +48,14 @@ class OpponentModel():
     (loose passive): 0.47, ffcccccccccccccccccccccccccccccccc
 
     tight/loose hand tests:
-    ...
+    - higher number == more hands the team played
 
     passive/aggressive hand tests:
-    ...
+    - higher number == more raises in relation to calls
+
+    self_bluffing:
+    - only calculated for the last round
+    - if the player went up to the last round and didn't fold with a weak hand, bluff = 1.0, else 0.0
 
     """
 
@@ -80,8 +84,9 @@ class OpponentModel():
         self.opponent_tight_loose = []
         self.self_passive_aggressive = []
         self.opponent_passive_aggressive = []
+        self.self_bluffing = []
 
-    def update_overall_agressiveness(self, total_rounds, self_actions, opponent_actions):
+    def update_overall_agressiveness(self, total_rounds, self_actions, opponent_actions, point_label):
         if len(self_actions) > 0:
             agressiveness = OpponentModel.calculate_points(self_actions)
             self.self_agressiveness.append(agressiveness)
@@ -89,7 +94,14 @@ class OpponentModel():
                 self.self_agressiveness_preflop.append(agressiveness)
             else:
                 self.self_agressiveness_postflop.append(agressiveness)
-            self.self_passive_aggressive.append(OpponentModel.calculate_points_only_for_call_and_raise(self_actions))
+            self_passive_aggressive = OpponentModel.calculate_points_only_for_call_and_raise(self_actions)
+            self.self_passive_aggressive.append(self_passive_aggressive)
+            if total_rounds == 4:
+                if point_label in ['20', '21', '22'] and 'f' not in self_actions:
+                    self.self_bluffing.append(1.0)
+                else:
+                    self.self_bluffing.append(0.0)
+                
         if len(opponent_actions) > 0:
             agressiveness = OpponentModel.calculate_points(opponent_actions)
             self.opponent_agressiveness.append(agressiveness)
@@ -154,6 +166,8 @@ class OpponentModel():
         # if len(self.self_passive_aggressive) > 0:
         #     inputs[16] = numpy.mean(self.self_passive_aggressive)
         #     inputs[17] = numpy.mean(self.self_passive_aggressive[:10])
+
+        # opponent bluff: default 0
 
         inputs = [i*Config.RESTRICTIONS['multiply_normalization_by'] for i in inputs]
         return inputs

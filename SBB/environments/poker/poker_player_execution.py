@@ -144,7 +144,7 @@ class PokerPlayerExecution():
         if inputs_type and inputs_type == 'all':
             last_match_state = PokerPlayerExecution._last_match_state(previous_messages+partial_messages)
             player_actions, opponent_actions = last_match_state.actions_per_player()
-            warning = PokerPlayerExecution._update_opponent_model(player, opponent, last_match_state, player_actions, opponent_actions, previous_action, debug_file)
+            warning = PokerPlayerExecution._update_opponent_model(player, opponent, point, last_match_state, player_actions, opponent_actions, previous_action, debug_file)
             if warning:
                 print "test1: "+str((port, is_training, is_sbb, inputs_type))
             if is_sbb and is_training:
@@ -218,7 +218,7 @@ class PokerPlayerExecution():
                 return MatchState(partial_msg, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'])
 
     @staticmethod
-    def _update_opponent_model(player, opponent, last_match_state, player_actions, opponent_actions, previous_action, debug_file):
+    def _update_opponent_model(player, opponent, point, last_match_state, player_actions, opponent_actions, previous_action, debug_file):
         warning = False
         if last_match_state.is_showdown():
             if Config.USER['reinforcement_parameters']['debug']['players']:
@@ -273,5 +273,5 @@ class PokerPlayerExecution():
                         print player.__repr__()+": last_match_state: "+str(last_match_state)+", opponent folded (2)\n"
                 self_folded = False
                 opponent_folded = True
-        PokerPlayerExecution._get_opponent_model(player, opponent).update_overall_agressiveness(len(last_match_state.rounds), player_actions, opponent_actions)
+        PokerPlayerExecution._get_opponent_model(player, opponent).update_overall_agressiveness(len(last_match_state.rounds), player_actions, opponent_actions, point.label_)
         return warning

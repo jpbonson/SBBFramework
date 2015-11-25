@@ -27,15 +27,16 @@ v2: gen100 and no self inputs + bug fix
 v3: updated config + automated top5,top10,top15
 ---
 
-- adicionar na info do team todos os atributos 'self' do oponent model (no SBB e no analysis?)
-- adicionar input 'self' (e 'opp'?) para bleff? (eg.: agressividade/hand_str) (no SBB e no analysis?)
+- adicionar input para bleff para opp? (eg.: agressividade/hand_str) (no SBB e no analysis?)
 - conferir runs
+- quando implementar rule-based opponent com bluffing, fazer isso de um jeito compativel com o input de bluffing (se rolar para blefar, proibir o player de blefar? ou aumentar artificialmente a hand strength? antes, testar se a hand e' fraca)
 
 - refatorar classe OpponentModel
 - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?)
 
 - ensure teams and point are really evolving over time
 - implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
+- validation set deve semrpe conter o ocnjunto de matches mais complexo
 
 - Maybe apply sbb for other domain? (de RL)
 - So' adicionar tight opps e/out hard hands apos gen 50?

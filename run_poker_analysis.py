@@ -10,13 +10,13 @@ if __name__ == "__main__":
     yappi.start()
     start_time = time.time()
     PokerAnalysis().run(
-        matches=100, 
+        matches=1000, 
         balanced=False, 
-        team_file="poker_analysis_files/run1/pareto_front/json/(3902-94).json", 
+        team_file="poker_analysis_files/run1/pareto_front/json/(4131-99).json", 
         opponent_type=PokerLooseAgressiveOpponent,
         generate_debug_files_per_match=True,
         generate_debug_files_per_players=True,
-        debug_folder='poker_analysis_outputs/',
+        debug_folder='poker_analysis_outputs/run1/',
         seed=1
     )
     elapsed_time = round_value((time.time() - start_time)/60.0)
