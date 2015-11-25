@@ -21,6 +21,22 @@ class PokerAnalysis():
     def __init__(self):
         pass
 
+    def run_for_all_opponents(self, matches, balanced, team_file, generate_debug_files_per_match, generate_debug_files_per_players, debug_folder, seed = None):
+        opponents = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
+        results = []
+        for opponent in opponents:
+            result = self.run(matches, balanced, team_file, opponent, generate_debug_files_per_match, generate_debug_files_per_players, debug_folder, seed)
+            results.append(result)
+        player1 = self._create_player("sbb", json_path=team_file)
+        print "\n\nPLAYER: "+str(player1.__repr__())
+        for o, r in zip(opponents, results):
+            with open(debug_folder+str(player1.__repr__())+"/team_summary_overall.log", 'w') as f:
+                m = "###### "+o.OPPONENT_ID+"\n"
+                for key, value in r.iteritems():
+                    m += key+": "+str(value)+"\n"
+                print m
+                f.write(m)
+
     def run(self, matches, balanced, team_file, opponent_type, generate_debug_files_per_match, generate_debug_files_per_players, debug_folder, seed = None):
         print "Starting poker analysis tool"
 
@@ -67,7 +83,7 @@ class PokerAnalysis():
         player2 = self._create_player("static", classname=opponent_type)
         self._setup_attributes(player1)
         # self._setup_attributes(player2)
-        Config.USER['reinforcement_parameters']['debug']['output_path'] = debug_folder+str(player1.__repr__())+"/"
+        Config.USER['reinforcement_parameters']['debug']['output_path'] = debug_folder+str(player1.__repr__())+"/"+str(opponent_type.OPPONENT_ID)+"/"
         print "...finished loading players."
 
         print "Executing matches..."
@@ -115,6 +131,10 @@ class PokerAnalysis():
         print final_message
         with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"team_summary.log", 'w') as f:
             f.write(final_message)
+        result = player1.get_behaviors_metrics()
+        result['total_chips'] = sum1+sum2
+        result['normalized_chips'] = player1.score_testset_
+        return result
 
     def maximum_winning(self):
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4

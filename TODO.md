@@ -33,6 +33,7 @@ v3: updated config + automated top5,top10,top15
 
 - refatorar classe OpponentModel
 - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?)
+- fazer printar avg de behaviors do time
 
 - ensure teams and point are really evolving over time
 - implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)

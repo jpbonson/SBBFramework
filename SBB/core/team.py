@@ -221,6 +221,15 @@ class Team(DefaultOpponent):
         for program in inactive_programs:
             self.remove_program(program)
 
+    def get_behaviors_metrics(self):
+        result = {}
+        result['agressiveness'] = self.extra_metrics_['agressiveness']
+        result['volatility'] = self.extra_metrics_['volatility']
+        result['tight_loose'] = self.extra_metrics_['tight_loose']
+        result['passive_aggressive'] = self.extra_metrics_['passive_aggressive']
+        result['bluffing'] = self.extra_metrics_['bluffing']
+        return result
+
     def metrics(self, full_version = False):
         validation_active_teams_members_ids = [p.__repr__() for p in self.validation_active_programs_]
         validation_inactive_programs = list(set(self.programs) - set(self.validation_active_programs_))
