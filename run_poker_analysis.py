@@ -15,7 +15,7 @@ if __name__ == "__main__":
         team_file="poker_analysis_files/(3902-94).json", 
         opponent_type=PokerLooseAgressiveOpponent,
         generate_debug_files=True,
-        debug_folder='poker_analysis_outputs/test2/',
+        debug_folder='poker_analysis_outputs/',
         seed=None
     )
     elapsed_time = round_value((time.time() - start_time)/60.0)

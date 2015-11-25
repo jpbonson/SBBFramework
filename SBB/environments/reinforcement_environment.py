@@ -29,7 +29,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
     __metaclass__  = abc.ABCMeta
 
     @abc.abstractmethod
-    def _play_match(self, team, point, mode):
+    def _play_match(self, team, point, mode, match_id):
         """
         
         """
@@ -274,8 +274,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
             point_population = self.point_population()
             opponent = self.current_opponent_
             results = []
+            match_id = 0
             for point in point_population:
-                result = self._play_match(team, opponent, point, mode)
+                match_id += 1
+                result = self._play_match(team, opponent, point, mode, match_id)
                 team.reset_registers()
                 team.results_per_points_[point.point_id_] = result
                 results.append(result)
@@ -291,8 +293,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
             results = []
             extra_metrics_opponents = defaultdict(list)
             extra_metrics_points = self._initialize_extra_metrics_for_points()
+            match_id = 0
             for point, opponent in zip(point_population, opponent_population):
-                result = self._play_match(team, opponent, point, mode)
+                match_id += 1
+                result = self._play_match(team, opponent, point, mode, match_id)
                 team.reset_registers()
                 extra_metrics_opponents[opponent.opponent_id].append(result)
                 extra_metrics_points = self._update_extra_metrics_for_points(extra_metrics_points, point, result)

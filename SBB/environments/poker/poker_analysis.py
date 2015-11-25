@@ -2,6 +2,8 @@ import json
 import random
 import linecache
 import numpy
+import glob
+import shutil
 from collections import defaultdict
 from poker_environment import PokerEnvironment
 from poker_point import PokerPoint
@@ -18,14 +20,12 @@ class PokerAnalysis():
     def __init__(self):
         pass
 
-    # limpar prints no output com debug
-    # conferir/ajeitar logs gerados por 'debug_matches'
-    # ajeitar nomes ods arquivos para suar id da match, nao a port?
-    # conferir se eh comaptivel com o tipo de log o Andrew quer
-    # conferir os outros stats que era legal um team ter
-        # - adicionar na info do team todos os atributos 'self' do oponent model
-        # - adicionar input 'self' (e 'opp'?) para bleff? (eg.: agressividade/hand_str)
+    # TODO:
     # printar total de chips ganhos e avg chips ganhos por match
+    # implementar tradutor para pokerstar
+    # organizar resultados dos runs
+    # - adicionar na info do team todos os atributos 'self' do oponent model (no SBB e no analysis?)
+    # - adicionar input 'self' (e 'opp'?) para bleff? (eg.: agressividade/hand_str) (no SBB e no analysis?)
 
     def run(self, matches, balanced, team_file, opponent_type, generate_debug_files, debug_folder, seed = None):
         print "Starting poker analysis tool"
@@ -34,18 +34,18 @@ class PokerAnalysis():
         # WARNING: Config.RESTRICTIONS should be exactly the same as the one used to train these teams
         Config.USER['task'] = 'reinforcement'
         Config.USER['reinforcement_parameters']['environment'] = 'poker'
-        Config.USER['advanced_training_parameters']['extra_registers'] = 3 # TODO: fazer isso ser definido automaticamente de acordo com o input em .json?
+        Config.USER['advanced_training_parameters']['extra_registers'] = 3
         Config.USER['advanced_training_parameters']['second_layer']['enabled'] = False
         Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions'] = False
-        Config.USER['reinforcement_parameters']['debug_matches'] = generate_debug_files
-        # TODO: conferir se mais algo precisar ser setado aqui
+        Config.USER['reinforcement_parameters']['debug']['matches'] = generate_debug_files
+        Config.USER['reinforcement_parameters']['debug']['print'] = False
+        Config.USER['reinforcement_parameters']['debug']['players'] = False
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
         if seed is None:
             seed = random.randint(0, Config.RESTRICTIONS['max_seed'])
         random.seed(seed)
         numpy.random.seed(seed)
         print "...seed = "+str(seed)
-        Config.USER['reinforcement_parameters']['debug_output_path'] = debug_folder
         print "...finished setup the configuration."
 
         print "Initializing the environment..."
@@ -73,11 +73,36 @@ class PokerAnalysis():
         player2 = self._create_player("static", classname=opponent_type)
         self._setup_attributes(player1)
         # self._setup_attributes(player2)
+        Config.USER['reinforcement_parameters']['debug']['output_path'] = debug_folder+str(player1.__repr__())+"/"
         print "...finished loading players."
 
         print "Executing matches..."
         self._evaluate_teams(player1, player2, points, environment)
         print "...finished executing matches."
+
+        print "Processing logs..."
+        path = Config.USER['reinforcement_parameters']['debug']['output_path']+"match_output"
+        files = glob.glob(path+"/*")
+        data = {}
+        for name in files:
+            temp = None
+            with open(name) as f:
+                for line in f:
+                    if "STATE" in line:
+                        line = line.replace("\n", "")
+                        line = line.replace("STATE:", "")
+                        temp = line
+            name = name.replace(".log", "")
+            name = name.replace(path+"/", "")
+            data[int(name)] = temp
+        states = data.values()
+        with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"matches_summary.log", 'w') as f:
+            for i, s in enumerate(states):
+                m = "match #"+str(i+1)+": "+s
+                f.write(m+"\n")
+                print m
+        shutil.rmtree(path)
+        print "...finished processing logs."
 
         print
         print "Result: "+str(player1.metrics(full_version=True))
@@ -157,9 +182,11 @@ class PokerAnalysis():
         team = player1
         extra_metrics_opponents = defaultdict(list)
         extra_metrics_points = environment._initialize_extra_metrics_for_points()
+        match_id = 0
         for point in points:
             # opponent team
-            result = environment._play_match(team, player2, point, Config.RESTRICTIONS['mode']['validation'])
+            match_id += 1
+            result = environment._play_match(team, player2, point, Config.RESTRICTIONS['mode']['validation'], match_id)
             team.reset_registers()
             # player2.reset_registers() # !
             extra_metrics_opponents['player2'].append(result)

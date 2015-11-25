@@ -88,12 +88,12 @@ class PokerEnvironment(ReinforcementEnvironment):
                 return True
         return False
 
-    def _play_match(self, team, opponent, point, mode):
+    def _play_match(self, team, opponent, point, mode, match_id):
         total = 3
         attempt = 0
         while True:
             try:
-                return self._play_match2(team, opponent, point, mode)
+                return self._play_match2(team, opponent, point, mode, match_id)
             except IndexError as e:
                 attempt += 1
                 print "Error: IndexError during poker execution. (attempt: "+str(attempt)+")"
@@ -102,7 +102,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                     raise
                 time.sleep(1)
 
-    def _play_match2(self, team, opponent, point, mode):
+    def _play_match2(self, team, opponent, point, mode, match_id):
         """
 
         """
@@ -112,11 +112,13 @@ class PokerEnvironment(ReinforcementEnvironment):
         else:
             is_training = False
 
-        if Config.USER['reinforcement_parameters']['debug_matches']:
-            if Config.USER['reinforcement_parameters']['debug_output_path'] is None and not os.path.exists(PokerConfig.CONFIG['acpc_path']+"outputs/"):
-                Config.USER['reinforcement_parameters']['debug_output_path'] = PokerConfig.CONFIG['acpc_path']+"outputs/"
-            if not os.path.exists(Config.USER['reinforcement_parameters']['debug_output_path']):
-                os.makedirs(Config.USER['reinforcement_parameters']['debug_output_path'])
+        if Config.USER['reinforcement_parameters']['debug']['matches']:
+            if Config.USER['reinforcement_parameters']['debug']['output_path'] is None and not os.path.exists(PokerConfig.CONFIG['acpc_path']+"outputs/"):
+                Config.USER['reinforcement_parameters']['debug']['output_path'] = PokerConfig.CONFIG['acpc_path']+"outputs/"
+            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"acpc_match/"):
+                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+"acpc_match/")
+            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"match_output/"):
+                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'match_output/')
 
         if point.position_ == 0:
             sbb_port = PokerConfig.CONFIG['available_ports'][0]
@@ -135,16 +137,16 @@ class PokerEnvironment(ReinforcementEnvironment):
         if opponent.opponent_id in PokerConfig.CONFIG['rule_based_opponents']:
             opponent_use_inputs = 'rule_based_opponent'
 
-        t1 = threading.Thread(target=PokerPlayerExecution.execute_player, args=[team, opponent, point, sbb_port, is_training, True, 'all'])
-        t2 = threading.Thread(target=PokerPlayerExecution.execute_player, args=[opponent, team, point, opponent_port, False, False, opponent_use_inputs])
+        t1 = threading.Thread(target=PokerPlayerExecution.execute_player, args=[team, opponent, point, sbb_port, is_training, True, 'all', match_id])
+        t2 = threading.Thread(target=PokerPlayerExecution.execute_player, args=[opponent, team, point, opponent_port, False, False, opponent_use_inputs, match_id])
         args = [PokerConfig.CONFIG['acpc_path']+'dealer', 
-                Config.USER['reinforcement_parameters']['debug_output_path']+'match_output_'+str(team.team_id_)+'_'+str(point.point_id_),
+                Config.USER['reinforcement_parameters']['debug']['output_path']+'match_output/'+str(match_id),
                 PokerConfig.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
                 "1", # total hands 
                 str(point.seed_),
                 player1, player2, 
                 '-p', str(PokerConfig.CONFIG['available_ports'][0])+","+str(PokerConfig.CONFIG['available_ports'][1])]
-        if not Config.USER['reinforcement_parameters']['debug_matches']:
+        if not Config.USER['reinforcement_parameters']['debug']['matches']:
             args.append('-l')
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         t1.start()
@@ -153,8 +155,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         t1.join()
         t2.join()
 
-        if Config.USER['reinforcement_parameters']['debug_matches']:
-            with open(Config.USER['reinforcement_parameters']['debug_output_path']+"match_"+str(team.team_id_)+'_'+str(point.point_id_)+".log", "w") as text_file:
+        if Config.USER['reinforcement_parameters']['debug']['matches']:
+            with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"acpc_match/"+str(match_id)+".log", "w") as text_file:
                 text_file.write(str(err))
         score = out.split("\n")[1]
         score = score.replace("SCORE:", "")
@@ -203,8 +205,9 @@ class PokerEnvironment(ReinforcementEnvironment):
             else:
                 self._update_team_extra_metrics_for_poker(team, point, normalized_value, 'champion')
 
-        if Config.USER['reinforcement_parameters']['debug_matches']:
+        if Config.USER['reinforcement_parameters']['debug']['matches']:
             print "---"
+            print "match: "+str(match_id)
             print "scores: "+str(scores)
             print "players: "+str(players)
             print "normalized_value: "+str(normalized_value)

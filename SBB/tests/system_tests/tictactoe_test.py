@@ -15,7 +15,12 @@ TEST_CONFIG = {
             'use_as_opponents': False,
             'diversity': None,
         },
-        'debug_matches': False, # use this option to debug
+        'debug': {
+            'print': False,
+            'matches': False,
+            'players': False,
+            'debug_output_path': '',
+        },
     },
     'training_parameters': {
         'runs_total': 2,

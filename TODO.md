@@ -30,8 +30,8 @@ v3: updated config + automated top5,top10,top15
 - implementar tool que permite SBB jogar contra SBB, static, e human, balanced e umbalanced, e gerar logs/reports
 
 - refatorar classe OpponentModel
-- adicionar na info do team todos os atributos 'self' do oponent model
-- adicionar input 'self' (e 'opp'?) para bleff? (eg.: agressividade/hand_str)
+- adicionar na info do team todos os atributos 'self' do oponent model (no SBB e no analysis?)
+- adicionar input 'self' (e 'opp'?) para bleff? (eg.: agressividade/hand_str) (no SBB e no analysis?)
 
 - fazer poker_analysis funcionar para human, outro sbb, e para second layer (.json salvar as teams de cada action?)
 
