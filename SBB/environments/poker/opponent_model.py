@@ -78,8 +78,8 @@ class OpponentModel():
         self.last_opponent_action_in_last_hand = None
         self.self_tight_loose = []
         self.opponent_tight_loose = []
-        self.self_aggressive_passive = []
-        self.opponent_aggressive_passive = []
+        self.self_passive_aggressive = []
+        self.opponent_passive_aggressive = []
 
     def update_overall_agressiveness(self, total_rounds, self_actions, opponent_actions):
         if len(self_actions) > 0:
@@ -89,7 +89,7 @@ class OpponentModel():
                 self.self_agressiveness_preflop.append(agressiveness)
             else:
                 self.self_agressiveness_postflop.append(agressiveness)
-            self.self_aggressive_passive.append(OpponentModel.calculate_points_only_for_call_and_raise(self_actions))
+            self.self_passive_aggressive.append(OpponentModel.calculate_points_only_for_call_and_raise(self_actions))
         if len(opponent_actions) > 0:
             agressiveness = OpponentModel.calculate_points(opponent_actions)
             self.opponent_agressiveness.append(agressiveness)
@@ -98,7 +98,7 @@ class OpponentModel():
             else:
                 self.opponent_agressiveness_postflop.append(agressiveness)
             self.last_opponent_action_in_last_hand = OpponentModel.calculate_points([opponent_actions[-1]])
-            self.opponent_aggressive_passive.append(OpponentModel.calculate_points_only_for_call_and_raise(opponent_actions))
+            self.opponent_passive_aggressive.append(OpponentModel.calculate_points_only_for_call_and_raise(opponent_actions))
         if total_rounds > 1:
             self.self_tight_loose.append(1.0)
             self.opponent_tight_loose.append(1.0)
@@ -135,9 +135,9 @@ class OpponentModel():
             inputs[6] = numpy.mean(self.opponent_tight_loose)
             inputs[7] = numpy.mean(self.opponent_tight_loose[:10])
 
-        if len(self.opponent_aggressive_passive) > 0:
-            inputs[8] = numpy.mean(self.opponent_aggressive_passive)
-            inputs[9] = numpy.mean(self.opponent_aggressive_passive[:10])
+        if len(self.opponent_passive_aggressive) > 0:
+            inputs[8] = numpy.mean(self.opponent_passive_aggressive)
+            inputs[9] = numpy.mean(self.opponent_passive_aggressive[:10])
 
         # if len(self.self_agressiveness) > 0:
         #     inputs[10] = numpy.mean(self.self_agressiveness)
@@ -151,9 +151,9 @@ class OpponentModel():
         #     inputs[14] = numpy.mean(self.self_tight_loose)
         #     inputs[15] = numpy.mean(self.self_tight_loose[:10])
 
-        # if len(self.self_aggressive_passive) > 0:
-        #     inputs[16] = numpy.mean(self.self_aggressive_passive)
-        #     inputs[17] = numpy.mean(self.self_aggressive_passive[:10])
+        # if len(self.self_passive_aggressive) > 0:
+        #     inputs[16] = numpy.mean(self.self_passive_aggressive)
+        #     inputs[17] = numpy.mean(self.self_passive_aggressive[:10])
 
         inputs = [i*Config.RESTRICTIONS['multiply_normalization_by'] for i in inputs]
         return inputs

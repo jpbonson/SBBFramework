@@ -1,0 +1,295 @@
+TEAM (3910-94)
+
+#### METRICS
+(3910-94)
+team members (5), A: ['(9806:94, 2)', '(9074:85, 2)', '(9807:94, 2)', '(8066:73, 0)', '(8073:73, 1)'], I: []
+- validation: A: ['(9806:94, 2)', '(9807:94, 2)', '(9074:85, 2)', '(8073:73, 1)', '(8066:73, 0)'], I: []
+fitness: 0.55092, test score: 0.55366
+inputs distribution: Counter({4: 5, 1: 4, 3: 1, 5: 1, 8: 1, 13: 1})
+last opponent played against (training): tight_agressive
+
+hands (validation):
+total: 297, played: 0.53198, won: 0.60759
+position, 0 (144): played: 0.54166, won: 0.6282
+position, 1 (153): played: 0.52287, won: 0.5875
+sbb_sd, 0 (148): played: 0.63513, won: 1.0
+sbb_sd, 1 (11): played: 0.36363, won: 0.0
+sbb_sd, 2 (138): played: 0.43478, won: 0.03333
+sbb_label, 0 (33): played: 0.54545, won: 0.5
+sbb_label, 1 (33): played: 0.69696, won: 1.0
+sbb_label, 2 (33): played: 0.51515, won: 1.0
+sbb_label, 3 (33): played: 0.51515, won: 0.0
+sbb_label, 4 (33): played: 0.63636, won: 0.71428
+sbb_label, 5 (33): played: 0.66666, won: 1.0
+sbb_label, 6 (33): played: 0.36363, won: 0.08333
+sbb_label, 7 (33): played: 0.45454, won: 0.06666
+sbb_label, 8 (33): played: 0.39393, won: 0.61538
+
+agressiveness: 0.493684629547
+volatility: 0.953065008128
+
+score per point (validation): 
+position: {0: 0.56141, 1: 0.54636}
+sbb_sd: {0: 0.80567, 1: 0.48768, 2: 0.28864}
+sbb_label: {0: 0.53882, 1: 0.84469, 2: 0.75157, 3: 0.23674, 4: 0.64488, 5: 0.81407, 6: 0.32481, 7: 0.28124, 8: 0.54608}
+
+score per opponent (validation): 0.55366
+loose_agressive: 0.58902
+tight_agressive: 0.53319
+tight_passive: 0.55005
+loose_passive: 0.54222
+
+entropy_c3: 0.00547
+genotype: 0.71428
+
+######## PROGRAMS (ACTIVE)
+
+#### Program (9806:94, 2)
+Participate in the teams (3): ['(3910-94)', '(4149-100)', '(4168-100)']
+Action Type: atomic
+================
+
+Total instructions (without introns): 10
+Inputs used: [4, 3, 1, 8]
+----------------
+
+r[3] = ln(r[3])
+r[0] = r[0] * i[4]
+r[0] = exp(r[0])
+r[2] = r[2] - i[3]
+r[3] = ln(r[3])
+r[0] = r[0] + i[1]
+r[3] = r[3] + i[8]
+r[3] = r[3] - r[2]
+if r[2] >= r[3]:
+    r[0] = r[0] * r[0]
+
+================
+
+Total instructions: 26
+----------------
+
+r[3] = ln(r[3])
+if r[1] >= r[2]: -r[1]
+if r[0] >= r[0]:
+    r[1] = exp(r[1])
+r[0] = r[0] * i[4]
+r[1] = cos(r[1])
+r[1] = r[1] / i[11]
+r[1] = cos(r[1])
+r[0] = exp(r[0])
+r[2] = r[2] - i[3]
+r[3] = ln(r[3])
+r[1] = r[1] + i[0]
+r[0] = r[0] + i[1]
+r[1] = exp(r[1])
+if r[1] >= i[11]: -r[1]
+r[1] = cos(r[1])
+r[3] = r[3] + i[8]
+r[3] = r[3] - r[2]
+if r[2] >= r[3]:
+    r[0] = r[0] * r[0]
+if r[3] >= r[2]:
+    if r[1] < i[13]:
+        r[3] = r[3] - r[3]
+if r[2] >= i[12]: -r[2]
+r[2] = ln(r[2])
+r[1] = r[1] / r[2]
+
+################
+
+#### Program (9074:85, 2)
+Participate in the teams (8): ['(3536-85)', '(3867-93)', '(3910-94)', '(3946-95)', '(4147-100)', '(4158-100)', '(4166-100)', '(4171-100)']
+Action Type: atomic
+================
+
+Total instructions (without introns): 16
+Inputs used: [4, 5, 13, 1]
+----------------
+
+r[3] = ln(r[3])
+r[2] = ln(r[2])
+r[0] = r[0] * i[4]
+if r[0] >= r[0]:
+    r[3] = exp(r[3])
+r[2] = ln(r[2])
+r[0] = r[0] * r[0]
+if r[3] >= r[2]: -r[3]
+r[3] = r[3] - r[3]
+r[3] = r[3] + i[5]
+r[3] = cos(r[3])
+r[0] = ln(r[0])
+r[2] = r[2] - i[13]
+r[0] = r[0] + i[1]
+if r[3] >= r[2]:
+    r[0] = exp(r[0])
+
+================
+
+Total instructions: 23
+----------------
+
+r[3] = ln(r[3])
+if r[1] >= i[11]: -r[1]
+r[2] = ln(r[2])
+r[0] = r[0] * i[4]
+r[1] = r[1] / i[3]
+if r[0] >= r[0]:
+    r[3] = exp(r[3])
+r[2] = ln(r[2])
+r[1] = ln(r[1])
+r[0] = r[0] * r[0]
+r[1] = exp(r[1])
+if r[3] >= r[2]: -r[3]
+r[1] = cos(r[1])
+r[3] = r[3] - r[3]
+r[3] = r[3] + i[5]
+r[3] = cos(r[3])
+r[0] = ln(r[0])
+r[1] = r[1] / r[2]
+r[1] = cos(r[1])
+r[2] = r[2] - i[13]
+r[0] = r[0] + i[1]
+if r[3] >= r[2]:
+    r[0] = exp(r[0])
+
+################
+
+#### Program (9807:94, 2)
+Participate in the teams (2): ['(3910-94)', '(4168-100)']
+Action Type: atomic
+================
+
+Total instructions (without introns): 3
+Inputs used: [4, 1]
+----------------
+
+r[0] = r[0] * i[4]
+r[0] = r[0] * r[0]
+r[0] = r[0] + i[1]
+
+================
+
+Total instructions: 23
+----------------
+
+r[2] = ln(r[2])
+if r[1] >= i[11]: -r[1]
+if r[3] >= r[2]:
+    r[1] = r[1] + i[2]
+r[1] = ln(r[1])
+r[0] = r[0] * i[4]
+r[1] = cos(r[1])
+if r[0] >= r[0]:
+    r[1] = cos(r[1])
+r[2] = r[2] - i[3]
+r[1] = cos(r[1])
+r[0] = r[0] * r[0]
+if r[1] >= r[2]: -r[1]
+r[1] = cos(r[1])
+r[2] = r[2] - i[13]
+r[3] = r[3] - r[2]
+r[3] = cos(r[3])
+r[0] = r[0] + i[1]
+if r[3] < i[13]:
+    r[1] = r[1] / i[11]
+if r[2] >= r[0]: -r[2]
+r[2] = ln(r[2])
+r[3] = r[3] + i[8]
+
+################
+
+#### Program (8066:73, 0)
+Participate in the teams (18): ['(3536-85)', '(3555-85)', '(3867-93)', '(3555-85)', '(3901-94)', '(3910-94)', '(3946-95)', '(3948-95)', '(4060-98)', '(4087-98)', '(4135-99)', '(4147-100)', '(4149-100)', '(4154-100)', '(4166-100)', '(4167-100)', '(4168-100)', '(4171-100)']
+Action Type: atomic
+================
+
+Total instructions (without introns): 4
+Inputs used: [1, 4]
+----------------
+
+r[0] = r[0] * r[1]
+if r[0] >= r[0]:
+    r[0] = r[0] + i[1]
+r[0] = r[0] * i[4]
+
+================
+
+Total instructions: 21
+----------------
+
+r[3] = r[3] - i[9]
+r[0] = r[0] * r[1]
+if r[1] >= i[11]: -r[1]
+r[2] = r[2] * r[1]
+r[1] = r[1] / i[11]
+r[3] = r[3] * r[0]
+r[1] = r[1] / r[2]
+if r[0] >= r[0]:
+    r[0] = r[0] + i[1]
+r[1] = r[1] * r[0]
+r[0] = r[0] * i[4]
+r[2] = exp(r[2])
+r[3] = r[3] - r[1]
+r[1] = exp(r[1])
+if r[3] >= i[4]: -r[3]
+r[3] = r[3] - r[2]
+r[2] = r[2] - i[13]
+r[1] = r[1] + i[0]
+r[3] = r[3] + i[3]
+r[1] = cos(r[1])
+if r[2] >= r[2]: -r[2]
+
+################
+
+#### Program (8073:73, 1)
+Participate in the teams (9): ['(3536-85)', '(3867-93)', '(3910-94)', '(3946-95)', '(4045-97)', '(4158-100)', '(4166-100)', '(4168-100)', '(4171-100)']
+Action Type: atomic
+================
+
+Total instructions (without introns): 8
+Inputs used: [4]
+----------------
+
+r[3] = ln(r[3])
+r[2] = ln(r[2])
+r[0] = r[0] * i[4]
+r[2] = ln(r[2])
+if r[0] >= r[2]: -r[0]
+r[3] = exp(r[3])
+r[0] = exp(r[0])
+r[0] = r[0] + r[3]
+
+================
+
+Total instructions: 23
+----------------
+
+r[3] = ln(r[3])
+r[2] = ln(r[2])
+r[1] = r[1] / i[11]
+r[0] = r[0] * i[4]
+if r[0] >= i[15]:
+    r[1] = r[1] / i[3]
+r[2] = ln(r[2])
+if r[3] >= i[14]:
+    r[1] = ln(r[1])
+r[1] = cos(r[1])
+if r[0] >= r[2]: -r[0]
+r[1] = exp(r[1])
+r[2] = exp(r[2])
+r[3] = exp(r[3])
+r[0] = exp(r[0])
+r[0] = r[0] + r[3]
+if r[3] >= i[0]: -r[3]
+r[3] = exp(r[3])
+r[1] = r[1] + i[1]
+r[2] = exp(r[2])
+r[1] = exp(r[1])
+r[1] = r[1] - r[2]
+r[3] = r[3] + i[3]
+
+################
+
+######## PROGRAMS (INACTIVE)
+[No inactive programs]

@@ -105,12 +105,16 @@ class PokerAnalysis():
         print "...finished processing logs."
 
         print
-        print "Result (team stats): "+str(player1.metrics(full_version=True))
+
         sum1 = sum([int(r['score'][0]) for r in messages if r['players'][0] == 'sbb'])
         sum2 = sum([int(r['score'][1]) for r in messages if r['players'][1] == 'sbb'])
-        print
-        print "Result (total chips): "+str(sum1+sum2)+" out of [-"+str(self.maximum_winning()*matches)+",+"+str(self.maximum_winning()*matches)+"]"
-        print "Result (normalized): "+str(player1.score_testset_)
+        final_message = "\nResult (team stats): "+str(player1.metrics(full_version=True))
+        final_message += "\n--- Results for matches:"
+        final_message += "\nResult (total chips): "+str(sum1+sum2)+" out of [-"+str(self.maximum_winning()*matches)+",+"+str(self.maximum_winning()*matches)+"]"
+        final_message += "\nResult (normalized): "+str(player1.score_testset_)
+        print final_message
+        with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"team_summary.log", 'w') as f:
+            f.write(final_message)
 
     def maximum_winning(self):
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
@@ -213,18 +217,29 @@ class PokerAnalysis():
         self_long_term_agressiveness = []
         self_agressiveness_preflop = []
         self_agressiveness_postflop = []
+        self_tight_loose = []
+        self_passive_aggressive = []
         for key, item in team.opponent_model.iteritems():
             self_long_term_agressiveness += item.self_agressiveness
             self_agressiveness_preflop += item.self_agressiveness_preflop
             self_agressiveness_postflop += item.self_agressiveness_postflop
+            self_tight_loose += item.self_tight_loose
+            self_passive_aggressive += item.self_passive_aggressive
         agressiveness = 0.5
         volatility = 0.5
         if len(self_long_term_agressiveness) > 0:
             agressiveness = numpy.mean(self_long_term_agressiveness)
         if len(self_agressiveness_preflop) > 0 and len(self_agressiveness_postflop) > 0:
             volatility = OpponentModel.calculate_volatility(self_agressiveness_postflop, self_agressiveness_preflop)
+        if len(self_tight_loose) > 0:
+            tight_loose = numpy.mean(self_tight_loose)
+        if len(self_passive_aggressive) > 0:
+            passive_aggressive = numpy.mean(self_passive_aggressive)
+
         team.extra_metrics_['agressiveness'] = agressiveness
         team.extra_metrics_['volatility'] = volatility
+        team.extra_metrics_['tight_loose'] = tight_loose
+        team.extra_metrics_['passive_aggressive'] = passive_aggressive
 
         team.opponent_model = {}
         team.chips = {}

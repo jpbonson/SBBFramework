@@ -273,22 +273,34 @@ class PokerEnvironment(ReinforcementEnvironment):
             self_long_term_agressiveness = []
             self_agressiveness_preflop = []
             self_agressiveness_postflop = []
+            self_tight_loose = []
+            self_passive_aggressive = []
             for key, item in team.opponent_model.iteritems():
                 self_long_term_agressiveness += item.self_agressiveness
                 self_agressiveness_preflop += item.self_agressiveness_preflop
                 self_agressiveness_postflop += item.self_agressiveness_postflop
+                self_tight_loose += item.self_tight_loose
+                self_passive_aggressive += item.self_passive_aggressive
             agressiveness = 0.5
             volatility = 0.5
             if len(self_long_term_agressiveness) > 0:
                 agressiveness = numpy.mean(self_long_term_agressiveness)
             if len(self_agressiveness_preflop) > 0 and len(self_agressiveness_postflop) > 0:
                 volatility = OpponentModel.calculate_volatility(self_agressiveness_postflop, self_agressiveness_preflop)
+            if len(self_tight_loose) > 0:
+                tight_loose = numpy.mean(self_tight_loose)
+            if len(self_passive_aggressive) > 0:
+                passive_aggressive = numpy.mean(self_passive_aggressive)
             if mode == Config.RESTRICTIONS['mode']['validation']:
                 team.extra_metrics_['agressiveness'] = agressiveness
                 team.extra_metrics_['volatility'] = volatility
+                team.extra_metrics_['tight_loose'] = tight_loose
+                team.extra_metrics_['passive_aggressive'] = passive_aggressive
             if mode == Config.RESTRICTIONS['mode']['champion']:
                 team.extra_metrics_['agressiveness_champion'] = agressiveness
                 team.extra_metrics_['volatility_champion'] = volatility
+                team.extra_metrics_['tight_loose_champion'] = tight_loose
+                team.extra_metrics_['passive_aggressive_champion'] = passive_aggressive
         # to clean memmory
         team.opponent_model = {}
         team.chips = {}

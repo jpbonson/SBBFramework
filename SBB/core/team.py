@@ -248,9 +248,13 @@ class Team(DefaultOpponent):
                 if 'agressiveness' in self.extra_metrics_:
                     msg += "\n\nagressiveness: "+str(self.extra_metrics_['agressiveness'])
                     msg += "\nvolatility: "+str(self.extra_metrics_['volatility'])
+                    msg += "\ntight_loose: "+str(self.extra_metrics_['tight_loose'])
+                    msg += "\npassive_aggressive: "+str(self.extra_metrics_['passive_aggressive'])
                 if 'agressiveness_champion' in self.extra_metrics_:
                     msg += "\nagressiveness (champion): "+str(self.extra_metrics_['agressiveness_champion'])
                     msg += "\nvolatility (champion): "+str(self.extra_metrics_['volatility_champion'])
+                    msg += "\ntight_loose (champion): "+str(self.extra_metrics_['tight_loose_champion'])
+                    msg += "\npassive_aggressive (champion): "+str(self.extra_metrics_['passive_aggressive_champion'])
 
                 if 'validation_points' in self.extra_metrics_:
                     msg += "\n\nscore per point (validation): "
