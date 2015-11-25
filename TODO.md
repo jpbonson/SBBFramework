@@ -27,15 +27,13 @@ v2: gen100 and no self inputs + bug fix
 v3: updated config + automated top5,top10,top15
 ---
 
-- implementar tool que permite SBB jogar contra SBB, static, e human, balanced e umbalanced, e gerar logs/reports
-
-- refatorar classe OpponentModel
 - adicionar na info do team todos os atributos 'self' do oponent model (no SBB e no analysis?)
 - adicionar input 'self' (e 'opp'?) para bleff? (eg.: agressividade/hand_str) (no SBB e no analysis?)
-
-- fazer poker_analysis funcionar para human, outro sbb, e para second layer (.json salvar as teams de cada action?)
-
 - conferir runs
+
+- refatorar classe OpponentModel
+- fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?)
+
 - ensure teams and point are really evolving over time
 - implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
 
@@ -45,9 +43,6 @@ v3: updated config + automated top5,top10,top15
 - Ou começar apenas com o river? Sem oponente?
 - tentar aumentar a dificuldade em partes?
 
-- conferir se os teams e points realmente estao evoluindo com o tempo
-- implementar run standalone para testar a performance do champion no cenario real contra static oponents e human players?
-- conferir runs + mandar rodar runs
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
 - implementar opponent population
     - approach 1
@@ -57,7 +52,6 @@ v3: updated config + automated top5,top10,top15
         - fazer o hall of fame ter o memso tamanho do smapling de oponentes
     - opponent that bluff
 - continuar a literature review 
-- remover codigo de classification?
 - traduzir parte do codigo para C?
 
 

@@ -281,8 +281,12 @@ class Team(DefaultOpponent):
 
     def inputs_distribution(self):
         inputs = []
-        for program in self.active_programs_:
-            inputs += program.inputs_list_
+        if len(self.active_programs_) > 0:
+            for program in self.active_programs_:
+                inputs += program.inputs_list_
+        else:
+            for program in self.programs:
+                inputs += program.inputs_list_
         inputs_dist = Counter(inputs)
         return inputs_dist
 
