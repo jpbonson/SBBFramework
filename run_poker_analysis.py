@@ -14,7 +14,8 @@ if __name__ == "__main__":
         balanced=False, 
         team_file="poker_analysis_files/json/(3902-94).json", 
         opponent_type=PokerLooseAgressiveOpponent,
-        generate_debug_files=True,
+        generate_debug_files_per_match=True,
+        generate_debug_files_per_players=False,
         debug_folder='poker_analysis_outputs/',
         seed=1
     )

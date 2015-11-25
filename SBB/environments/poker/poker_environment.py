@@ -119,6 +119,8 @@ class PokerEnvironment(ReinforcementEnvironment):
                 os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+"acpc_match/")
             if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"match_output/"):
                 os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'match_output/')
+            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"players/"):
+                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'players/')
 
         if point.position_ == 0:
             sbb_port = PokerConfig.CONFIG['available_ports'][0]

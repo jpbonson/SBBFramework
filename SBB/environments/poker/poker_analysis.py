@@ -21,7 +21,7 @@ class PokerAnalysis():
     def __init__(self):
         pass
 
-    def run(self, matches, balanced, team_file, opponent_type, generate_debug_files, debug_folder, seed = None):
+    def run(self, matches, balanced, team_file, opponent_type, generate_debug_files_per_match, generate_debug_files_per_players, debug_folder, seed = None):
         print "Starting poker analysis tool"
 
         print "Setup the configuration..."
@@ -31,9 +31,9 @@ class PokerAnalysis():
         Config.USER['advanced_training_parameters']['extra_registers'] = 3
         Config.USER['advanced_training_parameters']['second_layer']['enabled'] = False
         Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions'] = False
-        Config.USER['reinforcement_parameters']['debug']['matches'] = generate_debug_files
+        Config.USER['reinforcement_parameters']['debug']['matches'] = generate_debug_files_per_match
         Config.USER['reinforcement_parameters']['debug']['print'] = False
-        Config.USER['reinforcement_parameters']['debug']['players'] = False
+        Config.USER['reinforcement_parameters']['debug']['players'] = generate_debug_files_per_players
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
         if seed is None:
             seed = random.randint(0, Config.RESTRICTIONS['max_seed'])

@@ -39,7 +39,7 @@ class PokerPlayerExecution():
                 player_id = player.team_id_
             else:
                 player_id = player.opponent_id
-            debug_file = open(Config.USER['reinforcement_parameters']['debug']['output_path']+'player_'+str(player_id)+'_'+str(match_id)+'.log','w')
+            debug_file = open(Config.USER['reinforcement_parameters']['debug']['output_path']+'players/player_'+str(player_id)+'_'+str(match_id)+'.log','w')
             if Config.USER['reinforcement_parameters']['debug']['print']:
                 print player.__repr__()+": started"
         socket_tmp.send("VERSION:2.0.0\r\n")
