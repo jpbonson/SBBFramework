@@ -12,7 +12,7 @@ if __name__ == "__main__":
     PokerAnalysis().run(
         matches=5, 
         balanced=False, 
-        team_file="poker_analysis_files/(3902-94).json", 
+        team_file="poker_analysis_files/json/(3902-94).json", 
         opponent_type=PokerLooseAgressiveOpponent,
         generate_debug_files=True,
         debug_folder='poker_analysis_outputs/',

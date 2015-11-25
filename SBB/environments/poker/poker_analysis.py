@@ -21,11 +21,13 @@ class PokerAnalysis():
         pass
 
     # TODO:
+    # usar MatchState para traduzir o log
     # printar total de chips ganhos e avg chips ganhos por match
     # implementar tradutor para pokerstar
     # organizar resultados dos runs
     # - adicionar na info do team todos os atributos 'self' do oponent model (no SBB e no analysis?)
     # - adicionar input 'self' (e 'opp'?) para bleff? (eg.: agressividade/hand_str) (no SBB e no analysis?)
+    # implementar suporte a multilayer
 
     def run(self, matches, balanced, team_file, opponent_type, generate_debug_files, debug_folder, seed = None):
         print "Starting poker analysis tool"
