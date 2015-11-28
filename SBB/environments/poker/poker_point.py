@@ -13,20 +13,22 @@ class PokerPoint(ReinforcementPoint):
         super(PokerPoint, self).__init__()
         self.label_ = label
         self.seed_ = info['id']
-        self.position_ = info['p']
+        self.position_ = info['pos']
+        self.board_cards_ = info['bc']
         self.point_id_ = str(self.seed_)+"-"+str(self.position_)
-        self.showdown_result_ = info['r']
-        self.hand_strength_ = info['str']
-        self.ep_ = info['ep']
-        self.opp_hand_strength_ = info['ostr']
-        self.opp_ep_ = info['oep']
+        self.hand_strength_ = info['p']['str']
+        self.ep_ = info['p']['ep']
+        self.hole_cards_ = info['p']['hc']
+        self.opp_hand_strength_ = info['o']['str']
+        self.opp_ep_ = info['o']['ep']
+        self.opp_hole_cards_ = info['o']['hc']
 
-        if info['r'] == 0.0:
-            self.sbb_sd_label_ = 2
-        elif info['r'] == 0.5:
-            self.sbb_sd_label_ = 1
-        elif info['r'] == 1.0:
+        if self.hand_strength_[3] > self.opp_hand_strength_[3]:
             self.sbb_sd_label_ = 0
+        elif self.hand_strength_[3] < self.opp_hand_strength_[3]:
+            self.sbb_sd_label_ = 2
+        else:
+            self.sbb_sd_label_ = 1
 
         self.last_validation_opponent_id_ = None
         self.teams_results_ = []
@@ -50,18 +52,6 @@ class PokerPoint(ReinforcementPoint):
         inputs[0] = self.opp_hand_strength_[round_id-1]
         inputs[1] = self.opp_ep_[round_id-1]
         return inputs
-
-    def winner_of_showdown(self):
-        if self.showdown_result_ == 0.5:
-            return None # draw
-        if self.showdown_result_ == 0.0:
-            if self.position_ == 0:
-                return 1
-            else:
-                return 0
-        if self.showdown_result_ == 1.0:
-            return self.position_
-        raise ValueError("Bug! The code should have finished in the lines above!")        
 
     def __repr__(self):
         return "("+str(self.point_id_)+":"+str(self.label_)+")"

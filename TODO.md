@@ -10,8 +10,8 @@ defined groups for diversity as 3
 v2: gen100 and no self inputs + bug fix
 v3: updated config + automated top5,top10,top15
 v4: updated config + removed short-term opp model
-
 reorganized point_generator and poker_analysis + not using ACPC for hand generation anymore
+adapted code to used new poker hands
 ---
 
 ===
@@ -25,7 +25,7 @@ I would like to give a try at publishing a paper in January. I would like to kno
 4) [work in progress, I will try it during December] Comparison between the original approach (teams try to play the whole game from start) and dividing the poker task into simpler tasks that complexify over time until they become the full game.
 5) [work in progress, future] Comparison between the current approach (opponents with fixed behaviors) and opponents that also evolve over time.
 
-By the way, I got rid of the ACPC server. At the end of the day it was causing too many hideous bugs (the server don't inform almost anything in a clear way, including errors), the code was overly complex (due to using threads and process to communicate with the C code, now it is just a sequential code), and took a longer time to compute the results. Also, without ACPC I don't have the limitation of chips being infinite, so I can add it to the game now if I want to use it.
+By the way, I got rid of the ACPC server. At the end of the day it was causing too many hideous bugs (the server don't inform almost anything in a clear way, including errors), the code was overly complex (due to using threads and process to communicate with the C code, now it is just a sequential code), and took a longer time to compute the results. Also, without ACPC I don't have the limitation of chips being infinite, so I can add it to the game now if I want to use it. I also made a few other modifications on the code and the inputs.
 
 In case you have some free time, it would be nice to have a meeting in this or in the next week.
 

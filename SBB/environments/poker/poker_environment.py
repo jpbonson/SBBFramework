@@ -48,7 +48,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def _initialize_random_population_of_points(self, population_size, ignore_cache = False):
         if len(self.num_lines_per_file_) == 0:
             for label in range(self.total_labels_):
-                self.num_lines_per_file_.append(sum([1 for line in open("SBB/environments/poker/hand_types/hands_type_"+str(label)+".json")]))
+                self.num_lines_per_file_.append(sum([1 for line in open("SBB/environments/poker/hand_generator/poker_hands/hands_type_"+str(label)+".json")]))
         population_size_per_label = population_size/self.total_labels_
         data = self._sample_point_per_label(population_size_per_label, ignore_cache)
         data = flatten(data)
@@ -67,7 +67,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             data = []
             for label in range(self.total_labels_):
                 idxs = random.sample(range(1, self.num_lines_per_file_[label]+1), size)
-                result = [linecache.getline("SBB/environments/poker/hand_types/hands_type_"+str(label)+".json", i) for i in idxs]
+                result = [linecache.getline("SBB/environments/poker/hand_generator/poker_hands/hands_type_"+str(label)+".json", i) for i in idxs]
                 data.append([PokerPoint(label, json.loads(r)) for r in result])
             if ignore_cache:
                 return data
