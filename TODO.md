@@ -1,20 +1,4 @@
 Done (most recent):
-implemented json reader json for teams
-added metric for final team validations
-finished implementing the second layer (needs further testing)
-minor changes in outputs
-automated selection of best teams for second layer
-add system tests for second layer
-fixed bug for special case in poker match state
-- (antes: os runs de seed 1 para diversity e 5 runs de layer 1)
-plot violin plot of validation score per dimension of score + show list of criterias individually
-implemented max fitness and max global validation
-- (antes: os runs de seed 2 para diversity)
-added error trace for error during poker execution for seed 7
-fixed bug where the criteria for selecting poker teams was wrong
-fixed bug with unexpected poker behaviors (rollback)
-added option to keep using atomic action along with meta actions
--
 added more debug messages + changed balance to 10/30/60
 added more inputs to opponent model
 changed volatility default to 0.5
@@ -25,26 +9,53 @@ removed balanced_based_on and opp_label_
 defined groups for diversity as 3
 v2: gen100 and no self inputs + bug fix
 v3: updated config + automated top5,top10,top15
+v4: updated config + removed short-term opp model
 ---
 
-- adicionar input para bleff para opp? (eg.: agressividade/hand_str) (no SBB e no analysis?)
-- conferir runs
-- quando implementar rule-based opponent com bluffing, fazer isso de um jeito compativel com o input de bluffing (se rolar para blefar, proibir o player de blefar? ou aumentar artificialmente a hand strength? antes, testar se a hand e' fraca)
+- gerar balance por HS
+- gerar plots dos ultimos runs
+- conferir se ha bugs nas teams behaviors geradas por poker analysis
+- testar mais o porque da seed nao estar funcionando (also: diversities)
+- ensure teams and point are really evolving over time
+- gerar baseline no poker_analise com team random, always_call, always_fold, e always_raise
+- fazer printar avg de behaviors do time no poker analysis
+- em run_info, adicionar secao "most used metrics"
+- pensar nos parametros antes de definir eles
+- use_weighted_probability_selection True or False?
+- remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
 
+- baseado em checkpoints a cada 50 generations:
+    - sempre comparar runs com a versao com e sem checkpoints
+    - salvar os teams e metrics daquele generation antes de aplicar o checkpoint (tb para o run que nao esta usando checkpoints)
+    - validation points devem ser os memsso em todas as etapas, com o set completo
+    - aumentar team_size em 1-2 a cada checkpoint? (no sem checkpoint, comecar com o tamnho maximo desde o inicio?)
+    - 3 tipos de run: sem checkpoint, com checkpoint com team size fixo, com checkpoint com team size variavel
+    - checkpoint 1:
+        - opponents: loose_aggr, rounds: last, betting: 1, inputs: pokerpoint+pokermatch (-rounds) 
+        - computar small blind, big blind, e quem vai primeiro e bets como se fosse o round 1
+        - fazer classe separada para isso? que nao usa ACPC, apenas o hand_types?
+        - goal: teams learn how to use the basic inputs of a poker game
+    - checkpoint 2:
+        - opponents: all looses, rounds: last, betting: all, inputs: pokerpoint+pokermatch+last action+hand agressiveness+agressiveness
+        - computar small blind, big blind, e quem vai primeiro e bets como se fosse o round 1
+        - fazer classe separada para isso? que nao usa ACPC, apenas o hand_types?
+        - goal: teams learn how to bet and deal with opp's bets + learn the basics about passive/aggr opps
+    - checkpoint 3:
+        - opponents: all looses, rounds: all, betting: all, inputs: pokerpoint+pokermatch+last action+hand agressiveness+agressiveness
+        - goal: teams learn how to deal with the rounds
+    - checkpoint 4:
+        - opponents: loose+tight, rounds: all, betting: all, inputs: pokerpoint+pokermatch+opponentmodel
+        - goal: teams learn to deal with tight opps + more complex opp model
+
+
+
+- bluffing
+    - adicionar input para bleff para opp? (eg.: agressividade/hand_str) (no SBB e no analysis?)
+    - quando implementar rule-based opponent com bluffing, fazer isso de um jeito compativel com o input de bluffing (se rolar para blefar, proibir o player de blefar? ou aumentar artificialmente a hand strength? antes, testar se a hand e' fraca)
 - refatorar classe OpponentModel
 - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?)
-- fazer printar avg de behaviors do time
-
-- ensure teams and point are really evolving over time
 - implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
-- validation set deve semrpe conter o ocnjunto de matches mais complexo
-
 - Maybe apply sbb for other domain? (de RL)
-- So' adicionar tight opps e/out hard hands apos gen 50?
-- implementar codigo para permitir continuar treinamento de teams
-- Ou começar apenas com o river? Sem oponente?
-- tentar aumentar a dificuldade em partes?
-
 - Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
 - implementar opponent population
     - approach 1
@@ -59,12 +70,8 @@ v3: updated config + automated top5,top10,top15
 
 ---
 parameters to test:
-- what diversity? mix diversities? (temp: ncd_c3, g5)
-- inputs? (temp: all, check it better in the next runs)
-- ifs? (only normal ifs, only signal-ifs, or mixed? temp: mixed)
-- team size and program size? (testar apos obter reusltados para diversities?)
-- second layer: quantas actions escolher? 
-- oponents: loose + tight
+- what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
+- use_weighted_probability_selection True or False?
 
 nims pc:
 - entropy_c3, non-atomic (seeds 1)

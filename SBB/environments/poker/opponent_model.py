@@ -11,21 +11,21 @@ class OpponentModel():
     inputs[0] = opponent last action
     inputs[1] = opponent hand agressiveness
     inputs[2] = opponent long-term agressiveness
-    inputs[3] = opponent short-term agressiveness (last 10 hands)
-    inputs[4] = opponent long-term volatility
-    inputs[5] = opponent short-term volatility (last 10 hands)
-    inputs[6] = opponent long-term tight/loose
-    inputs[7] = opponent short-term tight/loose (last 10 hands)
-    inputs[8] = opponent long-term passive/aggressive
-    inputs[9] = opponent short-term passive/aggressive (last 10 hands)
-    inputs[10] = self long-term agressiveness
-    inputs[11] = self short-term agressiveness (last 10 hands)
-    inputs[12] = self long-term volatility
-    inputs[13] = self short-term volatility (last 10 hands)
-    inputs[14] = self long-term tight/loose
-    inputs[15] = self short-term tight/loose (last 10 hands)
-    inputs[16] = self long-term passive/aggressive
-    inputs[17] = self short-term passive/aggressive (last 10 hands)
+    inputs[3] = opponent long-term volatility
+    inputs[4] = opponent long-term tight/loose
+    inputs[5] = opponent long-term passive/aggressive
+    # inputs[6] = opponent short-term agressiveness (last 10 hands)
+    # inputs[7] = opponent short-term volatility (last 10 hands)
+    # inputs[8] = opponent short-term tight/loose (last 10 hands)
+    # inputs[9] = opponent short-term passive/aggressive (last 10 hands)
+    # inputs[10] = self long-term agressiveness
+    # inputs[11] = self short-term agressiveness (last 10 hands)
+    # inputs[12] = self long-term volatility
+    # inputs[13] = self short-term volatility (last 10 hands)
+    # inputs[14] = self long-term tight/loose
+    # inputs[15] = self short-term tight/loose (last 10 hands)
+    # inputs[16] = self long-term passive/aggressive
+    # inputs[17] = self short-term passive/aggressive (last 10 hands)
     reference for agressiveness: "Countering Evolutionary Forgetting in No-Limit Texas Hold'em Poker Agents"
 
     volatility: how frequently the opponent changes its behaviors between pre-flop and post-flop
@@ -59,11 +59,11 @@ class OpponentModel():
 
     """
 
-    INPUTS = ['opponent last action (0)', 'opponent hand agressiveness (1)',
-        'opponent long-term agressiveness (2)', 'opponent short-term agressiveness (3)',
-        'opponent long-term volatility (4)', 'opponent short-term volatility (5)',
-        'opponent long-term tight/loose (6)', 'opponent short-term tight/loose (7)',
-        'opponent long-term passive/aggressive (8)', 'opponent short-term passive/aggressive (9)']
+    INPUTS = ['opp last action', 'opp hand agressiveness','opp agressiveness', 'opp volatility', 
+        'opp tight/loose', 'opp passive/aggressive']
+
+        # 'opponent short-term agressiveness (3)','opponent short-term volatility (5)',
+        # 'opponent short-term tight/loose (7)','opponent short-term passive/aggressive (9)'
     #     ,
     #     'self long-term agressiveness (10)', 'self short-term agressiveness (11)', 
     #     'self long-term volatility (12)', 'self short-term volatility (13)',
@@ -137,19 +137,19 @@ class OpponentModel():
 
         if len(self.opponent_agressiveness) > 0:
             inputs[2] = numpy.mean(self.opponent_agressiveness)
-            inputs[3] = numpy.mean(self.opponent_agressiveness[:10])
+            # inputs[3] = numpy.mean(self.opponent_agressiveness[:10])
 
         if len(self.opponent_agressiveness_postflop) > 0 and len(self.opponent_agressiveness_preflop) > 0:
-            inputs[4] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop, self.opponent_agressiveness_preflop)
-            inputs[5] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop[:10], self.opponent_agressiveness_preflop[:10])
+            inputs[3] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop, self.opponent_agressiveness_preflop)
+            # inputs[5] = OpponentModel.calculate_volatility(self.opponent_agressiveness_postflop[:10], self.opponent_agressiveness_preflop[:10])
 
         if len(self.opponent_tight_loose) > 0:
-            inputs[6] = numpy.mean(self.opponent_tight_loose)
-            inputs[7] = numpy.mean(self.opponent_tight_loose[:10])
+            inputs[4] = numpy.mean(self.opponent_tight_loose)
+            # inputs[7] = numpy.mean(self.opponent_tight_loose[:10])
 
         if len(self.opponent_passive_aggressive) > 0:
-            inputs[8] = numpy.mean(self.opponent_passive_aggressive)
-            inputs[9] = numpy.mean(self.opponent_passive_aggressive[:10])
+            inputs[5] = numpy.mean(self.opponent_passive_aggressive)
+            # inputs[9] = numpy.mean(self.opponent_passive_aggressive[:10])
 
         # if len(self.self_agressiveness) > 0:
         #     inputs[10] = numpy.mean(self.self_agressiveness)
