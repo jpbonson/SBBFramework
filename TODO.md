@@ -10,7 +10,38 @@ defined groups for diversity as 3
 v2: gen100 and no self inputs + bug fix
 v3: updated config + automated top5,top10,top15
 v4: updated config + removed short-term opp model
+
+reorganized point_generator and poker_analysis + not using ACPC for hand generation anymore
 ---
+
+===
+Hi Malcolm,
+
+I would like to give a try at publishing a paper in January. I would like to know your opinion on which of the followings things accomplished by now would be 'paper worthy' and if I should aim for a short or full paper and in what type of conference. I think that it would be an interesting experience even if I get rejected, since I will have feedback to what should be improved and an initial paper to try again around March. I am asking ahead of time so I have enough time to focus on obtaining specific results for the paper, and to write it.
+
+1) [main] SBB + poker integration (ie. inputs, formulas, heuristics (hand balance, reward function...), opponents, opponent model, points, match preprocessing, diversities (+inputs for the diversities)) + current results (types of behaviors + score against baseline opponents (ie. loose aggressive, loose passive, tight aggressive, tight passive, always fold, always call, always raise, random))
+2) [extra] Comparison across various diversity metrics and how they impacted the teams' evolution
+3) [extra] Second layer + initial results
+4) [work in progress, I will try it during December] Comparison between the original approach (teams try to play the whole game from start) and dividing the poker task into simpler tasks that complexify over time until they become the full game.
+5) [work in progress, future] Comparison between the current approach (opponents with fixed behaviors) and opponents that also evolve over time.
+
+By the way, I got rid of the ACPC server. At the end of the day it was causing too many hideous bugs (the server don't inform almost anything in a clear way, including errors), the code was overly complex (due to using threads and process to communicate with the C code, now it is just a sequential code), and took a longer time to compute the results. Also, without ACPC I don't have the limitation of chips being infinite, so I can add it to the game now if I want to use it.
+
+In case you have some free time, it would be nice to have a meeting in this or in the next week.
+
+Regards,
+Jessica
+===
+
+- adaptar codigo para usar novo hands_generated
+- procurar/implementar codigo de poker + testar com o poker_analysis
+- remover yappi dos requisitos, remover instrucoes para instalar ACPC
+
+- nao usar mais o ACPC? usar apenas os hand_types ja' gerados pelo ACPC? (para evitar bugs, melhorar performance, e remover restricao ubuntu only)
+    - 2 teams e board nao usarem mais thread, e serem sequenciais, em um loop?
+    - opcao de gerar report? em um dict?
+- obs.: removi 'r' dos hand_types, alterei estrutura de pos, p, e o
+- unlimited chips due to ACPC?! add chips? add input for chips?
 
 - gerar balance por HS
 - gerar plots dos ultimos runs

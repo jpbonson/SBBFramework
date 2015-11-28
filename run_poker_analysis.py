@@ -1,8 +1,6 @@
 import yappi
 import time
-from SBB.environments.poker.poker_analysis import PokerAnalysis
-from SBB.environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
-    PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent)
+from SBB.environments.poker.poker_analysis.poker_analysis import PokerAnalysis
 from SBB.utils.helpers import round_value
 
 

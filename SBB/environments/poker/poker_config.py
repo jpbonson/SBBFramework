@@ -10,7 +10,6 @@ class PokerConfig():
         'suits': ['s', 'd', 'h', 'c'],
         'inputs': [], # setup in poker environment
         'action_mapping': {0: 'f', 1: 'c', 2: 'r'},
-        'acpc_path': "SBB/environments/poker/ACPC/",
         'available_ports': [],
         'small_bet': 10,
         'big_bet': 20,
