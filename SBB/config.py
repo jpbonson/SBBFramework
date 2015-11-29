@@ -30,7 +30,7 @@ class Config():
                 'print': False,
                 'matches': False,
                 'players': False,
-                'output_path': 'SBB/environments/poker/ACPC/',
+                'output_path': 'SBB/environments/poker/logs/',
             },
         },
 

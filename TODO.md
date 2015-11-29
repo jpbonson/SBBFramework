@@ -14,6 +14,8 @@ reorganized point_generator and poker_analysis + not using ACPC for hand generat
 adapted code to used new poker hands
 ---
 
+implementar poker match + removed yappi
+
 ===
 Hi Malcolm,
 
@@ -25,7 +27,7 @@ I would like to give a try at publishing a paper in January. I would like to kno
 4) [work in progress, I will try it during December] Comparison between the original approach (teams try to play the whole game from start) and dividing the poker task into simpler tasks that complexify over time until they become the full game.
 5) [work in progress, future] Comparison between the current approach (opponents with fixed behaviors) and opponents that also evolve over time.
 
-By the way, I got rid of the ACPC server. At the end of the day it was causing too many hideous bugs (the server don't inform almost anything in a clear way, including errors), the code was overly complex (due to using threads and process to communicate with the C code, now it is just a sequential code), and took a longer time to compute the results. Also, without ACPC I don't have the limitation of chips being infinite, so I can add it to the game now if I want to use it. I also made a few other modifications on the code and the inputs.
+By the way, I refactored the code to get rid of the ACPC server. At the end of the day it was causing too many hideous bugs (the server don't inform almost anything in a clear way, including errors), the code was overly complex (due to using threads and process to communicate with the C code, now it is just a sequential code), and took a longer time to compute the results. It also enables me to divide the poker task in simpler tasks (eg.: just the last round, or just 1 bet per round). I also made a few other modifications on the code and the inputs.
 
 In case you have some free time, it would be nice to have a meeting in this or in the next week.
 
@@ -33,7 +35,7 @@ Regards,
 Jessica
 ===
 
-- adaptar codigo para usar novo hands_generated
+- input chips?
 - procurar/implementar codigo de poker + testar com o poker_analysis
 - remover yappi dos requisitos, remover instrucoes para instalar ACPC
 
@@ -62,7 +64,7 @@ Jessica
     - aumentar team_size em 1-2 a cada checkpoint? (no sem checkpoint, comecar com o tamnho maximo desde o inicio?)
     - 3 tipos de run: sem checkpoint, com checkpoint com team size fixo, com checkpoint com team size variavel
     - checkpoint 1:
-        - opponents: loose_aggr, rounds: last, betting: 1, inputs: pokerpoint+pokermatch (-rounds) 
+        - opponents: loose_aggr, rounds: last, betting: 1, inputs: pokerpoint+pokermatch (-rounds)
         - computar small blind, big blind, e quem vai primeiro e bets como se fosse o round 1
         - fazer classe separada para isso? que nao usa ACPC, apenas o hand_types?
         - goal: teams learn how to use the basic inputs of a poker game
@@ -200,6 +202,7 @@ scp -r username@destination_host:destination_folder source_file_name
 
 =====================
 future work:
+- fazer projeto apenas com o codigo de jogar poker?
 - more players in the table?
 - nos testes, checar se os teams sabem blefar
 - refatorar codigo (separar poker_environment em mais arquivo, etc)

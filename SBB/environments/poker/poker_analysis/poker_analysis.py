@@ -112,12 +112,9 @@ class PokerAnalysis():
                 print m
         shutil.rmtree(path)
         messages = []
-        results = []
         for i, s in enumerate(states):
             message = self._decode_message(s)
             messages.append(message)
-            # text = self._to_pokerstar(message, i, points[i])
-            # results.append(text)
         print "...finished processing logs."
 
         print
@@ -142,14 +139,14 @@ class PokerAnalysis():
         return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
 
     def _create_unbalanced_points(self, total_points):
-        num_lines_per_file = sum([1 for line in open("SBB/environments/poker/hand_types/hands_type_all.json")])
+        num_lines_per_file = sum([1 for line in open("SBB/environments/poker/hand_generator/poker_hands/hands_type_all.json")])
         idxs = random.sample(range(1, num_lines_per_file+1), total_points)
-        result = [linecache.getline("SBB/environments/poker/hand_types/hands_type_all.json", i) for i in idxs]
+        result = [linecache.getline("SBB/environments/poker/hand_generator/poker_hands/hands_type_all.json", i) for i in idxs]
         data = [PokerPoint(0, json.loads(r)) for r in result]
         mapping = {'00': 0, '01': 1, '02': 2, '10': 3, '11': 4, '12': 5, '20': 6, '21': 7, '22': 8}
         for point in data:
-            label0_player = PokerConfig.get_hand_strength_label(point.hand_strength_[3])
-            label0_opp = PokerConfig.get_hand_strength_label(point.opp_hand_strength_[3])
+            label0_player = PokerConfig.get_hand_strength_label(point.players['team']['hand_strength'][3])
+            label0_opp = PokerConfig.get_hand_strength_label(point.players['opponent']['hand_strength'][3])
             label0 = str(label0_player)+str(label0_opp)
             point.label_ = mapping[label0]
         return data
@@ -292,157 +289,3 @@ class PokerAnalysis():
         result['score'] = splitted[3].split("|")
         result['players'] = splitted[4].split("|")
         return result
-
-    def _to_pokerstar(self, result, match_id, point):
-        """
-        The dealer button gets dealt the first card (because he is the small blind).
-
-        The person with the dealer button posts the small blind, while his/her opponent places the big blind. 
-        The dealer acts first before the flop. After the flop, the dealer acts last and continues to do so for 
-        the remainder of the hand.
-        """
-        msg = ""
-        msg += "PokerSBB Game: Hold'em Limit\n"
-        msg += "Table '"+str(match_id+1)+"' 2-max Seat #2 is the button\n"
-        msg += "Seat 1: "+result['players'][0]+" (infinite chips)\n"
-        msg += "Seat 2: "+result['players'][1]+" (infinite chips)\n"
-        msg += result['players'][1]+": posts small blind "+str(PokerConfig.CONFIG['small_bet'])+"\n"
-        msg += result['players'][0]+": posts big blind "+str(PokerConfig.CONFIG['big_bet'])+"\n"
-        msg += "*** HOLE CARDS ***\n"
-        for index, action in enumerate(result['rounds'][0]):
-            if index % 2 == 0:
-                msg += result['players'][1]+": "+self._get_action(action, index, 0)+"\n"
-            else:
-                msg += result['players'][0]+": "+self._get_action(action, index, 0)+"\n"
-        if len(result['rounds']) > 1:
-            msg += "*** FLOP *** ["+result['board_cards_temp']+"]\n"
-            for index, action in enumerate(result['rounds'][1]):
-                if index % 2 == 1:
-                    msg += result['players'][1]+": "+self._get_action(action, index, 1)+"\n"
-                else:
-                    msg += result['players'][0]+": "+self._get_action(action, index, 1)+"\n"
-        if len(result['rounds']) > 2:
-            msg += "*** TURN *** ["+result['board_cards_temp']+"] ["+result['board_cards'][1]+"]\n"
-            for index, action in enumerate(result['rounds'][2]):
-                if index % 2 == 1:
-                    msg += result['players'][1]+": "+self._get_action(action, index, 2)+"\n"
-                else:
-                    msg += result['players'][0]+": "+self._get_action(action, index, 2)+"\n"
-        if len(result['rounds']) > 3:
-            msg += "*** RIVER *** ["+result['board_cards_temp']+"] ["+result['board_cards'][1]+"] ["+result['board_cards'][2]+"]\n"
-            for index, action in enumerate(result['rounds'][3]):
-                if index % 2 == 1:
-                    msg += result['players'][1]+": "+self._get_action(action, index, 3)+"\n"
-                else:
-                    msg += result['players'][0]+": "+self._get_action(action, index, 3)+"\n"
-        
-        if point.position_ == 0:
-            hs1 = point.hand_strength_[3]
-            hs2 = point.opp_hand_strength_[3]
-            sd = point.sbb_sd_label_
-            if sd != 1:
-                if sd == 0:
-                    winner = 0
-                else:
-                    winner = 1
-        else:
-            hs1 = point.opp_hand_strength_[3]
-            hs2 = point.hand_strength_[3]
-            sd = point.sbb_sd_label_
-            if sd != 1:
-                if sd == 0:
-                    winner = 1
-                else:
-                    winner = 0
-
-        pot_value = self._calculate_pot(result)
-
-        if len(result['rounds']) > 3:
-            if 'f' not in result['rounds'][3]:
-                folded = False
-                msg += "*** SHOW DOWN ***\n"
-                msg += result['players'][0]+": shows ["+result['hole_cards'][0]+"] ("+str(hs1)+")\n"
-                msg += result['players'][1]+": shows ["+result['hole_cards'][1]+"] ("+str(hs2)+")\n"
-                if sd == 1:
-                    msg += result['players'][0]+": collected "+str(pot_value/2.0)+" from pot\n"
-                    msg += result['players'][1]+": collected "+str(pot_value/2.0)+" from pot\n"
-                else:
-                    msg += result['players'][winner]+": collected "+str(pot_value)+" from pot\n"
-            else:
-                folded = True
-                if len(result['rounds'][3]) % 2 == 0:
-                    winner = 0
-                else:
-                    winner = 1
-                msg += result['players'][winner]+": collected "+str(pot_value)+" from pot\n"
-                msg += result['players'][winner]+": doesn't show hand\n"
-        else:
-            folded = False
-
-        msg += "*** SUMMARY ***\n"
-        msg += "Total pot "+str(pot_value)+" | Rake 0\n"
-        if len(result['rounds']) > 1:
-            msg += "Board ["+result['board_cards_temp']+" "+result['board_cards'][1]+" "+result['board_cards'][2]+"]\n"
-        if not folded:
-            if sd == 1:
-                msg += "Seat 1: "+result['players'][0]+" showed and shared the pot\n"
-                msg += "Seat 1: "+result['players'][1]+" showed and shared the pot\n"
-            elif winner == 0:
-                msg += "Seat 1: "+result['players'][0]+" showed and won\n"
-                msg += "Seat 2: "+result['players'][1]+" showed and lost\n"
-            else:
-                msg += "Seat 1: "+result['players'][0]+" showed and lost\n"
-                msg += "Seat 2: "+result['players'][1]+" showed and won\n"
-        else:
-            if winner == 0:
-                msg += "Seat 1: "+result['players'][0]+" didn't show and won\n"
-                msg += "Seat 2: "+result['players'][1]+" folded\n"
-            else:
-                msg += "Seat 1: "+result['players'][0]+" folded\n"
-                msg += "Seat 2: "+result['players'][1]+" didn't show and won\n"
-
-        print msg
-        return msg
-
-    def _get_action(self, action, action_index, round_index):
-        #[checks|bets [VALUE]|folds|raises [VALUE] to [VALUE]|calls [VALUE]]
-        if action == 'f':
-            return "folds"
-        if action == 'c':
-            if action_index == 0:
-                return "checks"
-            else:
-                if round_index == 0 or round_index == 1:
-                    return "calls "+str(PokerConfig.CONFIG['small_bet'])
-                else:
-                    return "calls "+str(PokerConfig.CONFIG['big_bet'])
-        if action == 'r':
-            if action_index == 0:
-                if round_index == 0 or round_index == 1:
-                    return "bets "+str(PokerConfig.CONFIG['small_bet'])
-                else:
-                    return "bets "+str(PokerConfig.CONFIG['big_bet'])
-            else:
-                if round_index == 0 or round_index == 1:
-                    return "raises "+str(PokerConfig.CONFIG['small_bet'])
-                else:
-                    return "raises "+str(PokerConfig.CONFIG['big_bet'])
-        raise ValueError("Invalid action.")
-
-    def _calculate_pot(self, result):
-        # check if is the small blind
-        if len(result['rounds']) == 1:
-            if len(result['rounds'][0]) == 0 or (len(result['rounds'][0]) == 1 and result['rounds'][0][0] == 'f'):
-                return PokerConfig.CONFIG['small_bet']/2.0
-
-        # check if someone raised
-        pot = PokerConfig.CONFIG['small_bet']
-        for i, r in enumerate(result['rounds']):
-            if i == 0 or i == 1:
-                bet = PokerConfig.CONFIG['small_bet']
-            else:
-                bet = PokerConfig.CONFIG['big_bet']
-            for action in r:
-                if action == 'r':
-                    pot += bet
-        return pot

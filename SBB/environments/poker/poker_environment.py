@@ -3,7 +3,6 @@ import gc
 import math
 import time
 import json
-import yappi
 import operator
 import itertools
 import os
@@ -17,10 +16,11 @@ from opponent_model import OpponentModel
 from poker_point import PokerPoint
 from poker_config import PokerConfig
 from match_state import MatchState
+from poker_match import PokerMatch
 from poker_player_execution import PokerPlayerExecution
 from poker_opponents import PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
 from ..reinforcement_environment import ReinforcementEnvironment
-from ...utils.helpers import available_ports, round_value, flatten
+from ...utils.helpers import round_value, flatten
 from ...config import Config
 
 class PokerEnvironment(ReinforcementEnvironment):
@@ -30,7 +30,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def __init__(self):
         total_actions = 3 # fold, call, raise
-        PokerConfig.CONFIG['inputs'] = PokerPoint.INPUTS+MatchState.INPUTS+['chips']+OpponentModel.INPUTS
+        PokerConfig.CONFIG['inputs'] = MatchState.INPUTS+OpponentModel.INPUTS
         total_inputs = len(PokerConfig.CONFIG['inputs'])
         total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
 
@@ -40,8 +40,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
         PokerConfig.CONFIG['labels_per_subdivision']['opponent'] = self.opponent_names_for_validation_
-        port1, port2 = available_ports()
-        PokerConfig.CONFIG['available_ports'] = [port1, port2]
         self.num_lines_per_file_ = []
         self.backup_points_per_label = None
 
@@ -89,139 +87,10 @@ class PokerEnvironment(ReinforcementEnvironment):
         return False
 
     def _play_match(self, team, opponent, point, mode, match_id):
-        total = 3
-        attempt = 0
-        while True:
-            try:
-                return self._play_match2(team, opponent, point, mode, match_id)
-            except IndexError as e:
-                attempt += 1
-                print "Error: IndexError during poker execution. (attempt: "+str(attempt)+")"
-                if attempt > total:
-                    print "Error: Got maximum attempts."
-                    raise
-                time.sleep(1)
-
-    def _play_match2(self, team, opponent, point, mode, match_id):
-        """
-
-        """
-
-        if mode == Config.RESTRICTIONS['mode']['training']:
-            is_training = True
-        else:
-            is_training = False
-
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
-            if Config.USER['reinforcement_parameters']['debug']['output_path'] is None and not os.path.exists(PokerConfig.CONFIG['acpc_path']+"outputs/"):
-                Config.USER['reinforcement_parameters']['debug']['output_path'] = PokerConfig.CONFIG['acpc_path']+"outputs/"
-            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"acpc_match/"):
-                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+"acpc_match/")
-            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"match_output/"):
-                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'match_output/')
-            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"players/"):
-                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'players/')
-
-        if point.position_ == 0:
-            sbb_port = PokerConfig.CONFIG['available_ports'][0]
-            opponent_port = PokerConfig.CONFIG['available_ports'][1]
-            player1 = 'sbb'
-            player2 = 'opponent'
-        else:
-            sbb_port = PokerConfig.CONFIG['available_ports'][1]
-            opponent_port = PokerConfig.CONFIG['available_ports'][0]
-            player1 = 'opponent'
-            player2 = 'sbb'
-
-        opponent_use_inputs = None
-        if opponent.opponent_id == "hall_of_fame":
-            opponent_use_inputs = 'all'
-        if opponent.opponent_id in PokerConfig.CONFIG['rule_based_opponents']:
-            opponent_use_inputs = 'rule_based_opponent'
-
-        t1 = threading.Thread(target=PokerPlayerExecution.execute_player, args=[team, opponent, point, sbb_port, is_training, True, 'all', match_id])
-        t2 = threading.Thread(target=PokerPlayerExecution.execute_player, args=[opponent, team, point, opponent_port, False, False, opponent_use_inputs, match_id])
-        args = [PokerConfig.CONFIG['acpc_path']+'dealer', 
-                Config.USER['reinforcement_parameters']['debug']['output_path']+'match_output/'+str(match_id),
-                PokerConfig.CONFIG['acpc_path']+'holdem.limit.2p.reverse_blinds.game', 
-                "1", # total hands 
-                str(point.seed_),
-                player1, player2, 
-                '-p', str(PokerConfig.CONFIG['available_ports'][0])+","+str(PokerConfig.CONFIG['available_ports'][1])]
-        if not Config.USER['reinforcement_parameters']['debug']['matches']:
-            args.append('-l')
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        t1.start()
-        t2.start()
-        out, err = p.communicate()
-        t1.join()
-        t2.join()
-
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
-            with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"acpc_match/"+str(match_id)+".log", "w") as text_file:
-                text_file.write(str(err))
-        score = out.split("\n")[1]
-        score = score.replace("SCORE:", "")
-        splitted_score = score.split(":")
-        try:
-            scores = splitted_score[0].split("|")
-            players = splitted_score[1].split("|")
-        except IndexError as e:
-            print "---Error: IndexError during poker execution."
-            print "opponent.opponent_id: "+str(opponent.opponent_id)
-            print "player1: "+str(player1)
-            print "player2: "+str(player2)
-            print "mode: "+str(mode)
-            print "out: "+str(out)
-            print "err: "+str(err)
-            print "score: "+str(score)
-            print "splitted_score: "+str(splitted_score)
-            print "---"
-            raise
-        if players[0] == 'sbb':
-            sbb_position = 0
-            opponent_position = 1
-        else:
-            sbb_position = 1
-            opponent_position = 0
-
-        normalized_value = self._normalize_winning(float(scores[sbb_position]))
-
-        PokerPlayerExecution.get_chips(team, opponent).append(normalized_value)
-        if opponent.opponent_id == "hall_of_fame":
-            PokerPlayerExecution.get_chips(opponent, team).append(self._normalize_winning(float(scores[opponent_position])))
-
-        if not is_training:
-            if mode == Config.RESTRICTIONS['mode']['validation']:
-                self._update_team_extra_metrics_for_poker(team, point, normalized_value, 'validation')
-                point.last_validation_opponent_id_ = opponent.opponent_id
-                if team.extra_metrics_['played_last_hand']:
-                    team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 1.0
-                    if normalized_value > 0.5:
-                        team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 1.0
-                    else:
-                        team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
-                else:
-                    team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 0.0
-                    team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
-            else:
-                self._update_team_extra_metrics_for_poker(team, point, normalized_value, 'champion')
-
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
-            print "---"
-            print "match: "+str(match_id)
-            print "scores: "+str(scores)
-            print "players: "+str(players)
-            print "normalized_value: "+str(normalized_value)
-
-        point.teams_results_.append(normalized_value)
-
-        team.action_sequence_['coding1'].append(str(point.seed_))
-        team.action_sequence_['coding1'].append(str(point.position_))
-        team.action_sequence_['coding4'].append(str(point.seed_))
-        team.action_sequence_['coding4'].append(str(point.position_))
-
-        return normalized_value
+        # REFACTOR / TODO: mover parte do codigo para esse metodo?
+        match = PokerMatch(team, opponent, point, mode, match_id)
+        result = match.run()
+        return result
 
     def _normalize_winning(self, value):
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
@@ -246,19 +115,12 @@ class PokerEnvironment(ReinforcementEnvironment):
                 team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
                 team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
 
-    def reset(self):
-        super(PokerEnvironment, self).reset()
-        gc.collect()
-        yappi.clear_stats()
-
     def setup(self, teams_population):
         super(PokerEnvironment, self).setup(teams_population)
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             self._clear_hall_of_fame_memory()
         for point in self.point_population():
             point.teams_results_ = []
-        gc.collect()
-        yappi.clear_stats()
 
     def _clear_hall_of_fame_memory(self):
         for opponent in self.opponent_population_['hall_of_fame']:

@@ -15,63 +15,63 @@ class PokerPlayerExecution():
 
     @staticmethod
     def execute_player(player, opponent, point, port, is_training, is_sbb, inputs_type, match_id):
-        if is_sbb and not is_training:
-            player.extra_metrics_['played_last_hand'] = False
+        # if is_sbb and not is_training:
+        #     player.extra_metrics_['played_last_hand'] = False
 
-        socket_tmp = socket.socket()
+        # socket_tmp = socket.socket()
 
-        total = 100
-        attempt = 0
-        while True:
-            try:
-                socket_tmp.connect(("localhost", port))
-                break
-            except socket_error as e:
-                attempt += 1
-                if e.errno == errno.ECONNREFUSED:
-                    time.sleep(1)
-                if attempt > total:
-                    raise ValueError("Could not connect to port "+str(port))
+        # total = 100
+        # attempt = 0
+        # while True:
+        #     try:
+        #         socket_tmp.connect(("localhost", port))
+        #         break
+        #     except socket_error as e:
+        #         attempt += 1
+        #         if e.errno == errno.ECONNREFUSED:
+        #             time.sleep(1)
+        #         if attempt > total:
+        #             raise ValueError("Could not connect to port "+str(port))
 
-        debug_file = None
-        if Config.USER['reinforcement_parameters']['debug']['players']:
-            if is_sbb:
-                player_id = player.team_id_
-            else:
-                player_id = player.opponent_id
-            debug_file = open(Config.USER['reinforcement_parameters']['debug']['output_path']+'players/player_'+str(player_id)+'_'+str(match_id)+'.log','w')
-            if Config.USER['reinforcement_parameters']['debug']['print']:
-                print player.__repr__()+": started"
-        socket_tmp.send("VERSION:2.0.0\r\n")
+        # debug_file = None
+        # if Config.USER['reinforcement_parameters']['debug']['players']:
+        #     if is_sbb:
+        #         player_id = player.team_id_
+        #     else:
+        #         player_id = player.opponent_id
+        #     debug_file = open(Config.USER['reinforcement_parameters']['debug']['output_path']+'players/player_'+str(player_id)+'_'+str(match_id)+'.log','w')
+        #     if Config.USER['reinforcement_parameters']['debug']['print']:
+        #         print player.__repr__()+": started"
+        # socket_tmp.send("VERSION:2.0.0\r\n")
         previous_action = None
         partial_messages = []
         previous_messages = None
-        player.initialize(point.seed_) # so a probabilistic opponent will always play equal for the same hands and actions
+        # player.initialize(point.seed_) # so a probabilistic opponent will always play equal for the same hands and actions
         while True:
-            try:
-                message = socket_tmp.recv(1000)
-            except socket_error as e:
-                if e.errno == errno.ECONNRESET:
-                    break
-                else:
-                    print "socket_error (1): "+str(e)
-                    raise e
-            if not message:
-                break
-            message = message.replace("\r\n", "")
-            previous_messages = list(partial_messages)
-            partial_messages = message.split("MATCHSTATE")
-            last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
-            try:
-                match_state = MatchState(last_message, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'])
-            except ValueError as e:
-                print "---ERROR in initialization of MatchState:"
-                print "last_message: "+str(last_message)
-                print "partial_messages: "+str(partial_messages)
-                print "message: "+str(message)
-                print "previous_messages: "+str(previous_messages)
-                print "---"
-                raise
+            # try:
+            #     message = socket_tmp.recv(1000)
+            # except socket_error as e:
+            #     if e.errno == errno.ECONNRESET:
+            #         break
+            #     else:
+            #         print "socket_error (1): "+str(e)
+            #         raise e
+            # if not message:
+            #     break
+            # message = message.replace("\r\n", "")
+            # previous_messages = list(partial_messages)
+            # partial_messages = message.split("MATCHSTATE")
+            # last_message = partial_messages[-1] # only cares about the last message sent (ie. the one where this player should act)
+            # try:
+            # match_state = MatchState(last_message, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'])
+            # except ValueError as e:
+            #     print "---ERROR in initialization of MatchState:"
+            #     print "last_message: "+str(last_message)
+            #     print "partial_messages: "+str(partial_messages)
+            #     print "message: "+str(message)
+            #     print "previous_messages: "+str(previous_messages)
+            #     print "---"
+            #     raise
             if match_state.is_showdown():
                 previous_action = None
                 if Config.USER['reinforcement_parameters']['debug']['players']:
@@ -186,7 +186,6 @@ class PokerPlayerExecution():
             chips = 0.5
         else:
             chips = numpy.mean(chips)
-        chips = chips*Config.RESTRICTIONS['multiply_normalization_by']
         return chips
 
     @staticmethod
