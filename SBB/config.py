@@ -23,7 +23,7 @@ class Config():
             'hall_of_fame': {
                 'size': 10,
                 'enabled': True,
-                'use_as_opponents': False,
+                'use_as_opponents': False, # WARNING: 'True' doesnt work for poker!
                 'diversity': 'entropy_c3', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug': {
@@ -128,7 +128,7 @@ class Config():
             'update_chance': 0.05,
         },
         'diversity': {
-            'options': ['genotype', 'fitness_sharing', 'ncd_c1', 'entropy_c2', 'hamming_c3', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
+            'options': ['genotype', 'fitness_sharing', 'entropy_c2', 'hamming_c3', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
             'total_bins': 3, # used to quantize the distances for the diversity metrics
         },
         'second_layer': {

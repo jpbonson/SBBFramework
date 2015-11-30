@@ -36,6 +36,7 @@ Jessica
 ===
 
 - input chips?
+- remvoer volatility? conferir os resultados em team behaviors
 - procurar/implementar codigo de poker + testar com o poker_analysis
 - remover yappi dos requisitos, remover instrucoes para instalar ACPC
 
@@ -43,7 +44,7 @@ Jessica
     - 2 teams e board nao usarem mais thread, e serem sequenciais, em um loop?
     - opcao de gerar report? em um dict?
 - obs.: removi 'r' dos hand_types, alterei estrutura de pos, p, e o
-- unlimited chips due to ACPC?! add chips? add input for chips?
+- unlimited chips due to ACPC?! add chips? add input for chips? (to avoid losing too much to an opponent?)
 
 - gerar balance por HS
 - gerar plots dos ultimos runs

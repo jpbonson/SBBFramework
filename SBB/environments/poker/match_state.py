@@ -5,96 +5,17 @@ from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['hand strength', 'effective potential', 'pot', 'bet', 'pot odds', 'betting position', 'round', 'chips']
+    INPUTS = ['hand strength', 'effective potential', 'pot', 'bet', 'pot odds', 'betting position', 'round']
 
     def __init__(self, point, player_key):
         self.point = point
+        self.player_key = player_key
         self.position = point.players[player_key]['position']
         self.hand_strength = point.players[player_key]['hand_strength']
         self.effective_potential = point.players[player_key]['effective_potential']
-        self.round_id = 0
-        self.rounds = {}
-        self.rounds['preflop'] = []
-        self.rounds['flop'] = []
-        self.rounds['turn'] = []
-        self.rounds['river'] = []
+        self.actions = []
 
-    # def is_current_player_to_act(self):
-    #     if len(self.rounds) == 1: # since the game uses reverse blinds
-    #         if len(self.rounds[0]) % 2 == 0:
-    #             current_player = 1
-    #         else:
-    #             current_player = 0
-    #     else:
-    #         if len(self.rounds[-1]) % 2 == 0:
-    #             current_player = 0
-    #         else:
-    #             current_player = 1
-    #     if int(self.position) == current_player:
-    #         return True
-    #     else:
-    #         return False
-
-    # def last_player_to_act(self):
-    #     if len(self.rounds[-1]) == 0:
-    #         last_acted_round = self.rounds[-2]
-    #     else:
-    #         last_acted_round = self.rounds[-1]
-    #     if last_acted_round == self.rounds[0]: # since the game uses reverse blinds
-    #         if len(last_acted_round) % 2 == 0:
-    #             last_player = 0
-    #         else:
-    #             last_player = 1
-    #     else: # cc/cr/rr 10/01/01
-    #         if len(last_acted_round) % 2 == 0:
-    #             last_player = 1
-    #         else:
-    #             last_player = 0
-    #     return last_player
-
-    # def is_showdown(self):
-    #     if self.opponent_hole_cards:
-    #         return True
-    #     else:
-    #         return False
-
-    # def is_last_action_a_fold(self):
-    #     actions = self.rounds[-1]
-    #     if len(actions) > 0 and actions[-1] == 'f':
-    #         return True
-    #     else:
-    #         return False
-
-    # def actions_per_player(self):
-    #     self_actions = []
-    #     opponent_actions = []
-    #     for round_index, actions in enumerate(self.rounds):
-    #         for action_index, action in enumerate(actions):
-    #             if round_index == 0:
-    #                 if self.position == 0:
-    #                     if action_index % 2 == 0:
-    #                         opponent_actions.append(action)
-    #                     else:
-    #                         self_actions.append(action)
-    #                 else:
-    #                     if action_index % 2 == 0:
-    #                         self_actions.append(action)
-    #                     else:
-    #                         opponent_actions.append(action)
-    #             else:
-    #                 if self.position == 0:
-    #                     if action_index % 2 == 0:
-    #                         self_actions.append(action)
-    #                     else:
-    #                         opponent_actions.append(action)
-    #                 else:
-    #                     if action_index % 2 == 0:
-    #                         opponent_actions.append(action)
-    #                     else:
-    #                         self_actions.append(action)
-    #     return self_actions, opponent_actions
-
-    def inputs(self, pot, bet, chips):
+    def inputs(self, pot, bet, round_id):
         """
         inputs[0] = hand strength
         inputs[1] = effective potential
@@ -103,29 +24,27 @@ class MatchState():
         inputs[4] = pot odds
         inputs[5] = betting position (0: first betting, 1: last betting)
         inputs[6] = round
-        inputs[7] = chips
         """
-        inputs = [0] * len(MatchState.INPUTS)
-        inputs[0] = self.hand_strength[self.round_id]
-        inputs[1] = self.effective_potential[self.round_id]
-        inputs[2] = pot/float(self.maximum_winning())
-        inputs[3] = bet/float(PokerConfig.CONFIG['big_bet'])
-        if (pot + bet) > 0:
-            inputs[4] = bet / float(pot + bet)
-        else:
-            inputs[4] = 0.0
-        inputs[5] = float(self._betting_position())
-        inputs[6] = self.round_id/3.0
-        inputs[7] = chips
-        inputs = [round_value(i*Config.RESTRICTIONS['multiply_normalization_by']) for i in inputs]
-        return inputs
-
-    def simplified_inputs(self, bet):
-        inputs = [0] * 2
-        inputs[0] = self.hand_strength[self.round_id]
-        inputs[1] = bet/float(PokerConfig.CONFIG['big_bet'])
-        inputs = [round_value(i*Config.RESTRICTIONS['multiply_normalization_by']) for i in inputs]
-        return inputs
+        if self.player_key == 'team':
+            inputs = [0] * len(MatchState.INPUTS)
+            inputs[0] = self.hand_strength[round_id]
+            inputs[1] = self.effective_potential[round_id]
+            inputs[2] = pot/float(self.maximum_winning())
+            inputs[3] = bet/float(PokerConfig.CONFIG['big_bet'])
+            if (pot + bet) > 0:
+                inputs[4] = bet / float(pot + bet)
+            else:
+                inputs[4] = 0.0
+            inputs[5] = float(self._betting_position(round_id))
+            inputs[6] = round_id/3.0
+            normalized_inputs = [round_value(i*Config.RESTRICTIONS['multiply_normalization_by']) for i in inputs[2:]]
+            return inputs[:2]+normalized_inputs
+        else: # inputs for rule-based opponents
+            inputs = [0] * 2
+            inputs[0] = self.hand_strength[round_id]
+            inputs[1] = bet/float(PokerConfig.CONFIG['big_bet'])
+            inputs[1] = round_value(inputs[1]*Config.RESTRICTIONS['multiply_normalization_by'])
+            return inputs
 
     # def calculate_pot(self):
     #     # check if is the small blind
@@ -164,8 +83,8 @@ class MatchState():
     #             bet = 1.0 # since the value is normalized and the poker is limited, 1 means the maximum bet
     #     return bet
 
-    def _betting_position(self):
-        if self.round_id == 0: # reverse blinds
+    def _betting_position(self, round_id):
+        if round_id == 0: # reverse blinds
             if self.position == 0:
                 return 1
             else:
@@ -173,36 +92,7 @@ class MatchState():
         else:
             return self.position
 
-    # def valid_actions(self):
-    #     """
-        
-    #     """
-    #     valid = [1]
-    #     # check if can fold
-    #     if len(self.rounds) > 1:
-    #         current_round = self.rounds[-1]
-    #         if 'r' in current_round:
-    #             valid.append(0)
-    #     else:
-    #         current_round = self.rounds[-1]
-    #         if len(current_round) == 0 or 'r' in current_round:
-    #             valid.append(0)
-
-    #     # check if can raise
-    #     if len(self.rounds) == 1:
-    #         max_raises = 3
-    #     else:
-    #         max_raises = 4
-    #     raises = 0
-    #     for action in self.rounds[-1]:
-    #         if action == 'r':
-    #             raises += 1
-    #     if raises < max_raises:
-    #         valid.append(2)
-    #     return valid
-
     def __str__(self):
         msg = "\n"
         msg += "position: "+str(self.position)+"\n"
-        msg += "rounds: "+str(self.rounds)+"\n"
         return msg

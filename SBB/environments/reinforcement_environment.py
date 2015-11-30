@@ -251,7 +251,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def evaluate_teams_population_for_training(self, teams_population):
         for team in teams_population:
-            team.action_sequence_['coding1'] = []
             team.action_sequence_['coding2'] = []
             team.action_sequence_['coding3'] = []
             team.action_sequence_['coding4'] = []

@@ -1,6 +1,4 @@
-from poker_config import PokerConfig
 from ..reinforcement_environment import ReinforcementPoint
-from ...config import Config
 
 class PokerPoint(ReinforcementPoint):
     """

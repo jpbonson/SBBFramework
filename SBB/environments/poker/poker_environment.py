@@ -17,7 +17,6 @@ from poker_point import PokerPoint
 from poker_config import PokerConfig
 from match_state import MatchState
 from poker_match import PokerMatch
-from poker_player_execution import PokerPlayerExecution
 from poker_opponents import PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
 from ..reinforcement_environment import ReinforcementEnvironment
 from ...utils.helpers import round_value, flatten
@@ -91,29 +90,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         match = PokerMatch(team, opponent, point, mode, match_id)
         result = match.run()
         return result
-
-    def _normalize_winning(self, value):
-        max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
-        max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
-        max_winning = max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
-        max_losing = -max_winning
-        return (value - max_losing)/float(max_winning - max_losing)
-
-    def _update_team_extra_metrics_for_poker(self, team, point, normalized_value, mode_label):
-        team.extra_metrics_['total_hands'][mode_label] += 1
-        team.extra_metrics_['total_hands_per_point_type'][mode_label]['position'][point.position_] += 1
-        team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
-        team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
-        if team.extra_metrics_['played_last_hand']:
-            team.extra_metrics_['hand_played'][mode_label] += 1
-            team.extra_metrics_['hand_played_per_point_type'][mode_label]['position'][point.position_] += 1
-            team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
-            team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
-            if normalized_value > 0.5:
-                team.extra_metrics_['won_hands'][mode_label] += 1
-                team.extra_metrics_['won_hands_per_point_type'][mode_label]['position'][point.position_] += 1
-                team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
-                team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
 
     def setup(self, teams_population):
         super(PokerEnvironment, self).setup(teams_population)

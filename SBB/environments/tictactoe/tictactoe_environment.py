@@ -63,7 +63,6 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                 if action is None:
                     action = random.choice(match.valid_actions())
                 if is_training_for_first_player:
-                    first_player.action_sequence_['coding1'].append(str(action))
                     first_player.action_sequence_['coding2'].append(str(action))
                     first_player.action_sequence_['coding4'].append(str(action))
                 match.perform_action(player, action)
@@ -78,7 +77,6 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                 if action is None:
                     action = random.choice(match.valid_actions())
                 if is_training_for_second_player:
-                    second_player.action_sequence_['coding1'].append(str(action))
                     second_player.action_sequence_['coding2'].append(str(action))
                     second_player.action_sequence_['coding4'].append(str(action))
                 match.perform_action(player, action)

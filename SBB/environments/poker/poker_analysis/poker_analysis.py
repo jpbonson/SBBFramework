@@ -44,11 +44,11 @@ class PokerAnalysis():
         # WARNING: Config.RESTRICTIONS should be exactly the same as the one used to train these teams
         Config.USER['task'] = 'reinforcement'
         Config.USER['reinforcement_parameters']['environment'] = 'poker'
-        Config.USER['advanced_training_parameters']['extra_registers'] = 3
+        Config.USER['advanced_training_parameters']['extra_registers'] = 4
         Config.USER['advanced_training_parameters']['second_layer']['enabled'] = False
         Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions'] = False
         Config.USER['reinforcement_parameters']['debug']['matches'] = generate_debug_files_per_match
-        Config.USER['reinforcement_parameters']['debug']['print'] = False
+        Config.USER['reinforcement_parameters']['debug']['print'] = True
         Config.USER['reinforcement_parameters']['debug']['players'] = generate_debug_files_per_players
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
         if seed is None:
@@ -186,7 +186,6 @@ class PokerAnalysis():
         team.opponent_model = {}
         team.chips = {} # Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
 
-        team.action_sequence_['coding1'] = []
         team.action_sequence_['coding2'] = []
         team.action_sequence_['coding3'] = []
         team.action_sequence_['coding4'] = []

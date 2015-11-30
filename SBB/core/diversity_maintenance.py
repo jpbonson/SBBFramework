@@ -96,13 +96,6 @@ class DiversityMaintenance():
         return distance
 
     @staticmethod
-    def _ncd_c1(team, other_team):
-        action_sequence = team.action_sequence_['coding1']
-        other_action_sequence = other_team.action_sequence_['coding1']
-        distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
-        return distance
-
-    @staticmethod
     def _entropy_c2(team, other_team):
         action_sequence = team.action_sequence_['coding2']
         other_action_sequence = other_team.action_sequence_['coding2']

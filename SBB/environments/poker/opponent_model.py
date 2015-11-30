@@ -118,10 +118,9 @@ class OpponentModel():
             self.self_tight_loose.append(0.0)
             self.opponent_tight_loose.append(0.0)
 
-    def inputs(self, match_state):
+    def inputs(self, self_actions, opponent_actions):
         inputs = [0.5] * len(OpponentModel.INPUTS)
 
-        self_actions, opponent_actions = match_state.actions_per_player()
         if len(opponent_actions) > 0:
             inputs[0] = OpponentModel.calculate_points([opponent_actions[-1]])
         elif self.last_opponent_action_in_last_hand is not None:
