@@ -29,7 +29,6 @@ class Config():
             'debug': {
                 'print': False,
                 'matches': False,
-                'players': False,
                 'output_path': 'SBB/environments/poker/logs/',
             },
         },

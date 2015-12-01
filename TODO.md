@@ -12,9 +12,8 @@ v3: updated config + automated top5,top10,top15
 v4: updated config + removed short-term opp model
 reorganized point_generator and poker_analysis + not using ACPC for hand generation anymore
 adapted code to used new poker hands
+finished new code for poker match
 ---
-
-implementar poker match + removed yappi
 
 ===
 Hi Malcolm,
@@ -35,18 +34,10 @@ Regards,
 Jessica
 ===
 
-- input chips?
-- remvoer volatility? conferir os resultados em team behaviors
-- procurar/implementar codigo de poker + testar com o poker_analysis
+- procurar bugs
 - remover yappi dos requisitos, remover instrucoes para instalar ACPC
-
-- nao usar mais o ACPC? usar apenas os hand_types ja' gerados pelo ACPC? (para evitar bugs, melhorar performance, e remover restricao ubuntu only)
-    - 2 teams e board nao usarem mais thread, e serem sequenciais, em um loop?
-    - opcao de gerar report? em um dict?
-- obs.: removi 'r' dos hand_types, alterei estrutura de pos, p, e o
-- unlimited chips due to ACPC?! add chips? add input for chips? (to avoid losing too much to an opponent?)
-
-- gerar balance por HS
+- fazer gerar log por match
+- corrigir poker_match para funcionar com hall_of_fame
 - gerar plots dos ultimos runs
 - conferir se ha bugs nas teams behaviors geradas por poker analysis
 - testar mais o porque da seed nao estar funcionando (also: diversities)
@@ -54,9 +45,9 @@ Jessica
 - gerar baseline no poker_analise com team random, always_call, always_fold, e always_raise
 - fazer printar avg de behaviors do time no poker analysis
 - em run_info, adicionar secao "most used metrics"
-- pensar nos parametros antes de definir eles
 - use_weighted_probability_selection True or False?
 - remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
+- fix poker analysis
 
 - baseado em checkpoints a cada 50 generations:
     - sempre comparar runs com a versao com e sem checkpoints
@@ -80,8 +71,6 @@ Jessica
     - checkpoint 4:
         - opponents: loose+tight, rounds: all, betting: all, inputs: pokerpoint+pokermatch+opponentmodel
         - goal: teams learn to deal with tight opps + more complex opp model
-
-
 
 - bluffing
     - adicionar input para bleff para opp? (eg.: agressividade/hand_str) (no SBB e no analysis?)

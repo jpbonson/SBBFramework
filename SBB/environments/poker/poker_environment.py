@@ -86,39 +86,11 @@ class PokerEnvironment(ReinforcementEnvironment):
         return False
 
     def _play_match(self, team, opponent, point, mode, match_id):
-        debug_file_team, debug_file_opponent = self._setup_debug_files(team, opponent, match_id)
-
         match = PokerMatch(team, opponent, point, mode, match_id)
-        result = match.run(debug_file_team, debug_file_opponent)
-
+        result = match.run()
         if mode != Config.RESTRICTIONS['mode']['training']:
             self._update_team_metrics_for_poker(team, opponent, point, result, mode)
-
-        if Config.USER['reinforcement_parameters']['debug']['players']:
-            debug_file_team.write("The end.\n\n")
-            debug_file_opponent.write("The end.\n\n")
-            debug_file_team.close()
-            debug_file_opponent.close()
-
         return result
-
-    def _setup_debug_files(self, team, opponent, match_id):
-        if Config.USER['reinforcement_parameters']['debug']['output_path'] is None:
-            Config.USER['reinforcement_parameters']['debug']['output_path'] = 'SBB/environments/poker/logs/'
-
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
-            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"match_output/"):
-                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'match_output/')
-
-        debug_file_team = None
-        debug_file_opponent = None
-        if Config.USER['reinforcement_parameters']['debug']['players']:
-            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"players/"):
-                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'players/')
-            path = Config.USER['reinforcement_parameters']['debug']['output_path']+'players/player_'
-            debug_file_team = open(path+str(team.team_id_)+'_'+str(match_id)+'.log','w')
-            debug_file_opponent = open(path+str(opponent.opponent_id)+'_'+str(match_id)+'.log','w')
-        return debug_file_team, debug_file_opponent
 
     def _update_team_metrics_for_poker(self, team, opponent, point, normalized_value, mode):
         if mode == Config.RESTRICTIONS['mode']['validation']:
@@ -257,7 +229,6 @@ class PokerEnvironment(ReinforcementEnvironment):
     def metrics(self):
         msg = ""
         msg += "\n### Environment Info:"
-        msg += "\nports: "+str(PokerConfig.CONFIG['available_ports'])
         msg += "\ntotal inputs: "+str(self.total_inputs_)
         msg += "\ninputs: "+str([str(index)+": "+value for index, value in enumerate(PokerConfig.CONFIG['inputs'])])
         msg += "\ntotal actions: "+str(self.total_actions_)
@@ -274,7 +245,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         self._calculate_validation_population_metrics_per_validation(run_info)
 
     def _calculate_point_population_metrics_per_validation(self, run_info):
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.position_, 'position', range(PokerConfig.CONFIG['positions']))
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
 
@@ -286,7 +257,7 @@ class PokerEnvironment(ReinforcementEnvironment):
             run_info.point_population_distribution_per_validation[key][label].append(total)
 
     def _calculate_validation_population_metrics_per_validation(self, run_info):
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.position_, 'position', range(PokerConfig.CONFIG['positions']))
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
 

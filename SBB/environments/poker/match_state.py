@@ -1,11 +1,12 @@
 import re
+import numpy
 from poker_config import PokerConfig
 from ...utils.helpers import round_value
 from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['hand strength', 'effective potential', 'pot', 'bet', 'pot odds', 'betting position', 'round']
+    INPUTS = ['hand strength', 'effective potential', 'pot', 'bet', 'pot odds', 'betting position', 'round', 'chips']
 
     def __init__(self, point, player_key):
         self.point = point
@@ -15,7 +16,7 @@ class MatchState():
         self.effective_potential = point.players[player_key]['effective_potential']
         self.actions = []
 
-    def inputs(self, pot, bet, round_id):
+    def inputs(self, pot, bet, chips, round_id):
         """
         inputs[0] = hand strength
         inputs[1] = effective potential
@@ -24,6 +25,7 @@ class MatchState():
         inputs[4] = pot odds
         inputs[5] = betting position (0: first betting, 1: last betting)
         inputs[6] = round
+        inputs[7] = chips
         """
         if self.player_key == 'team':
             inputs = [0] * len(MatchState.INPUTS)
@@ -37,6 +39,7 @@ class MatchState():
                 inputs[4] = 0.0
             inputs[5] = float(self._betting_position(round_id))
             inputs[6] = round_id/3.0
+            inputs[7] = self._calculate_chips_input(chips)
             normalized_inputs = [round_value(i*Config.RESTRICTIONS['multiply_normalization_by']) for i in inputs[2:]]
             return inputs[:2]+normalized_inputs
         else: # inputs for rule-based opponents
@@ -59,3 +62,10 @@ class MatchState():
                 return 0
         else:
             return self.position
+
+    def _calculate_chips_input(self, chips):
+        if len(chips) == 0:
+            chips = 0.5
+        else:
+            chips = numpy.mean(chips)
+        return chips

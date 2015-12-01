@@ -23,7 +23,7 @@ class Program:
             self.program_id_ = program_id
         self.teams_ = []
         self.instructions_without_introns_ = []
-        self.inputs_list_ = None
+        self.inputs_list_ = []
         self.general_registers = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
 
     def reset_registers(self):

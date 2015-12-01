@@ -11,17 +11,15 @@ if __name__ == "__main__":
     #     balanced=False, 
     #     team_file="poker_analysis_files/run1/pareto_front/json/(4131-99).json", 
     #     generate_debug_files_per_match=True,
-    #     generate_debug_files_per_players=True,
     #     debug_folder='poker_analysis_outputs/run1/',
     #     seed=1
     # )
     PokerAnalysis().run(
-        matches=1, 
+        matches=10, 
         balanced=False, 
         team_file="poker_analysis_files/run1/pareto_front/json/(4131-99).json", 
         opponent_type=PokerAlwaysCallOpponent,
         generate_debug_files_per_match=False,
-        generate_debug_files_per_players=False,
         debug_folder='poker_analysis_outputs/run1/',
         seed=1
     )

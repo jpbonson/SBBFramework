@@ -23,7 +23,7 @@ class PokerConfig():
         },
         'attributes_per_subdivision': {
             'sbb_label': lambda x: x.label_,
-            'position': lambda x: x.position_,
+            'position': lambda x: x.players['team']['position'],
             'sbb_sd': lambda x: x.sbb_sd_label_,
             'opponent': lambda x: x.last_validation_opponent_id_,
         },

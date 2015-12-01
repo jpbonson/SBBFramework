@@ -22,11 +22,11 @@ class PokerAnalysis():
     def __init__(self):
         pass
 
-    def run_for_all_opponents(self, matches, balanced, team_file, generate_debug_files_per_match, generate_debug_files_per_players, debug_folder, seed = None):
+    def run_for_all_opponents(self, matches, balanced, team_file, generate_debug_files_per_match, debug_folder, seed = None):
         opponents = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
         results = []
         for opponent in opponents:
-            result = self.run(matches, balanced, team_file, opponent, generate_debug_files_per_match, generate_debug_files_per_players, debug_folder, seed)
+            result = self.run(matches, balanced, team_file, opponent, generate_debug_files_per_match, debug_folder, seed)
             results.append(result)
         player1 = self._create_player("sbb", json_path=team_file)
         print "\n\nPLAYER: "+str(player1.__repr__())
@@ -38,7 +38,7 @@ class PokerAnalysis():
                 print m
                 f.write(m)
 
-    def run(self, matches, balanced, team_file, opponent_type, generate_debug_files_per_match, generate_debug_files_per_players, debug_folder, seed = None):
+    def run(self, matches, balanced, team_file, opponent_type, generate_debug_files_per_match, debug_folder, seed = None):
         print "Starting poker analysis tool"
 
         print "Setup the configuration..."
@@ -50,7 +50,6 @@ class PokerAnalysis():
         Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions'] = False
         Config.USER['reinforcement_parameters']['debug']['matches'] = generate_debug_files_per_match
         Config.USER['reinforcement_parameters']['debug']['print'] = True
-        Config.USER['reinforcement_parameters']['debug']['players'] = generate_debug_files_per_players
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
         if seed is None:
             seed = random.randint(0, Config.RESTRICTIONS['max_seed'])
@@ -91,49 +90,49 @@ class PokerAnalysis():
         self._evaluate_teams(player1, player2, points, environment)
         print "...finished executing matches."
 
-        print "Processing logs..."
-        path = Config.USER['reinforcement_parameters']['debug']['output_path']+"match_output"
-        files = glob.glob(path+"/*")
-        data = {}
-        for name in files:
-            temp = None
-            with open(name) as f:
-                for line in f:
-                    if "STATE" in line:
-                        temp = line.replace("\n", "")
-                        temp = temp.replace("STATE:", "")
-            name = name.replace(".log", "")
-            name = name.replace(path+"/", "")
-            data[int(name)] = temp
-        states = data.values()
-        if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
-            os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path'])
-        with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"matches_summary.log", 'w') as f:
-            for i, s in enumerate(states):
-                m = "match #"+str(i+1)+": "+s
-                f.write(m+"\n")
-                print m
-        if os.path.exists(path):
-            shutil.rmtree(path)
-        messages = []
-        for i, s in enumerate(states):
-            message = self._decode_message(s)
-            messages.append(message)
-        print "...finished processing logs."
+        # print "Processing logs..."
+        # path = Config.USER['reinforcement_parameters']['debug']['output_path']+"matches_output"
+        # files = glob.glob(path+"/*")
+        # data = {}
+        # for name in files:
+        #     temp = None
+        #     with open(name) as f:
+        #         for line in f:
+        #             if "STATE" in line:
+        #                 temp = line.replace("\n", "")
+        #                 temp = temp.replace("STATE:", "")
+        #     name = name.replace(".log", "")
+        #     name = name.replace(path+"/", "")
+        #     data[int(name)] = temp
+        # states = data.values()
+        # if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
+        #     os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path'])
+        # with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"matches_summary.log", 'w') as f:
+        #     for i, s in enumerate(states):
+        #         m = "match #"+str(i+1)+": "+s
+        #         f.write(m+"\n")
+        #         print m
+        # if os.path.exists(path):
+        #     shutil.rmtree(path)
+        # messages = []
+        # for i, s in enumerate(states):
+        #     message = self._decode_message(s)
+        #     messages.append(message)
+        # print "...finished processing logs."
 
         print
 
-        sum1 = sum([int(r['score'][0]) for r in messages if r['players'][0] == 'sbb'])
-        sum2 = sum([int(r['score'][1]) for r in messages if r['players'][1] == 'sbb'])
+        # sum1 = sum([int(r['score'][0]) for r in messages if r['players'][0] == 'sbb'])
+        # sum2 = sum([int(r['score'][1]) for r in messages if r['players'][1] == 'sbb'])
         final_message = "\nResult (team stats): "+str(player1.metrics(full_version=True))
         final_message += "\n--- Results for matches:"
-        final_message += "\nResult (total chips): "+str(sum1+sum2)+" out of [-"+str(self._maximum_winning()*matches)+",+"+str(self._maximum_winning()*matches)+"]"
+        # final_message += "\nResult (total chips): "+str(sum1+sum2)+" out of [-"+str(self._maximum_winning()*matches)+",+"+str(self._maximum_winning()*matches)+"]"
         final_message += "\nResult (normalized): "+str(player1.score_testset_)
         print final_message
         with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"team_summary.log", 'w') as f:
             f.write(final_message)
         result = player1.get_behaviors_metrics()
-        result['total_chips'] = sum1+sum2
+        # result['total_chips'] = sum1+sum2
         result['normalized_chips'] = player1.score_testset_
         return result
 
