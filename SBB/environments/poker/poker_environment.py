@@ -86,10 +86,71 @@ class PokerEnvironment(ReinforcementEnvironment):
         return False
 
     def _play_match(self, team, opponent, point, mode, match_id):
-        # REFACTOR / TODO: mover parte do codigo para esse metodo?
+        debug_file_team, debug_file_opponent = self._setup_debug_files(team, opponent, match_id)
+
         match = PokerMatch(team, opponent, point, mode, match_id)
-        result = match.run()
+        result = match.run(debug_file_team, debug_file_opponent)
+
+        if mode != Config.RESTRICTIONS['mode']['training']:
+            self._update_team_metrics_for_poker(team, opponent, point, result, mode)
+
+        if Config.USER['reinforcement_parameters']['debug']['players']:
+            debug_file_team.write("The end.\n\n")
+            debug_file_opponent.write("The end.\n\n")
+            debug_file_team.close()
+            debug_file_opponent.close()
+
         return result
+
+    def _setup_debug_files(self, team, opponent, match_id):
+        if Config.USER['reinforcement_parameters']['debug']['output_path'] is None:
+            Config.USER['reinforcement_parameters']['debug']['output_path'] = 'SBB/environments/poker/logs/'
+
+        if Config.USER['reinforcement_parameters']['debug']['matches']:
+            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"match_output/"):
+                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'match_output/')
+
+        debug_file_team = None
+        debug_file_opponent = None
+        if Config.USER['reinforcement_parameters']['debug']['players']:
+            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"players/"):
+                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'players/')
+            path = Config.USER['reinforcement_parameters']['debug']['output_path']+'players/player_'
+            debug_file_team = open(path+str(team.team_id_)+'_'+str(match_id)+'.log','w')
+            debug_file_opponent = open(path+str(opponent.opponent_id)+'_'+str(match_id)+'.log','w')
+        return debug_file_team, debug_file_opponent
+
+    def _update_team_metrics_for_poker(self, team, opponent, point, normalized_value, mode):
+        if mode == Config.RESTRICTIONS['mode']['validation']:
+            self._update_team_hand_metrics_for_poker(team, point, normalized_value, 'validation')
+            point.last_validation_opponent_id_ = opponent.opponent_id
+            if team.extra_metrics_['played_last_hand']:
+                team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 1.0
+                if normalized_value > 0.5:
+                    team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 1.0
+                else:
+                    team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
+            else:
+                team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 0.0
+                team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
+        else:
+            self._update_team_hand_metrics_for_poker(team, point, normalized_value, 'champion')
+
+    def _update_team_hand_metrics_for_poker(self, team, point, normalized_value, mode_label):
+        team.extra_metrics_['total_hands'][mode_label] += 1
+        team.extra_metrics_['total_hands_per_point_type'][mode_label]['position'][point.players['team']['position']] += 1
+        team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
+        team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
+        if team.extra_metrics_['played_last_hand']:
+            team.extra_metrics_['hand_played'][mode_label] += 1
+            team.extra_metrics_['hand_played_per_point_type'][mode_label]['position'][point.players['team']['position']] += 1
+            team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
+            team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
+            if normalized_value > 0.5:
+                team.extra_metrics_['won_hands'][mode_label] += 1
+                team.extra_metrics_['won_hands_per_point_type'][mode_label]['position'][point.players['team']['position']] += 1
+                team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
+                team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
 
     def setup(self, teams_population):
         super(PokerEnvironment, self).setup(teams_population)
@@ -369,7 +430,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         return extra_metrics_points
 
     def _update_extra_metrics_for_points(self, extra_metrics_points, point, result):
-        extra_metrics_points['position'][point.position_].append(result)
+        extra_metrics_points['position'][point.players['team']['position']].append(result)
         extra_metrics_points['sbb_label'][point.label_].append(result)
         extra_metrics_points['sbb_sd'][point.sbb_sd_label_].append(result)
         return extra_metrics_points

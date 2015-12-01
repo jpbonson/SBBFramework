@@ -3,6 +3,7 @@ import random
 import linecache
 import numpy
 import glob
+import os
 import re
 import shutil
 from collections import defaultdict
@@ -105,12 +106,15 @@ class PokerAnalysis():
             name = name.replace(path+"/", "")
             data[int(name)] = temp
         states = data.values()
+        if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
+            os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path'])
         with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"matches_summary.log", 'w') as f:
             for i, s in enumerate(states):
                 m = "match #"+str(i+1)+": "+s
                 f.write(m+"\n")
                 print m
-        shutil.rmtree(path)
+        if os.path.exists(path):
+            shutil.rmtree(path)
         messages = []
         for i, s in enumerate(states):
             message = self._decode_message(s)
@@ -123,7 +127,7 @@ class PokerAnalysis():
         sum2 = sum([int(r['score'][1]) for r in messages if r['players'][1] == 'sbb'])
         final_message = "\nResult (team stats): "+str(player1.metrics(full_version=True))
         final_message += "\n--- Results for matches:"
-        final_message += "\nResult (total chips): "+str(sum1+sum2)+" out of [-"+str(self.maximum_winning()*matches)+",+"+str(self.maximum_winning()*matches)+"]"
+        final_message += "\nResult (total chips): "+str(sum1+sum2)+" out of [-"+str(self._maximum_winning()*matches)+",+"+str(self._maximum_winning()*matches)+"]"
         final_message += "\nResult (normalized): "+str(player1.score_testset_)
         print final_message
         with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"team_summary.log", 'w') as f:
@@ -133,7 +137,7 @@ class PokerAnalysis():
         result['normalized_chips'] = player1.score_testset_
         return result
 
-    def maximum_winning(self):
+    def _maximum_winning(self):
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
         max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
         return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2

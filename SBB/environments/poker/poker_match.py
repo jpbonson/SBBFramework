@@ -13,38 +13,12 @@ class PokerMatch():
         self.mode = mode
         self.match_id = match_id
 
-    def run(self):
-        ### Setup framework
+    def run(self, debug_file_team, debug_file_opponent):
+        ### Setup helpers
         if self.mode == Config.RESTRICTIONS['mode']['training']:
             is_training = True
         else:
             is_training = False
-
-        if Config.USER['reinforcement_parameters']['debug']['output_path'] is None:
-            Config.USER['reinforcement_parameters']['debug']['output_path'] = 'SBB/environments/poker/logs/'
-
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
-            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"match_output/"):
-                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'match_output/')
-
-        debug_file_team = None
-        debug_file_opponent = None
-        if Config.USER['reinforcement_parameters']['debug']['players']:
-            if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']+"players/"):
-                os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path']+'players/')
-            path = Config.USER['reinforcement_parameters']['debug']['output_path']+'players/player_'
-            debug_file_team = open(path+str(self.team.team_id_)+'_'+str(self.match_id)+'.log','w')
-            debug_file_opponent = open(path+str(self.opponent.opponent_id)+'_'+str(self.match_id)+'.log','w')
-        if Config.USER['reinforcement_parameters']['debug']['print']:
-            print "Setting up matches..."
-
-        opponent_use_inputs = None
-        if self.opponent.opponent_id == "hall_of_fame":
-            opponent_use_inputs = 'all'
-        if self.opponent.opponent_id in PokerConfig.CONFIG['rule_based_opponents']:
-            opponent_use_inputs = 'rule_based_opponent'
-
-        if not is_training:
             self.team.extra_metrics_['played_last_hand'] = False
 
         self.team.action_sequence_['coding4'].append(str(self.point.seed_))
@@ -53,35 +27,53 @@ class PokerMatch():
         self.opponent.initialize(self.point.seed_)
             
         ### Setup match
+
+        players_info = {
+            0: {
+                'player': None,
+                'match_state': None,
+                'key': None,
+                'chips': 0.0,
+            },
+            1: { # dealer/button
+                'player': None,
+                'match_state': None,
+                'key': None,
+                'chips': 0.0,
+            }
+        }
+
+        opponent_index = {
+            0: 1,
+            1: 0,
+        }
+
+        pot = 0.0
+
         if self.point.players['team']['position'] == 0:
-            player_pos0 = self.team
-            player_pos1 = self.opponent # dealer/button
-            player_key_pos0 = 'team'
-            player_key_pos1 = 'opponent'
+            players_info[0]['player'] = self.team
+            players_info[0]['match_state'] = MatchState(self.point, player_key = 'team')
+            players_info[1]['player'] = self.opponent
+            players_info[1]['match_state'] = MatchState(self.point, player_key = 'opponent')
             sbb_position = 0
             opponent_position = 1
         else:
-            player_pos0 = self.opponent
-            player_pos1 = self.team # dealer/button
-            player_key_pos0 = 'opponent'
-            player_key_pos1 = 'team'
+            players_info[1]['player'] = self.team
+            players_info[1]['match_state'] = MatchState(self.point, player_key = 'team')
+            players_info[0]['player'] = self.opponent
+            players_info[0]['match_state'] = MatchState(self.point, player_key = 'opponent')
             sbb_position = 1
             opponent_position = 0
-        player_pos0_chips = 0.0
-        player_pos1_chips = 0.0 # dealer/button
-        pot = 0.0
 
         ### Apply blinds (forced bets made before the cards are dealt)
         # since it is a heads-up, the dealer posts the small blind, and the non-dealer places the big blind
         # The small blind is usually equal to half of the big blind. 
         # The big blind is equal to the minimum bet.
-        match_state_pos0 = MatchState(self.point, player_key = player_key_pos0)
-        match_state_pos1 = MatchState(self.point, player_key = player_key_pos1)
         big_blind = PokerConfig.CONFIG['small_bet']
         small_blind = big_blind/2.0
-        player_pos0_chips -= big_blind
+        players_info[0]['chips'] -= big_blind
         pot += big_blind
-        player_pos1_chips -= small_blind  # dealer/button
+        players_info[1]['chips'] -= small_blind  # dealer/button
         pot += small_blind
 
         ### Starting match
@@ -94,22 +86,6 @@ class PokerMatch():
         self.rounds = [[], [], [], []]
         last_action = None
         current_index = 1
-        players_info = {
-            0: {
-                'player': player_pos0,
-                'match_state': match_state_pos0,
-                'chips': player_pos0_chips,
-            },
-            1: {
-                'player': player_pos1,
-                'match_state': match_state_pos1,
-                'chips': player_pos1_chips,
-            }
-        }
-        opponent_index = {
-            0: 1,
-            1: 0,
-        }
         bet = small_blind
         cont = 0
         while is_possible_to_act:
@@ -155,39 +131,16 @@ class PokerMatch():
             hamming_label = self._quantitize_value(points)
             self.team.action_sequence_['coding3'].append(hamming_label)
 
-        if Config.USER['reinforcement_parameters']['debug']['players']:
-            debug_file_team.write("The end.\n\n")
-            debug_file_opponent.write("The end.\n\n")
-            if Config.USER['reinforcement_parameters']['debug']['print']:
-                print "team: The end.\n"
-                print "opponent: The end.\n"
-            debug_file_team.close()
-            debug_file_opponent.close()
-
         sbb_chips = players_info[sbb_position]['chips']
         opponent_chips = players_info[opponent_position]['chips']
 
         normalized_value = self._normalize_winning(float(sbb_chips))
 
+        self.point.teams_results_.append(normalized_value)
+
         self._get_chips_for_team().append(normalized_value)
         # if opponent.opponent_id == "hall_of_fame": # update here for hall of fame
         #     self._get_chips_for_opponent().append(self._normalize_winning(float(opponent_chips)))
-
-        if not is_training:
-            if self.mode == Config.RESTRICTIONS['mode']['validation']:
-                self._update_team_extra_metrics_for_poker(normalized_value, 'validation')
-                self.point.last_validation_opponent_id_ = self.opponent.opponent_id
-                if self.team.extra_metrics_['played_last_hand']:
-                    self.team.extra_metrics_['hands_played_or_not_per_point'][self.point.point_id_] = 1.0
-                    if normalized_value > 0.5:
-                        self.team.extra_metrics_['hands_won_or_lost_per_point'][self.point.point_id_] = 1.0
-                    else:
-                        self.team.extra_metrics_['hands_won_or_lost_per_point'][self.point.point_id_] = 0.0
-                else:
-                    self.team.extra_metrics_['hands_played_or_not_per_point'][self.point.point_id_] = 0.0
-                    self.team.extra_metrics_['hands_won_or_lost_per_point'][self.point.point_id_] = 0.0
-            else:
-                self._update_team_extra_metrics_for_poker(normalized_value, 'champion')
 
         if Config.USER['reinforcement_parameters']['debug']['print']:
             print "---"
@@ -195,10 +148,6 @@ class PokerMatch():
             print "sbb_chips: "+str(sbb_chips)
             print "opponent_chips: "+str(opponent_chips)
             print "normalized_value: "+str(normalized_value)
-
-        self.point.teams_results_.append(normalized_value)
-
-        raise SystemError
 
         return normalized_value
 
@@ -292,18 +241,34 @@ class PokerMatch():
         max_losing = -max_winning
         return (value - max_losing)/float(max_winning - max_losing)
 
-    def _update_team_extra_metrics_for_poker(self, normalized_value, mode_label):
-        self.team.extra_metrics_['total_hands'][mode_label] += 1
-        self.team.extra_metrics_['total_hands_per_point_type'][mode_label]['position'][self.point.players['team']['position']] += 1
-        self.team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_label'][self.point.label_] += 1
-        self.team.extra_metrics_['total_hands_per_point_type'][mode_label]['sbb_sd'][self.point.sbb_sd_label_] += 1
-        if self.team.extra_metrics_['played_last_hand']:
-            self.team.extra_metrics_['hand_played'][mode_label] += 1
-            self.team.extra_metrics_['hand_played_per_point_type'][mode_label]['position'][self.point.players['team']['position']] += 1
-            self.team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_label'][self.point.label_] += 1
-            self.team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_sd'][self.point.sbb_sd_label_] += 1
-            if normalized_value > 0.5:
-                self.team.extra_metrics_['won_hands'][mode_label] += 1
-                self.team.extra_metrics_['won_hands_per_point_type'][mode_label]['position'][self.point.players['team']['position']] += 1
-                self.team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_label'][self.point.label_] += 1
-                self.team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_sd'][self.point.sbb_sd_label_] += 1
+    # def calculate_pot(self):
+    #     # check if is the small blind
+    #     if self.round_id == 0:
+    #         if len(self.rounds['preflop']) == 0 or (len(self.rounds['preflop']) == 1 and self.rounds['preflop'][0] == 'f'):
+    #             return PokerConfig.CONFIG['small_bet']/2.0
+
+    #     # check if someone raised
+    #     pot = PokerConfig.CONFIG['small_bet']
+    #     for i, r in enumerate(self.rounds):
+    #         if i == 0 or i == 1:
+    #             bet = PokerConfig.CONFIG['small_bet']
+    #         else:
+    #             bet = PokerConfig.CONFIG['big_bet']
+    #         for action in r:
+    #             if action == 'r':
+    #                 pot += bet
+    #     return pot
+
+    # def calculate_bet(self):
+    #     # check if is the small blind
+    #     if len(self.rounds) == 1 and len(self.rounds[0]) == 0:
+    #         return 0.5
+        
+    #     # check if the opponent raised
+    #     bet = 0.0
+    #     current_round = self.rounds[-1]
+    #     if current_round: # if there is previous actions
+    #         last_action = current_round[-1]
+    #         if last_action == 'r':
+    #             bet = 1.0 # since the value is normalized and the poker is limited, 1 means the maximum bet
+    #     return bet

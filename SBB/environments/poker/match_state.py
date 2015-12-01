@@ -29,7 +29,7 @@ class MatchState():
             inputs = [0] * len(MatchState.INPUTS)
             inputs[0] = self.hand_strength[round_id]
             inputs[1] = self.effective_potential[round_id]
-            inputs[2] = pot/float(self.maximum_winning())
+            inputs[2] = pot/float(self._maximum_winning())
             inputs[3] = bet/float(PokerConfig.CONFIG['big_bet'])
             if (pot + bet) > 0:
                 inputs[4] = bet / float(pot + bet)
@@ -46,42 +46,10 @@ class MatchState():
             inputs[1] = round_value(inputs[1]*Config.RESTRICTIONS['multiply_normalization_by'])
             return inputs
 
-    # def calculate_pot(self):
-    #     # check if is the small blind
-    #     if self.round_id == 0:
-    #         if len(self.rounds['preflop']) == 0 or (len(self.rounds['preflop']) == 1 and self.rounds['preflop'][0] == 'f'):
-    #             return PokerConfig.CONFIG['small_bet']/2.0
-
-    #     # check if someone raised
-    #     pot = PokerConfig.CONFIG['small_bet']
-    #     for i, r in enumerate(self.rounds):
-    #         if i == 0 or i == 1:
-    #             bet = PokerConfig.CONFIG['small_bet']
-    #         else:
-    #             bet = PokerConfig.CONFIG['big_bet']
-    #         for action in r:
-    #             if action == 'r':
-    #                 pot += bet
-    #     return pot
-
-    def maximum_winning(self):
+    def _maximum_winning(self):
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
         max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
         return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
-
-    # def calculate_bet(self):
-    #     # check if is the small blind
-    #     if len(self.rounds) == 1 and len(self.rounds[0]) == 0:
-    #         return 0.5
-        
-    #     # check if the opponent raised
-    #     bet = 0.0
-    #     current_round = self.rounds[-1]
-    #     if current_round: # if there is previous actions
-    #         last_action = current_round[-1]
-    #         if last_action == 'r':
-    #             bet = 1.0 # since the value is normalized and the poker is limited, 1 means the maximum bet
-    #     return bet
 
     def _betting_position(self, round_id):
         if round_id == 0: # reverse blinds
@@ -91,8 +59,3 @@ class MatchState():
                 return 0
         else:
             return self.position
-
-    def __str__(self):
-        msg = "\n"
-        msg += "position: "+str(self.position)+"\n"
-        return msg
