@@ -54,7 +54,7 @@ class PokerMatch():
     def run(self):
         ### Setup helpers
         if not self.is_training:
-            self.team.extra_metrics_['played_last_hand'] = False
+            self.team.extra_metrics_['played_last_hand'] = True
 
         self.team.action_sequence_['coding4'].append(str(self.point.seed_))
         self.team.action_sequence_['coding4'].append(str(self.point.players['team']['position']))
@@ -66,18 +66,22 @@ class PokerMatch():
             self.players_info[0]['player'] = self.team
             self.players_info[0]['match_state'] = MatchState(self.point, player_key = 'team')
             self.players_info[0]['id'] = self.team.__repr__()
+            self.players_info[0]['key'] = 'team'
             self.players_info[1]['player'] = self.opponent
             self.players_info[1]['match_state'] = MatchState(self.point, player_key = 'opponent')
             self.players_info[1]['id'] = self.opponent.opponent_id
+            self.players_info[1]['key'] = 'opponent'
             sbb_position = 0
             opponent_position = 1
         else:
             self.players_info[1]['player'] = self.team
             self.players_info[1]['match_state'] = MatchState(self.point, player_key = 'team')
             self.players_info[1]['id'] = self.team.__repr__()
+            self.players_info[1]['key'] = 'team'
             self.players_info[0]['player'] = self.opponent
             self.players_info[0]['match_state'] = MatchState(self.point, player_key = 'opponent')
             self.players_info[0]['id'] = self.opponent.opponent_id
+            self.players_info[0]['key'] = 'opponent'
             sbb_position = 1
             opponent_position = 0
 
@@ -239,6 +243,8 @@ class PokerMatch():
             self.rounds[self.round_id].append(action)
 
             if action == 'f':
+                if self.players_info[current_index]['key'] == 'team' and not self.is_training and self.round_id == 0: # update here for hall of fame (make these updates also for hall of fame)
+                    self.players_info[current_index]['player'].extra_metrics_['played_last_hand'] = False
                 if Config.USER['reinforcement_parameters']['debug']['matches']:
                     self.debug_file.write(self.players_info[current_index]['id']+": folds (pot: "+str(self.pot)+")\n")
                 self.players_info[self.opponent_indeces[current_index]]['chips'] += self.pot
@@ -295,8 +301,6 @@ class PokerMatch():
         if action is None:
             action = 1
         
-        if match_state.player_key == 'team' and not self.is_training and self.round_id > 0: # the player saw the flop
-            player.extra_metrics_['played_last_hand'] = True
         if match_state.player_key == 'team' and self.is_training:
             player.action_sequence_['coding2'].append(str(action))
 

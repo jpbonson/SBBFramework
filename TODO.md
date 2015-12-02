@@ -18,10 +18,11 @@ minor improvements on diversities + updated README instructions
 fixed bug in poker_match + added logs to poker_match + fixed bug in poker_opponents
 selecting points using age instead of uniform probability
 improve folder name
+improved hand_played metric
 ---
 
 - conferir runs de teste
-    - uniform, age, only 2 inputs
+    - uniform, age, only 2 inputs, improved hand_played
 - played_last_hand/opponent_folded
 - bug no poker_match?
 - points evolutindo? teams evoluindo? fitness, validation?
