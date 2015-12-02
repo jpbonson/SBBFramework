@@ -16,9 +16,11 @@ finished new code for poker match
 fixed diversity entropy (c2 and c3)
 minor improvements on diversities + updated README instructions
 fixed bug in poker_match + added logs to poker_match + fixed bug in poker_opponents
+selecting points using age instead of uniform probability
 ---
 
 - conferir runs de teste
+    - uniform, age
 - points evolutindo? teams evoluindo? fitness, validation?
 - ajeitar o output por conjunto de runs?
 - em run_info, adicionar secao "most used metrics"

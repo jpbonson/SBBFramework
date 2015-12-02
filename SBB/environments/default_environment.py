@@ -18,6 +18,7 @@ class DefaultPoint(object):
 
     def __init__(self):
         self.point_id_ = get_point_id()
+        self.age_ = 0
 
     def __repr__(self): 
         return "("+str(self.point_id_)+")"

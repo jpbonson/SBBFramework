@@ -203,10 +203,11 @@ class PokerMatch():
 
         normalized_value = self._normalize_winning(float(sbb_chips))
 
-        self.debug_file.write("\n\n### Result Information: ")
-        self.debug_file.write("\nsbb_chips: "+str(sbb_chips))
-        self.debug_file.write("\nopponent_chips: "+str(opponent_chips))
-        self.debug_file.write("\nnormalized_value: "+str(normalized_value))
+        if Config.USER['reinforcement_parameters']['debug']['matches']:
+            self.debug_file.write("\n\n### Result Information: ")
+            self.debug_file.write("\nsbb_chips: "+str(sbb_chips))
+            self.debug_file.write("\nopponent_chips: "+str(opponent_chips))
+            self.debug_file.write("\nnormalized_value: "+str(normalized_value))
 
         self.point.teams_results_.append(normalized_value)
 

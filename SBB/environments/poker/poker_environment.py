@@ -33,9 +33,11 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_inputs = len(PokerConfig.CONFIG['inputs'])
         total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
 
-        coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
-        coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
-        
+        # coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
+        # coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
+        coded_opponents_for_training = [PokerLooseAgressiveOpponent]
+        coded_opponents_for_validation = [PokerLooseAgressiveOpponent]
+
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
         PokerConfig.CONFIG['labels_per_subdivision']['opponent'] = self.opponent_names_for_validation_
@@ -56,7 +58,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_points_to_add_per_label = total_points_to_add/self.total_labels_
         return self._sample_point_per_label(total_points_to_add_per_label, ignore_cache = False)
 
-    def _sample_point_per_label(self, population_size_per_label, ignore_cache = False):
+    def _sample_point_per_label(self, population_size_per_label, ignore_cache):
         if ignore_cache or self._cache_dont_have_enough_data(population_size_per_label):
             size = population_size_per_label
             if not ignore_cache and size < PokerConfig.CONFIG['point_cache_size']:
