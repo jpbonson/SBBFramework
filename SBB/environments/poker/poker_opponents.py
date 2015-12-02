@@ -62,8 +62,8 @@ class PokerRuleBasedOpponent(DefaultOpponent):
 
     def __init__(self, opponent_id, alfa, beta):
         super(PokerRuleBasedOpponent, self).__init__(opponent_id)
-        self.alfa_ = alfa
-        self.beta_ = beta
+        self.alfa_ = alfa*Config.RESTRICTIONS['multiply_normalization_by']
+        self.beta_ = beta*Config.RESTRICTIONS['multiply_normalization_by']
 
     def initialize(self, seed):
         pass

@@ -2,8 +2,7 @@ import os
 import numpy
 import random
 import itertools
-if os.name == 'posix':
-    from pokereval import PokerEval
+from pokereval import PokerEval
 from ..poker_config import PokerConfig
 from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
 from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS

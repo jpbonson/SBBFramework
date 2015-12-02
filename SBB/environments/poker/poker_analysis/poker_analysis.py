@@ -30,13 +30,14 @@ class PokerAnalysis():
             results.append(result)
         player1 = self._create_player("sbb", json_path=team_file)
         print "\n\nPLAYER: "+str(player1.__repr__())
+        m = ""
         for o, r in zip(opponents, results):
-            with open(debug_folder+str(player1.__repr__())+"/team_summary_overall.log", 'w') as f:
-                m = "###### "+o.OPPONENT_ID+"\n"
-                for key, value in r.iteritems():
-                    m += key+": "+str(value)+"\n"
-                print m
-                f.write(m)
+            m += "\n###### "+o.OPPONENT_ID+"\n"
+            for key, value in r.iteritems():
+                m += key+": "+str(value)+"\n"
+        print m
+        with open(debug_folder+str(player1.__repr__())+"/team_summary_overall.log", 'w') as f:
+            f.write(m)
 
     def run(self, matches, balanced, team_file, opponent_type, generate_debug_files_per_match, debug_folder, seed = None):
         print "Starting poker analysis tool"
@@ -84,42 +85,13 @@ class PokerAnalysis():
         self._setup_attributes(player1)
         # self._setup_attributes(player2)
         Config.USER['reinforcement_parameters']['debug']['output_path'] = debug_folder+str(player1.__repr__())+"/"+str(opponent_type.OPPONENT_ID)+"/"
+        if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
+            os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path'])
         print "...finished loading players."
 
         print "Executing matches..."
         self._evaluate_teams(player1, player2, points, environment)
         print "...finished executing matches."
-
-        # print "Processing logs..."
-        # path = Config.USER['reinforcement_parameters']['debug']['output_path']+"matches_output"
-        # files = glob.glob(path+"/*")
-        # data = {}
-        # for name in files:
-        #     temp = None
-        #     with open(name) as f:
-        #         for line in f:
-        #             if "STATE" in line:
-        #                 temp = line.replace("\n", "")
-        #                 temp = temp.replace("STATE:", "")
-        #     name = name.replace(".log", "")
-        #     name = name.replace(path+"/", "")
-        #     data[int(name)] = temp
-        # states = data.values()
-        # if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
-        #     os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path'])
-        # with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"matches_summary.log", 'w') as f:
-        #     for i, s in enumerate(states):
-        #         m = "match #"+str(i+1)+": "+s
-        #         f.write(m+"\n")
-        #         print m
-        # if os.path.exists(path):
-        #     shutil.rmtree(path)
-        # messages = []
-        # for i, s in enumerate(states):
-        #     message = self._decode_message(s)
-        #     messages.append(message)
-        # print "...finished processing logs."
-
         print
 
         # sum1 = sum([int(r['score'][0]) for r in messages if r['players'][0] == 'sbb'])

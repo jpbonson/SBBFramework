@@ -16,8 +16,7 @@ from core.team import Team, reset_teams_ids
 from core.instruction import Instruction
 from environments.classification_environment import ClassificationEnvironment
 from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
-if os.name == 'posix':
-    from environments.poker.poker_environment import PokerEnvironment
+from environments.poker.poker_environment import PokerEnvironment
 from core.selection import Selection
 from core.diversity_maintenance import DiversityMaintenance
 from utils.helpers import round_value, flatten

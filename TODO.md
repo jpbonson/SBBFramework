@@ -15,13 +15,22 @@ adapted code to used new poker hands
 finished new code for poker match
 fixed diversity entropy (c2 and c3)
 minor improvements on diversities + updated README instructions
+fixed bug in poker_match + added logs to poker_match + fixed bug in poker_opponents
 ---
 
+- conferir runs de teste
+- points evolutindo? teams evoluindo? fitness, validation?
+- ajeitar o output por conjunto de runs?
+- em run_info, adicionar secao "most used metrics"
+- retestar SBB com varias combinacoes de parametros?
+- mandar email
+
+===
 Poker project update: Fully refactored the poker code, now runs are taking less than 1 hour
 
 Hi Malcolm and Andy,
 
-An update on the poker project. I decided to fully refactor the poker code to get rid of the ACPC server, since I noticed that I had more than one thousand lines of codes just to handle bugs and errors from the server (and I was still finding more bugs lately...), and that accessing the ACPC server with processes and threads was very time consuming. I finished the refactoring today. I implemented the poker framework by myself, so now the code is much simpler and with less bugs (so I can generate 'hand histories' now). Also, now everything related with hand evaluating is performed in a preprocessing step (I was doing it before, but ACPC still was consuming time to evaluate hands inside itself anyway), and since the code now is sequential, I am using 100% of the CPU.
+An update on the poker project. I decided to fully refactor the poker code to get rid of the ACPC server, since I noticed that I had more than one thousand lines of codes just to handle bugs and errors from the server (and I was still finding more bugs lately...), and that accessing the ACPC server with processes and threads was very time consuming. I finished the refactoring today. I implemented the poker framework by myself, so now the code is much simpler and with less bugs (so I can generate 'hand histories' now, I already updated the poker analysis tool). Also, now everything related with hand evaluating is performed in a preprocessing step (I was doing it before, but ACPC still was consuming time to evaluate hands inside itself anyway), and since the code now is sequential, I am using 100% of the CPU.
 
 The main advantage is that now a run that previously took 3 days to complete is finishing in less than an hour. So I expect that the research will advance way quicker from now on.
 
@@ -50,22 +59,10 @@ Regards,
 Jessica
 ===
 
-- procurar bugs (ter certeza de q esta tudo ok antes de mandar o email + enviar resultados iniciais?)
 - gerar pastas top5, top10 e top15 automaticamente?
-- analsiar alguns logs de matches do treino, para procurar por bugs (id do log: gen_id(ou val/champ)+team_id+match_id)
-- points evolutindo? teams evoluindo? fitness, validation?
-- ajeitar o output por conjunto de runs?
-- retestar SBB com varias combinacoes de parametros?
-- fazer gerar log por match
 - corrigir poker_match para funcionar com hall_of_fame
-- gerar plots dos ultimos runs
-- conferir se ha bugs nas teams behaviors geradas por poker analysis
-- testar mais o porque da seed nao estar funcionando (also: diversities)
-- ensure teams and point are really evolving over time
-- gerar baseline no poker_analise com team random, always_call, always_fold, e always_raise
 - fazer printar avg de behaviors do time no poker analysis
-- em run_info, adicionar secao "most used metrics"
-- fix poker analysis
+- gerar baseline no poker_analise com team random, always_call, always_fold, e always_raise
 
 - baseado em checkpoints a cada 50 generations:
     - sempre comparar runs com a versao com e sem checkpoints

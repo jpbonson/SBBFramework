@@ -14,6 +14,7 @@ class MatchState():
         self.position = point.players[player_key]['position']
         self.hand_strength = point.players[player_key]['hand_strength']
         self.effective_potential = point.players[player_key]['effective_potential']
+        self.hole_cards = point.players[player_key]['hole_cards']
         self.actions = []
 
     def inputs(self, pot, bet, chips, round_id):
@@ -31,7 +32,7 @@ class MatchState():
             inputs = [0] * len(MatchState.INPUTS)
             inputs[0] = self.hand_strength[round_id]
             inputs[1] = self.effective_potential[round_id]
-            inputs[2] = pot/float(self._maximum_winning())
+            inputs[2] = pot/float(MatchState.maximum_winning())
             inputs[3] = bet/float(PokerConfig.CONFIG['big_bet'])
             if (pot + bet) > 0:
                 inputs[4] = bet / float(pot + bet)
@@ -49,7 +50,8 @@ class MatchState():
             inputs[1] = round_value(inputs[1]*Config.RESTRICTIONS['multiply_normalization_by'])
             return inputs
 
-    def _maximum_winning(self):
+    @staticmethod
+    def maximum_winning():
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
         max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
         return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2

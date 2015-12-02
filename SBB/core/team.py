@@ -261,7 +261,7 @@ class Team(DefaultOpponent):
                     msg += "\npassive_aggressive: "+str(self.extra_metrics_['passive_aggressive'])
                     msg += "\nbluffing: "+str(self.extra_metrics_['bluffing'])
                 if 'agressiveness_champion' in self.extra_metrics_:
-                    msg += "\nagressiveness (champion): "+str(self.extra_metrics_['agressiveness_champion'])
+                    msg += "\n\nagressiveness (champion): "+str(self.extra_metrics_['agressiveness_champion'])
                     msg += "\nvolatility (champion): "+str(self.extra_metrics_['volatility_champion'])
                     msg += "\ntight_loose (champion): "+str(self.extra_metrics_['tight_loose_champion'])
                     msg += "\npassive_aggressive (champion): "+str(self.extra_metrics_['passive_aggressive_champion'])

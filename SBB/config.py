@@ -34,7 +34,7 @@ class Config():
         },
 
         'training_parameters': {
-            'runs_total': 1,
+            'runs_total': 2,
             'generations_total': 100,
             'validate_after_each_generation': 20,
             'populations': {
@@ -116,9 +116,9 @@ class Config():
         'use_memmory_for_actions': False, # initialized by the environment
         'write_output_files': True, # used by the test cases
         'mode': {
-            'training': 0,
-            'validation': 1,
-            'champion': 2,
+            'training': 'training',
+            'validation': 'validation',
+            'champion': 'champion',
         },
         'used_diversities': None, # initialized by sbb.py
         'multiply_normalization_by': 10.0,

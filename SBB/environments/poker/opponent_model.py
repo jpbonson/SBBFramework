@@ -1,4 +1,5 @@
 import numpy
+from ...utils.helpers import round_value
 from ...config import Config
 
 class OpponentModel():
@@ -168,7 +169,7 @@ class OpponentModel():
 
         # opponent bluff: default 0
 
-        inputs = [i*Config.RESTRICTIONS['multiply_normalization_by'] for i in inputs]
+        inputs = [round_value(i*Config.RESTRICTIONS['multiply_normalization_by']) for i in inputs]
         return inputs
 
     @staticmethod
