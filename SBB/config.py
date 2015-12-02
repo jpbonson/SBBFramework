@@ -38,7 +38,7 @@ class Config():
             'generations_total': 100,
             'validate_after_each_generation': 20,
             'populations': {
-                'teams': 80,
+                'teams': 100,
                 'points': 100,
             },
             'replacement_rate': {
@@ -75,9 +75,9 @@ class Config():
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'extra_registers': 4,
             'diversity': {
-                'use_and_show': ['entropy_c3'], # will be applied to fitness and show in the outputs
+                'use_and_show': ['entropy_c2'], # will be applied to fitness and show in the outputs
                 'only_show': ['genotype'], # will be only show in the outputs
-                'k': 8,
+                'k': 10,
             },
             'run_initialization_step2': False,
             'use_weighted_probability_selection': False, # if False, uniform probability will be used

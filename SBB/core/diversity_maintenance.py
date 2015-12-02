@@ -42,10 +42,17 @@ class DiversityMaintenance():
                         results[distance].append(result)
             # get mean of the k nearest neighbours
             for distance in distances:
+                print "---"
+                print str(distance)
                 sorted_list = sorted(results[distance])
+                print "sorted_list: "+str(sorted_list)
                 min_values = sorted_list[:k]
+                print "min_values: "+str(min_values)
                 diversity = numpy.mean(min_values)
+                print "diversity: "+str(diversity)
+                print "round_value(diversity): "+str(round_value(diversity))
                 team.diversity_[distance] = round_value(diversity)
+                print "---"
 
     @staticmethod
     def _fitness_sharing(population, point_population):
@@ -154,10 +161,10 @@ class DiversityMaintenance():
         xy_len = len(bz2.compress("".join(action_sequence+other_action_sequence)))
         distance = (xy_len - min(x_len, y_len))/float(max(x_len, y_len))
         if distance < 0.0:
-            # print "Warning! Value lower than 0.0 for NCD! Value: "+str(distance)+" ("+str(x_len)+","+str(y_len)+","+str(xy_len)+")"
+            print "Warning! Value lower than 0.0 for NCD! Value: "+str(distance)+" ("+str(x_len)+","+str(y_len)+","+str(xy_len)+")"
             distance = 0.0
         if distance > 1.0:
-            # print "Warning! Value higher than 1.0 for NCD! Value: "+str(distance)+" ("+str(x_len)+","+str(y_len)+","+str(xy_len)+")"
+            print "Warning! Value higher than 1.0 for NCD! Value: "+str(distance)+" ("+str(x_len)+","+str(y_len)+","+str(xy_len)+")"
             distance = 1.0
         return distance
 
@@ -169,20 +176,25 @@ class DiversityMaintenance():
         if len(action_sequence) == len(other_action_sequence):
             if action_sequence == other_action_sequence:
                 return 0.0
-        action_sequence = action_sequence
-        other_action_sequence = other_action_sequence
+        max_entropy = DiversityMaintenance._get_max_entropy(options)
         pdf = DiversityMaintenance._pdf(action_sequence, options)
         other_pdf = DiversityMaintenance._pdf(other_action_sequence, options)
-        temp = 0.0
-        for x in range(options):
-            temp += pdf[x]*numpy.log(pdf[x]/other_pdf[x])
-        dxy = temp
-        temp = 0.0
-        for x in range(options):
-            temp += other_pdf[x]*numpy.log(other_pdf[x]/pdf[x])
-        dyx = temp
-        total = (dxy + dyx)/float(options*2)
-        return total/9.21034037197
+        e1 = stats.entropy(pdf, other_pdf)
+        e2 = stats.entropy(other_pdf, pdf)
+        total = e1+e2
+        result = total/max_entropy
+        return result
+
+    @staticmethod
+    def _get_max_entropy(options):
+        if 'max_entropy' not in Config.RESTRICTIONS['diversity']:
+            pdf = DiversityMaintenance._pdf([0], options)
+            other_pdf = DiversityMaintenance._pdf([2], options)
+            e1 = stats.entropy(pdf, other_pdf)
+            e2 = stats.entropy(other_pdf, pdf)
+            total = e1+e2
+            Config.RESTRICTIONS['diversity']['max_entropy'] = total
+        return Config.RESTRICTIONS['diversity']['max_entropy']
 
     @staticmethod
     def _pdf(array, options):

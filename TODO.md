@@ -13,7 +13,22 @@ v4: updated config + removed short-term opp model
 reorganized point_generator and poker_analysis + not using ACPC for hand generation anymore
 adapted code to used new poker hands
 finished new code for poker match
+fixed diversity entropy (c2 and c3)
 ---
+
+Poker project update: Fully refactored the poker code, now runs are taking less than 1 hour
+
+Hi Malcolm and Andy,
+
+An update on the poker project. I decided to fully refactor the poker code to get rid of the ACPC server, since I noticed that I had more than one thousand lines of codes just to handle bugs and errors from the server (and I was still finding more bugs lately...), and that accessing the ACPC server with processes and threads was very time consuming. I finished the refactoring today. I implemented the poker framework by myself, so now the code is much simpler and with less bugs (so I can generate 'hand histories' now). Also, now everything related with hand evaluating is performed in a preprocessing step (I was doing it before, but ACPC still was consuming time to evaluate hands inside itself anyway), and since the code now is sequential, I am using 100% of the CPU.
+
+The main advantage is that now a run that previously took 3 days to complete is finishing in less than an hour. So I expect that the research will advance way quicker from now on.
+
+I must take the next days to focus on the class that I am taking (project and final exam), so I will stop the work on the research in the next days and resume it after I finish the class's work.
+
+Regards,
+Jessica
+
 
 ===
 Hi Malcolm,
@@ -34,7 +49,12 @@ Regards,
 Jessica
 ===
 
-- procurar bugs
+- procurar bugs (ter certeza de q esta tudo ok antes de mandar o email + enviar resultados iniciais?)
+- gerar pastas top5, top10 e top15 automaticamente?
+- analsiar alguns logs de matches do treino, para procurar por bugs (id do log: gen_id(ou val/champ)+team_id+match_id)
+- points evolutindo? teams evoluindo? fitness, validation?
+- ajeitar o output por conjunto de runs?
+- retestar SBB com varias combinacoes de parametros?
 - remover yappi dos requisitos, remover instrucoes para instalar ACPC
 - fazer gerar log por match
 - corrigir poker_match para funcionar com hall_of_fame
@@ -191,6 +211,8 @@ scp -r source_file_name username@destination_host:destination_folder
 scp -r username@destination_host:destination_folder source_file_name
 
 =====================
+- 6 hours per 5000 hands (total 10000 hands)
+
 future work:
 - fazer projeto apenas com o codigo de jogar poker?
 - more players in the table?
