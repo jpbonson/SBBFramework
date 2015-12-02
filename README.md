@@ -1,7 +1,7 @@
 # SBBReinforcementLearner
 Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming (GP). Algorithm developed by the NIMS laboratory, Dalhousie University, Canada. This implementation can be used as an extendable code to apply GP to reinforcement learning tasks.
 
-Work in progress...
+[Work in progress...]
 
 # Index
 1. Introduction
@@ -27,6 +27,8 @@ Install [Anaconda for Python 2.7](http://continuum.io/downloads)
 
 In the Windows console, type 'anaconda' before running the python commands.
 
+Obs.: You should also install the library 'python-pypoker-eval' if you intend to generate poker hands.
+
 **Ubuntu:**
 
 First, you must have pip installed:
@@ -39,24 +41,18 @@ Install the dependencies:
 sudo apt-get install build-essential python-dev pkg-config python-setuptools python-numpy python-scipy  libatlas-dev libatlas3gf-base libfreetype6-dev python-pypoker-eval
 ```
 
+Obs.: You only need to install 'python-pypoker-eval' if you intend to generate poker hands.
+
 Then execute:
 ```
 sudo pip install -r requirements.txt
 ```
 Obs.: You also have the option to use Anaconda for Ubuntu.
 
-Obs.: The Poker environment only works with Ubuntu, since the ACPC server only works in Ubuntu. You will need to execute the command 'make' in the SBB/environments/poker/ACPC folder to compile the C files for your computer if you want to use the Poker environment.
-
 ## 4. How to Run
 
-If not the poker environment:
 ```
 python main.py
-```
-
-For the poker environment:
-```
-python main_for_poker.py
 ```
 
 All configurable options are in the SBB/config.py file, in the variable CONFIG.

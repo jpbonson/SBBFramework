@@ -14,6 +14,7 @@ reorganized point_generator and poker_analysis + not using ACPC for hand generat
 adapted code to used new poker hands
 finished new code for poker match
 fixed diversity entropy (c2 and c3)
+minor improvements on diversities + updated README instructions
 ---
 
 Poker project update: Fully refactored the poker code, now runs are taking less than 1 hour
@@ -55,7 +56,6 @@ Jessica
 - points evolutindo? teams evoluindo? fitness, validation?
 - ajeitar o output por conjunto de runs?
 - retestar SBB com varias combinacoes de parametros?
-- remover yappi dos requisitos, remover instrucoes para instalar ACPC
 - fazer gerar log por match
 - corrigir poker_match para funcionar com hall_of_fame
 - gerar plots dos ultimos runs
@@ -65,8 +65,6 @@ Jessica
 - gerar baseline no poker_analise com team random, always_call, always_fold, e always_raise
 - fazer printar avg de behaviors do time no poker analysis
 - em run_info, adicionar secao "most used metrics"
-- use_weighted_probability_selection True or False?
-- remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
 - fix poker analysis
 
 - baseado em checkpoints a cada 50 generations:
@@ -115,42 +113,17 @@ Jessica
 parameters to test:
 - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
 - use_weighted_probability_selection True or False?
+- remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
+- more...? (generations, matches...)
 
 nims pc:
-- entropy_c3, non-atomic (seeds 1)
-    - top5, 1
-    - top10, 2
-- entropy_c3, atomic (seeds 1)
-    - top5, 3
-    - top10, 4
+- ...
 
 nims server:
-- entropy_c3, non-atomic (seeds 2)
-    - top5, 1, 23046
-    - top10, 2, 24557
-- entropy_c3, atomic (seeds 2)
-    - top5, 3, 27566
-    - top10, 4, 757
-- entropy_c3, non-atomic (seeds 3)
-    - top5, 5, 14341
-    - top10, 6, 19494
-- entropy_c3, atomic (seeds 3)
-    - top5, 7, 765
-    - top10, 8, 8441
+- ...
 
 hector server:
-- entropy_c3, non-atomic (seeds 4)
-    - top5, 1, 14955
-    - top10, 2, 14973
-- entropy_c3, atomic (seeds 4)
-    - top5, 3, 15287
-    - top10, 4, 15669
-- entropy_c3, non-atomic (seeds 5)
-    - top5, 5, 19203
-    - top10, 6, 20120
-- entropy_c3, atomic (seeds 5)
-    - top5, 7, 21722
-    - top10, 8, 23396
+- ...
 
 
 diversity:
@@ -160,9 +133,8 @@ diversity:
 - best_config_layer1_fitness_sharing_seed5, 4, 
 - best_config_layer1_genotype_seed5, 5, 
 - best_config_layer1_hamming_c3_g3_seed5, 6, 
-- best_config_layer1_ncd_c1_seed5, 7, 
-- best_config_layer1_ncd_c4_g5_seed5, 8 
-- best_config_layer1_no_diversity_seed5, 9, 
+- best_config_layer1_ncd_c4_g5_seed5, 7 
+- best_config_layer1_no_diversity_seed5, 8, 
 
 
 

@@ -42,17 +42,10 @@ class DiversityMaintenance():
                         results[distance].append(result)
             # get mean of the k nearest neighbours
             for distance in distances:
-                print "---"
-                print str(distance)
                 sorted_list = sorted(results[distance])
-                print "sorted_list: "+str(sorted_list)
                 min_values = sorted_list[:k]
-                print "min_values: "+str(min_values)
                 diversity = numpy.mean(min_values)
-                print "diversity: "+str(diversity)
-                print "round_value(diversity): "+str(round_value(diversity))
                 team.diversity_[distance] = round_value(diversity)
-                print "---"
 
     @staticmethod
     def _fitness_sharing(population, point_population):
@@ -141,10 +134,16 @@ class DiversityMaintenance():
     @staticmethod
     def _euclidean(team, other_team):
         value = euclidean(team.action_sequence_['coding3'], other_team.action_sequence_['coding3'])
-        options = Config.RESTRICTIONS['diversity']['total_bins']
-        max_value = math.sqrt(((options-1)**2)*Config.USER['training_parameters']['populations']['points'])
+        max_value = DiversityMaintenance._get_max_euclidean(Config.RESTRICTIONS['diversity']['total_bins'])
         result = value/float(max_value)
         return result
+
+    @staticmethod
+    def _get_max_euclidean(options):
+        if 'max_euclidean' not in Config.RESTRICTIONS['diversity']:
+            max_value = math.sqrt(((options-1)**2)*Config.USER['training_parameters']['populations']['points'])
+            Config.RESTRICTIONS['diversity']['max_euclidean'] = max_value
+        return Config.RESTRICTIONS['diversity']['max_euclidean']
 
     @staticmethod
     def _general_normalized_compression_distance(action_sequence, other_action_sequence):
