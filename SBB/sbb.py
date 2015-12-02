@@ -174,7 +174,8 @@ class SBB:
         if not os.path.exists("outputs/"):
             os.makedirs("outputs/")
         localtime = time.localtime()
-        pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+str(localtime.tm_hour)+str(localtime.tm_min)+str(localtime.tm_sec)
+        hours = "%02d%02d%02d" % (localtime.tm_hour,localtime.tm_min,localtime.tm_sec,)
+        pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+hours
         if Config.USER['task'] == 'classification':
             filename = Config.USER['classification_parameters']['dataset']
         else:
