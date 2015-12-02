@@ -19,16 +19,15 @@ fixed bug in poker_match + added logs to poker_match + fixed bug in poker_oppone
 selecting points using age instead of uniform probability
 improve folder name
 improved hand_played metric
+added 'main metrics' to run_info
 ---
 
 - conferir runs de teste
     - uniform, age, only 2 inputs, improved hand_played
-- played_last_hand/opponent_folded
-- bug no poker_match?
-- points evolutindo? teams evoluindo? fitness, validation?
+- bug no poker_match? testar com poker_analysis?
+- fitness e validation evoluindo?
 - ajeitar o output por conjunto de runs?
-- em run_info, adicionar secao "most used metrics"
-- retestar SBB com varias combinacoes de parametros?
+- retestar SBB com varias combinacoes de parametros? (more matches?)
 - mandar email
 
 ===
@@ -65,6 +64,7 @@ Regards,
 Jessica
 ===
 
+- implementar forma de second layer ser gerado automaticamente durante a execucao?
 - gerar pastas top5, top10 e top15 automaticamente?
 - corrigir poker_match para funcionar com hall_of_fame
 - fazer printar avg de behaviors do time no poker analysis

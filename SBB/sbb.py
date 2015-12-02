@@ -399,28 +399,7 @@ class SBB:
 
     def _generate_overall_metrics_output(self, run_infos):       
         msg = "\n\n\n#################### OVERALL RESULTS ####################"
-        msg += "\n\n\n##### BEST TEAM METRICS"
-        score_per_run = []
-        for run in run_infos:
-            score_per_run.append(round_value(run.best_team.score_testset_))
-        self.best_scores_per_runs_ = score_per_run
-        msg += "\n\nBest Team Validation Score per Run: "+str(score_per_run)
-        msg += "\nmean: "+str(round_value(numpy.mean(score_per_run)))
-        msg += "\nstd. deviation: "+str(round_value(numpy.std(score_per_run)))
-        scores = [run.best_team.score_testset_ for run in run_infos]
-        best_run = run_infos[scores.index(max(scores))]
-        msg += "\nbest run: "+str(best_run.run_id)
-
-        score_means, score_stds = self._process_scores([run.train_score_per_validation for run in run_infos])
-        msg += "\n\nBest Team Train Score per Validation across Runs:"
-        msg += "\nmean: "+str(score_means)
-        msg += "\nstd. deviation: "+str(score_stds)
-
-        score_means, score_stds = self._process_scores([run.test_score_per_validation for run in run_infos])
-        msg += "\n\nBest Team Validation Score per Validation across Runs:"
-        msg += "\nmean: "+str(score_means)
-        msg += "\nstd. deviation: "+str(score_stds)
-
+        
         msg += "\n\n\n##### GLOBAL METRICS"
         final_scores = [run.global_mean_validation_score_per_validation[-1] for run in run_infos]
         msg += "\n\nGlobal Validation Score per Run: "+str(final_scores)
@@ -444,6 +423,28 @@ class SBB:
             msg += "\n\nMean Diversity per Validation across Runs ("+str(key)+"):"
             msg += "\nmean: "+str(score_means)
             msg += "\nstd. deviation: "+str(score_stds)
+
+        msg += "\n\n\n##### BEST TEAM METRICS"
+        score_per_run = []
+        for run in run_infos:
+            score_per_run.append(round_value(run.best_team.score_testset_))
+        self.best_scores_per_runs_ = score_per_run
+        msg += "\n\nBest Team Validation Score per Run: "+str(score_per_run)
+        msg += "\nmean: "+str(round_value(numpy.mean(score_per_run)))
+        msg += "\nstd. deviation: "+str(round_value(numpy.std(score_per_run)))
+        scores = [run.best_team.score_testset_ for run in run_infos]
+        best_run = run_infos[scores.index(max(scores))]
+        msg += "\nbest run: "+str(best_run.run_id)
+
+        score_means, score_stds = self._process_scores([run.train_score_per_validation for run in run_infos])
+        msg += "\n\nBest Team Train Score per Validation across Runs:"
+        msg += "\nmean: "+str(score_means)
+        msg += "\nstd. deviation: "+str(score_stds)
+
+        score_means, score_stds = self._process_scores([run.test_score_per_validation for run in run_infos])
+        msg += "\n\nBest Team Validation Score per Validation across Runs:"
+        msg += "\nmean: "+str(score_means)
+        msg += "\nstd. deviation: "+str(score_stds)
 
         elapseds_per_run = [run.elapsed_time for run in run_infos]
         msg += "\n\nFinished execution, total elapsed time: "+str(round_value(sum(elapseds_per_run)))+" mins "
