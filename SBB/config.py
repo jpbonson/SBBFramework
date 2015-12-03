@@ -2,7 +2,7 @@ import sys
 import numpy
 from collections import deque
 # from config_examples import thyroid_config, tictactoe_config, poker_config
-from SBB.environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
+from environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
     PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent)
 
 class Config():
@@ -35,12 +35,12 @@ class Config():
             },
             'poker': {
                 'opponents': [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent],
-                'river_round_only': True,
+                'river_round_only': False,
             },
         },
 
         'training_parameters': {
-            'runs_total': 3,
+            'runs_total': 5,
             'generations_total': 200,
             'validate_after_each_generation': 20,
             'populations': {

@@ -106,7 +106,6 @@ class PokerAnalysis():
             f.write(final_message)
         result = player1.get_behaviors_metrics()
         # result['total_chips'] = sum1+sum2
-        result['normalized_chips'] = player1.score_testset_
         return result
 
     def _maximum_winning(self):
@@ -196,6 +195,7 @@ class PokerAnalysis():
             # player2.reset_registers() # !
             extra_metrics_opponents['player2'].append(result)
             extra_metrics_points = environment._update_extra_metrics_for_points(extra_metrics_points, point, result)
+            team.results_per_points_for_validation_[point.point_id_] = result
             results.append(result)
         for key in extra_metrics_opponents:
             extra_metrics_opponents[key] = round_value(numpy.mean(extra_metrics_opponents[key]))

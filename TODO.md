@@ -23,13 +23,12 @@ added 'main metrics' to run_info
 improved group metrics per run + added option to select poker opponents
 added option to run river only
 added program bid winner to poker log
+added mean and std result as metric + fixed bug with validation and champion population sizes
 ---
-
-- printar mean e std dev do normalized value? (tanto no analysis como no treino)
 
 - runs de teste + fitness e validation evoluindo? (goal: fitness increasing steadly)
     - all 4, loose aggressive, always raise
-    - river only: loose aggressive, all 4
+    - river only: all 4 (22073), loose aggressive (22075), always raise (22077)
 - retestar SBB com varias combinacoes de parametros?
     (more matches? tentar simplificar o problema? opponent always_raise? apenas o river?)
     parameters to test:
@@ -37,6 +36,7 @@ added program bid winner to poker log
     - use_weighted_probability_selection True or False?
     - remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
     - analisar uso dos inputs
+    - profile size?
     - more...? (generations, matches...)
 - mandar email (charts + sample de log de run de poker)
 

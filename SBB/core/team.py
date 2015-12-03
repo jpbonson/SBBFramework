@@ -1,4 +1,5 @@
 import random
+import numpy
 import copy
 import json
 from collections import Counter, defaultdict
@@ -230,6 +231,8 @@ class Team(DefaultOpponent):
         result['tight_loose'] = self.extra_metrics_['tight_loose']
         result['passive_aggressive'] = self.extra_metrics_['passive_aggressive']
         result['bluffing'] = self.extra_metrics_['bluffing']
+        result['normalized_result_mean'] = round_value(numpy.mean(self.results_per_points_for_validation_.values()))
+        result['normalized_result_std'] = round_value(numpy.std(self.results_per_points_for_validation_.values()))
         return result
 
     def metrics(self, full_version = False):
@@ -262,6 +265,8 @@ class Team(DefaultOpponent):
                     msg += "\ntight_loose: "+str(self.extra_metrics_['tight_loose'])
                     msg += "\npassive_aggressive: "+str(self.extra_metrics_['passive_aggressive'])
                     msg += "\nbluffing: "+str(self.extra_metrics_['bluffing'])
+                    msg += "\nnormalized result (mean): "+str(round_value(numpy.mean(self.results_per_points_for_validation_.values())))
+                    msg += "\nnormalized result (std): "+str(round_value(numpy.std(self.results_per_points_for_validation_.values())))
                 if 'agressiveness_champion' in self.extra_metrics_:
                     msg += "\n\nagressiveness (champion): "+str(self.extra_metrics_['agressiveness_champion'])
                     msg += "\nvolatility (champion): "+str(self.extra_metrics_['volatility_champion'])

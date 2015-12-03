@@ -48,6 +48,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
         if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
             self.opponent_names_for_training_.append('hall_of_fame')
         self.opponent_names_for_validation_ = [c.OPPONENT_ID for c in self.coded_opponents_for_validation_]
+        self._ensure_balanced_population_size('validation_population')
+        self._ensure_balanced_population_size('champion_population')
         self.team_to_add_to_hall_of_fame_ = None
         self.opponent_population_ = None
         self.point_population_ = []
@@ -64,6 +66,12 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.samples_per_class_to_remove_ = []
         Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
         self.matches_per_hall_of_fame_opponent_ = 10
+
+    def _ensure_balanced_population_size(self, population_key):
+        pop_size = Config.USER['reinforcement_parameters'][population_key]
+        temp = len(self.coded_opponents_for_validation_)*self.total_labels_
+        pop_size = (pop_size/temp)*temp
+        Config.USER['reinforcement_parameters'][population_key] = pop_size
 
     def _instantiate_coded_opponent(self, opponent_class): # TODO: refactor? parece que isso nao precisa ser heranca
         return opponent_class()
