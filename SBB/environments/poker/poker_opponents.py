@@ -53,7 +53,10 @@ class PokerAlwaysRaiseOpponent(DefaultOpponent):
         pass
 
     def execute(self, point_id, inputs, valid_actions, is_training):
-        return 2
+        if 2 in valid_actions:
+            return 2
+        else:
+            return 1
 
 class PokerRuleBasedOpponent(DefaultOpponent):
 

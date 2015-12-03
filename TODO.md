@@ -24,7 +24,9 @@ improved group metrics per run + added option to select poker opponents
 ---
 
 - bug no poker_match? testar com poker_analysis? normalized_value ok? conferir codigo de novo?
+- implementar maneira de rodar apenas o river
 - runs de teste + fitness e validation evoluindo?
+    - all 4, loose aggressive, always raise (goal: fitness increasing steadly)
 - retestar SBB com varias combinacoes de parametros?
     (more matches? tentar simplificar o problema? opponent always_raise? apenas o river?)
     parameters to test:
@@ -44,6 +46,8 @@ An update on the poker project. I decided to fully refactor the poker code to ge
 The main advantage is that now a run that previously took 3 days to complete is finishing in less than an hour. So I expect that the research will advance way quicker from now on. Now it is also easier to divide the poker task in easier subtasks (eg.: just one betting round, just one action per round...). This will be the next thing that I will focus on.
 
 I must take the next days to focus on the class that I am taking (project and final exam), so I will stop the work on the research in the next days and resume it after I finish the class's work. I attached a file with the initial results for the current system.
+
+Could we have a meeting someday after December, 16 to discuss the results and next steps before the holidays?
 
 Regards,
 Jessica
