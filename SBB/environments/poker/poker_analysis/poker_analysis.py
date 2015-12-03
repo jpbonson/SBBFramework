@@ -22,11 +22,11 @@ class PokerAnalysis():
     def __init__(self):
         pass
 
-    def run_for_all_opponents(self, matches, balanced, team_file, generate_debug_files_per_match, debug_folder, seed = None):
+    def run_for_all_opponents(self, matches, balanced, team_file, generate_debug_files_per_match, debug_folder, river_round_only, seed = None):
         opponents = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
         results = []
         for opponent in opponents:
-            result = self.run(matches, balanced, team_file, opponent, generate_debug_files_per_match, debug_folder, seed)
+            result = self.run(matches, balanced, team_file, opponent, generate_debug_files_per_match, debug_folder, river_round_only, seed)
             results.append(result)
         player1 = self._create_player("sbb", json_path=team_file)
         print "\n\nPLAYER: "+str(player1.__repr__())
@@ -39,18 +39,19 @@ class PokerAnalysis():
         with open(debug_folder+str(player1.__repr__())+"/team_summary_overall.log", 'w') as f:
             f.write(m)
 
-    def run(self, matches, balanced, team_file, opponent_type, generate_debug_files_per_match, debug_folder, seed = None):
+    def run(self, matches, balanced, team_file, opponent_type, generate_debug_files_per_match, debug_folder, river_round_only, seed = None):
         print "Starting poker analysis tool"
 
         print "Setup the configuration..."
         # WARNING: Config.RESTRICTIONS should be exactly the same as the one used to train these teams
         Config.USER['task'] = 'reinforcement'
         Config.USER['reinforcement_parameters']['environment'] = 'poker'
-        Config.USER['advanced_training_parameters']['extra_registers'] = 4
+        # Config.USER['advanced_training_parameters']['extra_registers'] = 4
         Config.USER['advanced_training_parameters']['second_layer']['enabled'] = False
         Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions'] = False
         Config.USER['reinforcement_parameters']['debug']['matches'] = generate_debug_files_per_match
         Config.USER['reinforcement_parameters']['debug']['print'] = True
+        Config.USER['reinforcement_parameters']['poker']['river_round_only'] = river_round_only
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
         if seed is None:
             seed = random.randint(0, Config.RESTRICTIONS['max_seed'])

@@ -114,25 +114,35 @@ class PokerMatch():
         ### Starting match
 
         self.rounds = [[], [], [], []]
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
-            self.debug_file.write("*** HOLE CARDS ***\n")
-        self.round_id = 0 # preflop
-        result = self._run_poker_round(starter_player_index = 1, initial_bet = small_blind, default_bet = PokerConfig.CONFIG['small_bet'])
-        if result == "next_round":
+        if not Config.USER['reinforcement_parameters']['poker']['river_round_only']:
             if Config.USER['reinforcement_parameters']['debug']['matches']:
-                self.debug_file.write("*** FLOP *** "+str(self.point.board_cards_[:3])+"\n")
-            self.round_id = 1 # flop
-            result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, default_bet = PokerConfig.CONFIG['small_bet'])
-        if result == "next_round":
-            if Config.USER['reinforcement_parameters']['debug']['matches']:
-                self.debug_file.write("*** TURN *** "+str(self.point.board_cards_[:4])+"\n")
-            self.round_id = 2 # turn
-            result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, default_bet = PokerConfig.CONFIG['big_bet'])
+                self.debug_file.write("*** HOLE CARDS ***\n")
+            self.round_id = 0 # preflop
+            result = self._run_poker_round(starter_player_index = 1, initial_bet = small_blind, default_bet = PokerConfig.CONFIG['small_bet'])
+            if result == "next_round":
+                if Config.USER['reinforcement_parameters']['debug']['matches']:
+                    self.debug_file.write("*** FLOP *** "+str(self.point.board_cards_[:3])+"\n")
+                self.round_id = 1 # flop
+                result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, default_bet = PokerConfig.CONFIG['small_bet'])
+            if result == "next_round":
+                if Config.USER['reinforcement_parameters']['debug']['matches']:
+                    self.debug_file.write("*** TURN *** "+str(self.point.board_cards_[:4])+"\n")
+                self.round_id = 2 # turn
+                result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, default_bet = PokerConfig.CONFIG['big_bet'])
+            river_bet = 0.0
+            river_default_bet = PokerConfig.CONFIG['big_bet']
+            river_starter_player_index = 0
+        else:
+            result = "next_round"
+            river_bet = small_blind
+            river_default_bet = PokerConfig.CONFIG['small_bet']
+            river_starter_player_index = 1
+            self.players_info[sbb_position]['player'].extra_metrics_['played_last_hand'] = True
         if result == "next_round":
             if Config.USER['reinforcement_parameters']['debug']['matches']:
                 self.debug_file.write("*** RIVER *** "+str(self.point.board_cards_)+"\n")
             self.round_id = 3 # river
-            result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, default_bet = PokerConfig.CONFIG['big_bet'])
+            result = self._run_poker_round(starter_player_index = river_starter_player_index, initial_bet = river_bet, default_bet = river_default_bet)
         if result == "next_round": # showdown
             if Config.USER['reinforcement_parameters']['debug']['matches']:
                 self.debug_file.write("*** SHOW DOWN ***\n")
@@ -343,8 +353,6 @@ class PokerMatch():
         return self.team.chips[opponent_id]
 
     def _normalize_winning(self, value):
-        max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
-        max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
-        max_winning = max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
+        max_winning = MatchState.maximum_winning()
         max_losing = -max_winning
         return (value - max_losing)/float(max_winning - max_losing)

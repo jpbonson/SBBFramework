@@ -21,12 +21,14 @@ improve folder name
 improved hand_played metric
 added 'main metrics' to run_info
 improved group metrics per run + added option to select poker opponents
+added option to run river only
 ---
 
-- bug no poker_match? testar com poker_analysis? normalized_value ok? conferir codigo de novo?
-- implementar maneira de rodar apenas o river
-- runs de teste + fitness e validation evoluindo?
-    - all 4, loose aggressive, always raise (goal: fitness increasing steadly)
+- printar tb no log qual o id do programa q deu a action
+- printar mean e std dev do normalized value? (tanto no analysis como no treino)
+
+- runs de teste + fitness e validation evoluindo? (goal: fitness increasing steadly)
+    - all 4, loose aggressive, always raise 
 - retestar SBB com varias combinacoes de parametros?
     (more matches? tentar simplificar o problema? opponent always_raise? apenas o river?)
     parameters to test:
@@ -34,23 +36,7 @@ improved group metrics per run + added option to select poker opponents
     - use_weighted_probability_selection True or False?
     - remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
     - more...? (generations, matches...)
-- mandar email
-
-===
-Poker project update: Fully refactored the poker code, now runs are taking less than 1 hour
-
-Hi Malcolm and Andy,
-
-An update on the poker project. I decided to fully refactor the poker code to get rid of the ACPC server, since I noticed that I had more than one thousand lines of codes just to handle bugs and errors from the server (and I was still finding more bugs lately...), and that accessing the ACPC server with processes and threads was very time consuming. I finished the refactoring today. I implemented the poker framework by myself, so now the code is much simpler and with less bugs (so I can generate 'hand histories' now, I already updated the poker analysis tool to support them). Also, now everything related with hand evaluating is performed in a preprocessing step (I was doing it before, but ACPC still was consuming time to evaluate hands inside itself anyway). And since the code now is sequential, I am using 100% of the CPU.
-
-The main advantage is that now a run that previously took 3 days to complete is finishing in less than an hour. So I expect that the research will advance way quicker from now on. Now it is also easier to divide the poker task in easier subtasks (eg.: just one betting round, just one action per round...). This will be the next thing that I will focus on.
-
-I must take the next days to focus on the class that I am taking (project and final exam), so I will stop the work on the research in the next days and resume it after I finish the class's work. I attached a file with the initial results for the current system.
-
-Could we have a meeting someday after December, 16 to discuss the results and next steps before the holidays?
-
-Regards,
-Jessica
+- mandar email (charts + sample de log de run de poker)
 
 
 ===

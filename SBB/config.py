@@ -35,6 +35,7 @@ class Config():
             },
             'poker': {
                 'opponents': [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent],
+                'river_round_only': False,
             },
         },
 
