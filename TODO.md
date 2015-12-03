@@ -22,19 +22,21 @@ improved hand_played metric
 added 'main metrics' to run_info
 improved group metrics per run + added option to select poker opponents
 added option to run river only
+added program bid winner to poker log
 ---
 
-- printar tb no log qual o id do programa q deu a action
 - printar mean e std dev do normalized value? (tanto no analysis como no treino)
 
 - runs de teste + fitness e validation evoluindo? (goal: fitness increasing steadly)
-    - all 4, loose aggressive, always raise 
+    - all 4, loose aggressive, always raise
+    - river only: loose aggressive, all 4
 - retestar SBB com varias combinacoes de parametros?
     (more matches? tentar simplificar o problema? opponent always_raise? apenas o river?)
     parameters to test:
     - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
     - use_weighted_probability_selection True or False?
     - remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
+    - analisar uso dos inputs
     - more...? (generations, matches...)
 - mandar email (charts + sample de log de run de poker)
 

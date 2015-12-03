@@ -37,6 +37,7 @@ class Team(DefaultOpponent):
         self.results_per_points_for_validation_ = {}
         self.diversity_ = {}
         self.action_sequence_ = {} # only used by reinforcement learning
+        self.last_selected_program_ = None
 
     def _add_program(self, program):
         self.programs.append(program)
@@ -83,6 +84,7 @@ class Team(DefaultOpponent):
                 return output_class
         else: # just run the code without changing the attributes or using memmory
             selected_program = self._select_program(inputs, valid_actions)
+            self.last_selected_program_ = selected_program.__repr__()
             if selected_program not in self.validation_active_programs_:
                 self.validation_active_programs_.append(selected_program)
             return selected_program._get_action_result(point_id, inputs, valid_actions, is_training)

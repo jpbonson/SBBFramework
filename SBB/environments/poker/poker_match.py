@@ -305,8 +305,11 @@ class PokerMatch():
         if match_state.player_key == 'team': # update here for hall of fame
             inputs += self._get_opponent_model_for_team().inputs(match_state.actions, opponent_actions)
         if Config.USER['reinforcement_parameters']['debug']['matches']:
-            self.debug_file.write("    >> "+str(inputs)+"\n")
+            self.debug_file.write("    >> inputs: "+str(inputs)+"\n")
         action = player.execute(self.point.point_id_, inputs, self._valid_actions(), self.is_training)
+        if Config.USER['reinforcement_parameters']['debug']['matches']:
+            if match_state.player_key == 'team': # update here for hall of fame
+                self.debug_file.write("    << program: "+str(player.last_selected_program_)+"\n")
 
         if action is None:
             action = 1
