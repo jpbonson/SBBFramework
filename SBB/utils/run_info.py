@@ -28,8 +28,6 @@ class RunInfo:
         self.inputs_distribution_per_instruction_per_validation = []
         self.inputs_distribution_per_team_per_validation = []
         self.global_diversity_per_validation = defaultdict(list)
-        self.global_mean_fitness_score_per_validation = []
-        self.global_max_fitness_score_per_validation = []
         self.global_mean_validation_score_per_validation = []
         self.global_max_validation_score_per_validation = []
         self.global_opponent_results_per_validation = []
@@ -54,9 +52,6 @@ class RunInfo:
         self.final_teams_validations_ids = []
         self.accumulative_performance_summary = {}
         
-
-# self.global_mean_fitness_score_per_validation
-# self.global_max_fitness_score_per_validation
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
         msg += "seed: "+str(self.seed)

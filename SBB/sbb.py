@@ -19,7 +19,7 @@ from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
 from environments.poker.poker_environment import PokerEnvironment
 from core.selection import Selection
 from core.diversity_maintenance import DiversityMaintenance
-from utils.helpers import round_value, flatten
+from utils.helpers import round_value, flatten, round_array
 from utils.run_info import RunInfo
 from utils.team_reader import read_team_from_json
 from config import Config
@@ -276,8 +276,6 @@ class SBB:
 
         print "\n### Global Metrics:"
 
-        run_info.global_mean_fitness_score_per_validation.append(fitness_score_mean)
-        run_info.global_max_fitness_score_per_validation.append(round_value(max([team.fitness_ for team in older_teams])))
         print "\nfitness (global): "+str(fitness_score_mean)
 
         actions_distribution = Counter([p.action for p in programs_population])
@@ -399,52 +397,92 @@ class SBB:
 
     def _generate_overall_metrics_output(self, run_infos):       
         msg = "\n\n\n#################### OVERALL RESULTS ####################"
-        
-        msg += "\n\n\n##### GLOBAL METRICS"
-        final_scores = [run.global_mean_validation_score_per_validation[-1] for run in run_infos]
-        msg += "\n\nGlobal Validation Score per Run: "+str(final_scores)
-        msg += "\nmean: "+str(round_value(numpy.mean(final_scores)))
-        msg += "\nstd. deviation: "+str(round_value(numpy.std(final_scores)))
-        best_run = run_infos[final_scores.index(max(final_scores))]
-        msg += "\nbest run: "+str(best_run.run_id)
 
-        score_means, score_stds = self._process_scores([run.global_mean_fitness_score_per_validation for run in run_infos])
-        msg += "\n\nGlobal Train Score per Validation across Runs:"
+        score_means, score_stds = self._process_scores([run.global_mean_validation_score_per_validation for run in run_infos])
+        msg += "\n\nGlobal Mean Validation Score per Validation:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
-        score_means, score_stds = self._process_scores([run.global_mean_validation_score_per_validation for run in run_infos])
-        msg += "\n\nGlobal Validation Score per Validation across Runs:"
+        score_means, score_stds = self._process_scores([run.global_max_validation_score_per_validation for run in run_infos])
+        msg += "\n\nGlobal Max. Validation Score per Validation:"
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
         for key in Config.RESTRICTIONS['used_diversities']:
             score_means, score_stds = self._process_scores([run.global_diversity_per_validation[key] for run in run_infos])
-            msg += "\n\nMean Diversity per Validation across Runs ("+str(key)+"):"
+            msg += "\n\nGlobal Diversities per Validation ("+str(key)+"):"
             msg += "\nmean: "+str(score_means)
             msg += "\nstd. deviation: "+str(score_stds)
 
-        msg += "\n\n\n##### BEST TEAM METRICS"
+        score_means, score_stds = self._process_scores([run.test_score_per_validation for run in run_infos])
+        msg += "\n\nBest Team Validation Score per Validation (champion):"
+        msg += "\nmean: "+str(score_means)
+        msg += "\nstd. deviation: "+str(score_stds)
+
+        score_means, score_stds = self._process_scores([run.global_mean_fitness_per_generation for run in run_infos])
+        msg += "\n\nGlobal Mean Fitness Score per Training:"
+        msg += "\nmean: "+str(round_array(score_means, 3))
+        msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
+
+        score_means, score_stds = self._process_scores([run.global_max_fitness_per_generation for run in run_infos])
+        msg += "\n\nGlobal Max. Fitness Score per Training:"
+        msg += "\nmean: "+str(round_array(score_means, 3))
+        msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
+
+        if Config.USER['task'] == 'reinforcement':
+            msg += "\n\nFinal Teams Validations: "+str(flatten([round_array(run.final_teams_validations, 3) for run in run_infos]))
+        
+        score_means, score_stds = self._process_scores([run.actions_distribution_per_validation[-1] for run in run_infos])
+        msg += "\n\nDistribution of Actions per Validation (last gen.):"
+        msg += "\nmean: "+str(round_array(score_means, 2))
+        msg += "\nstd. deviation: "+str(round_array(score_stds, 2))
+        score_means, score_stds = self._process_scores([run.inputs_distribution_per_instruction_per_validation[-1] for run in run_infos])
+        msg += "\nDistribution of Inputs per Validation (per instruction) (last gen.):"
+        msg += "\nmean: "+str(round_array(score_means, 2))
+        msg += "\nstd. deviation: "+str(round_array(score_stds, 2))
+        score_means, score_stds = self._process_scores([run.inputs_distribution_per_team_per_validation[-1] for run in run_infos])
+        msg += "\nDistribution of Inputs per Validation (per team) (last gen.):"
+        msg += "\nmean: "+str(round_array(score_means, 2))
+        msg += "\nstd. deviation: "+str(round_array(score_stds, 2))
+
+        msg += "\n\nMean Team Sizes (last gen.): "+str(numpy.mean([run.mean_team_size_per_validation[-1] for run in run_infos]))
+        msg += "\nMean Program Sizes (with introns) (last gen.): "+str(numpy.mean([run.mean_program_size_with_introns_per_validation[-1] for run in run_infos]))
+        msg += "\nMean Program Sizes (without introns) (last gen.): "+str(numpy.mean([run.mean_program_size_without_introns_per_validation[-1] for run in run_infos]))
+        
+        msg += "\n"
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+            metric = "score"
+            msg += "\nOverall Accumulative Results ("+str(metric)+"):"
+            score_means, score_stds = self._process_scores([run.individual_performance_in_last_generation[metric] for run in run_infos])
+            msg += "\n- Individual Team Performance:"
+            msg += "\nmean: "+str(round_array(score_means, 3))
+            msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
+            score_means, score_stds = self._process_scores([run.accumulative_performance_in_last_generation[metric] for run in run_infos])
+            msg += "\n- Accumulative Team Performance:"
+            msg += "\nmean: "+str(round_array(score_means, 3))
+            msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
+
+        msg += "\n\n######"
+
+        final_scores = [run.global_mean_validation_score_per_validation[-1] for run in run_infos]
+        msg += "\n\nGlobal Mean Validation Score per Validation per Run: "+str(final_scores)
+        msg += "\nmean: "+str(round_value(numpy.mean(final_scores)))
+        msg += "\nstd. deviation: "+str(round_value(numpy.std(final_scores)))
+        best_run = run_infos[final_scores.index(max(final_scores))]
+        msg += "\nbest run: "+str(best_run.run_id)
+
         score_per_run = []
         for run in run_infos:
             score_per_run.append(round_value(run.best_team.score_testset_))
         self.best_scores_per_runs_ = score_per_run
-        msg += "\n\nBest Team Validation Score per Run: "+str(score_per_run)
+        msg += "\n\nBest Team Validation Score per Validation per Run (champion): "+str(score_per_run)
         msg += "\nmean: "+str(round_value(numpy.mean(score_per_run)))
         msg += "\nstd. deviation: "+str(round_value(numpy.std(score_per_run)))
         scores = [run.best_team.score_testset_ for run in run_infos]
         best_run = run_infos[scores.index(max(scores))]
         msg += "\nbest run: "+str(best_run.run_id)
 
-        score_means, score_stds = self._process_scores([run.train_score_per_validation for run in run_infos])
-        msg += "\n\nBest Team Train Score per Validation across Runs:"
-        msg += "\nmean: "+str(score_means)
-        msg += "\nstd. deviation: "+str(score_stds)
-
-        score_means, score_stds = self._process_scores([run.test_score_per_validation for run in run_infos])
-        msg += "\n\nBest Team Validation Score per Validation across Runs:"
-        msg += "\nmean: "+str(score_means)
-        msg += "\nstd. deviation: "+str(score_stds)
+        msg += "\n\n######"
 
         elapseds_per_run = [run.elapsed_time for run in run_infos]
         msg += "\n\nFinished execution, total elapsed time: "+str(round_value(sum(elapseds_per_run)))+" mins "

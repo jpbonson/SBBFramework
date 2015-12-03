@@ -33,10 +33,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_inputs = len(PokerConfig.CONFIG['inputs'])
         total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
 
-        # coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
-        # coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
-        coded_opponents_for_training = [PokerLooseAgressiveOpponent]
-        coded_opponents_for_validation = [PokerLooseAgressiveOpponent]
+        coded_opponents_for_training = Config.USER['reinforcement_parameters']['poker']['opponents']
+        coded_opponents_for_validation = Config.USER['reinforcement_parameters']['poker']['opponents']
 
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)

@@ -12,7 +12,7 @@ def round_value(value, round_decimals_to = Config.RESTRICTIONS['round_to_decimal
 def round_array(array, round_decimals_to = Config.RESTRICTIONS['round_to_decimals']):
     new_array = []
     for value in array:
-        new_array.append(round_value(value))
+        new_array.append(round_value(value, round_decimals_to))
     return new_array
 
 def flatten(list_of_lists):

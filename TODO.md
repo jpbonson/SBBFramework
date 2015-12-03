@@ -20,14 +20,18 @@ selecting points using age instead of uniform probability
 improve folder name
 improved hand_played metric
 added 'main metrics' to run_info
+improved group metrics per run + added option to select poker opponents
 ---
 
-- conferir runs de teste
-    - uniform, age, only 2 inputs, improved hand_played
-- bug no poker_match? testar com poker_analysis?
-- fitness e validation evoluindo?
-- ajeitar o output por conjunto de runs?
-- retestar SBB com varias combinacoes de parametros? (more matches?)
+- bug no poker_match? testar com poker_analysis? normalized_value ok? conferir codigo de novo?
+- runs de teste + fitness e validation evoluindo?
+- retestar SBB com varias combinacoes de parametros?
+    (more matches? tentar simplificar o problema? opponent always_raise? apenas o river?)
+    parameters to test:
+    - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
+    - use_weighted_probability_selection True or False?
+    - remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
+    - more...? (generations, matches...)
 - mandar email
 
 ===
@@ -35,11 +39,11 @@ Poker project update: Fully refactored the poker code, now runs are taking less 
 
 Hi Malcolm and Andy,
 
-An update on the poker project. I decided to fully refactor the poker code to get rid of the ACPC server, since I noticed that I had more than one thousand lines of codes just to handle bugs and errors from the server (and I was still finding more bugs lately...), and that accessing the ACPC server with processes and threads was very time consuming. I finished the refactoring today. I implemented the poker framework by myself, so now the code is much simpler and with less bugs (so I can generate 'hand histories' now, I already updated the poker analysis tool). Also, now everything related with hand evaluating is performed in a preprocessing step (I was doing it before, but ACPC still was consuming time to evaluate hands inside itself anyway), and since the code now is sequential, I am using 100% of the CPU.
+An update on the poker project. I decided to fully refactor the poker code to get rid of the ACPC server, since I noticed that I had more than one thousand lines of codes just to handle bugs and errors from the server (and I was still finding more bugs lately...), and that accessing the ACPC server with processes and threads was very time consuming. I finished the refactoring today. I implemented the poker framework by myself, so now the code is much simpler and with less bugs (so I can generate 'hand histories' now, I already updated the poker analysis tool to support them). Also, now everything related with hand evaluating is performed in a preprocessing step (I was doing it before, but ACPC still was consuming time to evaluate hands inside itself anyway). And since the code now is sequential, I am using 100% of the CPU.
 
-The main advantage is that now a run that previously took 3 days to complete is finishing in less than an hour. So I expect that the research will advance way quicker from now on.
+The main advantage is that now a run that previously took 3 days to complete is finishing in less than an hour. So I expect that the research will advance way quicker from now on. Now it is also easier to divide the poker task in easier subtasks (eg.: just one betting round, just one action per round...). This will be the next thing that I will focus on.
 
-I must take the next days to focus on the class that I am taking (project and final exam), so I will stop the work on the research in the next days and resume it after I finish the class's work.
+I must take the next days to focus on the class that I am taking (project and final exam), so I will stop the work on the research in the next days and resume it after I finish the class's work. I attached a file with the initial results for the current system.
 
 Regards,
 Jessica
@@ -113,11 +117,6 @@ Jessica
 
 
 ---
-parameters to test:
-- what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
-- use_weighted_probability_selection True or False?
-- remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
-- more...? (generations, matches...)
 
 nims pc:
 - ...
