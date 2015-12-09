@@ -52,6 +52,7 @@ class PokerAnalysis():
         Config.USER['reinforcement_parameters']['debug']['matches'] = generate_debug_files_per_match
         Config.USER['reinforcement_parameters']['debug']['print'] = True
         Config.USER['reinforcement_parameters']['poker']['river_round_only'] = river_round_only
+        Config.USER['reinforcement_parameters']['poker']['river_only_to_fullgame'] = False
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
         if seed is None:
             seed = random.randint(0, Config.RESTRICTIONS['max_seed'])

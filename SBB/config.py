@@ -36,6 +36,7 @@ class Config():
             'poker': {
                 'opponents': [PokerLooseAgressiveOpponent], #[PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent],
                 'river_round_only': False,
+                'river_only_to_fullgame': True, # changed from one to another in half the generations, ignores 'river_round_only'
             },
         },
 

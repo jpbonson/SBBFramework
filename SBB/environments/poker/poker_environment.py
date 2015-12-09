@@ -42,6 +42,9 @@ class PokerEnvironment(ReinforcementEnvironment):
         self.num_lines_per_file_ = []
         self.backup_points_per_label = None
 
+        if Config.USER['reinforcement_parameters']['poker']['river_only_to_fullgame']:
+            Config.USER['reinforcement_parameters']['poker']['river_round_only'] = True
+
     def _initialize_random_population_of_points(self, population_size, ignore_cache = False):
         if len(self.num_lines_per_file_) == 0:
             for label in range(self.total_labels_):
@@ -224,6 +227,12 @@ class PokerEnvironment(ReinforcementEnvironment):
             point.teams_results_ = []
 
         best_team = super(PokerEnvironment, self).validate(current_generation, teams_population)
+
+        if Config.USER['reinforcement_parameters']['poker']['river_only_to_fullgame']:
+            print "current_generation: "+str(current_generation)
+            if current_generation >= Config.USER['training_parameters']['generations_total']/2:
+                Config.USER['reinforcement_parameters']['poker']['river_round_only'] = False
+
         return best_team
 
     def metrics(self):

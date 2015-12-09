@@ -29,8 +29,10 @@ added mean and std result as metric + fixed bug with validation and champion pop
 Conclusions (main):
 - I will rerun the setup with all 4 opponents, but instead of the SBB players going against only one of them per generation, instead they will play against all 4 of them in each generation (since now the runs run fast enough, I am able to add more matches per generation). I think that as it is now the players aren't being able to evolve diverse behaviors, since players that are good against LA are discard when they go against TP and so on.
 - I will execute some trial runs with the first 100 generations with 'river only', and then change to 'full game'.
+    - objetivo: fazer run 2 ter comportamento igual ao do run 6, mas para fullgame
 - automatizar second layer (usar outro point set para escolher os teams + salvarviolin plot logo antes do second layer)
 - + gerar results para o project
+- river_only_to_fullgame+LA
 
 Conclusions (extra):
 - Look for bugs. I have already looked a lot for bugs, so I am pretty sure there aren't bugs anymore. But since I think the current behaviors are suspectful, I will take more time looking for bugs just to be sure.

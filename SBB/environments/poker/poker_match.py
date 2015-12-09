@@ -115,7 +115,8 @@ class PokerMatch():
         ### Starting match
 
         self.rounds = [[], [], [], []]
-        if not Config.USER['reinforcement_parameters']['poker']['river_round_only']:
+        if (not Config.USER['reinforcement_parameters']['poker']['river_round_only'] or 
+                (Config.USER['reinforcement_parameters']['poker']['river_only_to_fullgame'] and not self.is_training)):
             if Config.USER['reinforcement_parameters']['debug']['matches']:
                 self.debug_file.write("*** HOLE CARDS ***\n")
             self.round_id = 0 # preflop
