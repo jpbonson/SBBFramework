@@ -32,7 +32,7 @@ Conclusions (main):
     - objetivo: fazer run 2 ter comportamento igual ao do run 6, mas para fullgame
 - automatizar second layer (usar outro point set para escolher os teams + salvarviolin plot logo antes do second layer)
 - + gerar results para o project
-- river_only_to_fullgame+LA
+- river_only_to_fullgame+LA, fullgame+new4O, river_only_to_fullgame+new4O
 
 Conclusions (extra):
 - Look for bugs. I have already looked a lot for bugs, so I am pretty sure there aren't bugs anymore. But since I think the current behaviors are suspectful, I will take more time looking for bugs just to be sure.

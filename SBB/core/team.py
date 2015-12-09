@@ -250,8 +250,6 @@ class Team(DefaultOpponent):
         if Config.USER['task'] == 'classification' and self.extra_metrics_:
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
         if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
-            if 'last_training_opponent' in self.extra_metrics_:
-                msg += "\nlast opponent played against (training): "+self.extra_metrics_['last_training_opponent']
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':
                 if 'total_hands' in self.extra_metrics_:
                     if self.extra_metrics_['total_hands']['validation'] > 0:
@@ -288,17 +286,21 @@ class Team(DefaultOpponent):
                 msg += "\n\nscore per opponent (champion): "+str(self.extra_metrics_['champion_score'])
                 for key in self.extra_metrics_['opponents']:
                     msg += "\n"+key+": "+str(self.extra_metrics_['champion_opponents'][key])
-        if full_version:
-            if Config.USER['task'] == 'classification' and self.extra_metrics_:
-                msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
-                msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])
             if Config.USER['task'] == 'reinforcement' and 'validation_score' in self.extra_metrics_:
                 msg += "\n\nscore per opponent (validation): "+str(self.extra_metrics_['validation_score'])
                 for key in self.extra_metrics_['validation_opponents']:
                     msg += "\n"+key+": "+str(self.extra_metrics_['validation_opponents'][key])
+            if Config.USER['task'] == 'reinforcement':
+                msg += "\n\nscore per opponent (training): "+str(round_value(self.fitness_))
+                for key in self.extra_metrics_['training_opponents']:
+                    msg += "\n"+key+": "+str(self.extra_metrics_['training_opponents'][key])
             msg += "\n"
+        if full_version:
+            if Config.USER['task'] == 'classification' and self.extra_metrics_:
+                msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
+                msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])
             for key, value in self.diversity_.iteritems():
-                msg +=  "\n"+str(key)+": "+str(value)
+                msg += "\n"+str(key)+": "+str(value)
         return msg
 
     def inputs_distribution(self):

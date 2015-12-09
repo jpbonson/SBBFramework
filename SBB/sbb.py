@@ -262,9 +262,7 @@ class SBB:
             run_info.global_mean_validation_score_per_validation.append(validation_score_mean)
             run_info.global_max_validation_score_per_validation.append(round_value(max([team.extra_metrics_['validation_score'] for team in older_teams])))
             run_info.global_opponent_results_per_validation.append(opponent_means)               
-            print "score per opponent (validation): "+str(best_team.extra_metrics_['validation_score'])+" (global: "+str(validation_score_mean)+")"
-            for key in best_team.extra_metrics_['validation_opponents']:
-                print key+": "+str(best_team.extra_metrics_['validation_opponents'][key])+" (global: "+str(opponent_means[key])+")"
+            print "\nglobal validation score (mean): "+str(validation_score_mean)
             run_info.final_teams_validations = [team.extra_metrics_['validation_score'] for team in older_teams]
         if Config.USER['task'] == 'classification':
             validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
@@ -313,10 +311,7 @@ class SBB:
 
         print
         print "Global Fitness (last 10 gen.): "+str(run_info.global_mean_fitness_per_generation[-10:])
-        
-        if Config.USER['task'] == 'reinforcement':
-            print "Opponent Type (last 10 gen.): "+str(run_info.opponent_type_per_generation[-10:])
-        
+               
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
             print "Global Diversity (last 10 gen.):"
             for diversity in Config.RESTRICTIONS['used_diversities']:
@@ -384,8 +379,10 @@ class SBB:
             run_info.global_fitness_per_diversity_per_generation[self.selection.previous_diversity_].append(mean_fitness)
             run_info.novelty_type_per_generation.append(Config.RESTRICTIONS['used_diversities'].index(self.selection.previous_diversity_))
         if Config.USER['task'] == 'reinforcement':
-            run_info.global_fitness_per_opponent_per_generation[self.environment.previous_population_type_].append(mean_fitness)
-            run_info.opponent_type_per_generation.append(self.environment.opponent_names_for_training_.index(self.environment.previous_population_type_))
+            opponents = older_teams[0].extra_metrics_['training_opponents'].keys()
+            for opponent in opponents:
+                mean_fitness_per_opponent = round_value(numpy.mean([team.extra_metrics_['training_opponents'][opponent] for team in older_teams]), 3)
+                run_info.global_fitness_per_opponent_per_generation[opponent].append(mean_fitness_per_opponent)
 
     def _store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         run_info.best_team = best_team
@@ -410,11 +407,19 @@ class SBB:
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
+        msg += "\n\nGlobal Diversities per Validation:"
         for key in Config.RESTRICTIONS['used_diversities']:
             score_means, score_stds = self._process_scores([run.global_diversity_per_validation[key] for run in run_infos])
-            msg += "\n\nGlobal Diversities per Validation ("+str(key)+"):"
-            msg += "\nmean: "+str(score_means)
-            msg += "\nstd. deviation: "+str(score_stds)
+            msg += "\n- "+str(key)+":"
+            msg += "\n- mean: "+str(score_means)
+            msg += "\n- std. deviation: "+str(score_stds)
+
+        msg += "\n\nGlobal Fitness per Opponent per Training:"
+        for key in run_infos[0].global_fitness_per_opponent_per_generation.keys():
+            score_means, score_stds = self._process_scores([run.global_fitness_per_opponent_per_generation[key] for run in run_infos])
+            msg += "\n- "+str(key)+":"
+            msg += "\n- mean: "+str(score_means)
+            msg += "\n- std. deviation: "+str(score_stds)
 
         score_means, score_stds = self._process_scores([run.test_score_per_validation for run in run_infos])
         msg += "\n\nBest Team Validation Score per Validation (champion):"
