@@ -26,18 +26,27 @@ added program bid winner to poker log
 added mean and std result as metric + fixed bug with validation and champion population sizes
 ---
 
-- runs de teste + fitness e validation evoluindo? (goal: fitness increasing steadly)
-    - all 4, loose aggressive, always raise
-    - river only: all 4 (22073), loose aggressive (22075), always raise (22077)
+Conclusions (main):
+- I will rerun the setup with all 4 opponents, but instead of the SBB players going against only one of them per generation, instead they will play against all 4 of them in each generation (since now the runs run fast enough, I am able to add more matches per generation). I think that as it is now the players aren't being able to evolve diverse behaviors, since players that are good against LA are discard when they go against TP and so on.
+- I will execute some trial runs with the first 100 generations with 'river only', and then change to 'full game'.
+- automatizar second layer (usar outro point set para escolher os teams + salvarviolin plot logo antes do second layer)
+- + gerar results para o project
+
+Conclusions (extra):
+- Look for bugs. I have already looked a lot for bugs, so I am pretty sure there aren't bugs anymore. But since I think the current behaviors are suspectful, I will take more time looking for bugs just to be sure.
+- I will calculate by hand what are the best possible average scores someone can get against the 4 types of opponents, to better understand the performance of the SBB teams.
+- Review all poker papers I have read and summarize how they benchmarked their poker players, in order to find out if what I am doing is ok or there are better ways to benchmark my results.
+
+- mandar rodar runs
 - retestar SBB com varias combinacoes de parametros?
     (more matches? tentar simplificar o problema? opponent always_raise? apenas o river?)
     parameters to test:
     - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
-    - use_weighted_probability_selection True or False?
     - remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
     - analisar uso dos inputs
     - profile size?
     - more...? (generations, matches...)
+    - usar hall_of_fame para gerar second layer? (junto com top, e sozinho?)
 - mandar email (charts + sample de log de run de poker)
 
 
@@ -60,7 +69,9 @@ Regards,
 Jessica
 ===
 
+- enfrentar todos os 4 oponentes em cada generation? 100 matches de cada?
 - implementar forma de second layer ser gerado automaticamente durante a execucao?
+    - usar um conjunto de points independente da validation para gerar as acc curves, para nao 'sujar' a validation
 - gerar pastas top5, top10 e top15 automaticamente?
 - corrigir poker_match para funcionar com hall_of_fame
 - fazer printar avg de behaviors do time no poker analysis
@@ -381,3 +392,20 @@ apenas de oponentes fortes, e perder quando enfrentar os fracos)
     - get the best ones per run, focusing in which opponents they are able to beat
     - apply pareto to try to obtain a diverse front
     - use a second layer (hierarquical SBB) to let SBB itself decide it
+
+----------------------
+
+##### Results using Mann-Whitney U-Test (http://www.socscistatistics.com/tests/mannwhitney/Default2.aspx):
+### COMPARISON REGARDING PARETO FRONT
+THYROID_DEFAULT < THYROID_WITH_PARETOS:
+The U-value is 137. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is -3.3955. The p-value is 0.00068. The result is significant at p <= 0.05.
+THYROID_WITH_PARETOS == THYROID_WITH_PARETO_FOR_TEAM_ONLY
+The U-value is 278. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is 0.6597. The p-value is 0.50926. The result is not significant at p <= 0.05.
+THYROID_WITH_PARETOS > THYROID_WITH_PARETO_FOR_POINT_ONLY
+The U-value is 190. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is 2.3671. The p-value is 0.01778. The result is significant at p <= 0.05.
+THYROID_WITH_PARETO_FOR_TEAM_ONLY == THYROID_WITH_PARETO_FOR_POINT_ONLY
+The U-value is 219. The distribution is approximately normal. Therefore, the Z-value can be used.
+The Z-Score is 1.8045. The p-value is 0.07186. The result is not significant at p <= 0.05.

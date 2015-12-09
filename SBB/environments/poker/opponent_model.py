@@ -80,7 +80,6 @@ class OpponentModel():
         self.self_agressiveness_postflop = []
         self.opponent_agressiveness_preflop = []
         self.opponent_agressiveness_postflop = []
-        self.last_opponent_action_in_last_hand = None
         self.self_tight_loose = []
         self.opponent_tight_loose = []
         self.self_passive_aggressive = []
@@ -110,22 +109,23 @@ class OpponentModel():
                 self.opponent_agressiveness_preflop.append(agressiveness)
             else:
                 self.opponent_agressiveness_postflop.append(agressiveness)
-            self.last_opponent_action_in_last_hand = OpponentModel.calculate_points([opponent_actions[-1]])
             self.opponent_passive_aggressive.append(OpponentModel.calculate_points_only_for_call_and_raise(opponent_actions))
         if total_rounds > 1:
             self.self_tight_loose.append(1.0)
             self.opponent_tight_loose.append(1.0)
         else:
-            self.self_tight_loose.append(0.0)
-            self.opponent_tight_loose.append(0.0)
+            if 'f' in self_actions:
+                self.self_tight_loose.append(0.0)
+                self.opponent_tight_loose.append(1.0)
+            else:
+                self.self_tight_loose.append(1.0)
+                self.opponent_tight_loose.append(0.0)
 
     def inputs(self, self_actions, opponent_actions):
         inputs = [0.5] * len(OpponentModel.INPUTS)
 
         if len(opponent_actions) > 0:
             inputs[0] = OpponentModel.calculate_points([opponent_actions[-1]])
-        elif self.last_opponent_action_in_last_hand is not None:
-            inputs[0] = self.last_opponent_action_in_last_hand
         else:
             inputs[0] = 0.5
 

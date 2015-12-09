@@ -77,7 +77,8 @@ class Selection:
                     fitness.append(team.fitness_)
             total_fitness = sum(fitness)
             probabilities = [f/float(total_fitness) for f in fitness]
-            return numpy.random.choice(teams_population, size = new_teams_to_create, replace = True, p = probabilities)
+            result =  numpy.random.choice(teams_population, size = new_teams_to_create, replace = True, p = probabilities)
+            return result
         else:
             return numpy.random.choice(teams_population, size = new_teams_to_create, replace = True)
 

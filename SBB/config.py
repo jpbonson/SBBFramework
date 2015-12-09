@@ -26,7 +26,7 @@ class Config():
                 'size': 10,
                 'enabled': True,
                 'use_as_opponents': False, # WARNING: 'True' doesnt work for poker!
-                'diversity': 'entropy_c3', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+                'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             },
             'debug': {
                 'print': False,
@@ -34,7 +34,7 @@ class Config():
                 'output_path': 'SBB/environments/poker/logs/',
             },
             'poker': {
-                'opponents': [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent],
+                'opponents': [PokerLooseAgressiveOpponent], #[PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent],
                 'river_round_only': False,
             },
         },

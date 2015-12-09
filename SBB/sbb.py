@@ -250,6 +250,7 @@ class SBB:
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]
 
         fitness_score_mean = round_value(numpy.mean([team.fitness_ for team in older_teams]))
+        fitness_score_std = round_value(numpy.std([team.fitness_ for team in older_teams]))
 
         if Config.USER['task'] == 'reinforcement':
             validation_score_mean = round_value(numpy.mean([team.extra_metrics_['validation_score'] for team in older_teams]))
@@ -276,7 +277,8 @@ class SBB:
 
         print "\n### Global Metrics:"
 
-        print "\nfitness (global): "+str(fitness_score_mean)
+        print "\nfitness, mean (global): "+str(fitness_score_mean)
+        print "\nfitness, std (global): "+str(fitness_score_std)
 
         actions_distribution = Counter([p.action for p in programs_population])
         print "\nactions distribution: "+str(actions_distribution)

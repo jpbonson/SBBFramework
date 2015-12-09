@@ -2,6 +2,7 @@ import os
 from match_state import MatchState
 from poker_config import PokerConfig
 from opponent_model import OpponentModel
+from ...utils.helpers import round_value
 from ...config import Config
 
 class PokerMatch():
@@ -305,6 +306,8 @@ class PokerMatch():
         if match_state.player_key == 'team': # update here for hall of fame
             inputs += self._get_opponent_model_for_team().inputs(match_state.actions, opponent_actions)
         if Config.USER['reinforcement_parameters']['debug']['matches']:
+            if match_state.player_key == 'team': # update here for hall of fame
+                self.debug_file.write("    >> registers: "+str([(p.program_id_, [round_value(r, 2) for r in p.general_registers]) for p in player.programs])+"\n")
             self.debug_file.write("    >> inputs: "+str(inputs)+"\n")
         action = player.execute(self.point.point_id_, inputs, self._valid_actions(), self.is_training)
         if Config.USER['reinforcement_parameters']['debug']['matches']:

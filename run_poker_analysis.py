@@ -7,12 +7,12 @@ from SBB.utils.helpers import round_value
 if __name__ == "__main__":
     start_time = time.time()
     PokerAnalysis().run_for_all_opponents(
-        matches=10, 
-        balanced=True, 
-        team_file="poker_analysis_files/best_team1.json", 
+        matches=1000, 
+        balanced=False, 
+        team_file="poker_analysis_files/best_team.json", 
         generate_debug_files_per_match=True,
-        debug_folder='poker_analysis_outputs/best_team1/',
-        river_round_only = True,
+        debug_folder='poker_analysis_outputs/best_team_unbalanced/',
+        river_round_only = False,
         seed=1
     )
     # PokerAnalysis().run(
