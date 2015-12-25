@@ -418,8 +418,8 @@ class SBB:
         for key in run_infos[0].global_fitness_per_opponent_per_generation.keys():
             score_means, score_stds = self._process_scores([run.global_fitness_per_opponent_per_generation[key] for run in run_infos])
             msg += "\n- "+str(key)+":"
-            msg += "\n- mean: "+str(score_means)
-            msg += "\n- std. deviation: "+str(score_stds)
+            msg += "\n- mean: "+str(round_array(score_means, 2))
+            msg += "\n- std. deviation: "+str(round_array(score_stds, 2))
 
         score_means, score_stds = self._process_scores([run.test_score_per_validation for run in run_infos])
         msg += "\n\nBest Team Validation Score per Validation (champion):"

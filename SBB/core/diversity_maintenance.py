@@ -159,6 +159,7 @@ class DiversityMaintenance():
         y_len = len(bz2.compress("".join(other_action_sequence)))
         xy_len = len(bz2.compress("".join(action_sequence+other_action_sequence)))
         distance = (xy_len - min(x_len, y_len))/float(max(x_len, y_len))
+        distance = distance/Config.RESTRICTIONS['diversity']['max_ncd']
         if distance < 0.0:
             print "Warning! Value lower than 0.0 for NCD! Value: "+str(distance)+" ("+str(x_len)+","+str(y_len)+","+str(xy_len)+")"
             distance = 0.0

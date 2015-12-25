@@ -24,22 +24,16 @@ improved group metrics per run + added option to select poker opponents
 added option to run river only
 added program bid winner to poker log
 added mean and std result as metric + fixed bug with validation and champion population sizes
+fixed max ncd + rounding report metrics
 ---
 
-Conclusions (main):
-- I will rerun the setup with all 4 opponents, but instead of the SBB players going against only one of them per generation, instead they will play against all 4 of them in each generation (since now the runs run fast enough, I am able to add more matches per generation). I think that as it is now the players aren't being able to evolve diverse behaviors, since players that are good against LA are discard when they go against TP and so on.
-- I will execute some trial runs with the first 100 generations with 'river only', and then change to 'full game'.
-    - objetivo: fazer run 2 ter comportamento igual ao do run 6, mas para fullgame
+- comparar runs com e sem 1000 matches
+
+Conclusions:
 - automatizar second layer (usar outro point set para escolher os teams + salvarviolin plot logo antes do second layer)
-- + gerar results para o project
-- river_only_to_fullgame+LA, fullgame+new4O, river_only_to_fullgame+new4O
+- conferir runs + mandar rodar runs
+- conferir/organizar proximos passos
 
-Conclusions (extra):
-- Look for bugs. I have already looked a lot for bugs, so I am pretty sure there aren't bugs anymore. But since I think the current behaviors are suspectful, I will take more time looking for bugs just to be sure.
-- I will calculate by hand what are the best possible average scores someone can get against the 4 types of opponents, to better understand the performance of the SBB teams.
-- Review all poker papers I have read and summarize how they benchmarked their poker players, in order to find out if what I am doing is ok or there are better ways to benchmark my results.
-
-- mandar rodar runs
 - retestar SBB com varias combinacoes de parametros?
     (more matches? tentar simplificar o problema? opponent always_raise? apenas o river?)
     parameters to test:
@@ -49,27 +43,7 @@ Conclusions (extra):
     - profile size?
     - more...? (generations, matches...)
     - usar hall_of_fame para gerar second layer? (junto com top, e sozinho?)
-- mandar email (charts + sample de log de run de poker)
-
-
-===
-Hi Malcolm,
-
-I would like to give a try at publishing a paper in January. I would like to know your opinion on which of the followings things accomplished by now would be 'paper worthy' and if I should aim for a short or full paper and in what type of conference. I think that it would be an interesting experience even if I get rejected, since I will have feedback to what should be improved and an initial paper to try again around March. I am asking ahead of time so I have enough time to focus on obtaining specific results for the paper, and to write it.
-
-1) [main] SBB + poker integration (ie. inputs, formulas, heuristics (hand balance, reward function...), opponents, opponent model, points, match preprocessing, diversities (+inputs for the diversities)) + current results (types of behaviors + score against baseline opponents (ie. loose aggressive, loose passive, tight aggressive, tight passive, always fold, always call, always raise, random))
-2) [extra] Comparison across various diversity metrics and how they impacted the teams' evolution
-3) [extra] Second layer + initial results
-4) [work in progress, I will try it during December] Comparison between the original approach (teams try to play the whole game from start) and dividing the poker task into simpler tasks that complexify over time until they become the full game.
-5) [work in progress, future] Comparison between the current approach (opponents with fixed behaviors) and opponents that also evolve over time.
-
-By the way, I refactored the code to get rid of the ACPC server. At the end of the day it was causing too many hideous bugs (the server don't inform almost anything in a clear way, including errors), the code was overly complex (due to using threads and process to communicate with the C code, now it is just a sequential code), and took a longer time to compute the results. It also enables me to divide the poker task in simpler tasks (eg.: just the last round, or just 1 bet per round). I also made a few other modifications on the code and the inputs.
-
-In case you have some free time, it would be nice to have a meeting in this or in the next week.
-
-Regards,
-Jessica
-===
+- usar simulacoes de monte carlo?
 
 - enfrentar todos os 4 oponentes em cada generation? 100 matches de cada?
 - implementar forma de second layer ser gerado automaticamente durante a execucao?
@@ -77,7 +51,6 @@ Jessica
 - gerar pastas top5, top10 e top15 automaticamente?
 - corrigir poker_match para funcionar com hall_of_fame
 - fazer printar avg de behaviors do time no poker analysis
-- gerar baseline no poker_analise com team random, always_call, always_fold, e always_raise
 
 - baseado em checkpoints a cada 50 generations:
     - sempre comparar runs com a versao com e sem checkpoints
@@ -193,10 +166,9 @@ scp -r username@destination_host:destination_folder source_file_name
 - 6 hours per 5000 hands (total 10000 hands)
 
 future work:
-- fazer projeto apenas com o codigo de jogar poker?
 - more players in the table?
 - nos testes, checar se os teams sabem blefar
-- refatorar codigo (separar poker_environment em mais arquivo, etc)
+- refatorar codigo
 - ir testando enquanto implementa:
     - (pc de casa, pc do lab (4 cores), NIMS server (6 cores), Hector)
 - permitir um player humano jogar contra um time SBB? (e outros players de AI tambem)

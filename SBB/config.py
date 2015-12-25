@@ -20,8 +20,8 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 600, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 1000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 2000, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 5000, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'hall_of_fame': {
                 'size': 10,
                 'enabled': True,
@@ -41,12 +41,12 @@ class Config():
         },
 
         'training_parameters': {
-            'runs_total': 5,
-            'generations_total': 200,
+            'runs_total': 1,
+            'generations_total': 100,
             'validate_after_each_generation': 20,
             'populations': {
                 'teams': 100,
-                'points': 300,
+                'points': 1000,
             },
             'replacement_rate': {
                 'teams': 0.5,
@@ -136,6 +136,7 @@ class Config():
         'diversity': {
             'options': ['genotype', 'fitness_sharing', 'entropy_c2', 'hamming_c3', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
             'total_bins': 3, # used to quantize the distances for the diversity metrics
+            'max_ncd': 1.05,
         },
         'second_layer': {
             'action_mapping': {}, # initialized by sbb.py
