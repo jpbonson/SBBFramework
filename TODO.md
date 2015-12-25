@@ -25,14 +25,18 @@ added option to run river only
 added program bid winner to poker log
 added mean and std result as metric + fixed bug with validation and champion population sizes
 fixed max ncd + rounding report metrics
+remvoed pot and volatility
 ---
 
 - retestar com 500 matches? oponentes? generations? fullgame ou river-to-fullgame?
     - 200 x 400 x 800 matches?
     - fullgame x river_to_fullgame
     - 5 runs?
-    - all 4 opponents (ou comecar apenas com LA?)
+    - all 4 opponents
     - 300 gens
+    - fullgame800 (1), river_to_fullgame800 (2), LA_to_all ()
+    - fullgame400 (3 28128), river_to_fullgame400 (4 28131), LA_to_all (SBB2 6 28255)
+    - fullgame200 (1 28108), river_to_fullgame200 (2 28126), LA_to_all (SBB2 5 28253)
 
 Conclusions:
 - automatizar second layer
@@ -45,7 +49,7 @@ Conclusions:
 - retestar SBB com varias combinacoes de parametros?
     parameters to test:
     - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
-    - analisar uso dos inputs
+    - analisar uso dos inputs (bet == opp last action?)
     - profile size?
     - more...? (generations, matches...)
     - usar hall_of_fame para gerar second layer? (junto com top, e sozinho?)

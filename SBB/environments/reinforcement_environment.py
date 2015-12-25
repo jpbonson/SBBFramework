@@ -68,7 +68,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def _ensure_balanced_population_size_for_training(self):
         pop_size = Config.USER['training_parameters']['populations']['points']
-        temp = len(self.coded_opponents_for_training_)*self.total_labels_
+        if Config.USER['reinforcement_parameters']['poker']['LA_to_all']:
+            temp = len(self.coded_opponents_for_validation_)*self.total_labels_
+        else:
+            temp = len(self.coded_opponents_for_training_)*self.total_labels_
         pop_size = (pop_size/temp)*temp
         Config.USER['training_parameters']['populations']['points'] = pop_size
 
@@ -117,7 +120,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             self.champion_point_population_for_hall_of_fame_ = population[Config.USER['reinforcement_parameters']['champion_population']:]
         else:
             self.champion_point_population_ = self._initialize_random_population_of_points(Config.USER['reinforcement_parameters']['champion_population'], ignore_cache = True)
-        self.training_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['training_parameters']['populations']['points'])
+        self.training_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_training(Config.USER['training_parameters']['populations']['points'])
         self.validation_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
@@ -131,6 +134,14 @@ class ReinforcementEnvironment(DefaultEnvironment):
             self.opponent_population_[opponent_class.OPPONENT_ID] = [self._instantiate_coded_opponent(opponent_class)]
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             self.opponent_population_['hall_of_fame'] = []
+
+    def _initialize_random_balanced_population_of_coded_opponents_for_training(self, population_size):
+        population = []
+        total_per_opponent = population_size/len(self.coded_opponents_for_training_)
+        for opponent_class in self.coded_opponents_for_training_:
+            for index in range(total_per_opponent):
+                population.append(self._instantiate_coded_opponent(opponent_class))
+        return population
 
     def _initialize_random_balanced_population_of_coded_opponents_for_validation(self, population_size):
         population = []
