@@ -27,28 +27,31 @@ added mean and std result as metric + fixed bug with validation and champion pop
 fixed max ncd + rounding report metrics
 ---
 
-- comparar runs com e sem 1000 matches
+- retestar com 500 matches? oponentes? generations? fullgame ou river-to-fullgame?
+    - 200 x 400 x 800 matches?
+    - fullgame x river_to_fullgame
+    - 5 runs?
+    - all 4 opponents (ou comecar apenas com LA?)
+    - 300 gens
 
 Conclusions:
-- automatizar second layer (usar outro point set para escolher os teams + salvarviolin plot logo antes do second layer)
+- automatizar second layer
+    - usar outro point set para escolher os teams + salvarviolin plot logo antes do second layer
+    - usar um conjunto de points independente da validation para gerar as acc curves, para nao 'sujar' a validation
+    - gerar pastas top5, top10 e top15 automaticamente?
 - conferir runs + mandar rodar runs
 - conferir/organizar proximos passos
 
 - retestar SBB com varias combinacoes de parametros?
-    (more matches? tentar simplificar o problema? opponent always_raise? apenas o river?)
     parameters to test:
     - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
-    - remover volatility? (equivalente a tight_loose) remover pot e bet? (equivalente a pot_odds)
     - analisar uso dos inputs
     - profile size?
     - more...? (generations, matches...)
     - usar hall_of_fame para gerar second layer? (junto com top, e sozinho?)
+
 - usar simulacoes de monte carlo?
 
-- enfrentar todos os 4 oponentes em cada generation? 100 matches de cada?
-- implementar forma de second layer ser gerado automaticamente durante a execucao?
-    - usar um conjunto de points independente da validation para gerar as acc curves, para nao 'sujar' a validation
-- gerar pastas top5, top10 e top15 automaticamente?
 - corrigir poker_match para funcionar com hall_of_fame
 - fazer printar avg de behaviors do time no poker analysis
 

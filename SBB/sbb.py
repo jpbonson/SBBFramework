@@ -304,7 +304,7 @@ class SBB:
                 inputs_distribution_per_team_array.append(inputs_distribution_per_team[value])
             else:
                 inputs_distribution_per_team_array.append(0)
-        print "inputs distribution (global, per instruction): "+str(inputs_distribution_per_instruction_array)
+        print "inputs distribution (global, per program): "+str(inputs_distribution_per_instruction_array)
         print "inputs distribution (global, per team): "+str(inputs_distribution_per_team_array)
         run_info.inputs_distribution_per_instruction_per_validation.append(inputs_distribution_per_instruction_array)
         run_info.inputs_distribution_per_team_per_validation.append(inputs_distribution_per_team_array)
@@ -444,7 +444,7 @@ class SBB:
         msg += "\nmean: "+str(round_array(score_means, 2))
         msg += "\nstd. deviation: "+str(round_array(score_stds, 2))
         score_means, score_stds = self._process_scores([run.inputs_distribution_per_instruction_per_validation[-1] for run in run_infos])
-        msg += "\nDistribution of Inputs per Validation (per instruction) (last gen.):"
+        msg += "\nDistribution of Inputs per Validation (per program) (last gen.):"
         msg += "\nmean: "+str(round_array(score_means, 2))
         msg += "\nstd. deviation: "+str(round_array(score_stds, 2))
         score_means, score_stds = self._process_scores([run.inputs_distribution_per_team_per_validation[-1] for run in run_infos])

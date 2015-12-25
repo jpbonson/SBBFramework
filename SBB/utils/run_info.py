@@ -73,7 +73,7 @@ class RunInfo:
             msg += "\nFinal Teams Validations: "+str(self.final_teams_validations)
         msg += "\n"
         msg += "\nDistribution of Actions per Validation (last gen.): "+str(self.actions_distribution_per_validation[-1])
-        msg += "\nDistribution of Inputs per Validation (per instruction) (last gen.): "+str(self.inputs_distribution_per_instruction_per_validation[-1])
+        msg += "\nDistribution of Inputs per Validation (per program) (last gen.): "+str(self.inputs_distribution_per_instruction_per_validation[-1])
         msg += "\nDistribution of Inputs per Validation (per team) (last gen.): "+str(self.inputs_distribution_per_team_per_validation[-1])
         msg += "\nMean Team Sizes (last gen.): "+str(self.mean_team_size_per_validation[-1])
         msg += "\nMean Program Sizes (with introns) (last gen.): "+str(self.mean_program_size_with_introns_per_validation[-1])
@@ -134,7 +134,7 @@ class RunInfo:
 
         msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
         msg += "\n\nDistribution of Actions per Validation: "+str(self.actions_distribution_per_validation)
-        msg += "\n\nDistribution of Inputs per Validation (per instruction): "+str(self.inputs_distribution_per_instruction_per_validation)
+        msg += "\n\nDistribution of Inputs per Validation (per program): "+str(self.inputs_distribution_per_instruction_per_validation)
         msg += "\n\nDistribution of Inputs per Validation (per team): "+str(self.inputs_distribution_per_team_per_validation)
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\nPoints Distribution for the Validation Population: "+str(self.validation_population_distribution_per_validation) # Validation Population Distribution per Validation
