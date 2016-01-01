@@ -26,7 +26,10 @@ added program bid winner to poker log
 added mean and std result as metric + fixed bug with validation and champion population sizes
 fixed max ncd + rounding report metrics
 remvoed pot and volatility
+removed input 'bet' and rmeoved option LA_to_all
 ---
+
+* refactored OpponentModel + added inputs 'bluffing' and short-term self and opp aggr
 
 rerodar melhor run + runs com modificacoes
 
@@ -45,9 +48,6 @@ rerodar melhor run + runs com modificacoes
     - nao usar checkpoint no second layer, comecar com fullgame?
 - conferir como papers validaram os resultados (em especial, os em journals bons)
     - + fazer doc com exemplos de charts usados nos papers de SBB + outros papers
-- checkpoints ajudam? mais matches ajudam?
-    - runs rodando
-        - fullgame400 (3 28128), river_to_fullgame400 (4 28131)
 - parameters to test:
     - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
     - profile size?
@@ -68,14 +68,10 @@ rerodar melhor run + runs com modificacoes
     - define pages/paragraphs for each section
     - write (nao necessariamente rpeciso usar todos os papers para cada section)
 - extras
-    - remover 'LA_to_all'?
     - fazer printar avg de behaviors do time no poker analysis
     - refatorar classe OpponentModel (separar self e opponent)
     - implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
     - coevolving opponents?
-    - adicionar input para bluffing do opp?
-        - (eg.: agressividade/hand_str) (no SBB e no analysis?) (apenas para showdown)
-        - conferir se teams usam mesmo sem hall of fame (ou seja, qd é inutil)
 
 ---
 

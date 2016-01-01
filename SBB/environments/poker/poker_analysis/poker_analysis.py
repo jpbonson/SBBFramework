@@ -10,7 +10,6 @@ from collections import defaultdict
 from ..poker_environment import PokerEnvironment
 from ..poker_point import PokerPoint
 from ..poker_config import PokerConfig
-from ..opponent_model import OpponentModel
 from ..poker_opponents import PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
 from ...default_environment import reset_points_ids
 from ....utils.team_reader import read_team_from_json
@@ -221,14 +220,11 @@ class PokerAnalysis():
             self_passive_aggressive += item.self_passive_aggressive
             self_bluffing += item.self_bluffing
         agressiveness = 0.5
-        volatility = 0.5
         tight_loose = 0.5
         passive_aggressive = 0.5
         bluffing = 0.0
         if len(self_long_term_agressiveness) > 0:
             agressiveness = numpy.mean(self_long_term_agressiveness)
-        if len(self_agressiveness_preflop) > 0 and len(self_agressiveness_postflop) > 0:
-            volatility = OpponentModel.calculate_volatility(self_agressiveness_postflop, self_agressiveness_preflop)
         if len(self_tight_loose) > 0:
             tight_loose = numpy.mean(self_tight_loose)
         if len(self_passive_aggressive) > 0:
@@ -237,7 +233,6 @@ class PokerAnalysis():
             bluffing = numpy.mean(self_bluffing)
 
         team.extra_metrics_['agressiveness'] = agressiveness
-        team.extra_metrics_['volatility'] = volatility
         team.extra_metrics_['tight_loose'] = tight_loose
         team.extra_metrics_['passive_aggressive'] = passive_aggressive
         team.extra_metrics_['bluffing'] = bluffing

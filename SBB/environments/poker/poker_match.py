@@ -145,7 +145,9 @@ class PokerMatch():
                 self.debug_file.write("*** RIVER *** "+str(self.point.board_cards_)+"\n")
             self.round_id = 3 # river
             result = self._run_poker_round(starter_player_index = river_starter_player_index, initial_bet = river_bet, default_bet = river_default_bet)
+        showdown_happened = False
         if result == "next_round": # showdown
+            showdown_happened = True
             if Config.USER['reinforcement_parameters']['debug']['matches']:
                 self.debug_file.write("*** SHOW DOWN ***\n")
                 self.debug_file.write(self.players_info[0]['id']+": shows "+str(self.players_info[0]['match_state'].hole_cards)+" (HS: "+str(self.players_info[0]['match_state'].hand_strength[3])+")\n")
@@ -207,7 +209,7 @@ class PokerMatch():
         # update here for hall of fame (make these updates also for hall of fame)
         player_actions = self.players_info[sbb_position]['match_state'].actions
         opponent_actions = self.players_info[opponent_position]['match_state'].actions
-        self._get_opponent_model_for_team().update_overall_agressiveness(self.round_id+1, player_actions, opponent_actions, self.point.label_)
+        self._get_opponent_model_for_opponent_team().update_overall_agressiveness(self.round_id, player_actions, opponent_actions, self.point.label_, showdown_happened)
         
         if self.is_training:
             points = OpponentModel.calculate_points(player_actions)
@@ -305,7 +307,7 @@ class PokerMatch():
     def _execute_player(self, player, match_state, bet, opponent_actions, current_index):
         inputs = match_state.inputs(self.pot, bet, self._get_chips_for_team(), self.round_id)
         if match_state.player_key == 'team': # update here for hall of fame
-            inputs += self._get_opponent_model_for_team().inputs(match_state.actions, opponent_actions)
+            inputs += self._get_opponent_model_for_opponent_team().inputs(match_state.actions, opponent_actions)
         if Config.USER['reinforcement_parameters']['debug']['matches']:
             if match_state.player_key == 'team': # update here for hall of fame
                 self.debug_file.write("    >> registers: "+str([(p.program_id_, [round_value(r, 2) for r in p.general_registers]) for p in player.programs])+"\n")
@@ -347,7 +349,7 @@ class PokerMatch():
             raise ValueError("Invalid value for Config.RESTRICTIONS['diversity']['total_bins']")
         return label
 
-    def _get_opponent_model_for_team(self):
+    def _get_opponent_model_for_opponent_team(self):
         opponent_id = self.opponent.opponent_id # update here for hall of fame
         if opponent_id not in self.team.opponent_model:
             self.team.opponent_model[opponent_id] = OpponentModel()

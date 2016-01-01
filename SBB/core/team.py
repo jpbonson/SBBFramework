@@ -227,7 +227,6 @@ class Team(DefaultOpponent):
     def get_behaviors_metrics(self):
         result = {}
         result['agressiveness'] = self.extra_metrics_['agressiveness']
-        result['volatility'] = self.extra_metrics_['volatility']
         result['tight_loose'] = self.extra_metrics_['tight_loose']
         result['passive_aggressive'] = self.extra_metrics_['passive_aggressive']
         result['bluffing'] = self.extra_metrics_['bluffing']
@@ -259,7 +258,6 @@ class Team(DefaultOpponent):
                             msg += self._hand_player_metrics('champion')
                 if 'agressiveness' in self.extra_metrics_:
                     msg += "\n\nagressiveness: "+str(self.extra_metrics_['agressiveness'])
-                    msg += "\nvolatility: "+str(self.extra_metrics_['volatility'])
                     msg += "\ntight_loose: "+str(self.extra_metrics_['tight_loose'])
                     msg += "\npassive_aggressive: "+str(self.extra_metrics_['passive_aggressive'])
                     msg += "\nbluffing: "+str(self.extra_metrics_['bluffing'])
@@ -267,7 +265,6 @@ class Team(DefaultOpponent):
                     msg += "\nnormalized result (std): "+str(round_value(numpy.std(self.results_per_points_for_validation_.values())))
                 if 'agressiveness_champion' in self.extra_metrics_:
                     msg += "\n\nagressiveness (champion): "+str(self.extra_metrics_['agressiveness_champion'])
-                    msg += "\nvolatility (champion): "+str(self.extra_metrics_['volatility_champion'])
                     msg += "\ntight_loose (champion): "+str(self.extra_metrics_['tight_loose_champion'])
                     msg += "\npassive_aggressive (champion): "+str(self.extra_metrics_['passive_aggressive_champion'])
                     msg += "\nbluffing (champion): "+str(self.extra_metrics_['bluffing_champion'])
