@@ -28,78 +28,54 @@ fixed max ncd + rounding report metrics
 remvoed pot and volatility
 ---
 
-- retestar com 500 matches? oponentes? generations? fullgame ou river-to-fullgame?
-    - 200 x 400 x 800 matches?
-    - fullgame x river_to_fullgame
-    - 5 runs?
-    - all 4 opponents
-    - 300 gens
-    - fullgame800 (1), river_to_fullgame800 (2), LA_to_all ()
-    - fullgame400 (3 28128), river_to_fullgame400 (4 28131), LA_to_all (SBB2 6 28255)
-    - fullgame200 (1 28108), river_to_fullgame200 (2 28126), LA_to_all (SBB2 5 28253)
+rerodar melhor run + runs com modificacoes
 
-Conclusions:
-- automatizar second layer
-    - usar outro point set para escolher os teams + salvarviolin plot logo antes do second layer
-    - usar um conjunto de points independente da validation para gerar as acc curves, para nao 'sujar' a validation
-    - gerar pastas top5, top10 e top15 automaticamente?
-- conferir runs + mandar rodar runs
-- conferir/organizar proximos passos
+- results
+    - 200 matches: LA_to_all (pior resultado e mais lento) < fullgame < river_to_fullgame
+    - 200 < 800 matches (mais estavel, resultados um pouco melhores)
 
-- retestar SBB com varias combinacoes de parametros?
-    parameters to test:
+- goal: fitness e validation curves crescendo de forma estavel, acc curve diversa
+- ler sobre simulacoes de monte carlo
+    - usar simulacoes de monte carlo?
+- second layer
+    - automatizar second layer (em partes ou em sequencia?)
+        - usar outro point set (não o validation) para escolher os teams + salvarviolin plot logo antes do second layer
+        - gerar pastas top5, top10 e top15 automaticamente?
+    - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?)
+    - nao usar checkpoint no second layer, comecar com fullgame?
+- conferir como papers validaram os resultados (em especial, os em journals bons)
+    - + fazer doc com exemplos de charts usados nos papers de SBB + outros papers
+- checkpoints ajudam? mais matches ajudam?
+    - runs rodando
+        - fullgame400 (3 28128), river_to_fullgame400 (4 28131)
+- parameters to test:
     - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
-    - analisar uso dos inputs (bet == opp last action?)
     - profile size?
+    - team size?
     - more...? (generations, matches...)
     - usar hall_of_fame para gerar second layer? (junto com top, e sozinho?)
-
-- usar simulacoes de monte carlo?
-
-- corrigir poker_match para funcionar com hall_of_fame
-- fazer printar avg de behaviors do time no poker analysis
-
-- baseado em checkpoints a cada 50 generations:
-    - sempre comparar runs com a versao com e sem checkpoints
-    - salvar os teams e metrics daquele generation antes de aplicar o checkpoint (tb para o run que nao esta usando checkpoints)
-    - validation points devem ser os memsso em todas as etapas, com o set completo
-    - aumentar team_size em 1-2 a cada checkpoint? (no sem checkpoint, comecar com o tamnho maximo desde o inicio?)
-    - 3 tipos de run: sem checkpoint, com checkpoint com team size fixo, com checkpoint com team size variavel
-    - checkpoint 1:
-        - opponents: loose_aggr, rounds: last, betting: 1, inputs: pokerpoint+pokermatch (-rounds)
-        - computar small blind, big blind, e quem vai primeiro e bets como se fosse o round 1
-        - fazer classe separada para isso? que nao usa ACPC, apenas o hand_types?
-        - goal: teams learn how to use the basic inputs of a poker game
-    - checkpoint 2:
-        - opponents: all looses, rounds: last, betting: all, inputs: pokerpoint+pokermatch+last action+hand agressiveness+agressiveness
-        - computar small blind, big blind, e quem vai primeiro e bets como se fosse o round 1
-        - fazer classe separada para isso? que nao usa ACPC, apenas o hand_types?
-        - goal: teams learn how to bet and deal with opp's bets + learn the basics about passive/aggr opps
-    - checkpoint 3:
-        - opponents: all looses, rounds: all, betting: all, inputs: pokerpoint+pokermatch+last action+hand agressiveness+agressiveness
-        - goal: teams learn how to deal with the rounds
-    - checkpoint 4:
-        - opponents: loose+tight, rounds: all, betting: all, inputs: pokerpoint+pokermatch+opponentmodel
-        - goal: teams learn to deal with tight opps + more complex opp model
-
-- bluffing
-    - adicionar input para bleff para opp? (eg.: agressividade/hand_str) (no SBB e no analysis?)
-    - quando implementar rule-based opponent com bluffing, fazer isso de um jeito compativel com o input de bluffing (se rolar para blefar, proibir o player de blefar? ou aumentar artificialmente a hand strength? antes, testar se a hand e' fraca)
-- refatorar classe OpponentModel
-- fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?)
-- implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
-- Maybe apply sbb for other domain? (de RL)
-- Fazer doc com exemplos de charts usados nos papers de SBB + outros oapers, e cofnerir com os resultados de ML para poker foram validados nos papers
-- implementar opponent population
-    - approach 1
-    - approach 2
-    - hall of fame:
-        - not only to avoid evolutionary forgetting, but also to provide opponent that use opponent models themselves, so that the inputs that enable unpredictability can be useful and used by the teams
-        - fazer o hall of fame ter o memso tamanho do smapling de oponentes
-    - opponent that bluff
-- continuar a literature review 
-- traduzir parte do codigo para C?
-
+- fix hall of fame
+    - adicionar dois oponentes do hall of fame como oponente por generation, depois de um checkpoint de generations?
+        - fazer champion ir contra todos os oponentes do hall of fame? (em matches mais curtas)
+    - ver como hall of fame foi usado nos papers
+    - corrigir poker_match para funcionar com hall_of_fame
+    - not only to avoid evolutionary forgetting, but also to provide opponent that use opponent models themselves, so that the inputs that enable unpredictability can be useful and used by the teams
+    - fazer o hall of fame ter o memso tamanho do smapling de oponentes
+    - testar
+- adiantar mais o literature_review
+    - comecar a escrever com os papers q já tenho (nao escrever coisas q podem mudar ainda)
+    - selecionar references que parecem promissoras (apenas dos papers mais recentes ou mais classicas, ou do Billings)
+    - define pages/paragraphs for each section
+    - write (nao necessariamente rpeciso usar todos os papers para cada section)
+- extras
+    - remover 'LA_to_all'?
+    - fazer printar avg de behaviors do time no poker analysis
+    - refatorar classe OpponentModel (separar self e opponent)
+    - implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
+    - coevolving opponents?
+    - adicionar input para bluffing do opp?
+        - (eg.: agressividade/hand_str) (no SBB e no analysis?) (apenas para showdown)
+        - conferir se teams usam mesmo sem hall of fame (ou seja, qd é inutil)
 
 ---
 
@@ -122,48 +98,6 @@ diversity:
 - best_config_layer1_hamming_c3_g3_seed5, 6, 
 - best_config_layer1_ncd_c4_g5_seed5, 7 
 - best_config_layer1_no_diversity_seed5, 8, 
-
-
-
----
-- adiantar mais o literature_review
-    - select papers for each section of the literature review
-        - for all TODO papers, relate them with the sections
-        - find papers for the sections with no papers (conferir tanto nos papers ja usados como os nao usados)
-    - dividir capitulos SBB e SBB+poker em sessoes
-    - selecionar references que parecem promissoras (apenas dos papers mais recentes ou mais classicas, ou do Billings)
-    - define pages/paragraphs for each section
-    - write (nao necessariamente rpeciso usar todos os papers para cada section)
-
----
-- coevolved opponents population:
-    - ou variar entre quais populatiosn dar freeze, e ambas receberem score por quao bem derrotam os points
-    - ou evoluir as duas ao mesmo tempo, mas com o score dos opponents sendo baseado nas distinctions
-    - na validation usar os 4 static opponents?
-    - usar hall of fame as opponents too?
-    - Competitive coevolution, host-parasite
-    - freeze SBB while evolve opponents, then freeze opponent, then SBB, etc...?
-    - use what version of SBB? layer 1? layer 2? layer 3? (preference for keep evolving layer 2)
-    - opponents evolving as alfa/beta from the paper poker_evolutionary_bayesian_opponent_model 2007 and 2008
-        - or the poker_evolutionary 1998 and 1999?
-        - preference for the earlier one
-    - check the notes about the new coevolved opponent population (alfa/beta)
-    - try to use pareto to select the teams that perform better against various opponents?
-    - or just one opponent per generation?
-    - usar algoritmo da pagina 99 para gerar oponentes? (ver em sbb_papers) como selecionar fitness dos oponentes? pareto de distinctions? ou uniform probability? tomar cuidado com class balance?
-        - removal: usar pareto com distinctions
-        - selection para clonar: usar uniform probability
-    - thesis do peter: Pages 103-108: outra maneira de remover points baseado em distinctions, sem ser pareto
-        - tamblem no paper "complexification", em "points removal" (ver em sbb_papers)
-    - add a way to classify the opponents and teams in the current population according to tight/loose and passive/agressive
-
----
-(optional?) final opponents
-- fazer torneios (100 runs?), sem balanced cards, do melhor player contra os 4 static oponentes?
-- ver o q papers de poker recente usaram para validar/como oponente final
-    - oponentes static dos 4 tipos?
-- implement static opponents so the best team can go against and check if they have strong poker strategies
-    - conferir doc com oponentes e charts
 
 ---
 scp -r source_file_name username@destination_host:destination_folder

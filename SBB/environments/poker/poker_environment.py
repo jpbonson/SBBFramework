@@ -35,9 +35,6 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         coded_opponents_for_training = Config.USER['reinforcement_parameters']['poker']['opponents']
         coded_opponents_for_validation = Config.USER['reinforcement_parameters']['poker']['opponents']
-        if Config.USER['reinforcement_parameters']['poker']['LA_to_all']:
-            coded_opponents_for_training = [PokerLooseAgressiveOpponent]
-            coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
 
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
@@ -234,14 +231,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         if Config.USER['reinforcement_parameters']['poker']['river_only_to_fullgame']:
             if current_generation >= Config.USER['training_parameters']['generations_total']/2:
                 Config.USER['reinforcement_parameters']['poker']['river_round_only'] = False
-        if Config.USER['reinforcement_parameters']['poker']['LA_to_all']:
-            if current_generation >= Config.USER['training_parameters']['generations_total']/2:
-                coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
-                self.coded_opponents_for_training_ = coded_opponents_for_training
-                self.opponent_names_for_training_ = [c.OPPONENT_ID for c in self.coded_opponents_for_training_]
-                self.training_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_training(Config.USER['training_parameters']['populations']['points'])
-                if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
-                    self.opponent_names_for_training_.append('hall_of_fame')
 
         return best_team
 

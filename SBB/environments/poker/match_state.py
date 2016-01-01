@@ -21,24 +21,22 @@ class MatchState():
         """
         inputs[0] = hand strength
         inputs[1] = effective potential
-        inputs[2] = bet
-        inputs[3] = pot odds
-        inputs[4] = betting position (0: first betting, 1: last betting)
-        inputs[5] = round
-        inputs[6] = chips
+        inputs[2] = pot odds
+        inputs[3] = betting position (0: first betting, 1: last betting)
+        inputs[4] = round
+        inputs[5] = chips
         """
         if self.player_key == 'team':
             inputs = [0] * len(MatchState.INPUTS)
             inputs[0] = self.hand_strength[round_id]
             inputs[1] = self.effective_potential[round_id]
-            inputs[2] = bet/float(PokerConfig.CONFIG['big_bet'])
             if (pot + bet) > 0:
-                inputs[3] = bet / float(pot + bet)
+                inputs[2] = bet / float(pot + bet)
             else:
-                inputs[3] = 0.0
-            inputs[4] = float(self._betting_position(round_id))
-            inputs[5] = round_id/3.0
-            inputs[6] = self._calculate_chips_input(chips)
+                inputs[2] = 0.0
+            inputs[3] = float(self._betting_position(round_id))
+            inputs[4] = round_id/3.0
+            inputs[5] = self._calculate_chips_input(chips)
             normalized_inputs = [round_value(i*Config.RESTRICTIONS['multiply_normalization_by']) for i in inputs[2:]]
             return inputs[:2]+normalized_inputs
         else: # inputs for rule-based opponents

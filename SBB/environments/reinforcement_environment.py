@@ -68,10 +68,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def _ensure_balanced_population_size_for_training(self):
         pop_size = Config.USER['training_parameters']['populations']['points']
-        if Config.USER['reinforcement_parameters']['poker']['LA_to_all']:
-            temp = len(self.coded_opponents_for_validation_)*self.total_labels_
-        else:
-            temp = len(self.coded_opponents_for_training_)*self.total_labels_
+        temp = len(self.coded_opponents_for_training_)*self.total_labels_
         pop_size = (pop_size/temp)*temp
         Config.USER['training_parameters']['populations']['points'] = pop_size
 

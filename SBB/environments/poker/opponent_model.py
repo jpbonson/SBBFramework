@@ -124,8 +124,6 @@ class OpponentModel():
 
         if len(opponent_actions) > 0:
             inputs[0] = OpponentModel.calculate_points([opponent_actions[-1]])
-        else:
-            inputs[0] = 0.5
 
         if len(opponent_actions) == 0:
             inputs[1] = 0.0
