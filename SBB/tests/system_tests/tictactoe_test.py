@@ -14,6 +14,7 @@ TEST_CONFIG = {
             'enabled': False,
             'use_as_opponents': False,
             'diversity': None,
+            'opponents_per_generation': 2,
         },
         'debug': {
             'print': False,
@@ -573,6 +574,7 @@ class ClassificationTests(unittest.TestCase):
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = True
         config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = True
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = 'ncd_c4'
+        config['reinforcement_parameters']['hall_of_fame']['opponents_per_generation'] = 2
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['seed'] = [1]
         config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']

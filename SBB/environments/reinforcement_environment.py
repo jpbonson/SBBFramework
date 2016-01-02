@@ -48,6 +48,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
             self.opponent_names_for_training_.append('hall_of_fame')
         self.opponent_names_for_validation_ = [c.OPPONENT_ID for c in self.coded_opponents_for_validation_]
+        self.matches_per_opponent_per_generation_ = None
         self._ensure_balanced_population_size_for_training()
         self._ensure_balanced_population_size('validation_population')
         self._ensure_balanced_population_size('champion_population')
@@ -64,12 +65,17 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.samples_per_class_to_keep_ = []
         self.samples_per_class_to_remove_ = []
         Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
-        self.matches_per_hall_of_fame_opponent_ = 10
+        self.champion_matches_per_hall_of_fame_opponent_ = 20
+        self.current_hall_of_fame_opponents_ = []
 
     def _ensure_balanced_population_size_for_training(self):
         pop_size = Config.USER['training_parameters']['populations']['points']
-        temp = len(self.coded_opponents_for_training_)*self.total_labels_
+        total_opponents = len(self.coded_opponents_for_training_)
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
+            total_opponents += Config.USER['reinforcement_parameters']['hall_of_fame']['opponents_per_generation']
+        temp = total_opponents*self.total_labels_
         pop_size = (pop_size/temp)*temp
+        self.matches_per_opponent_per_generation_ = pop_size/total_opponents
         Config.USER['training_parameters']['populations']['points'] = pop_size
 
     def _ensure_balanced_population_size(self, population_key):
@@ -99,10 +105,16 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def champion_opponent_population(self):
         if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] and len(self.opponent_population_['hall_of_fame']) == Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
-            temp = self.opponent_population_['hall_of_fame']*self.matches_per_hall_of_fame_opponent_
+            temp = self.opponent_population_['hall_of_fame']*self.champion_matches_per_hall_of_fame_opponent_
             return self.champion_opponent_population_ + temp
         else:
             return self.champion_opponent_population_
+
+    def training_opponent_population(self):
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] and len(self.opponent_population_['hall_of_fame']) == Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
+            return self.training_opponent_population_ + self.current_hall_of_fame_opponents_
+        else:
+            return self.training_opponent_population_
 
     def reset(self):
         reset_points_ids()
@@ -111,7 +123,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.team_to_add_to_hall_of_fame_ = None
         self.validation_point_population_ = self._initialize_random_population_of_points(Config.USER['reinforcement_parameters']['validation_population'], ignore_cache = True)
         if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
-            size = Config.USER['reinforcement_parameters']['champion_population'] + Config.USER['reinforcement_parameters']['hall_of_fame']['size']*self.matches_per_hall_of_fame_opponent_
+            size = Config.USER['reinforcement_parameters']['champion_population'] + Config.USER['reinforcement_parameters']['hall_of_fame']['size']*self.champion_matches_per_hall_of_fame_opponent_
             population = self._initialize_random_population_of_points(size, ignore_cache = True)
             self.champion_point_population_ = population[:Config.USER['reinforcement_parameters']['champion_population']]
             self.champion_point_population_for_hall_of_fame_ = population[Config.USER['reinforcement_parameters']['champion_population']:]
@@ -134,9 +146,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def _initialize_random_balanced_population_of_coded_opponents_for_training(self, population_size):
         population = []
-        total_per_opponent = population_size/len(self.coded_opponents_for_training_)
         for opponent_class in self.coded_opponents_for_training_:
-            for index in range(total_per_opponent):
+            for index in range(self.matches_per_opponent_per_generation_):
                 population.append(self._instantiate_coded_opponent(opponent_class))
         return population
 
@@ -196,7 +207,15 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 self.team_to_add_to_hall_of_fame_ = None
 
         # define current opponent population
-        # update here for hall of fame
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            if Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
+                if len(self.opponent_population_['hall_of_fame']) == Config.USER['reinforcement_parameters']['hall_of_fame']['size']:
+                    options = list(self.opponent_population_['hall_of_fame'])
+                    self.current_hall_of_fame_opponents_ = []
+                    for option in range(Config.USER['reinforcement_parameters']['hall_of_fame']['opponents_per_generation']):
+                        opponent = random.choice(options)
+                        options.remove(opponent)
+                        self.current_hall_of_fame_opponents_ += [opponent]*self.matches_per_opponent_per_generation_
 
     def _remove_points(self, points_to_remove, teams_population):
         """
@@ -283,10 +302,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
         """
         if mode == Config.RESTRICTIONS['mode']['training']:
             point_population = self.point_population()
-            opponent_population = self.training_opponent_population_
+            opponent_population = self.training_opponent_population()
             results = []
             extra_metrics_opponents = defaultdict(list)
             match_id = 0
+
             for point, opponent in zip(point_population, opponent_population):
                 match_id += 1
                 result = self._play_match(team, opponent, point, mode, match_id)

@@ -19,15 +19,15 @@ def get_team_id():
 
 class Team(DefaultOpponent):
     def __init__(self, generation, programs, team_id = None):
-        super(Team, self).__init__("sbb")
-        self.generation = generation
-        self.programs = []
-        for program in programs:
-            self._add_program(program)
         if team_id is None:
             self.team_id_ = get_team_id()
         else:
             self.team_id_ = team_id
+        self.generation = generation
+        super(Team, self).__init__(self.__repr__())
+        self.programs = []
+        for program in programs:
+            self._add_program(program)
         self.fitness_ = 0
         self.score_testset_ = 0
         self.extra_metrics_ = {}

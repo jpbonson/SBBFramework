@@ -27,11 +27,13 @@ added mean and std result as metric + fixed bug with validation and champion pop
 fixed max ncd + rounding report metrics
 remvoed pot and volatility
 removed input 'bet' and rmeoved option LA_to_all
+refactored OpponentModel + added inputs 'bluffing' and short-term self and opp aggr
+fixed hall of fame in class reinforcement learning
 ---
 
-* refactored OpponentModel + added inputs 'bluffing' and short-term self and opp aggr
-
 rerodar melhor run + runs com modificacoes
+- 400matches_300gens_12teams, 400matches_160gens_12teams, 800matches_160gens_12teams, 400matches_160gens_9teams
+- 200matches_160gens_9teams
 
 - results
     - 200 matches: LA_to_all (pior resultado e mais lento) < fullgame < river_to_fullgame
@@ -46,22 +48,16 @@ rerodar melhor run + runs com modificacoes
         - gerar pastas top5, top10 e top15 automaticamente?
     - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?)
     - nao usar checkpoint no second layer, comecar com fullgame?
+    - usar hall_of_fame para gerar second layer? (junto com top, e sozinho?)
 - conferir como papers validaram os resultados (em especial, os em journals bons)
     - + fazer doc com exemplos de charts usados nos papers de SBB + outros papers
+    - ver como hall of fame foi usado nos papers
 - parameters to test:
     - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
-    - profile size?
-    - team size?
-    - more...? (generations, matches...)
-    - usar hall_of_fame para gerar second layer? (junto com top, e sozinho?)
+    - profile size? team size? more...? (generations, matches...)
 - fix hall of fame
-    - adicionar dois oponentes do hall of fame como oponente por generation, depois de um checkpoint de generations?
-        - fazer champion ir contra todos os oponentes do hall of fame? (em matches mais curtas)
-    - ver como hall of fame foi usado nos papers
+    - na metrics do team, msotrar scores por id do time no hall of fame (fitness e champion)
     - corrigir poker_match para funcionar com hall_of_fame
-    - not only to avoid evolutionary forgetting, but also to provide opponent that use opponent models themselves, so that the inputs that enable unpredictability can be useful and used by the teams
-    - fazer o hall of fame ter o memso tamanho do smapling de oponentes
-    - testar
 - adiantar mais o literature_review
     - comecar a escrever com os papers q já tenho (nao escrever coisas q podem mudar ainda)
     - selecionar references que parecem promissoras (apenas dos papers mais recentes ou mais classicas, ou do Billings)
@@ -72,6 +68,7 @@ rerodar melhor run + runs com modificacoes
     - refatorar classe OpponentModel (separar self e opponent)
     - implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
     - coevolving opponents?
+    - passar aprte do processamento para memoria, para agilizar? rodar outro profile?
 
 ---
 

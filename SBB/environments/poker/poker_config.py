@@ -14,7 +14,7 @@ class PokerConfig():
         'big_bet': 20,
         'positions': 2,
         'rule_based_opponents': ['loose_agressive', 'loose_passive', 'tight_agressive', 'tight_passive'],
-        'point_cache_size': 50,
+        'point_cache_size': 100,
         'labels_per_subdivision': {
             'sbb_label': [0, 1, 2, 3, 4, 5, 6, 7, 8],
             'position': [0, 1],
