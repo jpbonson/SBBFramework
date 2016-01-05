@@ -29,26 +29,25 @@ remvoed pot and volatility
 removed input 'bet' and rmeoved option LA_to_all
 refactored OpponentModel + added inputs 'bluffing' and short-term self and opp aggr
 fixed hall of fame in class reinforcement learning
+
+saving more files for second layer + saving acc curves per run
 ---
 
-rerodar melhor run + runs com modificacoes
-- 400matches_300gens_12teams, 400matches_160gens_12teams, 800matches_160gens_12teams, 400matches_160gens_9teams
-- 200matches_160gens_9teams
+- 400, 600, 800 e 1000 matches? com 300gens (a cada 50 validations), 9 teams? 5 runs?
 
-- results
-    - 200 matches: LA_to_all (pior resultado e mais lento) < fullgame < river_to_fullgame
-    - 200 < 800 matches (mais estavel, resultados um pouco melhores)
+
+
 
 - goal: fitness e validation curves crescendo de forma estavel, acc curve diversa
 - ler sobre simulacoes de monte carlo
     - usar simulacoes de monte carlo?
 - second layer
-    - automatizar second layer (em partes ou em sequencia?)
-        - usar outro point set (não o validation) para escolher os teams + salvarviolin plot logo antes do second layer
-        - gerar pastas top5, top10 e top15 automaticamente?
+    - automatizar second layer em sequencia? (salvar metrics antes)
+    - usar outro point set (não o validation) para escolher os teams
     - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?)
     - nao usar checkpoint no second layer, comecar com fullgame?
-    - usar hall_of_fame para gerar second layer? (junto com top, e sozinho?)
+    - fazer ser compativel com pastas per run?
+    - update _initialize_environment e _initialize_actions_for_second_layer
 - conferir como papers validaram os resultados (em especial, os em journals bons)
     - + fazer doc com exemplos de charts usados nos papers de SBB + outros papers
     - ver como hall of fame foi usado nos papers

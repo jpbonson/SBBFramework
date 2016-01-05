@@ -468,6 +468,15 @@ class SBB:
             msg += "\n- Accumulative Team Performance:"
             msg += "\nmean: "+str(round_array(score_means, 3))
             msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
+            msg += "\n\nAccumulative Results per Run ("+str(metric)+"):"
+            msg += "\nindividual_values = ["
+            for run in run_infos:
+                msg += "\n"+str(run.individual_performance_in_last_generation[metric])+","
+            msg += "\n]"
+            msg += "\nacc_values = ["
+            for run in run_infos:
+                msg += "\n"+str(run.accumulative_performance_in_last_generation[metric])+","
+            msg += "\n]"
 
         msg += "\n\n######"
 
@@ -511,6 +520,7 @@ class SBB:
         for run in run_infos:
             path = self.filepath_+"run"+str(run.run_id)+"/"
             os.makedirs(path)
+            os.makedirs(path+"second_layer_files/")
             with open(path+"metrics.txt", "w") as text_file:
                 text_file.write(str(run))
             with open(path+"best_team.txt", "w") as text_file:
@@ -520,6 +530,13 @@ class SBB:
             self._save_teams(run.teams_in_last_generation, path+"last_generation_teams/")
             self._save_teams(run.pareto_front_in_last_generation, path+"pareto_front/")
             self._save_teams(run.hall_of_fame_in_last_generation, path+"hall_of_fame/")
+            self._save_teams_in_actions_file(run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame/")
+            for key in run.second_layer_files.keys():
+                self._save_teams_in_actions_file(run.second_layer_files[key], path+"second_layer_files/"+key+"/")
+            self._save_teams_in_actions_file(run.second_layer_files['top5_overall_subcats']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top5_overall_subcats/")
+            self._save_teams_in_actions_file(run.second_layer_files['top10_overall_subcats']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top10_overall_subcats/")
+            self._save_teams_in_actions_file(run.second_layer_files['top5_overall']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top5_overall/")
+            self._save_teams_in_actions_file(run.second_layer_files['top10_overall']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top10_overall/")
         print "\n### Files saved at "+self.filepath_+"\n"
 
     def _save_teams_data_per_generation(self, run_infos):
@@ -542,3 +559,12 @@ class SBB:
                     text_file.write(str(team))
                 with open(json_path+team.__repr__()+".json", "w") as text_file:
                     text_file.write(team.json())
+
+    def _save_teams_in_actions_file(self, teams, path):
+        if len(teams) > 0:
+            os.makedirs(path)
+            actions = {}
+            for index, team in enumerate(teams):
+                actions[index] = team.dict()
+            with open(path+"actions.json", "w") as text_file:
+                text_file.write(json.dumps(actions))

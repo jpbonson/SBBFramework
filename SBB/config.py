@@ -20,11 +20,11 @@ class Config():
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 400, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 800, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+            'validation_population': 50, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+            'champion_population': 50, # at a validated generation, these are the points the champion team will play against to obtain the metrics
             'hall_of_fame': {
                 'size': 10,
-                'enabled': False,
+                'enabled': True,
                 'use_as_opponents': False, # WARNING: 'True' doesnt work for poker!
                 'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
                 'opponents_per_generation': 2,
@@ -42,12 +42,12 @@ class Config():
         },
 
         'training_parameters': {
-            'runs_total': 5,
-            'generations_total': 160,
-            'validate_after_each_generation': 20,
+            'runs_total': 1,
+            'generations_total': 50,
+            'validate_after_each_generation': 50,
             'populations': {
-                'teams': 100,
-                'points': 200,
+                'teams': 50,
+                'points': 50,
             },
             'replacement_rate': {
                 'teams': 0.5,

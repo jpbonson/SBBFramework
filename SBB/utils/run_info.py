@@ -50,6 +50,7 @@ class RunInfo:
         self.final_teams_validations_per_subcategory = defaultdict(dict)
         self.final_teams_validations_ids = []
         self.accumulative_performance_summary = {}
+        self.second_layer_files = {}
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"

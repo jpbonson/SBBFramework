@@ -333,14 +333,25 @@ class Team(DefaultOpponent):
                 msg += "\n"+str(metric)+", "+str(key)+" ("+str(a)+"): played: "+str(b)+", won: "+str(c)
         return msg
 
-    def json(self):
+    def dict(self):
         info = {}
         info['team_id'] = self.team_id_
+        info['generation'] = self.generation
+        if not Config.USER['advanced_training_parameters']['second_layer']['enabled']:
+            info['programs_type'] = 'atomic'
+        else:
+            if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
+                info['programs_type'] = 'mixed'
+            else:
+                info['programs_type'] = 'meta'
         programs_json = []
         for program in self.programs:
             programs_json.append(program.dict())
         info['programs'] = programs_json
-        return json.dumps(info)
+        return info
+
+    def json(self):
+        return json.dumps(self.dict())
 
     def __repr__(self): 
         return "("+str(self.team_id_)+"-"+str(self.generation)+")"
