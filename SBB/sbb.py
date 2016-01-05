@@ -414,12 +414,18 @@ class SBB:
             msg += "\n- mean: "+str(score_means)
             msg += "\n- std. deviation: "+str(score_stds)
 
-        msg += "\n\nGlobal Fitness per Opponent per Training:"
-        for key in run_infos[0].global_fitness_per_opponent_per_generation.keys():
-            score_means, score_stds = self._process_scores([run.global_fitness_per_opponent_per_generation[key] for run in run_infos])
-            msg += "\n- "+str(key)+":"
-            msg += "\n- mean: "+str(round_array(score_means, 2))
-            msg += "\n- std. deviation: "+str(round_array(score_stds, 2))
+        if Config.USER['task'] == 'reinforcement':
+            msg += "\n\nGlobal Fitness per Opponent per Training:"
+            for key in self.environment.opponent_names_for_training_:
+                score_means, score_stds = self._process_scores([run.global_fitness_per_opponent_per_generation[key] for run in run_infos])
+                msg += "\n- "+str(key)+":"
+                msg += "\n- mean: "+str(round_array(score_means, 2))
+                msg += "\n- std. deviation: "+str(round_array(score_stds, 2))
+            for run_id, run in enumerate(run_infos):
+                valid_names = [t.__repr__() for t in run.hall_of_fame_in_last_generation]
+                for key in run.global_fitness_per_opponent_per_generation.keys():
+                    if key in valid_names:
+                        msg += "\n- run "+str(run_id+1)+", "+str(key)+": "+str(run.global_fitness_per_opponent_per_generation[key])
 
         score_means, score_stds = self._process_scores([run.test_score_per_validation for run in run_infos])
         msg += "\n\nBest Team Validation Score per Validation (champion):"

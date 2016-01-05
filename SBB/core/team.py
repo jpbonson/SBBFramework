@@ -280,7 +280,7 @@ class Team(DefaultOpponent):
                         msg += "\n"+key+": "+str(dict(self.extra_metrics_['champion_points'][key]))
 
             if 'champion_score' in self.extra_metrics_:
-                msg += "\n\nscore per opponent (champion): "+str(self.extra_metrics_['champion_score'])
+                msg += "\n\nscore per opponent (no hall of fame) (champion): "+str(self.extra_metrics_['champion_score'])
                 for key in self.extra_metrics_['opponents']:
                     msg += "\n"+key+": "+str(self.extra_metrics_['champion_opponents'][key])
             if Config.USER['task'] == 'reinforcement' and 'validation_score' in self.extra_metrics_:

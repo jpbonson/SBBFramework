@@ -6,7 +6,7 @@ from ...config import Config
 
 class MatchState():
 
-    INPUTS = ['hand strength', 'effective potential', 'bet', 'pot odds', 'betting position', 'round', 'chips']
+    INPUTS = ['hand strength', 'effective potential', 'pot odds', 'betting position', 'round', 'chips']
 
     def __init__(self, point, player_key):
         self.point = point
@@ -17,7 +17,7 @@ class MatchState():
         self.hole_cards = point.players[player_key]['hole_cards']
         self.actions = []
 
-    def inputs(self, pot, bet, chips, round_id):
+    def inputs_for_team(self, pot, bet, chips, round_id):
         """
         inputs[0] = hand strength
         inputs[1] = effective potential
@@ -26,25 +26,24 @@ class MatchState():
         inputs[4] = round
         inputs[5] = chips
         """
-        if self.player_key == 'team':
-            inputs = [0] * len(MatchState.INPUTS)
-            inputs[0] = self.hand_strength[round_id]
-            inputs[1] = self.effective_potential[round_id]
-            if (pot + bet) > 0:
-                inputs[2] = bet / float(pot + bet)
-            else:
-                inputs[2] = 0.0
-            inputs[3] = float(self._betting_position(round_id))
-            inputs[4] = round_id/3.0
-            inputs[5] = self._calculate_chips_input(chips)
-            normalized_inputs = [round_value(i*Config.RESTRICTIONS['multiply_normalization_by']) for i in inputs[2:]]
-            return inputs[:2]+normalized_inputs
-        else: # inputs for rule-based opponents
-            inputs = [0] * 2
-            inputs[0] = self.hand_strength[round_id]
-            inputs[1] = bet/float(PokerConfig.CONFIG['big_bet'])
-            inputs[1] = round_value(inputs[1]*Config.RESTRICTIONS['multiply_normalization_by'])
-            return inputs
+        inputs = [0] * len(MatchState.INPUTS)
+        inputs[0] = self.hand_strength[round_id]
+        inputs[1] = self.effective_potential[round_id]
+        if (pot + bet) > 0:
+            inputs[2] = bet / float(pot + bet)
+        else:
+            inputs[2] = 0.0
+        inputs[3] = float(self._betting_position(round_id))
+        inputs[4] = round_id/3.0
+        inputs[5] = self._calculate_chips_input(chips)
+        normalized_inputs = [round_value(i*Config.RESTRICTIONS['multiply_normalization_by']) for i in inputs[2:]]
+        return inputs[:2]+normalized_inputs
+
+    def inputs_for_rule_based_opponents(self, bet, round_id):
+        inputs = [0] * 2
+        inputs[0] = self.hand_strength[round_id]
+        inputs[1] = round_value(bet*Config.RESTRICTIONS['multiply_normalization_by'])
+        return inputs
 
     @staticmethod
     def maximum_winning():

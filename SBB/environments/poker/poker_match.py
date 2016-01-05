@@ -206,11 +206,12 @@ class PokerMatch():
 
             self.debug_file.write("\n\n### Point Information: "+str(self.point)+"\n")
 
-        # update here for hall of fame (make these updates also for hall of fame)
         player_actions = self.players_info[sbb_position]['match_state'].actions
         opponent_actions = self.players_info[opponent_position]['match_state'].actions
-        self._get_opponent_model_for_opponent_team().update_overall_agressiveness(self.round_id, player_actions, opponent_actions, self.point.label_, showdown_happened)
-        
+        self._get_opponent_model_for_team().update_overall_agressiveness(self.round_id, player_actions, opponent_actions, self.point.label_, showdown_happened)
+        if self.opponent.opponent_id == 'hall_of_fame':
+            self._get_opponent_model_for_hall_of_fame().update_overall_agressiveness(self.round_id, opponent_actions, player_actions, self.point.label_, showdown_happened)
+
         if self.is_training:
             points = OpponentModel.calculate_points(player_actions)
             hamming_label = self._quantitize_value(points)
@@ -230,8 +231,8 @@ class PokerMatch():
         self.point.teams_results_.append(normalized_value)
 
         self._get_chips_for_team().append(normalized_value)
-        # if opponent.opponent_id == "hall_of_fame": # update here for hall of fame
-        #     self._get_chips_for_opponent().append(self._normalize_winning(float(opponent_chips)))
+        if self.opponent.opponent_id == "hall_of_fame":
+            self._get_chips_for_hall_of_fame().append(self._normalize_winning(float(opponent_chips)))
 
         if Config.USER['reinforcement_parameters']['debug']['print']:
             print "---"
@@ -257,7 +258,7 @@ class PokerMatch():
             self.rounds[self.round_id].append(action)
 
             if action == 'f':
-                if self.players_info[current_index]['key'] == 'team' and not self.is_training and self.round_id == 0: # update here for hall of fame (make these updates also for hall of fame)
+                if self.players_info[current_index]['key'] == 'team' and not self.is_training and self.round_id == 0:
                     self.players_info[current_index]['player'].extra_metrics_['played_last_hand'] = False
                 if Config.USER['reinforcement_parameters']['debug']['matches']:
                     self.debug_file.write(self.players_info[current_index]['id']+": folds (pot: "+str(self.pot)+")\n")
@@ -305,16 +306,23 @@ class PokerMatch():
         return valid
 
     def _execute_player(self, player, match_state, bet, opponent_actions, current_index):
-        inputs = match_state.inputs(self.pot, bet, self._get_chips_for_team(), self.round_id)
-        if match_state.player_key == 'team': # update here for hall of fame
-            inputs += self._get_opponent_model_for_opponent_team().inputs(match_state.actions, opponent_actions)
+        if match_state.player_key == 'team':
+            inputs = match_state.inputs_for_team(self.pot, bet, self._get_chips_for_team(), self.round_id)
+            inputs += self._get_opponent_model_for_team().inputs(match_state.actions, opponent_actions)
+        else:
+            if player.opponent_id == 'hall_of_fame':
+                inputs = match_state.inputs_for_team(self.pot, bet, self._get_chips_for_hall_of_fame(), self.round_id)
+                inputs += self._get_opponent_model_for_hall_of_fame().inputs(match_state.actions, opponent_actions)
+            else:
+                inputs = match_state.inputs_for_rule_based_opponents(bet, self.round_id)
+
         if Config.USER['reinforcement_parameters']['debug']['matches']:
-            if match_state.player_key == 'team': # update here for hall of fame
+            if match_state.player_key == 'team' or self.opponent.opponent_id == 'hall_of_fame':
                 self.debug_file.write("    >> registers: "+str([(p.program_id_, [round_value(r, 2) for r in p.general_registers]) for p in player.programs])+"\n")
             self.debug_file.write("    >> inputs: "+str(inputs)+"\n")
         action = player.execute(self.point.point_id_, inputs, self._valid_actions(), self.is_training)
         if Config.USER['reinforcement_parameters']['debug']['matches']:
-            if match_state.player_key == 'team': # update here for hall of fame
+            if match_state.player_key == 'team' or self.opponent.opponent_id == 'hall_of_fame':
                 self.debug_file.write("    << program: "+str(player.last_selected_program_)+"\n")
 
         if action is None:
@@ -349,17 +357,29 @@ class PokerMatch():
             raise ValueError("Invalid value for Config.RESTRICTIONS['diversity']['total_bins']")
         return label
 
-    def _get_opponent_model_for_opponent_team(self):
-        opponent_id = self.opponent.opponent_id # update here for hall of fame
+    def _get_opponent_model_for_team(self):
+        opponent_id = self.opponent.opponent_id
         if opponent_id not in self.team.opponent_model:
             self.team.opponent_model[opponent_id] = OpponentModel()
         return self.team.opponent_model[opponent_id]
 
     def _get_chips_for_team(self):
-        opponent_id = self.opponent.opponent_id # update here for hall of fame
+        opponent_id = self.opponent.opponent_id
         if opponent_id not in self.team.chips:
             self.team.chips[opponent_id] = []
         return self.team.chips[opponent_id]
+
+    def _get_opponent_model_for_hall_of_fame(self):
+        opponent_id = self.team.team_id_
+        if opponent_id not in self.opponent.opponent_model:
+            self.opponent.opponent_model[opponent_id] = OpponentModel()
+        return self.opponent.opponent_model[opponent_id]
+
+    def _get_chips_for_hall_of_fame(self):
+        opponent_id = self.team.team_id_
+        if opponent_id not in self.opponent.chips:
+            self.opponent.chips[opponent_id] = []
+        return self.opponent.chips[opponent_id]
 
     def _normalize_winning(self, value):
         max_winning = MatchState.maximum_winning()

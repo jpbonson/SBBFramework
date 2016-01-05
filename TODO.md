@@ -29,11 +29,12 @@ remvoed pot and volatility
 removed input 'bet' and rmeoved option LA_to_all
 refactored OpponentModel + added inputs 'bluffing' and short-term self and opp aggr
 fixed hall of fame in class reinforcement learning
-
 saving more files for second layer + saving acc curves per run
+fixed hall of fame
 ---
 
-- 400, 600, 800 e 1000 matches? com 300gens (a cada 50 validations), 9 teams? 5 runs?
+- 400, 600, 800 e 1000 matches
+- hall of fame: 400 e 600 matches
 
 
 
@@ -54,9 +55,6 @@ saving more files for second layer + saving acc curves per run
 - parameters to test:
     - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
     - profile size? team size? more...? (generations, matches...)
-- fix hall of fame
-    - na metrics do team, msotrar scores por id do time no hall of fame (fitness e champion)
-    - corrigir poker_match para funcionar com hall_of_fame
 - adiantar mais o literature_review
     - comecar a escrever com os papers q já tenho (nao escrever coisas q podem mudar ainda)
     - selecionar references que parecem promissoras (apenas dos papers mais recentes ou mais classicas, ou do Billings)
