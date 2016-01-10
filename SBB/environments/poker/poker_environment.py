@@ -1,5 +1,4 @@
 import sys
-import gc
 import math
 import time
 import json

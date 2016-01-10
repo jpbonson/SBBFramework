@@ -25,9 +25,10 @@ class Config():
             'hall_of_fame': {
                 'size': 10,
                 'enabled': True,
-                'use_as_opponents': False,
+                'use_as_opponents': True,
                 'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-                'opponents_per_generation': 2,
+                'max_opponents_per_generation': 2,
+                'wait_generations': 100,
             },
             'debug': {
                 'print': False,

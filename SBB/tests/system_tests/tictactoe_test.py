@@ -14,7 +14,8 @@ TEST_CONFIG = {
             'enabled': False,
             'use_as_opponents': False,
             'diversity': None,
-            'opponents_per_generation': 2,
+            'max_opponents_per_generation': 2,
+            'wait_generations': -1,
         },
         'debug': {
             'print': False,

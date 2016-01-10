@@ -33,17 +33,19 @@ saving more files for second layer + saving acc curves per run
 fixed hall of fame
 ---
 
-- 400, 600, 800 e 1000 matches
-- hall of fame: 400 e 600 matches
+- 400 (1, done), 600 (2, done), 800 (3) e 1000 (4) matches, 400+100hf+1-2opp (1, ), 600+100hf+1-2opp (2, )
+- hall of fame: 400 (1) e 600 (2) matches
+- hall of fame: 600 (1, 2 opps, 31370, e 1 opp 31396) e 400 (2, 2 opps, 31398, 1 opp, 31400) matches
+- esperar mais generations antes de ativar o hall of fame? (para ter opps mais interessantes e executar mais rapido)
+- gradualmente aumentar de 0 hf, para 1, para 2?
+- obs.: desse jeito, esta se comecando com menos points e aumentando aos poucos
 
 
 
 
 - goal: fitness e validation curves crescendo de forma estavel, acc curve diversa
-- ler sobre simulacoes de monte carlo
-    - usar simulacoes de monte carlo?
+
 - second layer
-    - automatizar second layer em sequencia? (salvar metrics antes)
     - usar outro point set (não o validation) para escolher os teams
     - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?)
     - nao usar checkpoint no second layer, comecar com fullgame?
@@ -64,8 +66,35 @@ fixed hall of fame
     - fazer printar avg de behaviors do time no poker analysis
     - refatorar classe OpponentModel (separar self e opponent)
     - implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
-    - coevolving opponents?
+    - coevolving opponents? (evolving rule-based opponents e opponents q maximizam a diversity?)
     - passar aprte do processamento para memoria, para agilizar? rodar outro profile?
+- monte carlo?
+    - no final, um team precisa participar de matches e receber uma fitness
+    - monte carlo tree search nao parece fazer sentido nisso
+    - alternativa:
+        - ao inves de haver um point A (com 4 hole cards e 5 board cards), ha uma familia A (apenas as 4 holes cards? 2 hole cards? 4 hole cards e 3 board cards?)
+        - precisa ser de um jeito q possa ser calculado os resultados fora do training?
+        - como fica o balanceamento de hand strength nos points? (por familia de 4 hole cards?)
+        - o mesmo team e oponente tem que ir contra todos as combinacoes de uma familia
+        - risco de combinacoes nas familias nao fazerem diferenca, afinal as 4 hole cards iniciais nao mudam?
+        - quando gerar as familias de combinacoes, obrigar que a board strength final para pelos menos um dos players seja diferente em pelo menos 2 pontos de alg combinacao q ja exista?
+            - cuidado para nao travar! limitar numero de tries?
+            - ou gerar combinacoes aleatorias e pegar o set de combinacoes com maior variancia de board strength?
+        - 10 combinacoes por familia?
+        - poe atrapalhar os inputs de short term, ja q vai ter um bias para a familia atual
+        - how select the most disperse values/tuples in an array?
+            - ir selecionando o mais disperso e removendo do array?
+            - select min, max, e quartiles (25, 50, 75)?
+            - [*, -, -, -, *, -, -, -, *, -, -, -, *, -, -, -, *]
+            - len 9, 13, (x*4+1, para ser possivel pegar os percentiles 1, 25, 50, 75, 100)
+            - combinar os valores da tupla? fazer percentiles separados por lista de tuples?
+            - http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.percentile.html#numpy.percentile
+            - ou:
+            - euclidean distance? calculate it for all the other points and get a mean distance? (as in diversity!)
+                - select the k ones with higher distance, and also the median? or the quartiles?
+                - usar knn?
+                - testar e analsiar o que sai
+            
 
 ---
 
