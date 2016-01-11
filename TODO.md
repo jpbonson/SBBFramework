@@ -33,7 +33,7 @@ saving more files for second layer + saving acc curves per run
 fixed hall of fame
 ---
 
-- 400 (1, done), 600 (2, done), 800 (3) e 1000 (4) matches, 400+100hf+1-2opp (1, ), 600+100hf+1-2opp (2, )
+- 400 (1, done), 600 (2, done), 800 (3, done) e 1000 (4) matches, 400+100hf+1-2opp (1, ), 600+100hf+1-2opp (2, )
 - hall of fame: 400 (1) e 600 (2) matches
 - hall of fame: 600 (1, 2 opps, 31370, e 1 opp 31396) e 400 (2, 2 opps, 31398, 1 opp, 31400) matches
 - esperar mais generations antes de ativar o hall of fame? (para ter opps mais interessantes e executar mais rapido)
@@ -51,6 +51,9 @@ fixed hall of fame
     - nao usar checkpoint no second layer, comecar com fullgame?
     - fazer ser compativel com pastas per run?
     - update _initialize_environment e _initialize_actions_for_second_layer
+- profiling
+    - passar operations para c?
+    - melhorar codigo generate_profile em team.py? (ou chamadas a esse codigo em selection)
 - conferir como papers validaram os resultados (em especial, os em journals bons)
     - + fazer doc com exemplos de charts usados nos papers de SBB + outros papers
     - ver como hall of fame foi usado nos papers

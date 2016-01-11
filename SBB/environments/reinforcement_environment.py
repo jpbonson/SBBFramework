@@ -136,6 +136,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.validation_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['validation_population'])
         self.champion_opponent_population_ = self._initialize_random_balanced_population_of_coded_opponents_for_validation(Config.USER['reinforcement_parameters']['champion_population'])
         self.first_sampling_ = True
+        self._use_hall_of_fame_as_opponents = False
+        self._current_hall_of_fame_as_opponents = 0
+        self._next_generation_to_update_hall_of_fame = Config.USER['reinforcement_parameters']['hall_of_fame']['wait_generations']
+
 
     def _initialize_random_population_of_points(self, population_size, ignore_cache = False):
         return [self.point_class() for index in range(population_size)]
