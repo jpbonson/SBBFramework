@@ -72,6 +72,16 @@ class SBB:
             teams_population, programs_population = self._initialize_populations()
             
             self.environment.reset()
+
+            # initialize actions
+            if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
+                self._initialize_actions_for_second_layer(run_info.run_id)
+                total_team_actions = len(Config.RESTRICTIONS['second_layer']['action_mapping'])
+                if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
+                    Config.RESTRICTIONS['total_actions'] = Config.RESTRICTIONS['total_raw_actions'] + total_team_actions
+                else:
+                    Config.RESTRICTIONS['total_actions'] = total_team_actions
+
             while not self._stop_criterion():
                 self.current_generation_ += 1
                 
@@ -131,44 +141,34 @@ class SBB:
                 environment = PokerEnvironment()
         if environment is None:
             raise ValueError("No environment exists for "+str(Config.USER['task']))
-
-        if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
-            self._initialize_actions_for_second_layer()
-            total_team_actions = len(Config.RESTRICTIONS['second_layer']['action_mapping'])
-            if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
-                Config.RESTRICTIONS['total_actions'] += total_team_actions
-            else:
-                Config.RESTRICTIONS['total_actions'] = total_team_actions
         return environment
-
-    def _initialize_actions_for_second_layer(self):
-        if not os.path.exists("actions_reference/"):
-            os.makedirs("actions_reference/")
-        if not os.path.exists("actions_reference/default/"):
-            os.makedirs("actions_reference/default/")
-        path = Config.USER['advanced_training_parameters']['second_layer']['path']+'/*.json'   
-        files = glob.glob(path)
-        Config.RESTRICTIONS['second_layer']['short_action_mapping'] = {}
-        Config.RESTRICTIONS['second_layer']['action_mapping'] = {}
-        temp_actions_as_dicts = {}
-        for index, name in enumerate(sorted(files)):
-            with open(name) as f:
-                data = json.load(f)
-            team_id = ntpath.split(name)[-1].replace('.json', '')
-            if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
-                actual_index = index + Config.RESTRICTIONS['total_actions']
-            else:
-                actual_index = index
-            Config.RESTRICTIONS['second_layer']['short_action_mapping'][actual_index] = team_id
-            temp_actions_as_dicts[actual_index] = data
-
-        for action, team_descriptor in temp_actions_as_dicts.iteritems():
-            team = read_team_from_json(team_descriptor)
-            Config.RESTRICTIONS['second_layer']['action_mapping'][action] = team
 
     def _set_seed(self, seed):
         random.seed(seed)
         numpy.random.seed(seed)
+
+    def _initialize_actions_for_second_layer(self, run_id):
+        path = Config.USER['advanced_training_parameters']['second_layer']['path'].replace("[run_id]", str(run_id))
+        if not os.path.exists(path):
+            raise ValueError("Path for second layer actions doesn't exist: "+str(path))
+        Config.RESTRICTIONS['second_layer']['short_action_mapping'] = {}
+        Config.RESTRICTIONS['second_layer']['action_mapping'] = {}
+        temp_actions_as_dicts = {}
+        with open(path) as data_file:
+            data = json.load(data_file)
+        for index, team_json in data.iteritems():
+            index = int(index)
+            team_id = str(team_json['team_id'])+":"+str(team_json['generation'])
+            if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
+                actual_index = index + Config.RESTRICTIONS['total_raw_actions']
+            else:
+                actual_index = index
+            Config.RESTRICTIONS['second_layer']['short_action_mapping'][actual_index] = team_id
+            temp_actions_as_dicts[actual_index] = team_json
+
+        for action, team_descriptor in temp_actions_as_dicts.iteritems():
+            team = read_team_from_json(team_descriptor)
+            Config.RESTRICTIONS['second_layer']['action_mapping'][action] = team
 
     def _create_folder(self):
         if not os.path.exists("outputs/"):
@@ -539,10 +539,14 @@ class SBB:
             self._save_teams_in_actions_file(run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame/")
             for key in run.second_layer_files.keys():
                 self._save_teams_in_actions_file(run.second_layer_files[key], path+"second_layer_files/"+key+"/")
-            self._save_teams_in_actions_file(run.second_layer_files['top5_overall_subcats']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top5_overall_subcats/")
-            self._save_teams_in_actions_file(run.second_layer_files['top10_overall_subcats']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top10_overall_subcats/")
-            self._save_teams_in_actions_file(run.second_layer_files['top5_overall']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top5_overall/")
-            self._save_teams_in_actions_file(run.second_layer_files['top10_overall']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top10_overall/")
+            if 'top5_overall_subcats' in run.second_layer_files:
+                self._save_teams_in_actions_file(run.second_layer_files['top5_overall_subcats']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top5_overall_subcats/")
+            if 'top10_overall_subcats' in run.second_layer_files:
+                self._save_teams_in_actions_file(run.second_layer_files['top10_overall_subcats']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top10_overall_subcats/")
+            if 'top5_overall' in run.second_layer_files:
+                self._save_teams_in_actions_file(run.second_layer_files['top5_overall']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top5_overall/")
+            if 'top10_overall' in run.second_layer_files:
+                self._save_teams_in_actions_file(run.second_layer_files['top10_overall']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top10_overall/")
         print "\n### Files saved at "+self.filepath_+"\n"
 
     def _save_teams_data_per_generation(self, run_infos):

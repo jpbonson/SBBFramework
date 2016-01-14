@@ -33,10 +33,10 @@ saving more files for second layer + saving acc curves per run
 fixed hall of fame
 ---
 
-- mandar rodar (only fullgame e only river no server)
-- conferir se tem algo para dar commit
 - mandar rodar second layer para 600 matches (com a melhor combinacao? parte no hector?)
-- fazer charts para resultados do hall of fame (sem, com 1 opp, com 2 opps, com 1-2 opps)
+
+- fazer charts para resultados do hall of fame (baseline, com 1 opp, com 2 opps, com 1-2 opps)
+- fazer charts para resultados do river only (baseline, river_only, fullgame_only)
 - implementar gerador de familia de points
 
 
@@ -44,31 +44,30 @@ fixed hall of fame
 report:
 - experiments with river only to fullgame (vs only fullgame e only river)
     - also experiments with varying number of static opponents and quantity of generations and teams
+    - updated inputs
 - experiments with matches
 - experiments with hall of fame
 - experiments with second layer
 - idea based on monte carlo (mantains the good performance and uses averaged results, problems: less variety of hands, may mess up with the long-term inputs)
-- updated inputs
-- evolving opponents? it is worth it?
+- evolving opponents? is it worth it?
 - focus on new ideas or focus on wrap up what I have and start writing the thesis?
+- teach one class in GP about poker+SBB?
 
-- 600+100hf+1-2opp (1, )
+- 600+100hf+1-2opp (1), top5_overall_subcats (2), 
 - hall of fame: 600 (1) matches, 600+100hf+1-2opp (2, backup)
-- hall of fame: 600 (2 opps, 31370, e 1 opp 31396)
+- hall of fame: 600 (2 opps, 31370, e 1 opp 31396),  only_fullgame (5, 1326), only_river (6, 1330)
 
 - esperar mais generations antes de ativar o hall of fame? (para ter opps mais interessantes e executar mais rapido)
 - gradualmente aumentar de 0 hf, para 1, para 2?
 - obs.: desse jeito, esta se comecando com menos points e aumentando aos poucos
 
 - second layer
-    - usar outro point set (não o validation) para escolher os teams
-    - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?)
-    - nao usar checkpoint no second layer, comecar com fullgame?
-    - fazer ser compativel com pastas per run?
-    - update _initialize_environment e _initialize_actions_for_second_layer
+    - usar outra seed, fullgame_only
+    - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?), e para 'use_atomic_actions'
 - performance profiling
     - passar operations para c?
     - melhorar codigo generate_profile em team.py? (ou chamadas a esse codigo em selection)
+    - fazer profiling com um run de verdade? set de 2 runs?
 - conferir como papers validaram os resultados (em especial, os em journals bons)
     - + fazer doc com exemplos de charts usados nos papers de SBB + outros papers
     - ver como hall of fame foi usado nos papers
@@ -83,9 +82,7 @@ report:
 - extras
     - fazer printar avg de behaviors do time no poker analysis
     - refatorar classe OpponentModel (separar self e opponent)
-    - implementar jeito de poder continuar a treinar teams com mais generations? (para treinar em partes?)
     - coevolving opponents? (evolving rule-based opponents e opponents q maximizam a diversity?)
-    - passar aprte do processamento para memoria, para agilizar? rodar outro profile?
 - monte carlo?
     - no final, um team precisa participar de matches e receber uma fitness
     - monte carlo tree search nao parece fazer sentido nisso

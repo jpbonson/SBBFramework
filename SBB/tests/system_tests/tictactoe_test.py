@@ -64,7 +64,7 @@ TEST_CONFIG = {
         'seed': 1, # default = None
         'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
-        'extra_registers': 3,
+        'extra_registers': 4,
         'diversity': {
             'use_and_show': [], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
@@ -76,7 +76,7 @@ TEST_CONFIG = {
         'second_layer': {
             'enabled': False,
             'use_atomic_actions': False,
-            'path': 'actions_reference/ttt-test', # if using layered SBB, must provie a reference file for the actions
+            'path': 'actions_reference/ttt-test/run[run_id]/second_layer_files/hall_of_fame/actions.json',
         },
     },
 }

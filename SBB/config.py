@@ -38,7 +38,7 @@ class Config():
             'poker': {
                 'opponents': [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], # [PokerLooseAgressiveOpponent],
                 'river_round_only': False,
-                'river_only_to_fullgame': True, # changed from one to another in half the generations, ignores 'river_round_only'
+                'river_only_to_fullgame': False, # changed from one to another in half the generations, ignores 'river_round_only'
             },
         },
 
@@ -79,7 +79,7 @@ class Config():
         },
 
         'advanced_training_parameters': {
-            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run, WARNING: It not ensures that runs with the same seed will have the same result, just increases the chance
+            'seed': 2, # default = None, it can be a single seed for all runs, or an array of seeds per run, WARNING: It not ensures that runs with the same seed will have the same result, just increases the chance
             'use_pareto_for_point_population_selection': False, # if False, will select points using age
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'extra_registers': 4,
@@ -92,9 +92,9 @@ class Config():
             'use_weighted_probability_selection': False, # if False, uniform probability will be used
             'use_agressive_mutations': True,
             'second_layer': {
-                'enabled': False,
+                'enabled': True,
                 'use_atomic_actions': False,
-                'path': 'actions_reference/v3/1/top10',
+                'path': 'actions_reference/baseline/run[run_id]/second_layer_files/top5_overall_subcats/actions.json',
             },
         },
     }
