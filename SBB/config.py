@@ -27,7 +27,7 @@ class Config():
                 'enabled': True,
                 'use_as_opponents': False,
                 'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-                'max_opponents_per_generation': 2,
+                'max_opponents_per_generation': 1,
                 'wait_generations': 100,
             },
             'debug': {
@@ -39,6 +39,7 @@ class Config():
                 'opponents': [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], # [PokerLooseAgressiveOpponent],
                 'river_round_only': False,
                 'river_only_to_fullgame': False, # changed from one to another in half the generations, ignores 'river_round_only'
+                'maximum_bets': 3,
             },
         },
 
@@ -94,7 +95,7 @@ class Config():
             'second_layer': {
                 'enabled': True,
                 'use_atomic_actions': False,
-                'path': 'actions_reference/baseline/run[run_id]/second_layer_files/top5_overall_subcats/actions.json',
+                'path': 'actions_reference/baseline/run[run_id]/second_layer_files/hall_of_fame+top10_overall_subcats/actions.json',
             },
         },
     }

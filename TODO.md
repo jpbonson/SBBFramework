@@ -31,36 +31,66 @@ refactored OpponentModel + added inputs 'bluffing' and short-term self and opp a
 fixed hall of fame in class reinforcement learning
 saving more files for second layer + saving acc curves per run
 fixed hall of fame
+--------
+added option to simplify the number of bets
 ---
 
-- mandar rodar second layer para 600 matches (com a melhor combinacao? parte no hector?)
+####################################
 
-- fazer charts para resultados do hall of fame (baseline, com 1 opp, com 2 opps, com 1-2 opps)
-- fazer charts para resultados do river only (baseline, river_only, fullgame_only)
-- implementar gerador de familia de points
+- what is the baseline?
+    - simplest: static opponents
+    - ideal: bayesian opponent
+        - alternative: the one from 'Adaptive Learning for Poker' (too troublesome)
+    - resultados para river only e para fullgame?
 
+- next step:
+    - evolve bayesian opponent against static opponents
+    - compare best evolved bayesian opponents against best evolved sbb opponents
+    - if sbb > bayesian: good, else: improve sbb
 
+- goal: have final results around mid of March and then write/polish the paper
 
-report:
-- experiments with river only to fullgame (vs only fullgame e only river)
-    - also experiments with varying number of static opponents and quantity of generations and teams
-    - updated inputs
-- experiments with matches
-- experiments with hall of fame
-- experiments with second layer
-- idea based on monte carlo (mantains the good performance and uses averaged results, problems: less variety of hands, may mess up with the long-term inputs)
-- evolving opponents? is it worth it?
-- focus on new ideas or focus on wrap up what I have and start writing the thesis?
-- teach one class in GP about poker+SBB?
+- notes:
+    - fullgame or river only?
+    - usar oponente bayesiano?
+        - could be compared against SBB, but they are very different types of players
+        - not 'trainable' over generations
+        - cold start
+        - use heuristics (4 main player styles, best strategies against them, risk assesment againt multiple players)
+        - learn over matches against the same opponent
+        - eu mesma teria que gerar e testar os valores dos anti-players (pares de alfa e beta, em incrementos, 0 <= x <= 1, em 100 torneios com 10 chips, analisar se a win ratio é compativel com a do paper)
+            - testar para fullgame e river only?
+            - procurar valores fazendo busca binaria? (eg.: começar com 0.2/0.8 e 0.8/0.2)
 
-- 600+100hf+1-2opp (1), top5_overall_subcats (2), 
-- hall of fame: 600 (1) matches, 600+100hf+1-2opp (2, backup)
-- hall of fame: 600 (2 opps, 31370, e 1 opp 31396),  only_fullgame (5, 1326), only_river (6, 1330)
+#################################
 
-- esperar mais generations antes de ativar o hall of fame? (para ter opps mais interessantes e executar mais rapido)
-- gradualmente aumentar de 0 hf, para 1, para 2?
-- obs.: desse jeito, esta se comecando com menos points e aumentando aos poucos
+- prepare code for meeting on Tuesday + slides
 
+- rodar second layer com hall of fame:
+    - pc: hf 1, hf5 2, hf10 3
+- com apenas overall
+    - server: 5, 7868; 10, 7870; 15, 7872
+- quando terminar, mandar rodar runs com nova config default (river-fullgame e river-only)
+
+- nova config:
+    - 'river_only_to_fullgame' after 100 gens, instead of 150?
+    - usar 2 opps de hall of fame, instead of one? (to increase unpredictability) (from 0 to 2)
+    - hall of fame size 20?
+    - seed = 1
+    - second layer = False
+    - maior team size? (12? 16?)
+    - inputs?
+        ['0: hand strength', '1: effective potential', '2: pot odds', '3: betting position', '4: round', '5: chips', '6: opp last action', '7: opp hand agressiveness', '8: opp agressiveness', '9: opp tight/loose', '10: opp passive/aggressive', '11: opp bluffing', '12: opp short-term agressiveness', '13: self short-term agressiveness']
+        - add pot value?
+        - change pot odds?
+        - add bet?
+        - remove opp tight/loose e opp passive/aggressive?
+    - manter os ifs que trocam o sinal?
+- procurar valores para alfa e beta do bayesiano (fazer modificação no poker analysis?)
+
+- implementar gerador de familia de points?
+- usar heuristicas? quais?
+- more players?
 - second layer
     - usar outra seed, fullgame_only
     - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?), e para 'use_atomic_actions'
@@ -112,16 +142,6 @@ report:
             
 
 ---
-
-nims pc:
-- ...
-
-nims server:
-- ...
-
-hector server:
-- ...
-
 
 diversity:
 - best_config_layer1_entropy_c2_seed5, 1, 

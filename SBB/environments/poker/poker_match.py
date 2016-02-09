@@ -292,11 +292,13 @@ class PokerMatch():
     def _valid_actions(self):
         valid = [0, 1]
 
+        max_raises_overall = Config.USER['reinforcement_parameters']['poker']['maximum_bets']
+
         # check if can raise
-        if self.round_id == 0:
-            max_raises = 3
+        if self.round_id == 0 or Config.USER['reinforcement_parameters']['poker']['river_round_only']:
+            max_raises = max_raises_overall-1
         else:
-            max_raises = 4
+            max_raises = max_raises_overall
         raises = 0
         for action in self.rounds[self.round_id]:
             if action == 'r':

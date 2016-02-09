@@ -47,12 +47,12 @@ class MatchState():
 
     @staticmethod
     def maximum_winning():
-        if Config.USER['reinforcement_parameters']['poker']['river_round_only']:
-            max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*5
+        max_raises_overall = Config.USER['reinforcement_parameters']['poker']['maximum_bets']
+        max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*max_raises_overall
+        if Config.USER['reinforcement_parameters']['poker']['river_round_only']:  
             return max_small_bet_turn_winning
         else:
-            max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
-            max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
+            max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*max_raises_overall
             return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
 
     def _betting_position(self, round_id):
