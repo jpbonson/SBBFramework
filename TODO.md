@@ -33,6 +33,7 @@ saving more files for second layer + saving acc curves per run
 fixed hall of fame
 --------
 added option to simplify the number of bets
+new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 ---
 
 ####################################
@@ -72,20 +73,7 @@ added option to simplify the number of bets
     - server: 5, 7868; 10, 7870; 15, 7872
 - quando terminar, mandar rodar runs com nova config default (river-fullgame e river-only)
 
-- nova config:
-    - 'river_only_to_fullgame' after 100 gens, instead of 150?
-    - usar 2 opps de hall of fame, instead of one? (to increase unpredictability) (from 0 to 2)
-    - hall of fame size 20?
-    - seed = 1
-    - second layer = False
-    - maior team size? (12? 16?)
-    - inputs?
-        ['0: hand strength', '1: effective potential', '2: pot odds', '3: betting position', '4: round', '5: chips', '6: opp last action', '7: opp hand agressiveness', '8: opp agressiveness', '9: opp tight/loose', '10: opp passive/aggressive', '11: opp bluffing', '12: opp short-term agressiveness', '13: self short-term agressiveness']
-        - add pot value?
-        - change pot odds?
-        - add bet?
-        - remove opp tight/loose e opp passive/aggressive?
-    - manter os ifs que trocam o sinal?
+- testar k = 20 para diversity?
 - procurar valores para alfa e beta do bayesiano (fazer modificação no poker analysis?)
 
 - implementar gerador de familia de points?

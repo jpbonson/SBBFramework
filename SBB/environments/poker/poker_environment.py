@@ -219,7 +219,7 @@ class PokerEnvironment(ReinforcementEnvironment):
         best_team = super(PokerEnvironment, self).validate(current_generation, teams_population)
 
         if Config.USER['reinforcement_parameters']['poker']['river_only_to_fullgame']:
-            if current_generation >= Config.USER['training_parameters']['generations_total']/2:
+            if current_generation >= Config.USER['training_parameters']['generations_total']/3:
                 Config.USER['reinforcement_parameters']['poker']['river_round_only'] = False
 
         return best_team
