@@ -74,6 +74,7 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 - quando terminar, mandar rodar runs com nova config default (river-fullgame e river-only)
 
 - testar k = 20 para diversity?
+- testar colcoar hand potential como input novamente?
 - procurar valores para alfa e beta do bayesiano (fazer modificação no poker analysis?)
 
 - implementar gerador de familia de points?
