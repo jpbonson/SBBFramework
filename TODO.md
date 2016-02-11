@@ -68,13 +68,13 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 - prepare code for meeting on Tuesday + slides
 
 - rodar second layer com hall of fame:
-    - pc: hf 1, hf5 2, hf10 3
+    - pc: hf 1, hf5 2, hf10 3, novo baseline 4
 - com apenas overall
     - server: 5, 7868; 10, 7870; 15, 7872
 - quando terminar, mandar rodar runs com nova config default (river-fullgame e river-only)
 
 - testar k = 20 para diversity?
-- testar colcoar hand potential como input novamente?
+- testar colcoar hand potential como input novamente? (fazer calculo para extrair o potential de EHS?)
 - procurar valores para alfa e beta do bayesiano (fazer modificação no poker analysis?)
 
 - implementar gerador de familia de points?

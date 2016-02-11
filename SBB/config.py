@@ -1,7 +1,7 @@
 import sys
 import numpy
 from collections import deque
-# from config_examples import thyroid_config, tictactoe_config, poker_config
+from config_examples import tictactoe_config
 from environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
     PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent)
 
@@ -139,7 +139,7 @@ class Config():
         'diversity': {
             'options': ['genotype', 'fitness_sharing', 'entropy_c2', 'hamming_c3', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
             'total_bins': 3, # used to quantize the distances for the diversity metrics
-            'max_ncd': 1.06,
+            'max_ncd': 1.2,
         },
         'second_layer': {
             'action_mapping': {}, # initialized by sbb.py
@@ -196,7 +196,6 @@ class Config():
                 sys.stderr.write("Error: If you are using an array of seeds, the size of the array must be equal to the total of runs.\n")
                 raise SystemExit
 
-# To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /examples
-# Config.USER = thyroid_config.THYROID_REGISTERS2
+# To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /config_examples
 # Config.USER = tictactoe_config.TICTACTOE_DEFAULT
-# Config.USER = poker_config.POKER_DEFAULT_ENTROPY_1
+# Config.USER = tictactoe_config.TICTACTOE_QUICK
