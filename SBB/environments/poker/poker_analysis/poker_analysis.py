@@ -10,7 +10,8 @@ from collections import defaultdict
 from ..poker_environment import PokerEnvironment
 from ..poker_point import PokerPoint
 from ..poker_config import PokerConfig
-from ..poker_opponents import PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
+from ..poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, 
+    PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianTesterOpponent)
 from ...default_environment import reset_points_ids
 from ....utils.team_reader import read_team_from_json
 from ....utils.helpers import round_value, flatten
@@ -82,17 +83,21 @@ class PokerAnalysis():
 
         print "Loading players..."
 
-        if player1_is_sbb:
+        if player1_is_sbb and not player1_file_or_opponent_type == PokerBayesianTesterOpponent:
             player1 = self._create_player("sbb", json_path=player1_file_or_opponent_type)
             self._setup_attributes(player1)
         else:
             player1 = self._create_player("static", classname=player1_file_or_opponent_type)
+            if player1_file_or_opponent_type == PokerBayesianTesterOpponent:
+                self._setup_attributes(player1)
 
-        if player2_is_sbb:
+        if player2_is_sbb and not player2_file_or_opponent_type == PokerBayesianTesterOpponent:
             player2 = self._create_player("sbb", json_path=player2_file_or_opponent_type)
             self._setup_attributes(player2)
         else:
             player2 = self._create_player("static", classname=player2_file_or_opponent_type)
+            if player2_file_or_opponent_type == PokerBayesianTesterOpponent:
+                self._setup_attributes(player2)
         
         Config.USER['reinforcement_parameters']['debug']['output_path'] = debug_folder+str(player1.OPPONENT_ID)+"/"+str(player2.OPPONENT_ID)+"/"
         if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
