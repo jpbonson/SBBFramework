@@ -18,6 +18,9 @@ def get_team_id():
     return next_team_id
 
 class Team(DefaultOpponent):
+
+    OPPONENT_ID = "sbb"
+
     def __init__(self, generation, programs, team_id = None):
         if team_id is None:
             self.team_id_ = get_team_id()
@@ -288,9 +291,10 @@ class Team(DefaultOpponent):
                 for key in self.extra_metrics_['validation_opponents']:
                     msg += "\n"+key+": "+str(self.extra_metrics_['validation_opponents'][key])
             if Config.USER['task'] == 'reinforcement':
-                msg += "\n\nscore per opponent (training): "+str(round_value(self.fitness_))
-                for key in self.extra_metrics_['training_opponents']:
-                    msg += "\n"+key+": "+str(self.extra_metrics_['training_opponents'][key])
+                if 'training_opponents' in self.extra_metrics_:
+                    msg += "\n\nscore per opponent (training): "+str(round_value(self.fitness_))
+                    for key in self.extra_metrics_['training_opponents']:
+                        msg += "\n"+key+": "+str(self.extra_metrics_['training_opponents'][key])
             msg += "\n"
         if full_version:
             if Config.USER['task'] == 'classification' and self.extra_metrics_:

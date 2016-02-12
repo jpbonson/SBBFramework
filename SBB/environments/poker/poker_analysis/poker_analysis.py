@@ -25,7 +25,8 @@ class PokerAnalysis():
         opponents = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
         results = []
         for opponent in opponents:
-            result = self.run(matches, balanced, team_file, opponent, generate_debug_files_per_match, debug_folder, river_round_only, seed)
+            result = self.run(matches, balanced, team_file, opponent, True,
+                False, generate_debug_files_per_match, debug_folder, river_round_only, seed)
             results.append(result)
         player1 = self._create_player("sbb", json_path=team_file)
         print "\n\nPLAYER: "+str(player1.__repr__())
@@ -35,10 +36,11 @@ class PokerAnalysis():
             for key, value in r.iteritems():
                 m += key+": "+str(value)+"\n"
         print m
-        with open(debug_folder+str(player1.__repr__())+"/team_summary_overall.log", 'w') as f:
+        with open(debug_folder+str(player1.OPPONENT_ID)+"/team_summary_overall.log", 'w') as f:
             f.write(m)
 
-    def run(self, matches, balanced, team_file, opponent_type, generate_debug_files_per_match, debug_folder, river_round_only, seed = None):
+    def run(self, matches, balanced, player1_file_or_opponent_type, player2_file_or_opponent_type, 
+            player1_is_sbb, player2_is_sbb, generate_debug_files_per_match, debug_folder, river_round_only, seed = None):
         print "Starting poker analysis tool"
 
         print "Setup the configuration..."
@@ -79,34 +81,52 @@ class PokerAnalysis():
         print "...initialized the environment."
 
         print "Loading players..."
-        # WARNING: The stats are only processed for player1
-        # WARNING: Right now, only works for player1 = 'sbb' and player2 = 'static'
-        player1 = self._create_player("sbb", json_path=team_file)
-        player2 = self._create_player("static", classname=opponent_type)
-        self._setup_attributes(player1)
-        # self._setup_attributes(player2)
-        Config.USER['reinforcement_parameters']['debug']['output_path'] = debug_folder+str(player1.__repr__())+"/"+str(opponent_type.OPPONENT_ID)+"/"
+
+        if player1_is_sbb:
+            player1 = self._create_player("sbb", json_path=player1_file_or_opponent_type)
+            self._setup_attributes(player1)
+        else:
+            player1 = self._create_player("static", classname=player1_file_or_opponent_type)
+
+        if player2_is_sbb:
+            player2 = self._create_player("sbb", json_path=player2_file_or_opponent_type)
+            self._setup_attributes(player2)
+        else:
+            player2 = self._create_player("static", classname=player2_file_or_opponent_type)
+        
+        Config.USER['reinforcement_parameters']['debug']['output_path'] = debug_folder+str(player1.OPPONENT_ID)+"/"+str(player2.OPPONENT_ID)+"/"
         if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
             os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path'])
         print "...finished loading players."
 
         print "Executing matches..."
-        self._evaluate_teams(player1, player2, points, environment)
+        self._evaluate_teams(player1, player2, player1_is_sbb, player2_is_sbb, points, environment)
+        if player1_is_sbb:
+            self._setup_final_attributes(player1)
+        if player2_is_sbb:
+            self._setup_final_attributes(player2)
         print "...finished executing matches."
         print
 
-        # sum1 = sum([int(r['score'][0]) for r in messages if r['players'][0] == 'sbb'])
-        # sum2 = sum([int(r['score'][1]) for r in messages if r['players'][1] == 'sbb'])
-        final_message = "\nResult (team stats): "+str(player1.metrics(full_version=True))
-        final_message += "\n--- Results for matches:"
-        # final_message += "\nResult (total chips): "+str(sum1+sum2)+" out of [-"+str(self._maximum_winning()*matches)+",+"+str(self._maximum_winning()*matches)+"]"
-        final_message += "\nResult (normalized): "+str(player1.score_testset_)
-        print final_message
-        with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"team_summary.log", 'w') as f:
-            f.write(final_message)
-        result = player1.get_behaviors_metrics()
-        # result['total_chips'] = sum1+sum2
-        return result
+        # WARNING: The stats are only support one sbb player
+        metrics_player = None
+        if player1_is_sbb:
+            metrics_player = player1
+        if player2_is_sbb:
+            metrics_player = player2
+        if metrics_player is not None:
+            # sum1 = sum([int(r['score'][0]) for r in messages if r['players'][0] == 'sbb'])
+            # sum2 = sum([int(r['score'][1]) for r in messages if r['players'][1] == 'sbb'])
+            final_message = "\nResult (team stats): "+str(metrics_player.metrics(full_version=True))
+            final_message += "\n--- Results for matches:"
+            # final_message += "\nResult (total chips): "+str(sum1+sum2)+" out of [-"+str(self._maximum_winning()*matches)+",+"+str(self._maximum_winning()*matches)+"]"
+            final_message += "\nResult (normalized): "+str(metrics_player.score_testset_)
+            print final_message
+            with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"team_summary.log", 'w') as f:
+                f.write(final_message)
+            result = metrics_player.get_behaviors_metrics()
+            # result['total_chips'] = sum1+sum2
+            return result
 
     def _maximum_winning(self):
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
@@ -181,7 +201,7 @@ class PokerAnalysis():
                 for subkey in subkeys:
                     team.extra_metrics_[metric][key][subkey] = defaultdict(int)
 
-    def _evaluate_teams(self, player1, player2, points, environment):
+    def _evaluate_teams(self, player1, player2, player1_is_sbb, player2_is_sbb, points, environment):
         results = []
         team = player1
         extra_metrics_opponents = defaultdict(list)
@@ -206,16 +226,13 @@ class PokerAnalysis():
         team.extra_metrics_['points'] = extra_metrics_points
         team.score_testset_ = numpy.mean(results)
 
+    def _setup_final_attributes(self, team):
         self_long_term_agressiveness = []
-        self_agressiveness_preflop = []
-        self_agressiveness_postflop = []
         self_tight_loose = []
         self_passive_aggressive = []
         self_bluffing = []
         for key, item in team.opponent_model.iteritems():
             self_long_term_agressiveness += item.self_agressiveness
-            self_agressiveness_preflop += item.self_agressiveness_preflop
-            self_agressiveness_postflop += item.self_agressiveness_postflop
             self_tight_loose += item.self_tight_loose
             self_passive_aggressive += item.self_passive_aggressive
             self_bluffing += item.self_bluffing
