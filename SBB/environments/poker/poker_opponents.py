@@ -90,22 +90,22 @@ class PokerRuleBasedOpponent(DefaultOpponent):
 class PokerLooseAgressiveOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "loose_agressive"
     def __init__(self):
-        super(PokerLooseAgressiveOpponent, self).__init__(PokerLooseAgressiveOpponent.OPPONENT_ID, 2.0, 4.0)
+        super(PokerLooseAgressiveOpponent, self).__init__(PokerLooseAgressiveOpponent.OPPONENT_ID, 3.0, 5.3)
 
 class PokerLoosePassiveOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "loose_passive"
     def __init__(self):
-        super(PokerLoosePassiveOpponent, self).__init__(PokerLoosePassiveOpponent.OPPONENT_ID, 2.0, 8.0)
+        super(PokerLoosePassiveOpponent, self).__init__(PokerLoosePassiveOpponent.OPPONENT_ID, 3.0, 7.7)
 
 class PokerTightAgressiveOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "tight_agressive"
     def __init__(self):
-        super(PokerTightAgressiveOpponent, self).__init__(PokerTightAgressiveOpponent.OPPONENT_ID, 8.0, 8.5)
+        super(PokerTightAgressiveOpponent, self).__init__(PokerTightAgressiveOpponent.OPPONENT_ID, 7.0, 8.0)
 
 class PokerTightPassiveOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "tight_passive"
     def __init__(self):
-        super(PokerTightPassiveOpponent, self).__init__(PokerTightPassiveOpponent.OPPONENT_ID, 8.0, 9.5)
+        super(PokerTightPassiveOpponent, self).__init__(PokerTightPassiveOpponent.OPPONENT_ID, 7.0, 9.0)
 
 class PokerBayesianTesterOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "bayesian_tester"

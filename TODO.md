@@ -65,10 +65,12 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 
 #################################
 
-- prepare code for meeting on Tuesday + slides
+- analisar resultados
+- implementar baysian player
+- consertar poker analysis para second layer
 
 - rodar second layer com hall of fame:
-    - pc: hf 1, hf5 2, hf10 3, novo baseline 4
+    - pc: novo baseline 1, novo baseline com novos opps 2
 - com apenas overall
     - server: 5, 7868; 10, 7870; 15, 7872
 - quando terminar, mandar rodar runs com nova config default (river-fullgame e river-only)

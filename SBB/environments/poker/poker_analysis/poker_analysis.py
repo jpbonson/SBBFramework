@@ -136,8 +136,8 @@ class PokerAnalysis():
                 f.write(final_message)
             result = metrics_player.get_behaviors_metrics()
             # result['total_chips'] = sum1+sum2
-            return result
-            # return metrics_player.score_testset_
+            # return result
+            return metrics_player.score_testset_
 
     def _maximum_winning(self):
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
