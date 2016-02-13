@@ -109,8 +109,8 @@ class PokerTightPassiveOpponent(PokerRuleBasedOpponent):
 
 class PokerBayesianTesterOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "bayesian_tester"
-    def __init__(self):
-        super(PokerBayesianTesterOpponent, self).__init__(PokerBayesianTesterOpponent.OPPONENT_ID, 5.5, 5.5)
+    def __init__(self, alfa, beta):
+        super(PokerBayesianTesterOpponent, self).__init__(PokerBayesianTesterOpponent.OPPONENT_ID, alfa, beta)
         self.programs = []
         self.extra_metrics_ = {}
         self.results_per_points_for_validation_ = {}
@@ -135,33 +135,3 @@ class PokerBayesianTesterOpponent(PokerRuleBasedOpponent):
         print "won_hands/total_hands: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['total_hands']['validation']))
         print "won_hands/hand_played: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['hand_played']['validation']))
         return ""
-    """
-    PokerLooseAgressiveOpponent (unbalanced)
-    alfa = 0.5, beta = 0.5, result = 0.477
-    alfa = 5.0, beta = 5.0, result = 0.50593
-    alfa = 4.0, beta = 8.0, result = 0.4984
-    alfa = 5.0, beta = 8.0, result = 0.5013
-    alfa = 6.0, beta = 8.0, result = 0.49840
-    alfa = 7.0, beta = 8.0, result = 0.49813
-    alfa = 5.0, beta = 7.0, result = 0.50409
-    alfa = 5.0, beta = 6.0, result = 0.50445
-    alfa = 4.0, beta = 5.0, result = 0.50945
-    alfa = 3.0, beta = 5.0, result = 0.50347
-    alfa = 4.0, beta = 4.0, result = 0.51484
-    alfa = 3.0, beta = 4.0, result = 0.51055
-    alfa = 3.0, beta = 3.0, result = 0.51008
-    alfa = 4.0, beta = 4.5, result = 0.5119
-    alfa = 3.5, beta = 4.0, result = 0.51545 !!!
-
-    PokerLooseAgressiveOpponent (balanced)
-    alfa = 3.5, beta = 4.0, result = 0.50151
-    alfa = 2.5, beta = 4.0, result = 0.4904
-    alfa = 3.0, beta = 4.0, result = 0.4969
-    alfa = 4.0, beta = 4.0, result = 0.50415
-    alfa = 4.0, beta = 5.0, result = 0.5018
-    alfa = 5.0, beta = 5.0, result = 0.50589 !!!
-    alfa = 6.0, beta = 6.0, result = 0.50382
-    alfa = 5.0, beta = 6.0, result = 0.50241
-    alfa = 5.0, beta = 5.5, result = 0.5047
-    alfa = 5.5, beta = 5.5, result = 0.4992
-    """
