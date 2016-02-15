@@ -308,13 +308,16 @@ class PokerMatch():
         return valid
 
     def _execute_player(self, player, match_state, bet, opponent_actions, current_index):
-        if match_state.player_key == 'team':
+        if match_state.player_key == 'team' and not player.opponent_id == 'bayesian_opponent' and not player.opponent_id == 'bayesian_tester':
             inputs = match_state.inputs_for_team(self.pot, bet, self._get_chips_for_team(), self.round_id)
             inputs += self._get_opponent_model_for_team().inputs(match_state.actions, opponent_actions)
         else:
             if player.opponent_id == 'hall_of_fame':
                 inputs = match_state.inputs_for_team(self.pot, bet, self._get_chips_for_hall_of_fame(), self.round_id)
                 inputs += self._get_opponent_model_for_hall_of_fame().inputs(match_state.actions, opponent_actions)
+            elif player.opponent_id == 'bayesian_opponent':
+                inputs = match_state.inputs_for_rule_based_opponents(bet, self.round_id)
+                inputs.append(opponent_actions)
             else:
                 inputs = match_state.inputs_for_rule_based_opponents(bet, self.round_id)
 

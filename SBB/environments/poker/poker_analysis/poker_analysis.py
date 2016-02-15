@@ -11,7 +11,8 @@ from ..poker_environment import PokerEnvironment
 from ..poker_point import PokerPoint
 from ..poker_config import PokerConfig
 from ..poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, 
-    PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianTesterOpponent)
+    PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianTesterOpponent, 
+    PokerBayesianOpponent)
 from ...default_environment import reset_points_ids
 from ....utils.team_reader import read_team_from_json
 from ....utils.helpers import round_value, flatten
@@ -84,25 +85,25 @@ class PokerAnalysis():
 
         print "Loading players..."
 
-        if player1_is_sbb and not player1_file_or_opponent_type == PokerBayesianTesterOpponent:
-            player1 = self._create_player("sbb", json_path=player1_file_or_opponent_type)
+        if player1_is_sbb and not player1_file_or_opponent_type == PokerBayesianTesterOpponent and not player1_file_or_opponent_type == PokerBayesianOpponent:
+            player1 = self._create_player("sbb", balanced, json_path=player1_file_or_opponent_type)
             self._setup_attributes(player1)
         else:
-            if player1_file_or_opponent_type == PokerBayesianTesterOpponent:
-                player1 = self._create_player("static", json_path=None, classname=player1_file_or_opponent_type, test_bayesian_alfa=test_bayesian_alfa, test_bayesian_beta=test_bayesian_beta)
+            if player1_file_or_opponent_type == PokerBayesianTesterOpponent or player1_file_or_opponent_type == PokerBayesianOpponent:
+                player1 = self._create_player("static", balanced, json_path=None, classname=player1_file_or_opponent_type, test_bayesian_alfa=test_bayesian_alfa, test_bayesian_beta=test_bayesian_beta)
                 self._setup_attributes(player1)
             else:
-                player1 = self._create_player("static", classname=player1_file_or_opponent_type)
+                player1 = self._create_player("static", balanced, classname=player1_file_or_opponent_type)
 
-        if player2_is_sbb and not player2_file_or_opponent_type == PokerBayesianTesterOpponent:
-            player2 = self._create_player("sbb", json_path=player2_file_or_opponent_type)
+        if player2_is_sbb and not player2_file_or_opponent_type == PokerBayesianTesterOpponent and not player2_file_or_opponent_type == PokerBayesianOpponent:
+            player2 = self._create_player("sbb", balanced, json_path=player2_file_or_opponent_type)
             self._setup_attributes(player2)
         else:
-            if player2_file_or_opponent_type == PokerBayesianTesterOpponent:
-                player2 = self._create_player("static", json_path=None, classname=player2_file_or_opponent_type, test_bayesian_alfa=test_bayesian_alfa, test_bayesian_beta=test_bayesian_beta)
+            if player2_file_or_opponent_type == PokerBayesianTesterOpponent or player2_file_or_opponent_type == PokerBayesianOpponent:
+                player2 = self._create_player("static", balanced, json_path=None, classname=player2_file_or_opponent_type, test_bayesian_alfa=test_bayesian_alfa, test_bayesian_beta=test_bayesian_beta)
                 self._setup_attributes(player2)
             else:
-                player2 = self._create_player("static", classname=player2_file_or_opponent_type)
+                player2 = self._create_player("static", balanced, classname=player2_file_or_opponent_type)
         
         Config.USER['reinforcement_parameters']['debug']['output_path'] = debug_folder+str(player1.OPPONENT_ID)+"/"+str(player2.OPPONENT_ID)+"/"
         if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
@@ -157,7 +158,7 @@ class PokerAnalysis():
             point.label_ = mapping[label0]
         return data
 
-    def _create_player(self, player_type, json_path=None, classname=None, test_bayesian_alfa=None, test_bayesian_beta=None):
+    def _create_player(self, player_type, balanced, json_path=None, classname=None, test_bayesian_alfa=None, test_bayesian_beta=None):
         """
         Create a player.
         - sbb player: read a .json file with the team structure
@@ -179,6 +180,8 @@ class PokerAnalysis():
                 print "Error: 'classname' is None"
             if classname == PokerBayesianTesterOpponent:
                 player = classname(test_bayesian_alfa, test_bayesian_beta)
+            elif classname == PokerBayesianOpponent:
+                player = classname(balanced)
             else:
                 player = classname()
             print "...loaded 'static' player: "+str(player.__repr__())

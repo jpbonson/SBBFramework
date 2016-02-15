@@ -66,11 +66,12 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 #################################
 
 - analisar resultados
-- implementar baysian player
+- fazer action_prob baseada em testes
+- alterar valores para os Passive ou Agressive, de acordo com a segunda melhor opção?
 - consertar poker analysis para second layer
 
 - rodar second layer com hall of fame:
-    - pc: novo baseline 1, novo baseline com novos opps 2
+    - pc: novo baseline 1, novo baseline com novos opps 2, river only 3
 - com apenas overall
     - server: 5, 7868; 10, 7870; 15, 7872
 - quando terminar, mandar rodar runs com nova config default (river-fullgame e river-only)

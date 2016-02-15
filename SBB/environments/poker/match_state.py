@@ -42,6 +42,10 @@ class MatchState():
     def inputs_for_rule_based_opponents(self, bet, round_id):
         inputs = [0] * 2
         inputs[0] = self.hand_strength[round_id]
+        if round_id == 0 or round_id == 1:
+            bet = bet/float(PokerConfig.CONFIG['small_bet'])
+        else:
+            bet = bet/float(PokerConfig.CONFIG['big_bet'])
         inputs[1] = round_value(bet*Config.RESTRICTIONS['multiply_normalization_by'])
         return inputs
 

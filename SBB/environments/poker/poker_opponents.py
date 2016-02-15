@@ -135,3 +135,158 @@ class PokerBayesianTesterOpponent(PokerRuleBasedOpponent):
         print "won_hands/total_hands: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['total_hands']['validation']))
         print "won_hands/hand_played: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['hand_played']['validation']))
         return ""
+
+class PokerLAAntiPlayerOpponent(PokerRuleBasedOpponent):
+    OPPONENT_ID = "LA_antiplayer"
+    def __init__(self, balanced = True):
+        if balanced: # 0.5220
+            alfa = 6.0
+            beta = 6.0
+        else: # 0.5174
+            alfa = 5.0
+            beta = 5.0
+        super(PokerLAAntiPlayerOpponent, self).__init__(PokerLAAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
+
+class PokerLPAntiPlayerOpponent(PokerRuleBasedOpponent):
+    OPPONENT_ID = "LP_antiplayer"
+    def __init__(self, balanced = True):
+        if balanced: # 0.5302
+            alfa = 6.0
+            beta = 6.0
+        else: # 0.5245
+            alfa = 5.0
+            beta = 5.0
+        super(PokerLPAntiPlayerOpponent, self).__init__(PokerLPAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
+
+class PokerTAAntiPlayerOpponent(PokerRuleBasedOpponent):
+    OPPONENT_ID = "TA_antiplayer"
+    def __init__(self, balanced = True):
+        if balanced: # 0.4985
+            alfa = 9.0
+            beta = 9.0
+        else: # 0.5109
+            alfa = 0.0
+            beta = 0.0
+        super(PokerTAAntiPlayerOpponent, self).__init__(PokerTAAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
+
+class PokerTPAntiPlayerOpponent(PokerRuleBasedOpponent):
+    OPPONENT_ID = "TP_antiplayer"
+    def __init__(self, balanced = True):
+        if balanced: # 0.5009
+            alfa = 9.0
+            beta = 9.0
+        else: # 0.5109
+            alfa = 0.0
+            beta = 0.0
+        super(PokerTPAntiPlayerOpponent, self).__init__(PokerTPAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
+
+class PokerBayesianOpponent(DefaultOpponent):
+
+    """
+    1. analyse opponent's past actions
+    2. determine opponent's play style
+    3. perform anti-player actions
+
+    - usar tabela de action probability for each opponent style, ou criar uma? (over 1000 matches against cada static?)
+    - que acao fazer quando nao souber qual e o playing style? usar o com probabilidade mais alta?
+        - depois que obter 0.95 de confianca, parar de calcular?
+    - atualizar codigo para fazer update de initial_prob a cada action nova, ao inves de rodar tudo sempre?
+
+    """
+
+    OPPONENT_ID = "bayesian_opponent"
+
+    def __init__(self, balanced=True):
+        super(PokerBayesianOpponent, self).__init__(PokerBayesianOpponent.OPPONENT_ID)
+        action_prob_from_paper = {
+            'tp': {
+                'f': 0.87,                'c': 0.07,                'r': 0.06,
+            },
+            'ta': {
+                'f': 0.73,                'c': 0.02,                'r': 0.25,
+            },
+            'lp': {
+                'f': 0.6,                 'c': 0.29,                'r': 0.11,
+            },
+            'la': {
+                'f': 0.36,                'c': 0.05,                'r': 0.59,
+            }
+        }
+        # action_prob_from_tests = {
+        #     'tp': {
+        #         'f': 0.,                'c': 0.,                'r': 0.,
+        #     },
+        #     'ta': {
+        #         'f': 0.,                'c': 0.,                'r': 0.,
+        #     },
+        #     'lp': {
+        #         'f': 0.,                'c': 0.,                'r': 0.,
+        #     },
+        #     'la': {
+        #         'f': 0.,                'c': 0.,                'r': 0.,
+        #     }
+        # }
+        self.action_prob = action_prob_from_paper
+        self.antiplayers = {
+            'tp': PokerTAAntiPlayerOpponent(balanced),
+            'ta': PokerTAAntiPlayerOpponent(balanced),
+            'lp': PokerLPAntiPlayerOpponent(balanced),
+            'la': PokerLAAntiPlayerOpponent(balanced),
+        }
+        self.programs = []
+        self.extra_metrics_ = {}
+        self.results_per_points_for_validation_ = {}
+        self.action_sequence_ = {}
+        self.last_selected_program_ = None
+
+    def initialize(self, seed):
+        pass
+
+    def execute(self, point_id, inputs, valid_actions, is_training):
+        initial_prob = {
+            'tp': 0.25,
+            'ta': 0.25,
+            'lp': 0.25,
+            'la': 0.25,
+        }
+        opponent_past_actions = inputs[2]
+        # print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+        # print str(opponent_past_actions)
+        for action in opponent_past_actions:
+            temp = {}
+            for key in initial_prob.keys():
+                temp[key] = self.action_prob[key][action] * initial_prob[key]
+            # print str(temp)
+
+            normalization_param = sum(temp.values())
+            # print str(normalization_param)
+            for key in initial_prob.keys():
+                temp[key] /= normalization_param
+                initial_prob[key] = temp[key]
+            # print str(initial_prob)
+
+        play_style = max(initial_prob.iterkeys(), key=(lambda key: initial_prob[key]))
+        # print str(play_style)
+        action = self.antiplayers[play_style].execute(point_id, inputs, valid_actions, is_training)
+        # print str(action)
+        # print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+        return action
+
+    def reset_registers(self):
+        pass
+
+    def get_behaviors_metrics(self):
+        result = {}
+        result['agressiveness'] = self.extra_metrics_['agressiveness']
+        result['tight_loose'] = self.extra_metrics_['tight_loose']
+        result['passive_aggressive'] = self.extra_metrics_['passive_aggressive']
+        result['bluffing'] = self.extra_metrics_['bluffing']
+        result['normalized_result_mean'] = numpy.mean(self.results_per_points_for_validation_.values())
+        result['normalized_result_std'] = numpy.std(self.results_per_points_for_validation_.values())
+        return result
+
+    def metrics(self, full_version = False):
+        print "hand_played/total_hands: "+str(self.extra_metrics_['hand_played']['validation']/float(self.extra_metrics_['total_hands']['validation']))
+        print "won_hands/total_hands: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['total_hands']['validation']))
+        print "won_hands/hand_played: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['hand_played']['validation']))
+        return ""
