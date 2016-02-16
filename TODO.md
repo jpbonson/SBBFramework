@@ -65,16 +65,15 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 
 #################################
 
-- analisar resultados
-- fazer action_prob baseada em testes
-- alterar valores para os Passive ou Agressive, de acordo com a segunda melhor opção?
+- analisar resultados + rodar mais runs
 - consertar poker analysis para second layer
+- adicionar bayesian no treino, como runs paralelos?
+- implementar acc curve para poker analysis
 
 - rodar second layer com hall of fame:
-    - pc: novo baseline 1, novo baseline com novos opps 2, river only 3
+    - pc: only river
 - com apenas overall
     - server: 5, 7868; 10, 7870; 15, 7872
-- quando terminar, mandar rodar runs com nova config default (river-fullgame e river-only)
 
 - testar k = 20 para diversity?
 - testar colcoar hand potential como input novamente? (fazer calculo para extrair o potential de EHS?)

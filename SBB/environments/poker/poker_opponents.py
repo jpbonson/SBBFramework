@@ -1,6 +1,7 @@
 import abc
 import random
 import numpy
+from collections import Counter
 from ..default_opponent import DefaultOpponent
 
 """
@@ -90,22 +91,22 @@ class PokerRuleBasedOpponent(DefaultOpponent):
 class PokerLooseAgressiveOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "loose_agressive"
     def __init__(self):
-        super(PokerLooseAgressiveOpponent, self).__init__(PokerLooseAgressiveOpponent.OPPONENT_ID, 3.0, 5.3)
+        super(PokerLooseAgressiveOpponent, self).__init__(PokerLooseAgressiveOpponent.OPPONENT_ID, 2.0, 4.0)
 
 class PokerLoosePassiveOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "loose_passive"
     def __init__(self):
-        super(PokerLoosePassiveOpponent, self).__init__(PokerLoosePassiveOpponent.OPPONENT_ID, 3.0, 7.7)
+        super(PokerLoosePassiveOpponent, self).__init__(PokerLoosePassiveOpponent.OPPONENT_ID, 2.0, 8.0)
 
 class PokerTightAgressiveOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "tight_agressive"
     def __init__(self):
-        super(PokerTightAgressiveOpponent, self).__init__(PokerTightAgressiveOpponent.OPPONENT_ID, 7.0, 8.0)
+        super(PokerTightAgressiveOpponent, self).__init__(PokerTightAgressiveOpponent.OPPONENT_ID, 8.0, 8.5)
 
 class PokerTightPassiveOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "tight_passive"
     def __init__(self):
-        super(PokerTightPassiveOpponent, self).__init__(PokerTightPassiveOpponent.OPPONENT_ID, 7.0, 9.0)
+        super(PokerTightPassiveOpponent, self).__init__(PokerTightPassiveOpponent.OPPONENT_ID, 8.0, 9.5)
 
 class PokerBayesianTesterOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "bayesian_tester"
@@ -139,32 +140,32 @@ class PokerBayesianTesterOpponent(PokerRuleBasedOpponent):
 class PokerLAAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "LA_antiplayer"
     def __init__(self, balanced = True):
-        if balanced: # 0.5220
-            alfa = 6.0
-            beta = 6.0
-        else: # 0.5174
+        if balanced: # 0.5245
             alfa = 5.0
             beta = 5.0
+        else: # 0.5274
+            alfa = 4.0
+            beta = 4.0
         super(PokerLAAntiPlayerOpponent, self).__init__(PokerLAAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
 
 class PokerLPAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "LP_antiplayer"
     def __init__(self, balanced = True):
-        if balanced: # 0.5302
+        if balanced: # 0.5449
             alfa = 6.0
             beta = 6.0
-        else: # 0.5245
-            alfa = 5.0
+        else: # 0.5396
+            alfa = 4.0
             beta = 5.0
         super(PokerLPAntiPlayerOpponent, self).__init__(PokerLPAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
 
 class PokerTAAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "TA_antiplayer"
     def __init__(self, balanced = True):
-        if balanced: # 0.4985
-            alfa = 9.0
-            beta = 9.0
-        else: # 0.5109
+        if balanced: # 0.5010
+            alfa = 2.0
+            beta = 2.0
+        else: # 0.5188
             alfa = 0.0
             beta = 0.0
         super(PokerTAAntiPlayerOpponent, self).__init__(PokerTAAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
@@ -172,10 +173,10 @@ class PokerTAAntiPlayerOpponent(PokerRuleBasedOpponent):
 class PokerTPAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "TP_antiplayer"
     def __init__(self, balanced = True):
-        if balanced: # 0.5009
-            alfa = 9.0
-            beta = 9.0
-        else: # 0.5109
+        if balanced: # 0.5011
+            alfa = 2.0
+            beta = 2.0
+        else: # 0.5188
             alfa = 0.0
             beta = 0.0
         super(PokerTPAntiPlayerOpponent, self).__init__(PokerTPAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
@@ -212,21 +213,21 @@ class PokerBayesianOpponent(DefaultOpponent):
                 'f': 0.36,                'c': 0.05,                'r': 0.59,
             }
         }
-        # action_prob_from_tests = {
-        #     'tp': {
-        #         'f': 0.,                'c': 0.,                'r': 0.,
-        #     },
-        #     'ta': {
-        #         'f': 0.,                'c': 0.,                'r': 0.,
-        #     },
-        #     'lp': {
-        #         'f': 0.,                'c': 0.,                'r': 0.,
-        #     },
-        #     'la': {
-        #         'f': 0.,                'c': 0.,                'r': 0.,
-        #     }
-        # }
-        self.action_prob = action_prob_from_paper
+        action_prob_from_tests = {
+            'tp': {
+                'f': 0.38,                'c': 0.55,                'r': 0.07,
+            },
+            'ta': {
+                'f': 0.4,                'c': 0.37,                'r': 0.23,
+            },
+            'lp': {
+                'f': 0.05,                'c': 0.75,                'r': 0.2,
+            },
+            'la': {
+                'f': 0.05,                'c': 0.46,                'r': 0.49,
+            }
+        }
+        self.action_prob = action_prob_from_tests
         self.antiplayers = {
             'tp': PokerTAAntiPlayerOpponent(balanced),
             'ta': PokerTAAntiPlayerOpponent(balanced),
@@ -238,39 +239,45 @@ class PokerBayesianOpponent(DefaultOpponent):
         self.results_per_points_for_validation_ = {}
         self.action_sequence_ = {}
         self.last_selected_program_ = None
-
-    def initialize(self, seed):
-        pass
-
-    def execute(self, point_id, inputs, valid_actions, is_training):
-        initial_prob = {
+        self.opponent_past_actions_history = []
+        self.initial_prob = {
             'tp': 0.25,
             'ta': 0.25,
             'lp': 0.25,
             'la': 0.25,
         }
-        opponent_past_actions = inputs[2]
-        # print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
-        # print str(opponent_past_actions)
-        for action in opponent_past_actions:
+
+    def initialize(self, seed):
+        pass
+
+    def update_opponent_actions(self, opponent_actions):
+        self.opponent_past_actions_history += opponent_actions
+        for opp_action in opponent_actions:
             temp = {}
-            for key in initial_prob.keys():
-                temp[key] = self.action_prob[key][action] * initial_prob[key]
-            # print str(temp)
+            for key in self.initial_prob.keys():
+                temp[key] = self.action_prob[key][opp_action] * self.initial_prob[key]
 
             normalization_param = sum(temp.values())
-            # print str(normalization_param)
-            for key in initial_prob.keys():
+            for key in self.initial_prob.keys():
                 temp[key] /= normalization_param
-                initial_prob[key] = temp[key]
-            # print str(initial_prob)
+                self.initial_prob[key] = temp[key]
 
-        play_style = max(initial_prob.iterkeys(), key=(lambda key: initial_prob[key]))
-        # print str(play_style)
+    def execute(self, point_id, inputs, valid_actions, is_training):
+        play_style = max(self.initial_prob.iterkeys(), key=(lambda key: self.initial_prob[key]))
         action = self.antiplayers[play_style].execute(point_id, inputs, valid_actions, is_training)
-        # print str(action)
-        # print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+
+        # counter = Counter(self.opponent_past_actions_history)
+        # total = sum(counter.values())
+        # print "###"
+        # for key in counter:
+        #     print key+": "+str(counter[key]/float(total))
+        # print "###"
+
         return action
+        # return PokerLooseAgressiveOpponent().execute(point_id, inputs, valid_actions, is_training)
+        # return PokerLoosePassiveOpponent().execute(point_id, inputs, valid_actions, is_training)
+        # return PokerTightAgressiveOpponent().execute(point_id, inputs, valid_actions, is_training)
+        # return PokerTightPassiveOpponent().execute(point_id, inputs, valid_actions, is_training)
 
     def reset_registers(self):
         pass

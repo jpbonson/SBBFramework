@@ -212,6 +212,11 @@ class PokerMatch():
         if self.opponent.opponent_id == 'hall_of_fame':
             self._get_opponent_model_for_hall_of_fame().update_overall_agressiveness(self.round_id, opponent_actions, player_actions, self.point.label_, showdown_happened)
 
+        if self.team.opponent_id == 'bayesian_opponent':
+            self.team.update_opponent_actions(opponent_actions)
+        if self.opponent.opponent_id == 'bayesian_opponent':
+            self.opponent.update_opponent_actions(player_actions)
+
         if self.is_training:
             points = OpponentModel.calculate_points(player_actions)
             hamming_label = self._quantitize_value(points)
@@ -315,9 +320,6 @@ class PokerMatch():
             if player.opponent_id == 'hall_of_fame':
                 inputs = match_state.inputs_for_team(self.pot, bet, self._get_chips_for_hall_of_fame(), self.round_id)
                 inputs += self._get_opponent_model_for_hall_of_fame().inputs(match_state.actions, opponent_actions)
-            elif player.opponent_id == 'bayesian_opponent':
-                inputs = match_state.inputs_for_rule_based_opponents(bet, self.round_id)
-                inputs.append(opponent_actions)
             else:
                 inputs = match_state.inputs_for_rule_based_opponents(bet, self.round_id)
 
