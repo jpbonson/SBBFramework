@@ -8,77 +8,88 @@ import itertools
 
 if __name__ == "__main__":
     start_time = time.time()
+
+
     # PokerAnalysis().run_for_all_opponents(
-    #     matches=100, 
+    #     matches=1000, 
     #     balanced=True, 
-    #     team_file="poker_analysis_files/best_team.json", 
-    #     generate_debug_files_per_match=True,
-    #     debug_folder='poker_analysis_outputs/best_team/',
+    #     team_file="poker_analysis_files/best_team_layer2/best_team_layer2.json", 
+    #     second_layer_enabled = True,
+    #     generate_debug_files_per_match=False,
+    #     debug_folder='poker_analysis_outputs/best_team_layer2/',
     #     river_round_only = False,
     #     seed=1
     # )
 
 
-    pairs = list(itertools.combinations_with_replacement(range(0, 10), 2))
-    pairs = filter(lambda x: x[0] <= x[1], pairs)
-    results = []
-    for alfa, beta in pairs:
-        print str((alfa, beta))
-        r = PokerAnalysis().run(
-            matches=1000, 
-            balanced=False, 
-            player1_file_or_opponent_type=PokerBayesianTesterOpponent,
-            player2_file_or_opponent_type=PokerTightPassiveOpponent,
-            player1_is_sbb = True,
-            player2_is_sbb = False,
-            generate_debug_files_per_match=False,
-            debug_folder='poker_analysis_outputs/blah/',
-            river_round_only = False,
-            seed=1,
-            test_bayesian_alfa=alfa,
-            test_bayesian_beta=beta,
-        )
-        results.append(r)
-    print "\nresults: "+str(results)+"\n"
-    max_value = max(results)
-    max_index = results.index(max_value)
-    print "first: "+str((results[max_index], pairs[max_index]))
+    # pairs = list(itertools.combinations_with_replacement(range(0, 10), 2))
+    # pairs = filter(lambda x: x[0] <= x[1], pairs)
+    # results = []
+    # for alfa, beta in pairs:
+    #     print str((alfa, beta))
+    #     r = PokerAnalysis().run(
+    #         matches=1000, 
+    #         balanced=False, 
+    #         player1_file_or_opponent_type=PokerBayesianTesterOpponent,
+    #         player2_file_or_opponent_type=PokerTightPassiveOpponent,
+    #         player1_is_sbb = True,
+    #         player2_is_sbb = False,
+    #         generate_debug_files_per_match=False,
+    #         debug_folder='poker_analysis_outputs/blah/',
+    #         river_round_only = False,
+    #         second_layer_enabled = False,
+    #         seed=1,
+    #         test_bayesian_alfa=alfa,
+    #         test_bayesian_beta=beta,
+    #     )
+    #     results.append(r)
+    # print "\nresults: "+str(results)+"\n"
+    # max_value = max(results)
+    # max_index = results.index(max_value)
+    # print "first: "+str((results[max_index], pairs[max_index]))
 
-    results.pop(max_index)
-    pairs.pop(max_index)
-    max_value = max(results)
-    max_index = results.index(max_value)
-    print "second: "+str((results[max_index], pairs[max_index]))
+    # results.pop(max_index)
+    # pairs.pop(max_index)
+    # max_value = max(results)
+    # max_index = results.index(max_value)
+    # print "second: "+str((results[max_index], pairs[max_index]))
 
-    results.pop(max_index)
-    pairs.pop(max_index)
-    max_value = max(results)
-    max_index = results.index(max_value)
-    print "third: "+str((results[max_index], pairs[max_index]))
+    # results.pop(max_index)
+    # pairs.pop(max_index)
+    # max_value = max(results)
+    # max_index = results.index(max_value)
+    # print "third: "+str((results[max_index], pairs[max_index]))
 
 
-    # r = PokerAnalysis().run(
-    #     matches=1000, 
-    #     balanced=False, 
+    r = PokerAnalysis().run(
+        matches=1000, 
+        balanced=True, 
 
-    #     # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
-    #     # player2_file_or_opponent_type=PokerBayesianOpponent,
+        # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
+        # player2_file_or_opponent_type=PokerBayesianOpponent,
+        # second_layer_enabled = False,
 
-    #     player1_file_or_opponent_type=PokerBayesianOpponent, 
-    #     player2_file_or_opponent_type=PokerTightPassiveOpponent,
+        # player1_file_or_opponent_type="poker_analysis_files/best_team_layer2/best_team_layer2.json", 
+        # player2_file_or_opponent_type=PokerBayesianOpponent,
+        # second_layer_enabled = True,
 
-    #     # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
-    #     # player2_file_or_opponent_type=PokerTightPassiveOpponent,
+        player1_file_or_opponent_type=PokerBayesianOpponent, 
+        player2_file_or_opponent_type=PokerTightPassiveOpponent,
+        second_layer_enabled = False,
 
-    #     player1_is_sbb = True,
-    #     player2_is_sbb = False,
-    #     generate_debug_files_per_match=False,
-    #     debug_folder='poker_analysis_outputs/blah/',
-    #     river_round_only = False,
-    #     seed=1,
-    #     test_bayesian_alfa=None,
-    #     test_bayesian_beta=None,
-    # )
+        # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
+        # player2_file_or_opponent_type=PokerTightPassiveOpponent,
+        # second_layer_enabled = False,
+
+        player1_is_sbb = True,
+        player2_is_sbb = False,
+        generate_debug_files_per_match=False,
+        debug_folder='poker_analysis_outputs/blah/',
+        river_round_only = False,
+        seed=1,
+        test_bayesian_alfa=None,
+        test_bayesian_beta=None,
+    )
 
     elapsed_time = round_value((time.time() - start_time)/60.0)
     print("\nFinished, elapsed time: "+str(elapsed_time)+" mins")

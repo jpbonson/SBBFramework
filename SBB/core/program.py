@@ -84,7 +84,7 @@ class Program:
             return True
         else:
             if self.generation == -1:
-                return True # WARNING: Incompatible for more than 2 layers
+                return True # WARNING: Incompatible for more than 2 layers, also need to use gambiarra/workaround to load teams with 2 layers
             else:
                 if not Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
                     return False

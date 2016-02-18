@@ -66,11 +66,13 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 #################################
 
 - analisar resultados + rodar mais runs
-- consertar poker analysis para second layer [x]
-- implementar acc curve para poker analysis [x]
-- fazer set de 25 runs
+- implementar acc curve para poker analysis, fazer de um jeito que saia com box plots, ie. para various runs [x]
+    - apenas printar o resultado em formato compativel com o box_plots.py?
+    - fazer o poker analysis aceitar ler todos os teams de uma pasta (cuidado com o arquivo action.json)
+- fazer set de 25 runs (5 sets de 5 runs) com a best config
 - pegar teams da gen1 e fazer acc curve
 - fazer runs com river only
+- conferir bluffing
 
 - rodar second layer com hall of fame:
     - pc: old_config2 1, new_config2 2, old_config2 with bayes 3, new_config2 with bayes 4 

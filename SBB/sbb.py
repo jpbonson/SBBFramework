@@ -21,7 +21,7 @@ from core.selection import Selection
 from core.diversity_maintenance import DiversityMaintenance
 from utils.helpers import round_value, flatten, round_array
 from utils.run_info import RunInfo
-from utils.team_reader import read_team_from_json
+from utils.team_reader import initialize_actions_for_second_layer
 from config import Config
 
 class SBB:
@@ -75,7 +75,10 @@ class SBB:
 
             # initialize actions
             if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
-                self._initialize_actions_for_second_layer(run_info.run_id)
+                path = str(Config.USER['advanced_training_parameters']['second_layer']['path']).replace("[run_id]", str(run_info.run_id))
+                if not os.path.exists(path):
+                    raise ValueError("Path for second layer actions doesn't exist: "+str(path))
+                initialize_actions_for_second_layer(path)
                 total_team_actions = len(Config.RESTRICTIONS['second_layer']['action_mapping'])
                 if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
                     Config.RESTRICTIONS['total_actions'] = Config.RESTRICTIONS['total_raw_actions'] + total_team_actions
@@ -146,29 +149,6 @@ class SBB:
     def _set_seed(self, seed):
         random.seed(seed)
         numpy.random.seed(seed)
-
-    def _initialize_actions_for_second_layer(self, run_id):
-        path = Config.USER['advanced_training_parameters']['second_layer']['path'].replace("[run_id]", str(run_id))
-        if not os.path.exists(path):
-            raise ValueError("Path for second layer actions doesn't exist: "+str(path))
-        Config.RESTRICTIONS['second_layer']['short_action_mapping'] = {}
-        Config.RESTRICTIONS['second_layer']['action_mapping'] = {}
-        temp_actions_as_dicts = {}
-        with open(path) as data_file:
-            data = json.load(data_file)
-        for index, team_json in data.iteritems():
-            index = int(index)
-            team_id = str(team_json['team_id'])+":"+str(team_json['generation'])
-            if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
-                actual_index = index + Config.RESTRICTIONS['total_raw_actions']
-            else:
-                actual_index = index
-            Config.RESTRICTIONS['second_layer']['short_action_mapping'][actual_index] = team_id
-            temp_actions_as_dicts[actual_index] = team_json
-
-        for action, team_descriptor in temp_actions_as_dicts.iteritems():
-            team = read_team_from_json(team_descriptor)
-            Config.RESTRICTIONS['second_layer']['action_mapping'][action] = team
 
     def _create_folder(self):
         if not os.path.exists("outputs/"):

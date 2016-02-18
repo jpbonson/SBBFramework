@@ -14,7 +14,7 @@ from ..poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
     PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianTesterOpponent, 
     PokerBayesianOpponent)
 from ...default_environment import reset_points_ids
-from ....utils.team_reader import read_team_from_json
+from ....utils.team_reader import read_team_from_json, initialize_actions_for_second_layer
 from ....utils.helpers import round_value, flatten
 from ....config import Config
 
@@ -23,14 +23,15 @@ class PokerAnalysis():
     def __init__(self):
         pass
 
-    def run_for_all_opponents(self, matches, balanced, team_file, generate_debug_files_per_match, debug_folder, river_round_only, seed = None):
+    def run_for_all_opponents(self, matches, balanced, team_file, generate_debug_files_per_match, debug_folder, 
+            river_round_only, second_layer_enabled, seed = None):
         opponents = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
         results = []
         for opponent in opponents:
             result = self.run(matches, balanced, team_file, opponent, True,
-                False, generate_debug_files_per_match, debug_folder, river_round_only, seed)
+                False, generate_debug_files_per_match, debug_folder, river_round_only, second_layer_enabled, seed)
             results.append(result)
-        player1 = self._create_player("sbb", json_path=team_file)
+        player1 = self._create_player("sbb", balanced, second_layer_enabled, json_path=team_file)
         print "\n\nPLAYER: "+str(player1.__repr__())
         m = ""
         for o, r in zip(opponents, results):
@@ -42,8 +43,8 @@ class PokerAnalysis():
             f.write(m)
 
     def run(self, matches, balanced, player1_file_or_opponent_type, player2_file_or_opponent_type, 
-            player1_is_sbb, player2_is_sbb, generate_debug_files_per_match, debug_folder, river_round_only, seed = None,
-            test_bayesian_alfa = None, test_bayesian_beta = None):
+            player1_is_sbb, player2_is_sbb, generate_debug_files_per_match, debug_folder, river_round_only, 
+            second_layer_enabled, seed = None, test_bayesian_alfa = None, test_bayesian_beta = None):
         print "Starting poker analysis tool"
 
         print "Setup the configuration..."
@@ -51,7 +52,7 @@ class PokerAnalysis():
         Config.USER['task'] = 'reinforcement'
         Config.USER['reinforcement_parameters']['environment'] = 'poker'
         # Config.USER['advanced_training_parameters']['extra_registers'] = 4
-        Config.USER['advanced_training_parameters']['second_layer']['enabled'] = False
+        Config.USER['advanced_training_parameters']['second_layer']['enabled'] = second_layer_enabled
         Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions'] = False
         Config.USER['reinforcement_parameters']['debug']['matches'] = generate_debug_files_per_match
         Config.USER['reinforcement_parameters']['debug']['print'] = True
@@ -86,24 +87,24 @@ class PokerAnalysis():
         print "Loading players..."
 
         if player1_is_sbb and not player1_file_or_opponent_type == PokerBayesianTesterOpponent and not player1_file_or_opponent_type == PokerBayesianOpponent:
-            player1 = self._create_player("sbb", balanced, json_path=player1_file_or_opponent_type)
+            player1 = self._create_player("sbb", balanced, second_layer_enabled, json_path=player1_file_or_opponent_type)
             self._setup_attributes(player1)
         else:
             if player1_file_or_opponent_type == PokerBayesianTesterOpponent or player1_file_or_opponent_type == PokerBayesianOpponent:
-                player1 = self._create_player("static", balanced, json_path=None, classname=player1_file_or_opponent_type, test_bayesian_alfa=test_bayesian_alfa, test_bayesian_beta=test_bayesian_beta)
+                player1 = self._create_player("static", balanced, second_layer_enabled, json_path=None, classname=player1_file_or_opponent_type, test_bayesian_alfa=test_bayesian_alfa, test_bayesian_beta=test_bayesian_beta)
                 self._setup_attributes(player1)
             else:
-                player1 = self._create_player("static", balanced, classname=player1_file_or_opponent_type)
+                player1 = self._create_player("static", balanced, second_layer_enabled, classname=player1_file_or_opponent_type)
 
         if player2_is_sbb and not player2_file_or_opponent_type == PokerBayesianTesterOpponent and not player2_file_or_opponent_type == PokerBayesianOpponent:
-            player2 = self._create_player("sbb", balanced, json_path=player2_file_or_opponent_type)
+            player2 = self._create_player("sbb", balanced, second_layer_enabled, json_path=player2_file_or_opponent_type)
             self._setup_attributes(player2)
         else:
             if player2_file_or_opponent_type == PokerBayesianTesterOpponent or player2_file_or_opponent_type == PokerBayesianOpponent:
-                player2 = self._create_player("static", balanced, json_path=None, classname=player2_file_or_opponent_type, test_bayesian_alfa=test_bayesian_alfa, test_bayesian_beta=test_bayesian_beta)
+                player2 = self._create_player("static", balanced, second_layer_enabled, json_path=None, classname=player2_file_or_opponent_type, test_bayesian_alfa=test_bayesian_alfa, test_bayesian_beta=test_bayesian_beta)
                 self._setup_attributes(player2)
             else:
-                player2 = self._create_player("static", balanced, classname=player2_file_or_opponent_type)
+                player2 = self._create_player("static", balanced, second_layer_enabled, classname=player2_file_or_opponent_type)
         
         Config.USER['reinforcement_parameters']['debug']['output_path'] = debug_folder+str(player1.OPPONENT_ID)+"/"+str(player2.OPPONENT_ID)+"/"
         if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
@@ -137,8 +138,8 @@ class PokerAnalysis():
                 f.write(final_message)
             result = metrics_player.get_behaviors_metrics()
             # result['total_chips'] = sum1+sum2
-            # return result
-            return metrics_player.score_testset_
+            return result
+            # return metrics_player.score_testset_
 
     def _maximum_winning(self):
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
@@ -158,7 +159,7 @@ class PokerAnalysis():
             point.label_ = mapping[label0]
         return data
 
-    def _create_player(self, player_type, balanced, json_path=None, classname=None, test_bayesian_alfa=None, test_bayesian_beta=None):
+    def _create_player(self, player_type, balanced, second_layer_enabled, json_path=None, classname=None, test_bayesian_alfa=None, test_bayesian_beta=None):
         """
         Create a player.
         - sbb player: read a .json file with the team structure
@@ -172,7 +173,18 @@ class PokerAnalysis():
             with open(json_path) as data_file:    
                 data = json.load(data_file)
             player = read_team_from_json(data)
-            print "...loaded 'sbb' player: "+str(player.__repr__()) 
+
+            player.generation = 0 # gambiarra/workaround
+            for program in player.programs:
+                program.generation = 0 # gambiarra/workaround
+
+            print "...loaded 'sbb' player: "+str(player.__repr__())
+            folder_path = os.path.dirname(os.path.abspath(json_path))
+            if second_layer_enabled:
+                if os.path.isfile(folder_path+"/actions.json"):
+                    initialize_actions_for_second_layer(folder_path+"/actions.json")
+                else:
+                    raise ValueError("Enabled second layer, but no actions.json file found!")
             return player
         elif player_type == "static":
             print "Loading 'static' player"
