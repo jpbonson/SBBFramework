@@ -66,19 +66,23 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 #################################
 
 - analisar resultados + rodar mais runs
-- consertar poker analysis para second layer
-- adicionar bayesian no treino, como runs paralelos?
-- implementar acc curve para poker analysis
+- consertar poker analysis para second layer [x]
+- implementar acc curve para poker analysis [x]
+- fazer set de 25 runs
+- pegar teams da gen1 e fazer acc curve
+- fazer runs com river only
 
 - rodar second layer com hall of fame:
-    - pc: only river
+    - pc: old_config2 1, new_config2 2, old_config2 with bayes 3, new_config2 with bayes 4 
 - com apenas overall
     - server: 5, 7868; 10, 7870; 15, 7872
+old_baseline: 9 teams, 10 hf, 1 opps hf, 'river_only_to_fullgame' after gens/2, 4 bets
+new_baseline: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3, 3 bets
+old_config2: 9 teams, 10 hf, 1 opps hf, 'river_only_to_fullgame' after gens/3, 4 bets 
+new_config2: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3, 4 bets
 
 - testar k = 20 para diversity?
 - testar colcoar hand potential como input novamente? (fazer calculo para extrair o potential de EHS?)
-
-- procurar valores para alfa e beta do bayesiano (fazer modificação no poker analysis?)
 
 - implementar gerador de familia de points?
 - usar heuristicas? quais?

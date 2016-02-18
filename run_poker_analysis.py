@@ -19,116 +19,115 @@ if __name__ == "__main__":
     # )
 
 
-    # pairs = list(itertools.combinations_with_replacement(range(0, 10), 2))
-    # pairs = filter(lambda x: x[0] <= x[1], pairs)
-    # results = []
-    # for alfa, beta in pairs:
-    #     print str((alfa, beta))
-    #     r = PokerAnalysis().run(
-    #         matches=1000, 
-    #         balanced=False, 
-    #         player1_file_or_opponent_type=PokerBayesianTesterOpponent,
-    #         player2_file_or_opponent_type=PokerTightPassiveOpponent,
-    #         player1_is_sbb = True,
-    #         player2_is_sbb = False,
-    #         generate_debug_files_per_match=False,
-    #         debug_folder='poker_analysis_outputs/blah/',
-    #         river_round_only = False,
-    #         seed=1,
-    #         test_bayesian_alfa=alfa,
-    #         test_bayesian_beta=beta,
-    #     )
-    #     results.append(r)
-    # print "\nresults: "+str(results)+"\n"
-    # max_value = max(results)
-    # max_index = results.index(max_value)
-    # print "first: "+str((results[max_index], pairs[max_index]))
+    pairs = list(itertools.combinations_with_replacement(range(0, 10), 2))
+    pairs = filter(lambda x: x[0] <= x[1], pairs)
+    results = []
+    for alfa, beta in pairs:
+        print str((alfa, beta))
+        r = PokerAnalysis().run(
+            matches=1000, 
+            balanced=False, 
+            player1_file_or_opponent_type=PokerBayesianTesterOpponent,
+            player2_file_or_opponent_type=PokerTightPassiveOpponent,
+            player1_is_sbb = True,
+            player2_is_sbb = False,
+            generate_debug_files_per_match=False,
+            debug_folder='poker_analysis_outputs/blah/',
+            river_round_only = False,
+            seed=1,
+            test_bayesian_alfa=alfa,
+            test_bayesian_beta=beta,
+        )
+        results.append(r)
+    print "\nresults: "+str(results)+"\n"
+    max_value = max(results)
+    max_index = results.index(max_value)
+    print "first: "+str((results[max_index], pairs[max_index]))
 
-    # results.pop(max_index)
-    # pairs.pop(max_index)
-    # max_value = max(results)
-    # max_index = results.index(max_value)
-    # print "second: "+str((results[max_index], pairs[max_index]))
+    results.pop(max_index)
+    pairs.pop(max_index)
+    max_value = max(results)
+    max_index = results.index(max_value)
+    print "second: "+str((results[max_index], pairs[max_index]))
 
-    # results.pop(max_index)
-    # pairs.pop(max_index)
-    # max_value = max(results)
-    # max_index = results.index(max_value)
-    # print "third: "+str((results[max_index], pairs[max_index]))
+    results.pop(max_index)
+    pairs.pop(max_index)
+    max_value = max(results)
+    max_index = results.index(max_value)
+    print "third: "+str((results[max_index], pairs[max_index]))
 
 
-    r = PokerAnalysis().run(
-        matches=1000, 
-        balanced=True, 
+    # r = PokerAnalysis().run(
+    #     matches=1000, 
+    #     balanced=False, 
 
-        # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
-        # player2_file_or_opponent_type=PokerBayesianOpponent,
+    #     # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
+    #     # player2_file_or_opponent_type=PokerBayesianOpponent,
 
-        # player1_file_or_opponent_type=PokerBayesianOpponent, 
-        # player2_file_or_opponent_type=PokerTightPassiveOpponent,
+    #     player1_file_or_opponent_type=PokerBayesianOpponent, 
+    #     player2_file_or_opponent_type=PokerTightPassiveOpponent,
 
-        player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
-        player2_file_or_opponent_type=PokerTightPassiveOpponent,
+    #     # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
+    #     # player2_file_or_opponent_type=PokerTightPassiveOpponent,
 
-        player1_is_sbb = True,
-        player2_is_sbb = False,
-        generate_debug_files_per_match=False,
-        debug_folder='poker_analysis_outputs/blah/',
-        river_round_only = False,
-        seed=1,
-        test_bayesian_alfa=None,
-        test_bayesian_beta=None,
-    )
+    #     player1_is_sbb = True,
+    #     player2_is_sbb = False,
+    #     generate_debug_files_per_match=False,
+    #     debug_folder='poker_analysis_outputs/blah/',
+    #     river_round_only = False,
+    #     seed=1,
+    #     test_bayesian_alfa=None,
+    #     test_bayesian_beta=None,
+    # )
 
     elapsed_time = round_value((time.time() - start_time)/60.0)
     print("\nFinished, elapsed time: "+str(elapsed_time)+" mins")
 
-    """
-    LA (balanced)
-    team: 0.5074
-    bayesian_paper: 0.
-    bayesian_test: 0.5248
+    """ (4 bets)
+    total = [sum([x[0] for x in r])/4.0, sum([x[1] for x in r])/4.0, sum([x[2] for x in r])/4.0]
 
-    LA (unbalanced)
-    team: 0.
-    bayesian_paper: 0.
-    bayesian_test: 
+    LA: LA/LP/TA/TP
+    ['c', 'r', 'f']
+    r = [
+    [0.4816035145524437, 0.4814662273476112, 0.03693025809994509],
+    [0.3661795928562508, 0.6113400774322468, 0.022480329711502434],
+    [0.47613762486126526, 0.44006659267480575, 0.08379578246392896],
+    [0.3988618727366787, 0.5344024831867563, 0.06673564407656493],
+    ]
+    total: [0.43, 0.517, 0.053]
 
-
-    LP (balanced)
-    team: 0.5351
-    bayesian_paper: 0.
-    bayesian_test: 0.5445
-
-    LP (unbalanced)
-    team: 0.
-    bayesian_paper: 0.
-    bayesian_test: 
-
-
-    TA (balanced)
-    team: 0.4979
-    bayesian_paper: 0.5009
-    bayesian_test: 0.
-
-    TA (unbalanced)
-    team: 0.
-    bayesian_paper: 0.
-    bayesian_test:
+    LP
+    r = [
+    [0.7873828692094497, 0.1767190180810347, 0.03589811270951564],
+    [0.6581555518226104, 0.3114396102805308, 0.030404837896858727],
+    [0.7699680511182109, 0.16892971246006389, 0.06110223642172524],
+    [0.6970377019748654, 0.24461400359066426, 0.05834829443447038],
+    ]
+    [0.728, 0.225, 0.047]
 
 
-    TP (balanced)
-    team: 0.5037
-    bayesian_paper: 0.5010
-    bayesian_test: 0.
+    TA
+    r = [
+    [0.36879432624113473, 0.2789598108747045, 0.35224586288416077],
+    [0.459552495697074, 0.3363166953528399, 0.20413080895008606],
+    [0.2524271844660194, 0.21143473570658036, 0.5361380798274002],
+    [0.34684684684684686, 0.2531531531531532, 0.4],
+    ]
+    [0.357, 0.270, 0.373]
 
-    TP (unbalanced)
-    team: 0.
-    bayesian_paper: 0.
-    bayesian_test: 
-    """
+
+    TP
+    r = [
+    [0.5705607476635514, 0.07757009345794393, 0.3518691588785047],
+    [0.6404809619238477, 0.12104208416833667, 0.23847695390781562],
+    [0.4816472694717995, 0.06535362578334826, 0.4529991047448523],
+    [0.5414551607445008, 0.08037225042301184, 0.37817258883248733],
+    ]
+    [0.559, 0.086, 0.355]
 
     """
+
+    """ (3 bets)
     LA
     c: 0.51
     r: 0.43

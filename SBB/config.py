@@ -3,7 +3,8 @@ import numpy
 from collections import deque
 from config_examples import tictactoe_config
 from environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
-    PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent)
+    PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent,
+    PokerBayesianOpponent)
 
 class Config():
     """
@@ -26,7 +27,7 @@ class Config():
                 'size': 20,
                 'enabled': True,
                 'use_as_opponents': True,
-                'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+                'diversity': 'ncd_c4', # if None, use th3e fitness as the criteria to remove teams when the Hall of Fame is full
                 'max_opponents_per_generation': 2,
                 'wait_generations': 100,
             },
@@ -36,10 +37,10 @@ class Config():
                 'output_path': 'SBB/environments/poker/logs/',
             },
             'poker': {
-                'opponents': [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], # [PokerLooseAgressiveOpponent],
+                'opponents': [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], #, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent], #[PokerLooseAgressiveOpponent],
                 'river_round_only': False,
                 'river_only_to_fullgame': True, # changed from one to another in half the generations, ignores 'river_round_only'
-                'maximum_bets': 3,
+                'maximum_bets': 4,
             },
         },
 

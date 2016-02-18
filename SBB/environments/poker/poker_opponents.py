@@ -140,10 +140,10 @@ class PokerBayesianTesterOpponent(PokerRuleBasedOpponent):
 class PokerLAAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "LA_antiplayer"
     def __init__(self, balanced = True):
-        if balanced: # 0.5245
+        if balanced: # 0.5254
             alfa = 5.0
             beta = 5.0
-        else: # 0.5274
+        else: # 0.5281
             alfa = 4.0
             beta = 4.0
         super(PokerLAAntiPlayerOpponent, self).__init__(PokerLAAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
@@ -151,10 +151,10 @@ class PokerLAAntiPlayerOpponent(PokerRuleBasedOpponent):
 class PokerLPAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "LP_antiplayer"
     def __init__(self, balanced = True):
-        if balanced: # 0.5449
+        if balanced: # 0.5457
             alfa = 6.0
             beta = 6.0
-        else: # 0.5396
+        else: # 0.54
             alfa = 4.0
             beta = 5.0
         super(PokerLPAntiPlayerOpponent, self).__init__(PokerLPAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
@@ -162,10 +162,10 @@ class PokerLPAntiPlayerOpponent(PokerRuleBasedOpponent):
 class PokerTAAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "TA_antiplayer"
     def __init__(self, balanced = True):
-        if balanced: # 0.5010
+        if balanced: # 0.5010 / 0,4988
             alfa = 2.0
             beta = 2.0
-        else: # 0.5188
+        else: # 0.5188 / 0.5147
             alfa = 0.0
             beta = 0.0
         super(PokerTAAntiPlayerOpponent, self).__init__(PokerTAAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
@@ -173,10 +173,10 @@ class PokerTAAntiPlayerOpponent(PokerRuleBasedOpponent):
 class PokerTPAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "TP_antiplayer"
     def __init__(self, balanced = True):
-        if balanced: # 0.5011
+        if balanced: # 0.5011 / 0.4989
             alfa = 2.0
             beta = 2.0
-        else: # 0.5188
+        else: # 0.5188 / 0.5147
             alfa = 0.0
             beta = 0.0
         super(PokerTPAntiPlayerOpponent, self).__init__(PokerTPAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
@@ -213,7 +213,7 @@ class PokerBayesianOpponent(DefaultOpponent):
                 'f': 0.36,                'c': 0.05,                'r': 0.59,
             }
         }
-        action_prob_from_tests = {
+        action_prob_from_tests_with_3bets = {
             'tp': {
                 'f': 0.38,                'c': 0.55,                'r': 0.07,
             },
@@ -227,7 +227,21 @@ class PokerBayesianOpponent(DefaultOpponent):
                 'f': 0.05,                'c': 0.46,                'r': 0.49,
             }
         }
-        self.action_prob = action_prob_from_tests
+        action_prob_from_tests_with_4bets = {
+            'la': {
+                'f': 0.053,                'c': 0.43,                'r': 0.517,
+            },
+            'lp': {
+                'f': 0.047,                'c': 0.728,                'r': 0.225,
+            },
+            'ta': {
+                'f': 0.373,                'c': 0.357,                'r': 0.270,
+            },
+            'tp': {
+                'f': 0.355,                'c': 0.559,                'r': 0.086,
+            }
+        }
+        self.action_prob = action_prob_from_tests_with_4bets
         self.antiplayers = {
             'tp': PokerTAAntiPlayerOpponent(balanced),
             'ta': PokerTAAntiPlayerOpponent(balanced),
@@ -269,8 +283,14 @@ class PokerBayesianOpponent(DefaultOpponent):
         # counter = Counter(self.opponent_past_actions_history)
         # total = sum(counter.values())
         # print "###"
+        # keys = []
+        # values = []
         # for key in counter:
-        #     print key+": "+str(counter[key]/float(total))
+        #     # print key+": "+str(counter[key]/float(total))
+        #     keys.append(key)
+        #     values.append(counter[key]/float(total))
+        # print str(keys)
+        # print str(values)
         # print "###"
 
         return action
