@@ -5,6 +5,7 @@ import numpy
 import glob
 import os
 import re
+import glob
 import shutil
 from collections import defaultdict
 from ..poker_environment import PokerEnvironment
@@ -15,13 +16,51 @@ from ..poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent
     PokerBayesianOpponent)
 from ...default_environment import reset_points_ids
 from ....utils.team_reader import read_team_from_json, initialize_actions_for_second_layer
-from ....utils.helpers import round_value, flatten
+from ....utils.helpers import round_value, flatten, accumulative_performances
 from ....config import Config
 
 class PokerAnalysis():
 
     def __init__(self):
         pass
+
+    def run_folder_for_acc_curve(self, folder_path, matches, balanced, player2_file_or_opponent_type, 
+            player2_is_sbb, generate_debug_files_per_match, debug_folder, river_round_only, 
+            second_layer_enabled, seed = None):
+        self._setup_config(second_layer_enabled, generate_debug_files_per_match, river_round_only, seed)
+        environment, points = self._setup_environment(balanced, matches)
+
+        player1_is_sbb = True
+        if player2_is_sbb and not player2_file_or_opponent_type == PokerBayesianTesterOpponent and not player2_file_or_opponent_type == PokerBayesianOpponent:
+            player2 = self._create_player("sbb", balanced, second_layer_enabled, json_path=player2_file_or_opponent_type)
+            self._setup_attributes(player2)
+        else:
+            if player2_file_or_opponent_type == PokerBayesianTesterOpponent or player2_file_or_opponent_type == PokerBayesianOpponent:
+                player2 = self._create_player("static", balanced, second_layer_enabled, json_path=None, classname=player2_file_or_opponent_type, test_bayesian_alfa=None, test_bayesian_beta=None)
+                self._setup_attributes(player2)
+            else:
+                player2 = self._create_player("static", balanced, second_layer_enabled, classname=player2_file_or_opponent_type)
+
+        teams_population = []
+        for filename in glob.glob(folder_path+"*"):
+            player1 = self._create_player("sbb", balanced, second_layer_enabled, json_path=filename)
+            self._setup_attributes(player1)
+            self._execute_matches(player1, player2, player1_is_sbb, player2_is_sbb, points, environment)
+            teams_population.append(player1)
+      
+        sorting_criteria = lambda x: x.score_testset_
+        get_results_per_points = lambda x: x.results_per_points_for_validation_
+        point_ids = [point.point_id_ for point in points]
+        r = accumulative_performances(teams_population, point_ids, sorting_criteria, get_results_per_points)
+        individual_performance, accumulative_performance, teams_ids = r
+
+        msg = ""
+        msg += "\n\nindividual_values = "+str(individual_performance)
+        msg += "\n\nacc_values = "+str(accumulative_performance)
+        msg += "\n\nteams_ids = "+str(teams_ids)
+        print msg
+        with open(debug_folder+"acc_curves.log", 'w') as f:
+            f.write(msg)
 
     def run_for_all_opponents(self, matches, balanced, team_file, generate_debug_files_per_match, debug_folder, 
             river_round_only, second_layer_enabled, seed = None):
@@ -47,6 +86,34 @@ class PokerAnalysis():
             second_layer_enabled, seed = None, test_bayesian_alfa = None, test_bayesian_beta = None):
         print "Starting poker analysis tool"
 
+        self._setup_config(second_layer_enabled, generate_debug_files_per_match, river_round_only, seed)
+        environment, points = self._setup_environment(balanced, matches)
+        player1, player2 = self._setup_players(player1_is_sbb, player1_file_or_opponent_type, player2_is_sbb, 
+            player2_file_or_opponent_type, balanced, second_layer_enabled, test_bayesian_alfa, test_bayesian_beta, debug_folder)
+        self._execute_matches(player1, player2, player1_is_sbb, player2_is_sbb, points, environment)
+        
+        # WARNING: The stats are only support one sbb player
+        metrics_player = None
+        if player1_is_sbb:
+            metrics_player = player1
+        if player2_is_sbb:
+            metrics_player = player2
+        if metrics_player is not None:
+            # sum1 = sum([int(r['score'][0]) for r in messages if r['players'][0] == 'sbb'])
+            # sum2 = sum([int(r['score'][1]) for r in messages if r['players'][1] == 'sbb'])
+            final_message = "\nResult (team stats): "+str(metrics_player.metrics(full_version=True))
+            final_message += "\n--- Results for matches:"
+            # final_message += "\nResult (total chips): "+str(sum1+sum2)+" out of [-"+str(self._maximum_winning()*matches)+",+"+str(self._maximum_winning()*matches)+"]"
+            final_message += "\nResult (normalized): "+str(metrics_player.score_testset_)
+            print final_message
+            with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"team_summary.log", 'w') as f:
+                f.write(final_message)
+            result = metrics_player.get_behaviors_metrics()
+            # result['total_chips'] = sum1+sum2
+            return result
+            # return metrics_player.score_testset_
+
+    def _setup_config(self, second_layer_enabled, generate_debug_files_per_match, river_round_only, seed):
         print "Setup the configuration..."
         # WARNING: Config.RESTRICTIONS should be exactly the same as the one used to train these teams
         Config.USER['task'] = 'reinforcement'
@@ -66,6 +133,7 @@ class PokerAnalysis():
         print "...seed = "+str(seed)
         print "...finished setup the configuration."
 
+    def _setup_environment(self, balanced, matches):
         print "Initializing the environment..."
         environment = PokerEnvironment()
         reset_points_ids()
@@ -83,7 +151,10 @@ class PokerAnalysis():
             print "Error! Zero points created!"
             raise SystemExit
         print "...initialized the environment."
+        return environment, points
 
+    def _setup_players(self, player1_is_sbb, player1_file_or_opponent_type, player2_is_sbb, 
+            player2_file_or_opponent_type, balanced, second_layer_enabled, test_bayesian_alfa, test_bayesian_beta, debug_folder):
         print "Loading players..."
 
         if player1_is_sbb and not player1_file_or_opponent_type == PokerBayesianTesterOpponent and not player1_file_or_opponent_type == PokerBayesianOpponent:
@@ -110,7 +181,9 @@ class PokerAnalysis():
         if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
             os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path'])
         print "...finished loading players."
+        return player1, player2
 
+    def _execute_matches(self, player1, player2, player1_is_sbb, player2_is_sbb, points, environment):
         print "Executing matches..."
         self._evaluate_teams(player1, player2, player1_is_sbb, player2_is_sbb, points, environment)
         if player1_is_sbb:
@@ -120,31 +193,14 @@ class PokerAnalysis():
         print "...finished executing matches."
         print
 
-        # WARNING: The stats are only support one sbb player
-        metrics_player = None
-        if player1_is_sbb:
-            metrics_player = player1
-        if player2_is_sbb:
-            metrics_player = player2
-        if metrics_player is not None:
-            # sum1 = sum([int(r['score'][0]) for r in messages if r['players'][0] == 'sbb'])
-            # sum2 = sum([int(r['score'][1]) for r in messages if r['players'][1] == 'sbb'])
-            final_message = "\nResult (team stats): "+str(metrics_player.metrics(full_version=True))
-            final_message += "\n--- Results for matches:"
-            # final_message += "\nResult (total chips): "+str(sum1+sum2)+" out of [-"+str(self._maximum_winning()*matches)+",+"+str(self._maximum_winning()*matches)+"]"
-            final_message += "\nResult (normalized): "+str(metrics_player.score_testset_)
-            print final_message
-            with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"team_summary.log", 'w') as f:
-                f.write(final_message)
-            result = metrics_player.get_behaviors_metrics()
-            # result['total_chips'] = sum1+sum2
-            return result
-            # return metrics_player.score_testset_
-
     def _maximum_winning(self):
-        max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*4
-        max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*4
-        return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
+        max_raises_overall = Config.USER['reinforcement_parameters']['poker']['maximum_bets']
+        max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*max_raises_overall
+        if Config.USER['reinforcement_parameters']['poker']['river_round_only']:  
+            return max_small_bet_turn_winning
+        else:
+            max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*max_raises_overall
+            return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
 
     def _create_unbalanced_points(self, total_points):
         num_lines_per_file = sum([1 for line in open("SBB/environments/poker/hand_generator/poker_hands/hands_type_all.json")])

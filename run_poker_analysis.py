@@ -10,6 +10,20 @@ if __name__ == "__main__":
     start_time = time.time()
 
 
+    PokerAnalysis().run_folder_for_acc_curve(
+        matches=1000, 
+        balanced=True, 
+        folder_path="poker_analysis_files/old_baseline_teams/", 
+        player2_file_or_opponent_type=PokerLooseAgressiveOpponent,
+        second_layer_enabled = False,
+        player2_is_sbb = False,
+        generate_debug_files_per_match=False,
+        debug_folder='poker_analysis_outputs/blah/',
+        river_round_only = False,
+        seed=1,
+    )
+
+
     # PokerAnalysis().run_for_all_opponents(
     #     matches=1000, 
     #     balanced=True, 
@@ -61,35 +75,35 @@ if __name__ == "__main__":
     # print "third: "+str((results[max_index], pairs[max_index]))
 
 
-    r = PokerAnalysis().run(
-        matches=1000, 
-        balanced=True, 
+    # r = PokerAnalysis().run(
+    #     matches=1000, 
+    #     balanced=True, 
 
-        # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
-        # player2_file_or_opponent_type=PokerBayesianOpponent,
-        # second_layer_enabled = False,
+    #     # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
+    #     # player2_file_or_opponent_type=PokerBayesianOpponent,
+    #     # second_layer_enabled = False,
 
-        # player1_file_or_opponent_type="poker_analysis_files/best_team_layer2/best_team_layer2.json", 
-        # player2_file_or_opponent_type=PokerBayesianOpponent,
-        # second_layer_enabled = True,
+    #     player1_file_or_opponent_type="poker_analysis_files/best_team_layer2/best_team_layer2.json", 
+    #     player2_file_or_opponent_type=PokerBayesianOpponent,
+    #     second_layer_enabled = True,
 
-        player1_file_or_opponent_type=PokerBayesianOpponent, 
-        player2_file_or_opponent_type=PokerTightPassiveOpponent,
-        second_layer_enabled = False,
+    #     # player1_file_or_opponent_type=PokerBayesianOpponent, 
+    #     # player2_file_or_opponent_type=PokerTightPassiveOpponent,
+    #     # second_layer_enabled = False,
 
-        # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
-        # player2_file_or_opponent_type=PokerTightPassiveOpponent,
-        # second_layer_enabled = False,
+    #     # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
+    #     # player2_file_or_opponent_type=PokerTightPassiveOpponent,
+    #     # second_layer_enabled = False,
 
-        player1_is_sbb = True,
-        player2_is_sbb = False,
-        generate_debug_files_per_match=False,
-        debug_folder='poker_analysis_outputs/blah/',
-        river_round_only = False,
-        seed=1,
-        test_bayesian_alfa=None,
-        test_bayesian_beta=None,
-    )
+    #     player1_is_sbb = True,
+    #     player2_is_sbb = False,
+    #     generate_debug_files_per_match=False,
+    #     debug_folder='poker_analysis_outputs/blah/',
+    #     river_round_only = False,
+    #     seed=1,
+    #     test_bayesian_alfa=None,
+    #     test_bayesian_beta=None,
+    # )
 
     elapsed_time = round_value((time.time() - start_time)/60.0)
     print("\nFinished, elapsed time: "+str(elapsed_time)+" mins")

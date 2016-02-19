@@ -1,4 +1,5 @@
 import socket
+from collections import defaultdict
 from ..config import Config
 
 """
@@ -33,3 +34,20 @@ def available_ports():
     socket_tmp1.close()
     socket_tmp2.close()
     return port1, port2
+
+def accumulative_performances(teams_population, point_ids, sorting_criteria, get_results_per_points):
+    sorted_teams = sorted(teams_population, key=lambda team: sorting_criteria(team), reverse = True) # better ones first
+    individual_performance = []
+    accumulative_performance = []
+    best_results_per_point = defaultdict(int)
+    for team in sorted_teams:
+        total = 0.0
+        for key, item in get_results_per_points(team).iteritems():
+            if key in point_ids:
+                total += item
+                if item > best_results_per_point[key]:
+                    best_results_per_point[key] = item
+        individual_performance.append(round_value(total))
+        accumulative_performance.append(round_value(sum(best_results_per_point.values())))
+    teams_ids = [t.__repr__() for t in sorted_teams]
+    return individual_performance, accumulative_performance, teams_ids
