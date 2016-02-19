@@ -233,6 +233,7 @@ class Team(DefaultOpponent):
         result['tight_loose'] = self.extra_metrics_['tight_loose']
         result['passive_aggressive'] = self.extra_metrics_['passive_aggressive']
         result['bluffing'] = self.extra_metrics_['bluffing']
+        result['bluffing_only_raise'] = self.extra_metrics_['bluffing_only_raise']
         result['normalized_result_mean'] = round_value(numpy.mean(self.results_per_points_for_validation_.values()))
         result['normalized_result_std'] = round_value(numpy.std(self.results_per_points_for_validation_.values()))
         return result
@@ -264,6 +265,7 @@ class Team(DefaultOpponent):
                     msg += "\ntight_loose: "+str(self.extra_metrics_['tight_loose'])
                     msg += "\npassive_aggressive: "+str(self.extra_metrics_['passive_aggressive'])
                     msg += "\nbluffing: "+str(self.extra_metrics_['bluffing'])
+                    msg += "\nbluffing_only_raise: "+str(self.extra_metrics_['bluffing_only_raise'])
                     msg += "\nnormalized result (mean): "+str(round_value(numpy.mean(self.results_per_points_for_validation_.values())))
                     msg += "\nnormalized result (std): "+str(round_value(numpy.std(self.results_per_points_for_validation_.values())))
                 if 'agressiveness_champion' in self.extra_metrics_:

@@ -42,6 +42,7 @@ class OpponentModel():
         self.self_passive_aggressive = []
         self.opponent_passive_aggressive = []
         self.self_bluffing = []
+        self.self_bluffing_only_raise = []
         self.opponent_bluffing = []
 
     def update_overall_agressiveness(self, round_id, self_actions, opponent_actions, point_label, showdown_happened):
@@ -54,6 +55,10 @@ class OpponentModel():
                     self.self_bluffing.append(1.0)
                 else:
                     self.self_bluffing.append(0.0)
+                if point_label in [6, 7, 8] and 'r' in self_actions:
+                    self.self_bluffing_only_raise.append(1.0)
+                else:
+                    self.self_bluffing_only_raise.append(0.0)
                 
         if len(opponent_actions) > 0:
             agressiveness = OpponentModel.calculate_points(opponent_actions)

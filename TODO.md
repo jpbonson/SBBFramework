@@ -65,10 +65,9 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 
 #################################
 
-- adicionar bluffing_with_only_raise como uma metrica interna
 - analisar resultados + rodar mais runs
 - fazer set de 25 runs (5 sets de 5 runs) com a best config
-- pegar teams da gen1 e fazer acc curve (fazer gambiarra comentando codigo?)
+- pegar teams da gen1 e fazer acc curve (fazer gambiarra comentando codigo?) [x]
 - fazer runs com river only
 
 - rodar second layer com hall of fame:

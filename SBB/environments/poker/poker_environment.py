@@ -147,15 +147,18 @@ class PokerEnvironment(ReinforcementEnvironment):
             self_tight_loose = []
             self_passive_aggressive = []
             self_bluffing = []
+            self_bluffing_only_raise = []
             for key, item in team.opponent_model.iteritems():
                 self_long_term_agressiveness += item.self_agressiveness
                 self_tight_loose += item.self_tight_loose
                 self_passive_aggressive += item.self_passive_aggressive
                 self_bluffing += item.self_bluffing
+                self_bluffing_only_raise += item.self_bluffing_only_raise
             agressiveness = 0.5
             tight_loose = 0.5
             passive_aggressive = 0.5
             bluffing = 0.0
+            bluffing_only_raise = 0.0
             if len(self_long_term_agressiveness) > 0:
                 agressiveness = numpy.mean(self_long_term_agressiveness)
             if len(self_tight_loose) > 0:
@@ -164,16 +167,20 @@ class PokerEnvironment(ReinforcementEnvironment):
                 passive_aggressive = numpy.mean(self_passive_aggressive)
             if len(self_bluffing) > 0:
                 bluffing = numpy.mean(self_bluffing)
+            if len(self_bluffing_only_raise) > 0:
+                bluffing_only_raise = numpy.mean(self_bluffing_only_raise)
             if mode == Config.RESTRICTIONS['mode']['validation']:
                 team.extra_metrics_['agressiveness'] = agressiveness
                 team.extra_metrics_['tight_loose'] = tight_loose
                 team.extra_metrics_['passive_aggressive'] = passive_aggressive
                 team.extra_metrics_['bluffing'] = bluffing
+                team.extra_metrics_['bluffing_only_raise'] = bluffing_only_raise
             if mode == Config.RESTRICTIONS['mode']['champion']:
                 team.extra_metrics_['agressiveness_champion'] = agressiveness
                 team.extra_metrics_['tight_loose_champion'] = tight_loose
                 team.extra_metrics_['passive_aggressive_champion'] = passive_aggressive
                 team.extra_metrics_['bluffing_champion'] = bluffing
+                team.extra_metrics_['bluffing_only_raise_champion'] = bluffing_only_raise
         # to clean memmory
         team.opponent_model = {}
         team.chips = {}
