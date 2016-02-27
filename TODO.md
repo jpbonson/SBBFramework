@@ -65,39 +65,40 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 
 #################################
 
-- analisar resultados + rodar mais runs
-- fazer set de 25 runs (5 sets de 5 runs) com a best config
-- pegar teams da gen1 e fazer acc curve (fazer gambiarra comentando codigo?) [x]
-- fazer runs com river only
+- acc curve para ttt
+- melhor runtime
+- opcao de desligar o profiling
+- mandar rodar runs
 
-- rodar second layer com hall of fame:
-    - pc: old_config2 1, new_config2 2, old_config2 with bayes 3, new_config2 with bayes 4 
-- com apenas overall
-    - server: 5, 7868; 10, 7870; 15, 7872
-old_baseline: 9 teams, 10 hf, 1 opps hf, 'river_only_to_fullgame' after gens/2, 4 bets
-new_baseline: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3, 3 bets
-old_config2: 9 teams, 10 hf, 1 opps hf, 'river_only_to_fullgame' after gens/3, 4 bets 
-new_config2: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3, 4 bets
 
-- testar k = 20 para diversity?
-- testar colcoar hand potential como input novamente? (fazer calculo para extrair o potential de EHS?)
+
+- automatizar melhor a geracao de box plot para acc curve de varios runs [x]
+- fazer set de 25 runs (5 sets de 5 runs) com a best config (?)
+- pegar teams da gen1 e fazer acc curve (fazer gambiarra comentando codigo?) (tanto para first como para second layer?) [x]
+- fazer runs com river only (?)
+- fazer report dos resultados e mandar para o malcolm e o andy (question: focar o q no paper?) (question: dyvia's process?) [x]
+- comparar performance do first layer com o do second layer?
+
+pc:
+- layer2 baseline2 without bayes 1, layer2 baseline2 with bayes 2, new_config3 3, new_config3 com river_only_to_fullgame 4
+server:
+- ncd_c3 13749, entropy_c2 13754, entropy_c3 13756, hamming_c3 13758, euclidean 13761
+
+new_config (baseline2): 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3, 4 bets
+new_config3: 500gens, sem bayes, +genotype, sem 'river_only_to_fullgame'? qual diversity?
+- best second layer: top10_overall (still considering top5 and overall_subcats)
+
 
 - implementar gerador de familia de points?
-- usar heuristicas? quais?
 - more players?
 - second layer
     - usar outra seed, fullgame_only
-    - fazer poker_analysis funcionar para second layer (.json salvar as teams de cada action?), e para 'use_atomic_actions'
 - performance profiling
     - passar operations para c?
     - melhorar codigo generate_profile em team.py? (ou chamadas a esse codigo em selection)
-    - fazer profiling com um run de verdade? set de 2 runs?
 - conferir como papers validaram os resultados (em especial, os em journals bons)
     - + fazer doc com exemplos de charts usados nos papers de SBB + outros papers
     - ver como hall of fame foi usado nos papers
-- parameters to test:
-    - what diversity? mix diversities? (entropy_c3, hamming_c3, ncd_c3, ou ncd_c4?)
-    - profile size? team size? more...? (generations, matches...)
 - adiantar mais o literature_review
     - comecar a escrever com os papers q já tenho (nao escrever coisas q podem mudar ainda)
     - selecionar references que parecem promissoras (apenas dos papers mais recentes ou mais classicas, ou do Billings)

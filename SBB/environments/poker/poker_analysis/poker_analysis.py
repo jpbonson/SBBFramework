@@ -43,10 +43,11 @@ class PokerAnalysis():
 
         teams_population = []
         for filename in glob.glob(folder_path+"*"):
-            player1 = self._create_player("sbb", balanced, second_layer_enabled, json_path=filename)
-            self._setup_attributes(player1)
-            self._execute_matches(player1, player2, player1_is_sbb, player2_is_sbb, points, environment)
-            teams_population.append(player1)
+            if "actions.json" not in filename:
+                player1 = self._create_player("sbb", balanced, second_layer_enabled, json_path=filename)
+                self._setup_attributes(player1)
+                self._execute_matches(player1, player2, player1_is_sbb, player2_is_sbb, points, environment)
+                teams_population.append(player1)
       
         sorting_criteria = lambda x: x.score_testset_
         get_results_per_points = lambda x: x.results_per_points_for_validation_

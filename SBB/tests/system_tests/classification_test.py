@@ -57,6 +57,7 @@ TEST_CONFIG = {
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used
         'use_agressive_mutations': False,
+        'use_profiling': True,
         'second_layer': {
             'enabled': False,
             'path': None, # if using layered SBB, must provie a reference file for the actions
@@ -78,6 +79,7 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 3
         config['advanced_training_parameters']['run_initialization_step2'] = False
+        config['advanced_training_parameters']['use_profiling'] = True
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -94,6 +96,24 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
+        config['advanced_training_parameters']['use_profiling'] = True
+        Config.USER = config
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_classification_for_iris_without_profiling(self):
+        """ Checking if everything for classification is still working and producing the same result. """
+        config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
+        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['diversity']['only_show'] = []
+        config['classification_parameters']['dataset'] = 'iris'
+        config['training_parameters']['runs_total'] = 1
+        config['advanced_training_parameters']['run_initialization_step2'] = False
+        config['advanced_training_parameters']['use_profiling'] = False
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -110,6 +130,7 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = True
+        config['advanced_training_parameters']['use_profiling'] = True
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -126,6 +147,7 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
+        config['advanced_training_parameters']['use_profiling'] = True
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -142,6 +164,7 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
+        config['advanced_training_parameters']['use_profiling'] = True
         Config.USER = config
         sbb = SBB()
         sbb.run()
@@ -158,6 +181,7 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'thyroid'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
+        config['advanced_training_parameters']['use_profiling'] = True
         Config.USER = config
         sbb = SBB()
         sbb.run()

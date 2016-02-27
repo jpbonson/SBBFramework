@@ -66,7 +66,7 @@ class Team(DefaultOpponent):
 
         # if there is a least one program that can produce a valid action, execute the programs
         if is_training:
-            if update_profile:
+            if Config.USER['advanced_training_parameters']['use_profiling'] and update_profile:
                 if len(Config.RESTRICTIONS['profile']['samples']) < Config.RESTRICTIONS['profile']['samples'].maxlen:
                     # add everything until it is full
                     Config.RESTRICTIONS['profile']['samples'].append(inputs)

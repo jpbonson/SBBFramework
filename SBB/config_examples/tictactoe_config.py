@@ -69,6 +69,7 @@ TICTACTOE_QUICK = {
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used
         'use_agressive_mutations': True,
+        'use_profiling': True,
         'second_layer': {
             'enabled': False,
             'use_atomic_actions': False,
@@ -99,8 +100,8 @@ TICTACTOE_DEFAULT = {
 
     'training_parameters': {
         'runs_total': 1,
-        'generations_total': 100,
-        'validate_after_each_generation': 50,
+        'generations_total': 75,
+        'validate_after_each_generation': 25,
         'populations': {
             'teams': 100,
             'points': 100,
@@ -146,6 +147,7 @@ TICTACTOE_DEFAULT = {
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used
         'use_agressive_mutations': True,
+        'use_profiling': True,
         'second_layer': {
             'enabled': False,
             'use_atomic_actions': False,

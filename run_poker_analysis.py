@@ -10,30 +10,30 @@ if __name__ == "__main__":
     start_time = time.time()
 
 
-    # PokerAnalysis().run_folder_for_acc_curve(
+    PokerAnalysis().run_folder_for_acc_curve(
+        matches=100, 
+        balanced=True, 
+        folder_path="poker_analysis_files/top10_overall_subcats/5/", 
+        player2_file_or_opponent_type=PokerBayesianOpponent,
+        second_layer_enabled = True,
+        player2_is_sbb = False,
+        generate_debug_files_per_match=False,
+        debug_folder='poker_analysis_outputs/blah/',
+        river_round_only = False,
+        seed=1,
+    )
+
+
+    # PokerAnalysis().run_for_all_opponents(
     #     matches=1000, 
     #     balanced=True, 
-    #     folder_path="poker_analysis_files/old_baseline_teams/", 
-    #     player2_file_or_opponent_type=PokerLooseAgressiveOpponent,
-    #     second_layer_enabled = False,
-    #     player2_is_sbb = False,
+    #     team_file="poker_analysis_files/best_team_layer2/best_team_layer2.json", 
+    #     second_layer_enabled = True,
     #     generate_debug_files_per_match=False,
-    #     debug_folder='poker_analysis_outputs/blah/',
+    #     debug_folder='poker_analysis_outputs/best_team_layer2/',
     #     river_round_only = False,
-    #     seed=1,
+    #     seed=1
     # )
-
-
-    PokerAnalysis().run_for_all_opponents(
-        matches=1000, 
-        balanced=True, 
-        team_file="poker_analysis_files/best_team_layer2/best_team_layer2.json", 
-        second_layer_enabled = True,
-        generate_debug_files_per_match=False,
-        debug_folder='poker_analysis_outputs/best_team_layer2/',
-        river_round_only = False,
-        seed=1
-    )
 
 
     # pairs = list(itertools.combinations_with_replacement(range(0, 10), 2))

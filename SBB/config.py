@@ -27,7 +27,7 @@ class Config():
                 'size': 20,
                 'enabled': True,
                 'use_as_opponents': True,
-                'diversity': 'ncd_c4', # if None, use th3e fitness as the criteria to remove teams when the Hall of Fame is full
+                'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
                 'max_opponents_per_generation': 2,
                 'wait_generations': 100,
             },
@@ -37,16 +37,16 @@ class Config():
                 'output_path': 'SBB/environments/poker/logs/',
             },
             'poker': {
-                'opponents': [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], #, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent], #[PokerLooseAgressiveOpponent],
+                'opponents': [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], # PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent], #[PokerLooseAgressiveOpponent],
                 'river_round_only': False,
-                'river_only_to_fullgame': True, # changed from one to another in half the generations, ignores 'river_round_only'
+                'river_only_to_fullgame': False, # changed from one to another in half the generations, ignores 'river_round_only'
                 'maximum_bets': 4,
             },
         },
 
         'training_parameters': {
             'runs_total': 5,
-            'generations_total': 300,
+            'generations_total': 500,
             'validate_after_each_generation': 50,
             'populations': {
                 'teams': 100,
@@ -86,17 +86,18 @@ class Config():
             'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
             'extra_registers': 4,
             'diversity': {
-                'use_and_show': ['ncd_c4'], # will be applied to fitness and show in the outputs
-                'only_show': ['genotype'], # will be only show in the outputs
+                'use_and_show': ['ncd_c4', 'genotype'], # will be applied to fitness and show in the outputs
+                'only_show': [], # will be only show in the outputs
                 'k': 10,
             },
             'run_initialization_step2': False,
             'use_weighted_probability_selection': False, # if False, uniform probability will be used
             'use_agressive_mutations': True,
+            'use_profiling': True,
             'second_layer': {
                 'enabled': False,
                 'use_atomic_actions': False,
-                'path': 'actions_reference/baseline/run[run_id]/second_layer_files/hall_of_fame+top10_overall_subcats/actions.json',
+                'path': 'actions_reference/baseline2_with_bayes/run[run_id]/second_layer_files/top10_overall/actions.json',
             },
         },
     }
@@ -198,5 +199,5 @@ class Config():
                 raise SystemExit
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /config_examples
-# Config.USER = tictactoe_config.TICTACTOE_DEFAULT
+Config.USER = tictactoe_config.TICTACTOE_DEFAULT
 # Config.USER = tictactoe_config.TICTACTOE_QUICK
