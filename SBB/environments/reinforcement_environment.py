@@ -8,7 +8,7 @@ from ..core.team import Team
 from ..core.diversity_maintenance import DiversityMaintenance
 from ..core.pareto_dominance_for_points import ParetoDominanceForPoints
 from ..core.pareto_dominance_for_teams import ParetoDominanceForTeams
-from ..utils.helpers import round_value, flatten
+from ..utils.helpers import round_value, flatten, accumulative_performances
 from ..config import Config
 
 class ReinforcementPoint(DefaultPoint):
@@ -410,3 +410,17 @@ class ReinforcementEnvironment(DefaultEnvironment):
             return [p for p in self.opponent_population_['hall_of_fame']]
         else:
             return []
+
+    def calculate_final_validation_metrics(self, run_info, teams_population, current_generation):
+        self._calculate_accumulative_performances(run_info, teams_population, current_generation)
+
+    def _calculate_accumulative_performances(self, run_info, teams_population, current_generation):
+        older_teams = [team for team in teams_population if team.generation != current_generation]
+        metric = 'score'
+        sorting_criteria = lambda x: x.extra_metrics_['validation_score']
+        get_results_per_points = lambda x: x.results_per_points_for_validation_
+        point_ids = [point.point_id_ for point in self.validation_population()]
+        individual_performance, accumulative_performance, teams_ids = accumulative_performances(older_teams, point_ids, sorting_criteria, get_results_per_points)
+        run_info.individual_performance_in_last_generation[metric] = individual_performance
+        run_info.accumulative_performance_in_last_generation[metric] = accumulative_performance
+        run_info.ids_for_acc_performance_in_last_generation[metric] = teams_ids

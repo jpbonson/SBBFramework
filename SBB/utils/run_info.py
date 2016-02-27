@@ -80,21 +80,12 @@ class RunInfo:
         msg += "\nMean Program Sizes (with introns) (last gen.): "+str(self.mean_program_size_with_introns_per_validation[-1])
         msg += "\nMean Program Sizes (without introns) (last gen.): "+str(self.mean_program_size_without_introns_per_validation[-1])
         msg += "\n"
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+        if Config.USER['task'] == 'reinforcement':
             metric = "score"
             msg += "\nOverall Accumulative Results ("+str(metric)+"):"
-            msg += "\noverall+subcats (len: "+str(len(self.accumulative_performance_summary[metric]['overall+subcats']['ids_only']))+"):"
-            msg += "\n- Rank: "+str(self.accumulative_performance_summary[metric]['overall+subcats']['rank'])
-            msg += "\n- Team ids: "+str(self.accumulative_performance_summary[metric]['overall+subcats']['ids_only'])
-            top5 = self.accumulative_performance_summary[metric]['overall+subcats']['rank'][:5]
-            msg += "\n- Team ids (top5): "+str(sorted([r[0] for r in top5]))
-            top10 = self.accumulative_performance_summary[metric]['overall+subcats']['rank'][:10]
-            msg += "\n- Team ids (top10): "+str(sorted([r[0] for r in top10]))
-            msg += "\n"
             msg += "\n- Individual Team Performance: "+str(self.individual_performance_in_last_generation[metric])
             msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation[metric])
             msg += "\n- Team ids: "+str(self.ids_for_acc_performance_in_last_generation[metric])
-
 
 
         msg += "\n\n\n#################### ALL METRICS"

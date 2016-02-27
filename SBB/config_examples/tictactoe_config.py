@@ -100,7 +100,7 @@ TICTACTOE_DEFAULT = {
 
     'training_parameters': {
         'runs_total': 1,
-        'generations_total': 75,
+        'generations_total': 100,
         'validate_after_each_generation': 25,
         'populations': {
             'teams': 100,
@@ -155,3 +155,16 @@ TICTACTOE_DEFAULT = {
         },
     },
 }
+
+TICTACTOE_RESEARCH = dict(TICTACTOE_DEFAULT)
+TICTACTOE_RESEARCH['training_parameters']['runs_total'] = 30
+
+TICTACTOE_RESEARCH_1 = dict(TICTACTOE_RESEARCH)
+TICTACTOE_RESEARCH_1['advanced_training_parameters']['use_profiling'] = False
+TICTACTOE_RESEARCH_1['advanced_training_parameters']['diversity']['use_and_show'] = []
+TICTACTOE_RESEARCH_2 = dict(TICTACTOE_RESEARCH)
+TICTACTOE_RESEARCH_2['advanced_training_parameters']['use_profiling'] = True
+TICTACTOE_RESEARCH_2['advanced_training_parameters']['diversity']['use_and_show'] = []
+TICTACTOE_RESEARCH_3 = dict(TICTACTOE_RESEARCH)
+TICTACTOE_RESEARCH_3['advanced_training_parameters']['use_profiling'] = True
+TICTACTOE_RESEARCH_3['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype']

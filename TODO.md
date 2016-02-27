@@ -65,12 +65,7 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
 
 #################################
 
-- acc curve para ttt
-- melhor runtime
-- opcao de desligar o profiling
-- mandar rodar runs
-
-
+- confeirr runs de ttt (14560, 14578, 14581)
 
 - automatizar melhor a geracao de box plot para acc curve de varios runs [x]
 - fazer set de 25 runs (5 sets de 5 runs) com a best config (?)

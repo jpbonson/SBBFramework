@@ -371,7 +371,7 @@ class SBB:
                 run_info.teams_in_last_generation.append(team)
         run_info.pareto_front_in_last_generation = pareto_front
         run_info.hall_of_fame_in_last_generation = self.environment.hall_of_fame()
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+        if Config.USER['task'] == 'reinforcement':
             self.environment.calculate_final_validation_metrics(run_info, teams_population, self.current_generation_)
 
     def _generate_overall_metrics_output(self, run_infos):       
@@ -443,7 +443,7 @@ class SBB:
         msg += "\nMean Program Sizes (without introns) (last gen.): "+str(numpy.mean([run.mean_program_size_without_introns_per_validation[-1] for run in run_infos]))
         
         msg += "\n"
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
+        if Config.USER['task'] == 'reinforcement':
             metric = "score"
             msg += "\nOverall Accumulative Results ("+str(metric)+"):"
             score_means, score_stds = self._process_scores([run.individual_performance_in_last_generation[metric] for run in run_infos])
