@@ -13,7 +13,7 @@ if __name__ == "__main__":
     PokerAnalysis().run_folder_for_acc_curve(
         matches=100, 
         balanced=True, 
-        folder_path="poker_analysis_files/top10_overall_subcats/5/", 
+        folder_path="poker_analysis_files/top10_overall_subcats/", 
         player2_file_or_opponent_type=PokerBayesianOpponent,
         second_layer_enabled = True,
         player2_is_sbb = False,

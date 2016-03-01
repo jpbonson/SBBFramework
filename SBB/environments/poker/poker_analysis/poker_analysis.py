@@ -41,26 +41,38 @@ class PokerAnalysis():
             else:
                 player2 = self._create_player("static", balanced, second_layer_enabled, classname=player2_file_or_opponent_type)
 
-        teams_population = []
-        for filename in glob.glob(folder_path+"*"):
-            if "actions.json" not in filename:
-                player1 = self._create_player("sbb", balanced, second_layer_enabled, json_path=filename)
-                self._setup_attributes(player1)
-                self._execute_matches(player1, player2, player1_is_sbb, player2_is_sbb, points, environment)
-                teams_population.append(player1)
-      
-        sorting_criteria = lambda x: x.score_testset_
-        get_results_per_points = lambda x: x.results_per_points_for_validation_
-        point_ids = [point.point_id_ for point in points]
-        r = accumulative_performances(teams_population, point_ids, sorting_criteria, get_results_per_points)
-        individual_performance, accumulative_performance, teams_ids = r
+        individual_performances_summary = []
+        accumulative_performances_summary = []
+        for folder in glob.glob(folder_path+"*"):
+            teams_population = []
+            for filename in glob.glob(folder+"/*"):
+                if "actions.json" not in filename:
+                    player1 = self._create_player("sbb", balanced, second_layer_enabled, json_path=filename)
+                    self._setup_attributes(player1)
+                    self._execute_matches(player1, player2, player1_is_sbb, player2_is_sbb, points, environment)
+                    teams_population.append(player1)
+          
+            if len(teams_population) > 0:
+                sorting_criteria = lambda x: x.score_testset_
+                get_results_per_points = lambda x: x.results_per_points_for_validation_
+                point_ids = [point.point_id_ for point in points]
+                r = accumulative_performances(teams_population, point_ids, sorting_criteria, get_results_per_points)
+                individual_performance, accumulative_performance, teams_ids = r
+                individual_performances_summary.append(individual_performance)
+                accumulative_performances_summary.append(accumulative_performance)
 
+                msg = ""
+                msg += "\n\nindividual_values = "+str(individual_performance)
+                msg += "\n\nacc_values = "+str(accumulative_performance)
+                msg += "\n\nteams_ids = "+str(teams_ids)
+                print msg
+                with open(debug_folder+"acc_curves.log", 'w') as f:
+                    f.write(msg)
         msg = ""
-        msg += "\n\nindividual_values = "+str(individual_performance)
-        msg += "\n\nacc_values = "+str(accumulative_performance)
-        msg += "\n\nteams_ids = "+str(teams_ids)
+        msg += "individual_values = "+str(individual_performances_summary)
+        msg += "\nacc_values = "+str(accumulative_performances_summary)
         print msg
-        with open(debug_folder+"acc_curves.log", 'w') as f:
+        with open(debug_folder+"acc_curves_summary.log", 'w') as f:
             f.write(msg)
 
     def run_for_all_opponents(self, matches, balanced, team_file, generate_debug_files_per_match, debug_folder, 

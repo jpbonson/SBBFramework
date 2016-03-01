@@ -59,25 +59,35 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
         - cold start
         - use heuristics (4 main player styles, best strategies against them, risk assesment againt multiple players)
         - learn over matches against the same opponent
-        - eu mesma teria que gerar e testar os valores dos anti-players (pares de alfa e beta, em incrementos, 0 <= x <= 1, em 100 torneios com 10 chips, analisar se a win ratio é compativel com a do paper)
-            - testar para fullgame e river only?
-            - procurar valores fazendo busca binaria? (eg.: começar com 0.2/0.8 e 0.8/0.2)
+        - eu mesma gerei os valores dos anti-players (pares de alfa e beta, em incrementos de 0.1, 0 <= x <= 1)
 
 #################################
 
-- confeirr runs de ttt (14560, 14578, 14581)
+metrics (box plots de acc curves):
+- sbb x bayesian
+- sbb x static (comparar)
+- bayesian x static (comparar)
+- gen0 sbb x static
+- gen0 sbb x bayesian?
 
-- automatizar melhor a geracao de box plot para acc curve de varios runs [x]
-- fazer set de 25 runs (5 sets de 5 runs) com a best config (?)
-- pegar teams da gen1 e fazer acc curve (fazer gambiarra comentando codigo?) (tanto para first como para second layer?) [x]
-- fazer runs com river only (?)
-- fazer report dos resultados e mandar para o malcolm e o andy (question: focar o q no paper?) (question: dyvia's process?) [x]
+- fazer maneira facil de pegar teams nao treinadas da gen1? (?)
+- pegar teams da gen1 e fazer acc curve (fazer gambiarra comentando codigo?) (tanto para first como para second layer? para ql das configs?)
+- fazer report dos resultados e mandar para o malcolm e o andy (question: focar o q no paper?) (question: dyvia's process?)
+- fazer report de ttt
+- mandar rodar novos runs
+
 - comparar performance do first layer com o do second layer?
+- conferir alfa e beta que eu gerei com o do paper (?)
+- fazer set de 25 runs (5 sets de 5 runs) com a best config (?)
+- fazer runs com river only (?)
+
 
 pc:
 - layer2 baseline2 without bayes 1, layer2 baseline2 with bayes 2, new_config3 3, new_config3 com river_only_to_fullgame 4
 server:
 - ncd_c3 13749, entropy_c2 13754, entropy_c3 13756, hamming_c3 13758, euclidean 13761
+- conferir runs de ttt (14560, 14578, 14581)
+
 
 new_config (baseline2): 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3, 4 bets
 new_config3: 500gens, sem bayes, +genotype, sem 'river_only_to_fullgame'? qual diversity?
