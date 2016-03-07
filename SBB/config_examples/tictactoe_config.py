@@ -1,3 +1,5 @@
+import copy
+
 # How to use: Either copy and paste this on config.py, or uncomment the last line in config.py
 
 # takes around 1 min, the best teams have around 0.7 win ratio
@@ -100,8 +102,8 @@ TICTACTOE_DEFAULT = {
 
     'training_parameters': {
         'runs_total': 1,
-        'generations_total': 100,
-        'validate_after_each_generation': 25,
+        'generations_total': 50,
+        'validate_after_each_generation': 10,
         'populations': {
             'teams': 100,
             'points': 100,
@@ -156,15 +158,14 @@ TICTACTOE_DEFAULT = {
     },
 }
 
-TICTACTOE_RESEARCH = dict(TICTACTOE_DEFAULT)
+TICTACTOE_RESEARCH = copy.deepcopy(TICTACTOE_DEFAULT)
 TICTACTOE_RESEARCH['training_parameters']['runs_total'] = 30
 
-TICTACTOE_RESEARCH_1 = dict(TICTACTOE_RESEARCH)
-TICTACTOE_RESEARCH_1['advanced_training_parameters']['use_profiling'] = False
-TICTACTOE_RESEARCH_1['advanced_training_parameters']['diversity']['use_and_show'] = []
-TICTACTOE_RESEARCH_2 = dict(TICTACTOE_RESEARCH)
+TICTACTOE_RESEARCH_2 = copy.deepcopy(TICTACTOE_RESEARCH)
 TICTACTOE_RESEARCH_2['advanced_training_parameters']['use_profiling'] = True
 TICTACTOE_RESEARCH_2['advanced_training_parameters']['diversity']['use_and_show'] = []
-TICTACTOE_RESEARCH_3 = dict(TICTACTOE_RESEARCH)
+TICTACTOE_RESEARCH_2['advanced_training_parameters']['diversity']['only_show'] = ['genotype']
+TICTACTOE_RESEARCH_3 = copy.deepcopy(TICTACTOE_RESEARCH)
 TICTACTOE_RESEARCH_3['advanced_training_parameters']['use_profiling'] = True
 TICTACTOE_RESEARCH_3['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype']
+TICTACTOE_RESEARCH_3['advanced_training_parameters']['diversity']['only_show'] = []

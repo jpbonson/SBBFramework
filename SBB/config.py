@@ -1,7 +1,7 @@
 import sys
 import numpy
 from collections import deque
-from config_examples import tictactoe_config
+from config_examples import tictactoe_config, poker_config
 from environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
     PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent,
     PokerBayesianOpponent)
@@ -97,7 +97,7 @@ class Config():
             'second_layer': {
                 'enabled': False,
                 'use_atomic_actions': False,
-                'path': 'actions_reference/baseline2_with_bayes/run[run_id]/second_layer_files/top10_overall/actions.json',
+                'path': 'actions_reference/baseline3_without_bayes/run[run_id]/second_layer_files/top10_overall/actions.json',
             },
         },
     }
@@ -199,6 +199,13 @@ class Config():
                 raise SystemExit
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /config_examples
+
 # Config.USER = tictactoe_config.TICTACTOE_DEFAULT
 # Config.USER = tictactoe_config.TICTACTOE_QUICK
-# Config.USER = tictactoe_config.TICTACTOE_RESEARCH_1
+# Config.USER = tictactoe_config.TICTACTOE_RESEARCH_2
+# Config.USER = tictactoe_config.TICTACTOE_RESEARCH_3
+
+# Config.USER = poker_config.POKER_LAYER1
+# Config.USER = poker_config.POKER_LAYER1_WITH_BAYES
+# Config.USER = poker_config.POKER_LAYER2
+# Config.USER = poker_config.POKER_LAYER2_WITH_SUBCATS

@@ -69,28 +69,34 @@ metrics (box plots de acc curves):
 - bayesian x static (comparar)
 - gen0 sbb x static
 - gen0 sbb x bayesian?
+- comparar performance do first layer com o do second layer?
 
+- implementar snapshots a cada validation com acc curves que possam gerar box plots
+    - plus save the host and program populations to file (to generate second layer)
 - fazer maneira facil de pegar teams nao treinadas da gen1? (?)
 - pegar teams da gen1 e fazer acc curve (fazer gambiarra comentando codigo?) (tanto para first como para second layer? para ql das configs?)
-- fazer report dos resultados e mandar para o malcolm e o andy (question: focar o q no paper?) (question: dyvia's process?)
-- fazer report de ttt
-- mandar rodar novos runs
+- fazer report dos resultados e mandar para o malcolm e o andy (question: focar o q no paper?)
 
-- comparar performance do first layer com o do second layer?
+
 - conferir alfa e beta que eu gerei com o do paper (?)
-- fazer set de 25 runs (5 sets de 5 runs) com a best config (?)
+- fazer set de 25 runs (5 sets de 5 runs) com a best config, com outras seeds (?)
 - fazer runs com river only (?)
 
 
 pc:
-- layer2 baseline2 without bayes 1, layer2 baseline2 with bayes 2, new_config3 3, new_config3 com river_only_to_fullgame 4
+- new_config3 com bayes
+- layer2 de new_config3 sem bayes + top10_overall + seed 11 (menos gens? 300?)
+- layer2 de new_config3 sem bayes + top10_overall_subcats + seed 11 (menos gens? 300?)
+- new config2 ttt
+- new config3 ttt
+
 server:
-- ncd_c3 13749, entropy_c2 13754, entropy_c3 13756, hamming_c3 13758, euclidean 13761
-- conferir runs de ttt (14560, 14578, 14581)
+- 5 sets de 5 runs de new_config3 sem bayes com outras seeds (2, 3, 4, 5, 6) [18662, 18664, 18666, 18669, 18671]
+- 5 sets de 5 runs de new_config3 com bayes com outras seeds (2, 3, 4, 5, 6) [18712, 18714, 18716, 18718, 18720]
 
 
 new_config (baseline2): 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3, 4 bets
-new_config3: 500gens, sem bayes, +genotype, sem 'river_only_to_fullgame'? qual diversity?
+new_config3: 500gens, sem bayes, +genotype, sem 'river_only_to_fullgame', diversity: ncd_c4
 - best second layer: top10_overall (still considering top5 and overall_subcats)
 
 
