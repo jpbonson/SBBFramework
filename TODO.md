@@ -71,9 +71,7 @@ metrics (box plots de acc curves):
 - gen0 sbb x bayesian?
 - comparar performance do first layer com o do second layer?
 
-- implementar snapshots a cada validation com acc curves que possam gerar box plots
-    - plus save the host and program populations to file (to generate second layer)
-- fazer maneira facil de pegar teams nao treinadas da gen1? (?)
+- fazer maneira facil de pegar teams nao treinadas da gen1? (?) (fazer gambiarra, mas gerando logo todos os 30 runs?)
 - pegar teams da gen1 e fazer acc curve (fazer gambiarra comentando codigo?) (tanto para first como para second layer? para ql das configs?)
 - fazer report dos resultados e mandar para o malcolm e o andy (question: focar o q no paper?)
 

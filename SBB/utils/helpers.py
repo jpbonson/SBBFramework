@@ -1,4 +1,5 @@
 import socket
+import operator
 from collections import defaultdict
 from ..config import Config
 
@@ -51,3 +52,26 @@ def accumulative_performances(teams_population, point_ids, sorting_criteria, get
         accumulative_performance.append(round_value(sum(best_results_per_point.values())))
     teams_ids = [t.__repr__() for t in sorted_teams]
     return individual_performance, accumulative_performance, teams_ids
+
+def rank_teams_by_accumulative_score(ind_scores, acc_scores, list_ids):
+    if len(ind_scores) == 0:
+        return []
+    best_teams = {}
+    # check if first score is good enough (must be better than the others by at least 1.0 point)
+    for score in ind_scores:
+        if (ind_scores[0] - score) > 1.0:
+            best_teams[list_ids[0]] = acc_scores[0]
+    # check if the other scores are good enough
+    previous_score = acc_scores[0]
+    for score, team_id in zip(acc_scores, list_ids):
+        score_improvement = score - previous_score
+        if score_improvement > 1.0:
+            if team_id not in best_teams:
+                best_teams[team_id] = round_value(score_improvement)
+            else:
+                if score_improvement > best_teams[team_id]:
+                    best_teams[team_id] = round_value(score_improvement)
+        previous_score = score
+    # sort the best scores
+    rank = sorted(best_teams.items(), key=operator.itemgetter(1), reverse=True)
+    return rank

@@ -117,7 +117,8 @@ class SBB:
                     if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['save_partial_files_per_validation']:
                         run_info_temp = RunInfo(-1, -1)
                         self.environment.calculate_final_validation_metrics(run_info_temp, teams_population, self.current_generation_)
-                        # [TODO]: actions de top10_overall, top10_overall_subcats?, all + salvar em arquivo [por pasta de runs]
+                        older_teams = [team for team in teams_population if team.generation != self.current_generation_]
+                        run_info_temp.teams_in_last_generation = list(older_teams)
                         run_infos_temp[str(run_info.run_id)].append(run_info_temp)
 
             # to ensure validation metrics exist for all teams in the hall of fame
@@ -150,9 +151,20 @@ class SBB:
             self._save_teams_data_per_generation(run_infos)
             if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['save_partial_files_per_validation']:
                 for index, run in enumerate(processed_runs):
-                    with open(self.filepath_+"acc_curves_for_val"+str(index+1)+".txt", "w") as text_file:
+                    with open(self.filepath_+"acc_curves_for_val"+str(index)+".txt", "w") as text_file:
                         text_file.write(run)
 
+                path = self.filepath_+"partial_files_per_validation/"
+                os.makedirs(path)
+                for index in range(total_validations):
+                    os.makedirs(path+"val"+str(index)+"/")
+                for run_id, validations in run_infos_temp.iteritems():
+                    for index, run in enumerate(validations):
+                        self._save_teams_in_actions_file(run.teams_in_last_generation, path+"val"+str(index)+"/"+"run"+str(run_id)+"_all_", create_folder=False)
+                        self._save_teams_in_actions_file(run.second_layer_files['top5_overall'], path+"val"+str(index)+"/"+"run"+str(run_id)+"_top5_", create_folder=False)
+                        self._save_teams_in_actions_file(run.second_layer_files['top10_overall'], path+"val"+str(index)+"/"+"run"+str(run_id)+"_top10_", create_folder=False)
+                        self._save_teams_in_actions_file(run.second_layer_files['top15_overall'], path+"val"+str(index)+"/"+"run"+str(run_id)+"_top15_", create_folder=False)
+    
     def _initialize_environment(self):
         environment = None
         if Config.USER['task'] == 'classification':
@@ -575,9 +587,10 @@ class SBB:
                 with open(json_path+team.__repr__()+".json", "w") as text_file:
                     text_file.write(team.json())
 
-    def _save_teams_in_actions_file(self, teams, path):
+    def _save_teams_in_actions_file(self, teams, path, create_folder=True):
         if len(teams) > 0:
-            os.makedirs(path)
+            if create_folder:
+                os.makedirs(path)
             actions = {}
             for index, team in enumerate(teams):
                 actions[index] = team.dict()

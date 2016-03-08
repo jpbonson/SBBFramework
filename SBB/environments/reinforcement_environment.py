@@ -8,7 +8,7 @@ from ..core.team import Team
 from ..core.diversity_maintenance import DiversityMaintenance
 from ..core.pareto_dominance_for_points import ParetoDominanceForPoints
 from ..core.pareto_dominance_for_teams import ParetoDominanceForTeams
-from ..utils.helpers import round_value, flatten, accumulative_performances
+from ..utils.helpers import round_value, flatten, accumulative_performances, rank_teams_by_accumulative_score
 from ..config import Config
 
 class ReinforcementPoint(DefaultPoint):
@@ -413,6 +413,14 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
     def calculate_final_validation_metrics(self, run_info, teams_population, current_generation):
         self._calculate_accumulative_performances(run_info, teams_population, current_generation)
+        self._summarize_accumulative_performances(run_info)
+
+        top5_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:5]]
+        top10_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:10]]
+        top15_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:15]]
+        run_info.second_layer_files['top5_overall'] = [t for t in teams_population if t.__repr__() in top5_overall_ids]
+        run_info.second_layer_files['top10_overall'] = [t for t in teams_population if t.__repr__() in top10_overall_ids]
+        run_info.second_layer_files['top15_overall'] = [t for t in teams_population if t.__repr__() in top15_overall_ids]
 
     def _calculate_accumulative_performances(self, run_info, teams_population, current_generation):
         older_teams = [team for team in teams_population if team.generation != current_generation]
@@ -424,3 +432,15 @@ class ReinforcementEnvironment(DefaultEnvironment):
         run_info.individual_performance_in_last_generation[metric] = individual_performance
         run_info.accumulative_performance_in_last_generation[metric] = accumulative_performance
         run_info.ids_for_acc_performance_in_last_generation[metric] = teams_ids
+
+    def _summarize_accumulative_performances(self, run_info):
+        run_info.accumulative_performance_summary = {}
+        metric = 'score'
+        run_info.accumulative_performance_summary[metric] = {}
+        ind_score = run_info.individual_performance_in_last_generation[metric]
+        acc_score = run_info.accumulative_performance_in_last_generation[metric]
+        ids = run_info.ids_for_acc_performance_in_last_generation[metric]
+        rank = rank_teams_by_accumulative_score(ind_score, acc_score, ids)
+        run_info.accumulative_performance_summary[metric]['overall'] = {}
+        run_info.accumulative_performance_summary[metric]['overall']['rank'] = rank
+        run_info.accumulative_performance_summary[metric]['overall']['ids_only'] = sorted([r[0] for r in rank])
