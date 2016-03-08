@@ -10,7 +10,7 @@ import numpy
 import glob
 import json
 import ntpath
-from collections import Counter
+from collections import Counter, defaultdict
 from core.program import Program, reset_programs_ids
 from core.team import Team, reset_teams_ids
 from core.instruction import Instruction
@@ -60,6 +60,8 @@ class SBB:
         print overall_info
 
         run_infos = []
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['save_partial_files_per_validation']:
+            run_infos_temp = defaultdict(list)
         for run_id in range(Config.USER['training_parameters']['runs_total']):
             start_time = time.time()
             run_info = RunInfo(run_id+1, self.seeds_per_run_[run_id])
@@ -112,6 +114,12 @@ class SBB:
                     self._store_per_generation_metrics(run_info, teams_population)
                     self._print_and_store_per_validation_metrics(run_info, best_team, teams_population, programs_population)
 
+                    if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['save_partial_files_per_validation']:
+                        run_info_temp = RunInfo(-1, -1)
+                        self.environment.calculate_final_validation_metrics(run_info_temp, teams_population, self.current_generation_)
+                        # [TODO]: actions de top10_overall, top10_overall_subcats?, all + salvar em arquivo [por pasta de runs]
+                        run_infos_temp[str(run_info.run_id)].append(run_info_temp)
+
             # to ensure validation metrics exist for all teams in the hall of fame
             if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
                 print "Validating hall of fame..."
@@ -128,10 +136,22 @@ class SBB:
         print overall_info
         sys.stdout.flush()
 
+        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['save_partial_files_per_validation']:
+            total_validations = len(run_infos_temp['1'])
+            processed_runs = []
+            for index in range(total_validations):
+                run_infos_temp_for_index = [x[index] for x in run_infos_temp.values()]
+                processed_runs_for_index = self._generate_overall_metrics_output_for_acc_curves(run_infos_temp_for_index)
+                processed_runs.append(processed_runs_for_index)
+
         if Config.RESTRICTIONS['write_output_files']:
             self.filepath_ = self._create_folder()
             self._write_output_files(run_infos, overall_info)
             self._save_teams_data_per_generation(run_infos)
+            if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['save_partial_files_per_validation']:
+                for index, run in enumerate(processed_runs):
+                    with open(self.filepath_+"acc_curves_for_val"+str(index+1)+".txt", "w") as text_file:
+                        text_file.write(run)
 
     def _initialize_environment(self):
         environment = None
@@ -444,25 +464,7 @@ class SBB:
         
         msg += "\n"
         if Config.USER['task'] == 'reinforcement':
-            metric = "score"
-            msg += "\nOverall Accumulative Results ("+str(metric)+"):"
-            score_means, score_stds = self._process_scores([run.individual_performance_in_last_generation[metric] for run in run_infos])
-            msg += "\n- Individual Team Performance:"
-            msg += "\nmean: "+str(round_array(score_means, 3))
-            msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
-            score_means, score_stds = self._process_scores([run.accumulative_performance_in_last_generation[metric] for run in run_infos])
-            msg += "\n- Accumulative Team Performance:"
-            msg += "\nmean: "+str(round_array(score_means, 3))
-            msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
-            msg += "\n\nAccumulative Results per Run ("+str(metric)+"):"
-            msg += "\nindividual_values = ["
-            for run in run_infos:
-                msg += "\n"+str(run.individual_performance_in_last_generation[metric])+","
-            msg += "\n]"
-            msg += "\nacc_values = ["
-            for run in run_infos:
-                msg += "\n"+str(run.accumulative_performance_in_last_generation[metric])+","
-            msg += "\n]"
+            msg += self._generate_overall_metrics_output_for_acc_curves(run_infos)
 
         msg += "\n\n######"
 
@@ -499,6 +501,29 @@ class SBB:
             score_means.append(round_value(numpy.mean(column)))
             score_stds.append(round_value(numpy.std(column)))
         return score_means, score_stds
+
+    def _generate_overall_metrics_output_for_acc_curves(self, run_infos):
+        msg = ""
+        metric = "score"
+        msg += "\nOverall Accumulative Results ("+str(metric)+"):"
+        score_means, score_stds = self._process_scores([run.individual_performance_in_last_generation[metric] for run in run_infos])
+        msg += "\n- Individual Team Performance:"
+        msg += "\nmean: "+str(round_array(score_means, 3))
+        msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
+        score_means, score_stds = self._process_scores([run.accumulative_performance_in_last_generation[metric] for run in run_infos])
+        msg += "\n- Accumulative Team Performance:"
+        msg += "\nmean: "+str(round_array(score_means, 3))
+        msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
+        msg += "\n\nAccumulative Results per Run ("+str(metric)+"):"
+        msg += "\nindividual_values = ["
+        for run in run_infos:
+            msg += "\n"+str(run.individual_performance_in_last_generation[metric])+","
+        msg += "\n]"
+        msg += "\nacc_values = ["
+        for run in run_infos:
+            msg += "\n"+str(run.accumulative_performance_in_last_generation[metric])+","
+        msg += "\n]"
+        return msg
 
     def _write_output_files(self, run_infos, overall_info):
         with open(self.filepath_+"metrics_overall.txt", "w") as text_file:

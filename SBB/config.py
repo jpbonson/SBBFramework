@@ -42,6 +42,7 @@ class Config():
                 'river_only_to_fullgame': False, # changed from one to another in half the generations, ignores 'river_round_only'
                 'maximum_bets': 4,
             },
+            'save_partial_files_per_validation': False,
         },
 
         'training_parameters': {

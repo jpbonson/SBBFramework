@@ -23,6 +23,7 @@ TEST_CONFIG = {
             'players': False,
             'debug_output_path': '',
         },
+        'save_partial_files_per_validation': False,
     },
     'training_parameters': {
         'runs_total': 2,

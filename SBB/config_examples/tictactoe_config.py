@@ -20,6 +20,7 @@ TICTACTOE_QUICK = {
         'debug': {
             'print': False,
         },
+        'save_partial_files_per_validation': True,
     },
 
     'training_parameters': {
@@ -98,6 +99,7 @@ TICTACTOE_DEFAULT = {
         'debug': {
             'print': False,
         },
+        'save_partial_files_per_validation': True,
     },
 
     'training_parameters': {
