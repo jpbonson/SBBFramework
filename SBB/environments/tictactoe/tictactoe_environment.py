@@ -54,7 +54,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                 is_training_for_second_player = False
                 sbb_player = 1
 
-            match = TictactoeMatch()
+            match = TictactoeMatch(player1_label = first_player.__repr__(), player2_label = second_player.__repr__())
             opponent.initialize(point.seed_)
             while True:
                 player = 1

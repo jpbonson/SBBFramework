@@ -47,7 +47,7 @@ class Config():
 
         'training_parameters': {
             'runs_total': 5,
-            'generations_total': 500,
+            'generations_total': 300,
             'validate_after_each_generation': 50,
             'populations': {
                 'teams': 100,
@@ -136,7 +136,7 @@ class Config():
         'used_diversities': None, # initialized by sbb.py
         'multiply_normalization_by': 10.0,
         'profile': {
-            'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*5.0)),
+            'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*3.0)),
             'update_chance': 0.05,
         },
         'diversity': {
@@ -205,6 +205,8 @@ class Config():
 # Config.USER = tictactoe_config.TICTACTOE_QUICK
 # Config.USER = tictactoe_config.TICTACTOE_RESEARCH_2
 # Config.USER = tictactoe_config.TICTACTOE_RESEARCH_3
+# Config.USER = tictactoe_config.TICTACTOE_RESEARCH_2_LAYER2
+# Config.USER = tictactoe_config.TICTACTOE_RESEARCH_3_LAYER2
 
 # Config.USER = poker_config.POKER_LAYER1
 # Config.USER = poker_config.POKER_LAYER1_WITH_BAYES

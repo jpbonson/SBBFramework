@@ -71,6 +71,9 @@ metrics (box plots de acc curves):
 - gen0 sbb x bayesian?
 - comparar performance do first layer com o do second layer?
 
+- implementar simplified ttt analysis (se possivel, standalone) + maneira de plugar nele outro oponente
+    - comecar fazendo calls para o SBB (copiar e ir editando do poker)
+
 - fazer maneira facil de pegar teams nao treinadas da gen1? (?) (fazer gambiarra, mas gerando logo todos os 30 runs?)
 - pegar teams da gen1 e fazer acc curve (fazer gambiarra comentando codigo?) (tanto para first como para second layer? para ql das configs?)
 - fazer report dos resultados e mandar para o malcolm e o andy (question: focar o q no paper?)
@@ -82,19 +85,25 @@ metrics (box plots de acc curves):
 
 
 pc:
+- new_config3 sem bayes
 - new_config3 com bayes
 - layer2 de new_config3 sem bayes + top10_overall + seed 11 (menos gens? 300?)
 - layer2 de new_config3 sem bayes + top10_overall_subcats + seed 11 (menos gens? 300?)
-- new config2 ttt
-- new config3 ttt
+- new config2 ttt (second layer)
+- new config3 ttt (second layer)
+- second layer v0 (config2 and config3)
 
 server:
-- 5 sets de 5 runs de new_config3 sem bayes com outras seeds (2, 3, 4, 5, 6) [18662, 18664, 18666, 18669, 18671]
-- 5 sets de 5 runs de new_config3 com bayes com outras seeds (2, 3, 4, 5, 6) [18712, 18714, 18716, 18718, 18720]
+- 4 sets de 5 runs de new_config3 sem bayes com outras seeds (2, 3, 4, 5) [19233, 19235, 19237, 19239]
+    - + new config2 ttt with top15 fixed [20369]
+- 4 sets de 5 runs de new_config3 com bayes com outras seeds (2, 3, 4, 5) [19243, 19245, 19247, 19249]
+    - + new config2 ttt with top15 fixed [20335]
+
+
 
 
 new_config (baseline2): 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3, 4 bets
-new_config3: 500gens, sem bayes, +genotype, sem 'river_only_to_fullgame', diversity: ncd_c4
+new_config3: 300gens, sem bayes, +genotype, sem 'river_only_to_fullgame', diversity: ncd_c4
 - best second layer: top10_overall (still considering top5 and overall_subcats)
 
 

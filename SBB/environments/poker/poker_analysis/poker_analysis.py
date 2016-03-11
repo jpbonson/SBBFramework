@@ -360,24 +360,3 @@ class PokerAnalysis():
 
         team.opponent_model = {}
         team.chips = {}
-
-    def _decode_message(self, message):
-        """
-        message: 0:f:5s8h|7s4c:5|-5:opponent|sbb
-        result: {'hole_cards': ['5s8h', '7s4c'], 'board_cards': [], 'players': ['opponent', 'sbb'], 'score': ['5', '-5'], 'position': '0', 'rounds': ['f']}
-
-        message: 0:rrrc/rrrrc/rrrrc/rrrrc:Js2c|5cTh/4c3hTs/4h/Qs:-240|240:sbb|opponent
-        result: {'hole_cards': ['Js2c', '5cTh'], 'board_cards': ['4c3hTs', '4h', 'Qs'], 'players': ['sbb', 'opponent'], 'score': ['-240', '240'], 'position': '0', 'rounds': ['rrrc', 'rrrrc', 'rrrrc', 'rrrrc']}
-        """
-        result = {}
-        splitted = message.split(":")
-        result['position'] = splitted[0]
-        result['rounds'] = splitted[1].split("/")
-        cards = splitted[2].split("/")
-        result['hole_cards'] = cards[0].split("|")
-        result['board_cards'] = cards[1:]
-        if len(result['board_cards']) > 0:
-            result['board_cards_temp'] = result['board_cards'][0][0:2]+" "+result['board_cards'][0][2:4]+" "+result['board_cards'][0][4:5]
-        result['score'] = splitted[3].split("|")
-        result['players'] = splitted[4].split("|")
-        return result

@@ -5,7 +5,7 @@ from ..environments.poker.poker_opponents import (PokerAlwaysCallOpponent, Poker
 
 # How to use: Either copy and paste this on config.py, or uncomment the last line in config.py
 
-SEED = 1
+SEED = 2
 
 POKER_CONFIG3 = {
     'task': 'reinforcement',
@@ -35,11 +35,12 @@ POKER_CONFIG3 = {
             'river_only_to_fullgame': False, # changed from one to another in half the generations, ignores 'river_round_only'
             'maximum_bets': 4,
         },
+        'save_partial_files_per_validation': False,
     },
 
     'training_parameters': {
         'runs_total': 5,
-        'generations_total': 500,
+        'generations_total': 300,
         'validate_after_each_generation': 50,
         'populations': {
             'teams': 100,
@@ -101,7 +102,7 @@ POKER_LAYER1_WITH_BAYES = copy.deepcopy(POKER_LAYER1)
 POKER_LAYER1_WITH_BAYES['reinforcement_parameters']['poker']['opponents'] = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent]
 
 POKER_LAYER2 = copy.deepcopy(POKER_CONFIG3)
-POKER_LAYER2['training_parameters']['generations_total'] = 300
+POKER_LAYER2['training_parameters']['generations_total'] = 200
 POKER_LAYER2['advanced_training_parameters']['second_layer']['enabled'] = True
 POKER_LAYER2['advanced_training_parameters']['seed'] += 10
 
