@@ -75,7 +75,6 @@ TICTACTOE_QUICK = {
         'use_profiling': True,
         'second_layer': {
             'enabled': False,
-            'use_atomic_actions': False,
             'path': 'actions_reference/baseline/run[run_id]/second_layer_files/hall_of_fame+top10_overall_subcats/actions.json',
         },
     },
@@ -154,7 +153,6 @@ TICTACTOE_DEFAULT = {
         'use_profiling': True,
         'second_layer': {
             'enabled': False,
-            'use_atomic_actions': False,
             'path': 'actions_reference/baseline/run[run_id]/second_layer_files/hall_of_fame+top10_overall_subcats/actions.json',
         },
     },
@@ -172,12 +170,25 @@ TICTACTOE_RESEARCH_3['advanced_training_parameters']['use_profiling'] = True
 TICTACTOE_RESEARCH_3['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype']
 TICTACTOE_RESEARCH_3['advanced_training_parameters']['diversity']['only_show'] = []
 
+# TICTACTOE_RESEARCH_2_LAYER2 = copy.deepcopy(TICTACTOE_RESEARCH_2)
+# TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['second_layer']['enabled'] = True
+# TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['seed'] += 10
+# TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_config2/run[run_id]_all_actions.json'
+
+# TICTACTOE_RESEARCH_3_LAYER2 = copy.deepcopy(TICTACTOE_RESEARCH_3)
+# TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['second_layer']['enabled'] = True
+# TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['seed'] += 10
+# TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_config3/run[run_id]_all_actions.json'
+
 TICTACTOE_RESEARCH_2_LAYER2 = copy.deepcopy(TICTACTOE_RESEARCH_2)
 TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['second_layer']['enabled'] = True
 TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['seed'] += 10
-TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_config2_val0/run[run_id]_all_actions.json'
+TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_top15/ttt_config2/run[run_id]_top10_actions.json'
 
 TICTACTOE_RESEARCH_3_LAYER2 = copy.deepcopy(TICTACTOE_RESEARCH_3)
 TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['second_layer']['enabled'] = True
 TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['seed'] += 10
-TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_config3_val0/run[run_id]_all_actions.json'
+TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_top15/ttt_config3/run[run_id]_top10_actions.json'
+
+TICTACTOE_RESEARCH_TEMP = copy.deepcopy(TICTACTOE_RESEARCH_2_LAYER2)
+TICTACTOE_RESEARCH_TEMP['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_top15/ttt_config2/run25_top10_actions.json'

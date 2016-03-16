@@ -86,13 +86,7 @@ class Program:
             if self.generation == -1:
                 return True # WARNING: Incompatible for more than 2 layers, also need to use gambiarra/workaround to load teams with 2 layers
             else:
-                if not Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
-                    return False
-                else:
-                    if self.action in range(Config.RESTRICTIONS['total_raw_actions']):
-                        return True
-                    else:
-                        return False
+                return False
 
     def get_raw_actions(self):
         if self.is_atomic_action():

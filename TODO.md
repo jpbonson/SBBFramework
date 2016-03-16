@@ -83,21 +83,19 @@ metrics (box plots de acc curves):
 - fazer set de 25 runs (5 sets de 5 runs) com a best config, com outras seeds (?)
 - fazer runs com river only (?)
 
+- fazer 25 runs de poker para top10, e alguns extras de 5 testando as outras opções?
+
 
 pc:
 - new_config3 sem bayes
-- new_config3 com bayes
-- layer2 de new_config3 sem bayes + top10_overall + seed 11 (menos gens? 300?)
-- layer2 de new_config3 sem bayes + top10_overall_subcats + seed 11 (menos gens? 300?)
-- new config2 ttt (second layer)
-- new config3 ttt (second layer)
-- second layer v0 (config2 and config3)
+- layer2 de new_config3 sem bayes + top10_overall + seed 11
+- layer2 de new_config3 sem bayes + top10_overall_subcats + seed 11
 
 server:
 - 4 sets de 5 runs de new_config3 sem bayes com outras seeds (2, 3, 4, 5) [19233, 19235, 19237, 19239]
     - + new config2 ttt with top15 fixed [20369]
 - 4 sets de 5 runs de new_config3 com bayes com outras seeds (2, 3, 4, 5) [19243, 19245, 19247, 19249]
-    - + new config2 ttt with top15 fixed [20335]
+    - + new config3 ttt with top15 fixed [20335, DONE]
 
 
 

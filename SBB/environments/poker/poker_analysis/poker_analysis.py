@@ -133,7 +133,6 @@ class PokerAnalysis():
         Config.USER['reinforcement_parameters']['environment'] = 'poker'
         # Config.USER['advanced_training_parameters']['extra_registers'] = 4
         Config.USER['advanced_training_parameters']['second_layer']['enabled'] = second_layer_enabled
-        Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions'] = False
         Config.USER['reinforcement_parameters']['debug']['matches'] = generate_debug_files_per_match
         Config.USER['reinforcement_parameters']['debug']['print'] = True
         Config.USER['reinforcement_parameters']['poker']['river_round_only'] = river_round_only

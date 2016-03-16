@@ -69,12 +69,6 @@ class SBB:
 
             self._set_seed(run_info.seed)
 
-            # randomly initialize populations
-            self.current_generation_ = 0
-            teams_population, programs_population = self._initialize_populations()
-            
-            self.environment.reset()
-
             # initialize actions
             if Config.USER['advanced_training_parameters']['second_layer']['enabled']:
                 path = str(Config.USER['advanced_training_parameters']['second_layer']['path']).replace("[run_id]", str(run_info.run_id))
@@ -82,10 +76,13 @@ class SBB:
                     raise ValueError("Path for second layer actions doesn't exist: "+str(path))
                 initialize_actions_for_second_layer(path)
                 total_team_actions = len(Config.RESTRICTIONS['second_layer']['action_mapping'])
-                if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
-                    Config.RESTRICTIONS['total_actions'] = Config.RESTRICTIONS['total_raw_actions'] + total_team_actions
-                else:
-                    Config.RESTRICTIONS['total_actions'] = total_team_actions
+                Config.RESTRICTIONS['total_actions'] = total_team_actions
+
+            # randomly initialize populations
+            self.current_generation_ = 0
+            teams_population, programs_population = self._initialize_populations()
+            
+            self.environment.reset()
 
             while not self._stop_criterion():
                 self.current_generation_ += 1

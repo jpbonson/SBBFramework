@@ -349,10 +349,7 @@ class Team(DefaultOpponent):
         if not Config.USER['advanced_training_parameters']['second_layer']['enabled']:
             info['programs_type'] = 'atomic'
         else:
-            if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
-                info['programs_type'] = 'mixed'
-            else:
-                info['programs_type'] = 'meta'
+            info['programs_type'] = 'meta'
         programs_json = []
         for program in self.programs:
             programs_json.append(program.dict())

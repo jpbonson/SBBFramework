@@ -90,7 +90,6 @@ POKER_CONFIG3 = {
         'use_profiling': True,
         'second_layer': {
             'enabled': False,
-            'use_atomic_actions': False,
             'path': 'actions_reference/baseline3_without_bayes/run[run_id]/second_layer_files/top10_overall/actions.json',
         },
     },

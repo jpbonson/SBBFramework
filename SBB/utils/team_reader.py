@@ -27,12 +27,8 @@ def initialize_actions_for_second_layer(path):
         for index, team_json in data.iteritems():
             index = int(index)
             team_id = str(team_json['team_id'])+":"+str(team_json['generation'])
-            if Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions']:
-                actual_index = index + Config.RESTRICTIONS['total_raw_actions']
-            else:
-                actual_index = index
-            Config.RESTRICTIONS['second_layer']['short_action_mapping'][actual_index] = team_id
-            temp_actions_as_dicts[actual_index] = team_json
+            Config.RESTRICTIONS['second_layer']['short_action_mapping'][index] = team_id
+            temp_actions_as_dicts[index] = team_json
 
         for action, team_descriptor in temp_actions_as_dicts.iteritems():
             team = read_team_from_json(team_descriptor)

@@ -34,7 +34,6 @@ class TTTAnalysis():
         print "Setup the configuration..."
         Config.USER['advanced_training_parameters']['extra_registers'] = extra_registers
         Config.USER['advanced_training_parameters']['second_layer']['enabled'] = False
-        Config.USER['advanced_training_parameters']['second_layer']['use_atomic_actions'] = False
         Config.USER['reinforcement_parameters']['debug']['print'] = print_matches
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
         if seed is None:

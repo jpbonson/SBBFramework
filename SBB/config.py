@@ -97,7 +97,6 @@ class Config():
             'use_profiling': True,
             'second_layer': {
                 'enabled': False,
-                'use_atomic_actions': False,
                 'path': 'actions_reference/baseline3_without_bayes/run[run_id]/second_layer_files/top10_overall/actions.json',
             },
         },
@@ -207,6 +206,7 @@ class Config():
 # Config.USER = tictactoe_config.TICTACTOE_RESEARCH_3
 # Config.USER = tictactoe_config.TICTACTOE_RESEARCH_2_LAYER2
 # Config.USER = tictactoe_config.TICTACTOE_RESEARCH_3_LAYER2
+Config.USER = tictactoe_config.TICTACTOE_RESEARCH_TEMP
 
 # Config.USER = poker_config.POKER_LAYER1
 # Config.USER = poker_config.POKER_LAYER1_WITH_BAYES
