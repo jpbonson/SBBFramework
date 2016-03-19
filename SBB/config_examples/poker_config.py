@@ -5,7 +5,7 @@ from ..environments.poker.poker_opponents import (PokerAlwaysCallOpponent, Poker
 
 # How to use: Either copy and paste this on config.py, or uncomment the last line in config.py
 
-SEED = 2
+SEED = 1
 
 POKER_CONFIG3 = {
     'task': 'reinforcement',
@@ -104,6 +104,7 @@ POKER_LAYER2 = copy.deepcopy(POKER_CONFIG3)
 POKER_LAYER2['training_parameters']['generations_total'] = 200
 POKER_LAYER2['advanced_training_parameters']['second_layer']['enabled'] = True
 POKER_LAYER2['advanced_training_parameters']['seed'] += 10
+POKER_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/baseline_poker_paper/without_bayes/seed'+str(SEED)+'_run[run_id]/top10_overall/actions.json'
 
-POKER_LAYER2_WITH_SUBCATS = copy.deepcopy(POKER_LAYER2)
-POKER_LAYER2_WITH_SUBCATS['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/baseline3_without_bayes/run[run_id]/second_layer_files/top10_overall_subcats/actions.json'
+POKER_LAYER2_WITH_BAYES = copy.deepcopy(POKER_LAYER2)
+POKER_LAYER2_WITH_BAYES['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/baseline_poker_paper/with_bayes/seed'+str(SEED)+'_run[run_id]/top10_overall/actions.json'

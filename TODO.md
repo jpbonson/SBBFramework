@@ -87,15 +87,16 @@ metrics (box plots de acc curves):
 
 
 pc:
-- new_config3 sem bayes
-- layer2 de new_config3 sem bayes + top10_overall + seed 11
-- layer2 de new_config3 sem bayes + top10_overall_subcats + seed 11
+- ttt test
+- ttt for real
+- seed1 no bayes
+- seed1 with bayes
 
 server:
-- 4 sets de 5 runs de new_config3 sem bayes com outras seeds (2, 3, 4, 5) [19233, 19235, 19237, 19239]
-    - + new config2 ttt with top15 fixed [20369]
-- 4 sets de 5 runs de new_config3 com bayes com outras seeds (2, 3, 4, 5) [19243, 19245, 19247, 19249]
-    - + new config3 ttt with top15 fixed [20335, DONE]
+1)
+- without bayes, top10_overall [27936, 27938, 27940, 27942], top10_overall_subcats [27946, 27948, 27950, 27952]
+2)
+- with bayes, top10_overall [7768, 7770, 7772, 7774], top10_overall_subcats [7778, 7780, 7782, 7784]
 
 
 

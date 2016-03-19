@@ -189,6 +189,3 @@ TICTACTOE_RESEARCH_3_LAYER2 = copy.deepcopy(TICTACTOE_RESEARCH_3)
 TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['second_layer']['enabled'] = True
 TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['seed'] += 10
 TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_top15/ttt_config3/run[run_id]_top10_actions.json'
-
-TICTACTOE_RESEARCH_TEMP = copy.deepcopy(TICTACTOE_RESEARCH_2_LAYER2)
-TICTACTOE_RESEARCH_TEMP['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_top15/ttt_config2/run25_top10_actions.json'

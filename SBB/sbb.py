@@ -454,10 +454,11 @@ class SBB:
         if Config.USER['task'] == 'reinforcement':
             msg += "\n\nFinal Teams Validations: "+str(flatten([round_array(run.final_teams_validations, 3) for run in run_infos]))
         
-        score_means, score_stds = self._process_scores([run.actions_distribution_per_validation[-1] for run in run_infos])
-        msg += "\n\nDistribution of Actions per Validation (last gen.):"
-        msg += "\nmean: "+str(round_array(score_means, 2))
-        msg += "\nstd. deviation: "+str(round_array(score_stds, 2))
+        if not Config.USER['advanced_training_parameters']['second_layer']['enabled']:
+            score_means, score_stds = self._process_scores([run.actions_distribution_per_validation[-1] for run in run_infos])
+            msg += "\n\nDistribution of Actions per Validation (last gen.):"
+            msg += "\nmean: "+str(round_array(score_means, 2))
+            msg += "\nstd. deviation: "+str(round_array(score_stds, 2))
         score_means, score_stds = self._process_scores([run.inputs_distribution_per_instruction_per_validation[-1] for run in run_infos])
         msg += "\nDistribution of Inputs per Validation (per program) (last gen.):"
         msg += "\nmean: "+str(round_array(score_means, 2))

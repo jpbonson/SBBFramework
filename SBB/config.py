@@ -206,9 +206,8 @@ class Config():
 # Config.USER = tictactoe_config.TICTACTOE_RESEARCH_3
 # Config.USER = tictactoe_config.TICTACTOE_RESEARCH_2_LAYER2
 # Config.USER = tictactoe_config.TICTACTOE_RESEARCH_3_LAYER2
-Config.USER = tictactoe_config.TICTACTOE_RESEARCH_TEMP
 
 # Config.USER = poker_config.POKER_LAYER1
 # Config.USER = poker_config.POKER_LAYER1_WITH_BAYES
 # Config.USER = poker_config.POKER_LAYER2
-# Config.USER = poker_config.POKER_LAYER2_WITH_SUBCATS
+# Config.USER = poker_config.POKER_LAYER2_WITH_BAYES
