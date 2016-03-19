@@ -3,10 +3,12 @@ import json
 import random
 import numpy
 import time
+import glob
 from SBB.environments.tictactoe.tictactoe_opponents import TictactoeRandomOpponent, TictactoeSmartOpponent
 from SBB.environments.tictactoe.tictactoe_environment import TictactoeEnvironment
 from SBB.environments.default_environment import reset_points_ids
 from SBB.utils.team_reader import read_team_from_json, initialize_actions_for_second_layer
+from SBB.utils.helpers import accumulative_performances
 from SBB.config import Config
 
 class TTTAnalysis():
@@ -14,6 +16,54 @@ class TTTAnalysis():
     """
     WARNING: Config.RESTRICTIONS in config.py should be exactly the same as the one used to train the teams
     """
+
+    def run_folder_for_acc_curve(self, matches, folder_path, player2_file_or_opponent_type, player2_is_sbb, 
+        second_layer_enabled, print_matches, extra_registers, seed = None):
+        self._setup_config(second_layer_enabled, print_matches, extra_registers, seed)
+        environment, points = self._setup_environment(matches)
+
+        print "Loading player 2..."
+        if player2_is_sbb:
+            player2 = self._create_player("sbb", second_layer_enabled, json_path=player2_file_or_opponent_type)
+        else:
+            player2 = self._create_player("static", second_layer_enabled, classname=player2_file_or_opponent_type)
+        print "...finished loading player 2."
+
+        individual_performances_summary = []
+        accumulative_performances_summary = []
+        debug_folder = "analysis_files/ttt/"
+        for folder in glob.glob(folder_path+"run*"):
+            print "Executing folder "+str(folder)+"..."
+            teams_population = []
+            for filename in glob.glob(folder+"/last_generation_teams/json/*"):
+                if "actions.json" not in filename:
+                    player1 = self._create_player("sbb", second_layer_enabled, json_path=filename)
+                    self._evaluate_teams(player1, player2, player2_is_sbb, points, environment)
+                    teams_population.append(player1)
+          
+            if len(teams_population) > 0:
+                sorting_criteria = lambda x: x.score_testset_
+                get_results_per_points = lambda x: x.results_per_points_for_validation_
+                point_ids = [point.point_id_ for point in points]
+                r = accumulative_performances(teams_population, point_ids, sorting_criteria, get_results_per_points)
+                individual_performance, accumulative_performance, teams_ids = r
+                individual_performances_summary.append(individual_performance)
+                accumulative_performances_summary.append(accumulative_performance)
+
+                msg = ""
+                msg += "\n\nindividual_values = "+str(individual_performance)
+                msg += "\n\nacc_values = "+str(accumulative_performance)
+                msg += "\n\nteams_ids = "+str(teams_ids)
+                print msg
+                # with open(debug_folder+"acc_curves.log", 'w') as f:
+                #     f.write(msg)
+        msg = ""
+        msg += "individual_values = "+str(individual_performances_summary)
+        msg += "\nacc_values = "+str(accumulative_performances_summary)
+        print msg
+
+        with open(debug_folder+"acc_curves_summary.log", 'w') as f:
+            f.write(msg)
 
     def run(self, matches, player1_file, player2_file_or_opponent_type, player2_is_sbb, 
         second_layer_enabled, print_matches, extra_registers, seed = None):
@@ -109,8 +159,10 @@ class TTTAnalysis():
         match_id = 0
         for point in points:
             match_id += 1
-            print "...player: "+str(player1.__repr__())+", "+str(match_id)
+            if match_id % 100 == 0:
+                print "...player: "+str(player1.__repr__())+", "+str(match_id)
             result = environment._play_match(player1, player2, point, Config.RESTRICTIONS['mode']['validation'], match_id)
+            player1.results_per_points_for_validation_[point.point_id_] = result
             player1.reset_registers()
             if player2_is_sbb:
                 player2.reset_registers()
@@ -122,23 +174,11 @@ def run_config_for_sbb_vs_static():
     TTTAnalysis().run(
         matches=10, # obs.: 2 matches are played for each 'match' value, so both players play in positions 1 and 2
 
-        player1_file="analysis_files/ttt/best_team.json", 
+        # player1_file="analysis_files/ttt/best_team.json", 
+        player1_file="../outputs/outputs_for_paper_ttt_2/all_teams/config3/run1/last_generation_teams/json/(465-8).json", 
+
         player2_file_or_opponent_type=TictactoeSmartOpponent,
         player2_is_sbb = False,
-        second_layer_enabled = False,
-
-        print_matches=False,
-        extra_registers=4, # must be the same value as the one used in training
-        seed=1,
-    )
-
-def run_config_for_sbb_vs_sbb():
-    TTTAnalysis().run(
-        matches=10, # obs.: 2 matches are played for each 'match' value, so both players play in positions 1 and 2
-        
-        player1_file="analysis_files/ttt/best_team.json", 
-        player2_file_or_opponent_type="analysis_files/ttt/best_team2.json",
-        player2_is_sbb = True,
         second_layer_enabled = False,
 
         print_matches=False,
@@ -160,16 +200,48 @@ def run_config_for_sbb_vs_static_for_layer2():
         seed=1,
     )
 
+def run_config_for_sbb_vs_sbb():
+    TTTAnalysis().run(
+        matches=10, # obs.: 2 matches are played for each 'match' value, so both players play in positions 1 and 2
+        
+        player1_file="analysis_files/ttt/best_team.json", 
+        player2_file_or_opponent_type="analysis_files/ttt/best_team2.json",
+        player2_is_sbb = True,
+        second_layer_enabled = False,
+
+        print_matches=False,
+        extra_registers=4, # must be the same value as the one used in training
+        seed=1,
+    )
+
+def run_config_for_sbb_vs_static_for_acc_curve():
+    TTTAnalysis().run_folder_for_acc_curve(
+        matches=1000, # obs.: 2 matches are played for each 'match' value, so both players play in positions 1 and 2
+
+        folder_path="../outputs/outputs_for_paper_ttt_2/all_teams/config3/", 
+        player2_file_or_opponent_type=TictactoeSmartOpponent,
+        player2_is_sbb = False,
+        second_layer_enabled = False,
+
+        print_matches=False,
+        extra_registers=4, # must be the same value as the one used in training
+        seed=1,
+    )
+
 if __name__ == "__main__":
     start_time = time.time()
 
-    run_config_for_sbb_vs_static()
-    # run_config_for_sbb_vs_sbb()
+    # run_config_for_sbb_vs_static()
     # run_config_for_sbb_vs_static_for_layer2()
-    
+    # run_config_for_sbb_vs_sbb()
+    run_config_for_sbb_vs_static_for_acc_curve()
+
     elapsed_time = (time.time() - start_time)/60.0
     print("\nFinished, elapsed time: "+str(elapsed_time)+" mins")
 
-# - executar um best_team.json da pasta config
-# - run results for various runs in the configs folder
-# - generate acc curve baseado no codigo de poker
+# TODO:
+# - ir executando enquanto trabalho? executar runs em paralelo nopc do lab? cuidado com o nome dos arquivos!
+# - copiar arquivos action.json para as pastas dos .json para executar os de layer2 (ou fazer o programa ler os actions de uma pasta especifica)
+# - fazer codigo para ler os teams no arquivos de actions, para poder fazer report de val0 (e talvez dos outros vals tb)
+# - fazer report dos resutlados de top10 para ttt
+# - fazer report de acc curve apenas contra SmartOpponent
