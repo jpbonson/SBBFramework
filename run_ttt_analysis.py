@@ -17,16 +17,16 @@ class TTTAnalysis():
     WARNING: Config.RESTRICTIONS in config.py should be exactly the same as the one used to train the teams
     """
 
-    def run_folder_for_acc_curve(self, matches, folder_path, player2_file_or_opponent_type, player2_is_sbb, 
-        second_layer_enabled, print_matches, extra_registers, seed = None):
+    def run_folder_for_acc_curve(self, matches, folder_path, output_file_name, player2_file_or_opponent_type, player2_is_sbb, 
+        second_layer_enabled, second_layer_action_folder, print_matches, extra_registers, seed = None):
         self._setup_config(second_layer_enabled, print_matches, extra_registers, seed)
         environment, points = self._setup_environment(matches)
 
         print "Loading player 2..."
         if player2_is_sbb:
-            player2 = self._create_player("sbb", second_layer_enabled, json_path=player2_file_or_opponent_type)
+            player2 = self._create_player("sbb", second_layer_enabled, second_layer_action_folder, json_path=player2_file_or_opponent_type)
         else:
-            player2 = self._create_player("static", second_layer_enabled, classname=player2_file_or_opponent_type)
+            player2 = self._create_player("static", second_layer_enabled, second_layer_action_folder, classname=player2_file_or_opponent_type)
         print "...finished loading player 2."
 
         individual_performances_summary = []
@@ -37,7 +37,10 @@ class TTTAnalysis():
             teams_population = []
             for filename in glob.glob(folder+"/last_generation_teams/json/*"):
                 if "actions.json" not in filename:
-                    player1 = self._create_player("sbb", second_layer_enabled, json_path=filename)
+                    run_id = folder.split("\\")[-1]
+                    run_id = run_id.split("/")[-1]
+                    second_layer_action_folder_per_run = str(second_layer_action_folder).replace("[run_id]", run_id)
+                    player1 = self._create_player("sbb", second_layer_enabled, second_layer_action_folder_per_run, json_path=filename)
                     self._evaluate_teams(player1, player2, player2_is_sbb, points, environment)
                     teams_population.append(player1)
           
@@ -62,7 +65,7 @@ class TTTAnalysis():
         msg += "\nacc_values = "+str(accumulative_performances_summary)
         print msg
 
-        with open(debug_folder+"acc_curves_summary.log", 'w') as f:
+        with open(debug_folder+"acc_curves_summary_"+output_file_name+".log", 'w') as f:
             f.write(msg)
 
     def run(self, matches, player1_file, player2_file_or_opponent_type, player2_is_sbb, 
@@ -117,7 +120,7 @@ class TTTAnalysis():
         print "...finished loading players."
         return player1, player2
 
-    def _create_player(self, player_type, second_layer_enabled, json_path=None, classname=None):
+    def _create_player(self, player_type, second_layer_enabled, second_layer_action_folder, json_path=None, classname=None):
         """
         Create a player.
         - sbb player: read a .json file with the team structure
@@ -138,9 +141,8 @@ class TTTAnalysis():
                 for program in player.programs:
                     program.generation = 0 # workaround for second layer
 
-                folder_path = os.path.dirname(os.path.abspath(json_path))
-                if os.path.isfile(folder_path+"/actions.json"):
-                    initialize_actions_for_second_layer(folder_path+"/actions.json")
+                if os.path.isfile(second_layer_action_folder):
+                    initialize_actions_for_second_layer(second_layer_action_folder)
                     print "...loaded actions"
                 else:
                     raise ValueError("Enabled second layer, but no actions.json file found!")
@@ -177,11 +179,11 @@ def run_config_for_sbb_vs_static():
         # player1_file="analysis_files/ttt/best_team.json", 
         player1_file="../outputs/outputs_for_paper_ttt_2/all_teams/config3/run1/last_generation_teams/json/(465-8).json", 
 
-        player2_file_or_opponent_type=TictactoeSmartOpponent,
+        player2_file_or_opponent_type=TictactoeTrueSmartOpponent,
         player2_is_sbb = False,
         second_layer_enabled = False,
 
-        print_matches=False,
+        print_matches=True,
         extra_registers=4, # must be the same value as the one used in training
         seed=1,
     )
@@ -218,10 +220,13 @@ def run_config_for_sbb_vs_static_for_acc_curve():
     TTTAnalysis().run_folder_for_acc_curve(
         matches=1000, # obs.: 2 matches are played for each 'match' value, so both players play in positions 1 and 2
 
-        folder_path="../outputs/outputs_for_paper_ttt_2/all_teams/config3/", 
+        # folder_path="../outputs/outputs_for_paper_ttt_2/all_teams/config3/", 
+        folder_path="../outputs/outputs_for_paper_ttt_2/all_teams/second_layer_config2_val5/", 
+        output_file_name="config2_val5_layer2_1000m_random",
         player2_file_or_opponent_type=TictactoeSmartOpponent,
         player2_is_sbb = False,
-        second_layer_enabled = False,
+        second_layer_enabled = True,
+        second_layer_action_folder = "../outputs/outputs_for_paper_ttt_2/all_teams/config2/partial_files_per_validation/val5/[run_id]_all_actions.json",
 
         print_matches=False,
         extra_registers=4, # must be the same value as the one used in training
@@ -240,8 +245,11 @@ if __name__ == "__main__":
     print("\nFinished, elapsed time: "+str(elapsed_time)+" mins")
 
 # TODO:
-# - ir executando enquanto trabalho? executar runs em paralelo nopc do lab? cuidado com o nome dos arquivos!
-# - copiar arquivos action.json para as pastas dos .json para executar os de layer2 (ou fazer o programa ler os actions de uma pasta especifica)
-# - fazer codigo para ler os teams no arquivos de actions, para poder fazer report de val0 (e talvez dos outros vals tb)
-# - fazer report dos resutlados de top10 para ttt
-# - fazer report de acc curve apenas contra SmartOpponent
+
+# - poker: falar sobre o bayesian opponent + tipos de runs sendo rodados + river only? + qualo foco do paper?
+
+# - implementar metrica para total complexity para os runs de second layer
+
+# - mandar email para fayez
+
+# - esperando gerar os ultimos charts de layer2 + definir se vai ser gen50 ou gen100 para ttt + ajeitar ttt_config

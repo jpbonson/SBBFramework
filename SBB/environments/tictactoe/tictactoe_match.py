@@ -87,5 +87,6 @@ class TictactoeMatch():
                        (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
         for config in winning_configs:
             if inputs[config[0]] == inputs[config[1]] and inputs[config[1]] == inputs[config[2]]:
-                return inputs[config[0]]
+                if inputs[config[0]] != 0:
+                    return inputs[config[0]]
         return None # no winner

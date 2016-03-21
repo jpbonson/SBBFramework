@@ -135,7 +135,7 @@ class Config():
         'used_diversities': None, # initialized by sbb.py
         'multiply_normalization_by': 10.0,
         'profile': {
-            'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*3.0)),
+            'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*2.0)),
             'update_chance': 0.05,
         },
         'diversity': {

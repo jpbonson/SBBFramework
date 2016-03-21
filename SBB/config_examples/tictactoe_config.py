@@ -98,13 +98,13 @@ TICTACTOE_DEFAULT = {
         'debug': {
             'print': False,
         },
-        'save_partial_files_per_validation': False,
+        'save_partial_files_per_validation': True,
     },
 
     'training_parameters': {
         'runs_total': 1,
         'generations_total': 50,
-        'validate_after_each_generation': 10,
+        'validate_after_each_generation': 25,
         'populations': {
             'teams': 100,
             'points': 100,
@@ -159,7 +159,7 @@ TICTACTOE_DEFAULT = {
 }
 
 TICTACTOE_RESEARCH = copy.deepcopy(TICTACTOE_DEFAULT)
-TICTACTOE_RESEARCH['training_parameters']['runs_total'] = 30
+TICTACTOE_RESEARCH['training_parameters']['runs_total'] = 20
 
 TICTACTOE_RESEARCH_2 = copy.deepcopy(TICTACTOE_RESEARCH)
 TICTACTOE_RESEARCH_2['advanced_training_parameters']['use_profiling'] = True
@@ -183,9 +183,9 @@ TICTACTOE_RESEARCH_3['advanced_training_parameters']['diversity']['only_show'] =
 TICTACTOE_RESEARCH_2_LAYER2 = copy.deepcopy(TICTACTOE_RESEARCH_2)
 TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['second_layer']['enabled'] = True
 TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['seed'] += 10
-TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_top15/ttt_config2/run[run_id]_top10_actions.json'
+TICTACTOE_RESEARCH_2_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_new_config2/val0/run[run_id]_all_actions.json'
 
 TICTACTOE_RESEARCH_3_LAYER2 = copy.deepcopy(TICTACTOE_RESEARCH_3)
 TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['second_layer']['enabled'] = True
 TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['seed'] += 10
-TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_top15/ttt_config3/run[run_id]_top10_actions.json'
+TICTACTOE_RESEARCH_3_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/ttt_new_config3/val0/run[run_id]_all_actions.json'
