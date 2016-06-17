@@ -29,7 +29,7 @@ class Program:
     def reset_registers(self):
         self.general_registers = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
 
-    def execute(self, input_registers):
+    def execute(self, input_registers, force_reset = False):
         """
         Execute code for each input
         """
@@ -37,7 +37,7 @@ class Program:
             self.instructions_without_introns_ = Program.remove_introns(self.instructions)
             self.inputs_list_ = self._inputs_list()
         instructions = self.instructions_without_introns_
-        if Config.USER['task'] == 'classification':
+        if Config.USER['task'] == 'classification' or force_reset:
             self.reset_registers()
         if_instruction = None
         skip_next = False

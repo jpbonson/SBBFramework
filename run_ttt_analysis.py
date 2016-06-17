@@ -221,12 +221,12 @@ def run_config_for_sbb_vs_static_for_acc_curve():
         matches=1000, # obs.: 2 matches are played for each 'match' value, so both players play in positions 1 and 2
 
         # folder_path="../outputs/outputs_for_paper_ttt_2/all_teams/config3/", 
-        folder_path="../outputs/outputs_for_paper_ttt_2/all_teams/second_layer_config2_val5/", 
-        output_file_name="config2_val5_layer2_1000m_random",
-        player2_file_or_opponent_type=TictactoeSmartOpponent,
+        folder_path="../outputs/outputs_for_paper_ttt_2/new/layer2_config3_val5/", 
+        output_file_name="layer2_config3_val5_random",
+        player2_file_or_opponent_type=TictactoeRandomOpponent,
         player2_is_sbb = False,
         second_layer_enabled = True,
-        second_layer_action_folder = "../outputs/outputs_for_paper_ttt_2/all_teams/config2/partial_files_per_validation/val5/[run_id]_all_actions.json",
+        second_layer_action_folder = "../outputs/outputs_for_paper_ttt_2/new/layer1_config3_val5/partial_files_per_validation/val2/[run_id]_all_actions.json",
 
         print_matches=False,
         extra_registers=4, # must be the same value as the one used in training
@@ -243,13 +243,3 @@ if __name__ == "__main__":
 
     elapsed_time = (time.time() - start_time)/60.0
     print("\nFinished, elapsed time: "+str(elapsed_time)+" mins")
-
-# TODO:
-
-# - poker: falar sobre o bayesian opponent + tipos de runs sendo rodados + river only? + qualo foco do paper?
-
-# - implementar metrica para total complexity para os runs de second layer
-
-# - mandar email para fayez
-
-# - esperando gerar os ultimos charts de layer2 + definir se vai ser gen50 ou gen100 para ttt + ajeitar ttt_config

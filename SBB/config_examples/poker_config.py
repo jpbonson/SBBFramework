@@ -1,11 +1,11 @@
 import copy
-from ..environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
+from ..environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerAlwaysFoldOpponent,
     PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent,
-    PokerBayesianOpponent)
+    PokerBayesianOpponent, PokerRandomOpponent)
 
 # How to use: Either copy and paste this on config.py, or uncomment the last line in config.py
 
-SEED = 1
+SEED = 5
 
 POKER_CONFIG3 = {
     'task': 'reinforcement',
@@ -83,6 +83,7 @@ POKER_CONFIG3 = {
             'use_and_show': ['ncd_c4', 'genotype'], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 10,
+            'only_diversity': False,
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used
@@ -97,6 +98,19 @@ POKER_CONFIG3 = {
 
 POKER_LAYER1 = copy.deepcopy(POKER_CONFIG3)
 
+POKER_LAYER_VAL0 = copy.deepcopy(POKER_CONFIG3)
+POKER_LAYER_VAL0['training_parameters']['generations_total'] = 1
+POKER_LAYER_VAL0['training_parameters']['validate_after_each_generation'] = 1
+POKER_LAYER_VAL0['training_parameters']['runs_total'] = 25
+POKER_LAYER_VAL0['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+POKER_LAYER_VAL0['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
+POKER_LAYER_VAL0['reinforcement_parameters']['validation_population'] = 100
+POKER_LAYER_VAL0['reinforcement_parameters']['champion_population'] = 100
+POKER_LAYER_VAL0['reinforcement_parameters']['poker']['opponents'] = [PokerAlwaysFoldOpponent]
+POKER_LAYER_VAL0['training_parameters']['team_size']['min'] = 3
+POKER_LAYER_VAL0['advanced_training_parameters']['diversity']['use_and_show'] = []
+# POKER_LAYER_VAL0['advanced_training_parameters']['run_initialization_step2'] = True
+
 POKER_LAYER1_WITH_BAYES = copy.deepcopy(POKER_LAYER1)
 POKER_LAYER1_WITH_BAYES['reinforcement_parameters']['poker']['opponents'] = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent]
 
@@ -104,7 +118,31 @@ POKER_LAYER2 = copy.deepcopy(POKER_CONFIG3)
 POKER_LAYER2['training_parameters']['generations_total'] = 200
 POKER_LAYER2['advanced_training_parameters']['second_layer']['enabled'] = True
 POKER_LAYER2['advanced_training_parameters']['seed'] += 10
-POKER_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/baseline_poker_paper/without_bayes/seed'+str(SEED)+'_run[run_id]/top10_overall/actions.json'
+# POKER_LAYER2['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/baseline_poker_paper/without_bayes/seed'+str(SEED)+'_run[run_id]/top10_overall_subcats/actions.json'
+POKER_LAYER2['advanced_training_parameters']['second_layer']['path'] = "../outputs/outputs_for_paper/config_layer1_without_bayes_seed"+str(SEED)+"/run[run_id]/second_layer_files/actions_all_teams.json"
 
 POKER_LAYER2_WITH_BAYES = copy.deepcopy(POKER_LAYER2)
-POKER_LAYER2_WITH_BAYES['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/baseline_poker_paper/with_bayes/seed'+str(SEED)+'_run[run_id]/top10_overall/actions.json'
+# POKER_LAYER2_WITH_BAYES['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/baseline_poker_paper/with_bayes/seed'+str(SEED)+'_run[run_id]/top10_overall_subcats/actions.json'
+POKER_LAYER2_WITH_BAYES['advanced_training_parameters']['second_layer']['path'] = "../outputs/outputs_for_paper/config_layer1_with_bayes_seed"+str(SEED)+"/run[run_id]/second_layer_files/actions_all_teams.json"
+POKER_LAYER2_WITH_BAYES['reinforcement_parameters']['poker']['opponents'] = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent]
+
+POKER_LAYER1_NO_DIVERSITY = copy.deepcopy(POKER_LAYER1)
+POKER_LAYER1_NO_DIVERSITY['advanced_training_parameters']['diversity']['use_and_show'] = []
+POKER_LAYER1_NO_DIVERSITY['advanced_training_parameters']['use_profiling'] = False
+
+POKER_LAYER1_WITH_DIVERSITY = copy.deepcopy(POKER_LAYER1)
+POKER_LAYER1_WITH_DIVERSITY['training_parameters']['runs_total'] = 25
+POKER_LAYER1_WITH_DIVERSITY['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4', 'genotype']
+POKER_LAYER1_WITH_DIVERSITY['advanced_training_parameters']['use_profiling'] = True
+
+POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING = copy.deepcopy(POKER_LAYER1)
+POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = []
+POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING['advanced_training_parameters']['use_profiling'] = True
+
+POKER_LAYER1_WITH_DIVERSITY_NO_PROFILING = copy.deepcopy(POKER_LAYER1)
+POKER_LAYER1_WITH_DIVERSITY_NO_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4', 'genotype']
+POKER_LAYER1_WITH_DIVERSITY_NO_PROFILING['advanced_training_parameters']['use_profiling'] = False
+
+POKER_LAYER1_ONLY_DIVERSITY = copy.deepcopy(POKER_LAYER1)
+POKER_LAYER1_ONLY_DIVERSITY['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+POKER_LAYER1_ONLY_DIVERSITY['advanced_training_parameters']['diversity']['only_diversity'] = True

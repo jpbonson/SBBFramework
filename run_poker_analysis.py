@@ -2,24 +2,135 @@ import time
 from SBB.environments.poker.poker_analysis.poker_analysis import PokerAnalysis
 from SBB.environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
     PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent,
-    PokerBayesianTesterOpponent, PokerBayesianOpponent)
+    PokerBayesianTesterOpponent, PokerBayesianOpponent, PokerRandomOpponent)
 from SBB.utils.helpers import round_value
 import itertools
+
+# usar actions.json files
+# automatizar mais os charts?
 
 if __name__ == "__main__":
     start_time = time.time()
 
 
+    # balanced_type = True
+    # balanced_type2 = "balanced"
+    # # balanced_type = False
+    # # balanced_type2 = "unbalanced"
+
+    # # # layer2_type = "overall"
+    # # # layer2_type = "overall_subcats"
+    # # layer2_type = "all_teams"
+
+    # opp_type = "with_bayes"
+    # opp_type2 = ""
+
+    # PokerAnalysis().run_folder_for_text_analysis(
+    #     folder_path="../outputs/outputs_for_paper/config_layer1_with_bayes_seed",
+    #     debug_folder='analysis_files/poker/',
+    # )
+
+
+
+    # # balanced_type = True
+    # # balanced_type2 = "balanced"
+    # balanced_type = False
+    # balanced_type2 = "unbalanced"
+
+    # group_type = "top5_overall"
+
+    # rank_size = 5
+    
+    # PokerAnalysis().run_folder_for_voting(
+    #     matches=1260, 
+    #     # matches=9,
+    #     balanced=balanced_type, 
+    #     # folder_path="../outputs/outputs_for_paper/config_val0",
+    #     # folder_path="../outputs/outputs_for_paper/config_seed",
+    #     # folder_path="../outputs/outputs_for_paper/config_layer2_without_bayes_all_teams_seed",
+    #     folder_path="../outputs/outputs_for_paper/config_layer1_with_bayes_seed",
+    #     subfolder_path="/second_layer_files/actions_all_teams.json",
+    #     # subfolder_path="/second_layer_files/"+group_type+"/actions.json",
+    #     player2_file_or_opponent_type=PokerLooseAgressiveOpponent,
+    #     player2_is_sbb = False,
+    #     generate_debug_files_per_match=False,
+    #     debug_folder='analysis_files/poker/',
+    #     output_file_name="_all_teams_with_weigth_sbb_trained_against_bayesian_vs_LA_opponent__1260_"+balanced_type2+"_points",
+    #     # output_file_name="_all_teams_sbb_trained_against_bayesian_vs_LA_opponent__1260_"+balanced_type2+"_points",
+    #     # output_file_name="_all_teams"+str(rank_size)+"_sbb_trained_against_bayesian_vs_LA_opponent__1260_"+balanced_type2+"_points",
+    #     # output_file_name="_"+group_type+"_sbb_trained_against_bayesian_vs_LA_opponent__1260_"+balanced_type2+"_points",
+    #     seed=1,
+    #     rank_on_the_run=False,
+    #     rank_size=rank_size,
+    #     create_player_using_all_runs=False,
+    #     use_weights=True,
+    # )
+
+
+
+    # # balanced_type = True
+    # # balanced_type2 = "balanced"
+    # balanced_type = False
+    # balanced_type2 = "unbalanced"
+
+    # # # layer2_type = "overall"
+    # # # layer2_type = "overall_subcats"
+    # # layer2_type = "all_teams"
+
+    # opp_type = "with_bayes"
+    # # opp_type2 = ""
+
+    # PokerAnalysis().run_folder_for_acc_curve_for_all_statics(
+    #     matches=1260, 
+    #     # matches=9,
+    #     balanced=balanced_type, 
+    #     # folder_path="../outputs/outputs_for_paper/config_layer1_with_bayes_seed",
+    #     # folder_path="../outputs/outputs_for_paper/config_layer1_without_bayes_seed",
+    #     folder_path="../outputs/outputs_for_paper/config_layer1_without_bayes_no_diversity_seed",
+    #     generate_debug_files_per_match=False,
+    #     debug_folder='analysis_files/poker/',
+    #     # output_file_name="_sbb_trained_against_bayesian_vs_static_opponents__1260_"+balanced_type2+"_points",
+    #     # output_file_name="_sbb_not_trained_against_bayesian_vs_static_opponents__1260_"+balanced_type2+"_points",
+    #     output_file_name="_sbb_no_diversity_vs_static_opponents__1260_"+balanced_type2+"_points",
+    #     river_round_only = False,
+    #     seed=1,
+    # )
+
+
+
+    balanced_type = True
+    balanced_type2 = "balanced"
+    # balanced_type = False
+    # balanced_type2 = "unbalanced"
+
+    # # layer2_type = "overall"
+    # # layer2_type = "overall_subcats"
+    # layer2_type = "all_teams"
+
+    opp_type = "with_bayes"
+    opp_type2 = ""
+
     PokerAnalysis().run_folder_for_acc_curve(
-        matches=100, 
-        balanced=True, 
-        folder_path="poker_analysis_files/top10_overall_subcats/", 
+        matches=1260, 
+        # matches=9,
+        balanced=balanced_type, 
+        # folder_path="../outputs/outputs_for_paper/config_layer1_with_bayes_seed",
+        folder_path="../outputs/outputs_for_paper/diversities_entropy_c2",
+        # folder_path="../outputs/outputs_for_paper/config_layer1_without_bayes_with_metrics_no_profiling_seed",
         player2_file_or_opponent_type=PokerBayesianOpponent,
-        second_layer_enabled = True,
+        # second_layer_enabled = False,
+        second_layer_enabled = False,
+        second_layer_action_folder = "../outputs/outputs_for_paper/config_layer1_"+opp_type+"_[seed_id]/[run_id]/second_layer_files/actions_all_teams.json",
         player2_is_sbb = False,
         generate_debug_files_per_match=False,
-        debug_folder='poker_analysis_outputs/blah/',
+        debug_folder='analysis_files/poker/',
+        output_file_name="diversities_entropy_c2",
+        # output_file_name="_sbb_trained_against_bayesian_vs_TP_opponent__1260_unbalanced_points",
+        # output_file_name="_sbb_with_metrics_no_profiling_vs_bayesian_opponent__1260_"+balanced_type2+"_points",
+        # output_file_name="_sbb_not_trained_against_bayesian_vs_TP_opponent__1260_"+balanced_type2+"_points_by_won_matches",
+        # output_file_name="_layer2_"+layer2_type+"_sbb_"+opp_type2+"trained_against_bayesian_vs_bayesian_opponent__1260_"+balanced_type2+"_points",
         river_round_only = False,
+        sort_by_points = True,
         seed=1,
     )
 
@@ -75,30 +186,33 @@ if __name__ == "__main__":
     # print "third: "+str((results[max_index], pairs[max_index]))
 
 
-    # r = PokerAnalysis().run(
-    #     matches=1000, 
-    #     balanced=True, 
+    # PokerAnalysis().run(
+    #     matches=1260, 
+    #     # matches=9, 
+    #     # balanced=True, 
+    #     balanced=False, 
 
     #     # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
     #     # player2_file_or_opponent_type=PokerBayesianOpponent,
     #     # second_layer_enabled = False,
 
-    #     player1_file_or_opponent_type="poker_analysis_files/best_team_layer2/best_team_layer2.json", 
-    #     player2_file_or_opponent_type=PokerBayesianOpponent,
-    #     second_layer_enabled = True,
+    #     # player1_file_or_opponent_type="poker_analysis_files/best_team_layer2/best_team_layer2.json", 
+    #     # player2_file_or_opponent_type=PokerBayesianOpponent,
+    #     # second_layer_enabled = True,
 
-    #     # player1_file_or_opponent_type=PokerBayesianOpponent, 
-    #     # player2_file_or_opponent_type=PokerTightPassiveOpponent,
-    #     # second_layer_enabled = False,
+    #     player1_file_or_opponent_type=PokerRandomOpponent, 
+    #     player2_file_or_opponent_type=PokerTightPassiveOpponent,
+    #     second_layer_enabled = False,
+    #     second_layer_action_folder = "",
 
     #     # player1_file_or_opponent_type="poker_analysis_files/best_team.json", 
     #     # player2_file_or_opponent_type=PokerTightPassiveOpponent,
     #     # second_layer_enabled = False,
 
-    #     player1_is_sbb = True,
+    #     player1_is_sbb = False,
     #     player2_is_sbb = False,
     #     generate_debug_files_per_match=False,
-    #     debug_folder='poker_analysis_outputs/blah/',
+    #     debug_folder='analysis_files/poker/',
     #     river_round_only = False,
     #     seed=1,
     #     test_bayesian_alfa=None,

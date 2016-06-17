@@ -1,7 +1,7 @@
 import sys
 import numpy
 from collections import deque
-from config_examples import tictactoe_config, poker_config
+from config_examples import tictactoe_config, poker_config, classification_config
 from environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
     PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent,
     PokerBayesianOpponent)
@@ -17,7 +17,8 @@ class Config():
     USER = {
         'task': 'reinforcement',
         'classification_parameters': { # only used if 'task' is 'classification'
-            'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
+            'dataset': 'thyroid', # must have a .train and a .test file
+            'working_path': "/home/jpbonson/Dropbox/MCS/SBBReinforcementLearner/SBB/datasets/",
         },
         'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
             'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
@@ -90,6 +91,7 @@ class Config():
                 'use_and_show': ['ncd_c4', 'genotype'], # will be applied to fitness and show in the outputs
                 'only_show': [], # will be only show in the outputs
                 'k': 10,
+                'only_diversity': False,
             },
             'run_initialization_step2': False,
             'use_weighted_probability_selection': False, # if False, uniform probability will be used
@@ -106,7 +108,6 @@ class Config():
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
         'environment_types': ['tictactoe', 'poker'],
-        'working_path': "SBB/",
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
         'is_nearly_equal_threshold': 0.0001,
@@ -202,12 +203,15 @@ class Config():
 
 # Config.USER = tictactoe_config.TICTACTOE_DEFAULT
 # Config.USER = tictactoe_config.TICTACTOE_QUICK
-# Config.USER = tictactoe_config.TICTACTOE_RESEARCH_2
-# Config.USER = tictactoe_config.TICTACTOE_RESEARCH_3
-# Config.USER = tictactoe_config.TICTACTOE_RESEARCH_2_LAYER2
-# Config.USER = tictactoe_config.TICTACTOE_RESEARCH_3_LAYER2
 
 # Config.USER = poker_config.POKER_LAYER1
 # Config.USER = poker_config.POKER_LAYER1_WITH_BAYES
 # Config.USER = poker_config.POKER_LAYER2
 # Config.USER = poker_config.POKER_LAYER2_WITH_BAYES
+# Config.USER = poker_config.POKER_LAYER1_WITH_DIVERSITY
+# Config.USER = poker_config.POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING
+Config.USER = poker_config.POKER_LAYER1_ONLY_DIVERSITY
+
+# Config.USER = classification_config.CLASS_CONFIG
+# Config.USER = classification_config.THYROID_CONFIG
+# Config.USER = classification_config.SHUTTLE_CONFIG

@@ -63,7 +63,7 @@ class Team(DefaultOpponent):
         for program in self.programs:
             program.reset_registers()
         
-    def execute(self, point_id, inputs, valid_actions, is_training, update_profile = True):
+    def execute(self, point_id, inputs, valid_actions, is_training, update_profile = True, force_reset = False):
         if not self._actions_are_available(valid_actions):
             return None
 
@@ -82,7 +82,7 @@ class Team(DefaultOpponent):
             if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id in self.memory_actions_per_points_:
                 return self.memory_actions_per_points_[point_id]
             else:
-                selected_program = self._select_program(inputs, valid_actions)
+                selected_program = self._select_program(inputs, valid_actions, force_reset)
                 output_class = selected_program._get_action_result(point_id, inputs, valid_actions, is_training)
                 if Config.RESTRICTIONS['use_memmory_for_actions']:
                     self.memory_actions_per_points_[point_id] = output_class
@@ -90,7 +90,7 @@ class Team(DefaultOpponent):
                     self.active_programs_.append(selected_program)
                 return output_class
         else: # just run the code without changing the attributes or using memmory
-            selected_program = self._select_program(inputs, valid_actions)
+            selected_program = self._select_program(inputs, valid_actions, force_reset)
             self.last_selected_program_ = selected_program.program_id_
             if selected_program not in self.validation_active_programs_:
                 self.validation_active_programs_.append(selected_program)
@@ -107,7 +107,7 @@ class Team(DefaultOpponent):
             return False
         return True
 
-    def _select_program(self, inputs, valid_actions):
+    def _select_program(self, inputs, valid_actions, force_reset):
         """
         Generates the outputs for all programs and order them. The team checks if the first 
         action is valid before submitting it to the environment. If it is not valid, then 
@@ -119,7 +119,7 @@ class Team(DefaultOpponent):
             actions = program.get_raw_actions()
             possible_action = set(actions).intersection(valid_actions)
             if len(possible_action) > 0:
-                partial_outputs.append(program.execute(inputs))
+                partial_outputs.append(program.execute(inputs, force_reset))
                 valid_programs.append(program)
         selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
         return selected_program
@@ -130,7 +130,7 @@ class Team(DefaultOpponent):
             partial_outputs = []
             valid_programs = []
             for program in self.programs:
-                partial_outputs.append(program.execute(inputs))
+                partial_outputs.append(program.execute(inputs, force_reset = True))
                 valid_programs.append(program)
             selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
             action_result = selected_program._get_action_result(point_id = -1, inputs = inputs, 

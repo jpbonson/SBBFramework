@@ -243,7 +243,7 @@ class PokerBayesianOpponent(DefaultOpponent):
         }
         self.action_prob = action_prob_from_tests_with_4bets
         self.antiplayers = {
-            'tp': PokerTAAntiPlayerOpponent(balanced),
+            'tp': PokerTPAntiPlayerOpponent(balanced),
             'ta': PokerTAAntiPlayerOpponent(balanced),
             'lp': PokerLPAntiPlayerOpponent(balanced),
             'la': PokerLAAntiPlayerOpponent(balanced),
@@ -313,7 +313,11 @@ class PokerBayesianOpponent(DefaultOpponent):
         return result
 
     def metrics(self, full_version = False):
-        print "hand_played/total_hands: "+str(self.extra_metrics_['hand_played']['validation']/float(self.extra_metrics_['total_hands']['validation']))
-        print "won_hands/total_hands: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['total_hands']['validation']))
-        print "won_hands/hand_played: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['hand_played']['validation']))
+        print "Metrics for Played Hands:"
+        print "- total_hands: "+str(float(self.extra_metrics_['total_hands']['validation']))
+        print "- hand_played: "+str(self.extra_metrics_['hand_played']['validation'])
+        print "- won_hands: "+str(self.extra_metrics_['won_hands']['validation'])
+        print "- hand_played/total_hands: "+str(self.extra_metrics_['hand_played']['validation']/float(self.extra_metrics_['total_hands']['validation']))
+        print "- won_hands/total_hands: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['total_hands']['validation']))
+        print "- won_hands/hand_played: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['hand_played']['validation']))
         return ""

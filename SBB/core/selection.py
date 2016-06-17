@@ -56,7 +56,13 @@ class Selection:
                 options.remove(self.previous_diversity_)
             novelty = random.choice(options)
             DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population())
-            keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams_population, novelty, teams_to_keep)
+            if Config.USER['advanced_training_parameters']['diversity']['only_diversity']:
+                sorted_solutions = sorted(teams_population, key=lambda solution: solution.diversity_[novelty], reverse=True)
+                keep_teams = sorted_solutions[0:teams_to_keep]
+                remove_teams = sorted_solutions[teams_to_keep:]
+                pareto_front = []
+            else:
+                keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams_population, novelty, teams_to_keep)
             self.previous_diversity_ = novelty
         return keep_teams, remove_teams, pareto_front
 

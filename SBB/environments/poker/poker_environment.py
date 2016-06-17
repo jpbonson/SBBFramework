@@ -98,15 +98,29 @@ class PokerEnvironment(ReinforcementEnvironment):
         if mode == Config.RESTRICTIONS['mode']['validation']:
             self._update_team_hand_metrics_for_poker(team, point, normalized_value, 'validation')
             point.last_validation_opponent_id_ = opponent.opponent_id
+
+            # if team.extra_metrics_['played_last_hand']:
+            #     team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 1.0
+            #     if normalized_value > 0.5:
+            #         team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 1.0
+            #     else:
+            #         team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
+            # else:
+            #     team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 0.0
+            #     team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
+
             if team.extra_metrics_['played_last_hand']:
                 team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 1.0
-                if normalized_value > 0.5:
-                    team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 1.0
-                else:
-                    team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
             else:
                 team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 0.0
+            
+            if normalized_value > 0.5:
+                team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 1.0
+            elif normalized_value == 0.5:
+                team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.5
+            else:
                 team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
+
         else:
             self._update_team_hand_metrics_for_poker(team, point, normalized_value, 'champion')
 
@@ -120,11 +134,11 @@ class PokerEnvironment(ReinforcementEnvironment):
             team.extra_metrics_['hand_played_per_point_type'][mode_label]['position'][point.players['team']['position']] += 1
             team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
             team.extra_metrics_['hand_played_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
-            if normalized_value > 0.5:
-                team.extra_metrics_['won_hands'][mode_label] += 1
-                team.extra_metrics_['won_hands_per_point_type'][mode_label]['position'][point.players['team']['position']] += 1
-                team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
-                team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
+        if normalized_value > 0.5:
+            team.extra_metrics_['won_hands'][mode_label] += 1
+            team.extra_metrics_['won_hands_per_point_type'][mode_label]['position'][point.players['team']['position']] += 1
+            team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_label'][point.label_] += 1
+            team.extra_metrics_['won_hands_per_point_type'][mode_label]['sbb_sd'][point.sbb_sd_label_] += 1
 
     def setup(self, teams_population):
         super(PokerEnvironment, self).setup(teams_population)

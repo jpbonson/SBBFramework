@@ -1,55 +1,46 @@
-Done (most recent):
-added more debug messages + changed balance to 10/30/60
-added more inputs to opponent model
-changed volatility default to 0.5
-removed sbb_extra_label and opp_extra_label
-implemented stateful registers for reinforcement tasks
-updated hands to balance pstr_ostr + fixed point cache
-removed balanced_based_on and opp_label_
-defined groups for diversity as 3
-v2: gen100 and no self inputs + bug fix
-v3: updated config + automated top5,top10,top15
-v4: updated config + removed short-term opp model
-reorganized point_generator and poker_analysis + not using ACPC for hand generation anymore
-adapted code to used new poker hands
-finished new code for poker match
-fixed diversity entropy (c2 and c3)
-minor improvements on diversities + updated README instructions
-fixed bug in poker_match + added logs to poker_match + fixed bug in poker_opponents
-selecting points using age instead of uniform probability
-improve folder name
-improved hand_played metric
-added 'main metrics' to run_info
-improved group metrics per run + added option to select poker opponents
-added option to run river only
-added program bid winner to poker log
-added mean and std result as metric + fixed bug with validation and champion population sizes
-fixed max ncd + rounding report metrics
-remvoed pot and volatility
-removed input 'bet' and rmeoved option LA_to_all
-refactored OpponentModel + added inputs 'bluffing' and short-term self and opp aggr
-fixed hall of fame in class reinforcement learning
-saving more files for second layer + saving acc curves per run
-fixed hall of fame
---------
-added option to simplify the number of bets
-new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
----
+- Try to keep your sentences relatively short and readable.  Occasionally I found them trying to say too much and it got a little confusing
+
+- add more info where possible
+
+----
+
+In this case the point we are making is not so much ‘complex tasks’ as novelty as an objective is important for complex tasks. Indeed works on diversity maintenance are framed from the perspective of diversity being important in ‘deceptive tasks’… whatever that might mean.
+
+What is the issue for us is the amount of ambiguity in the task. Poker implies incomplete information AND a lot of stochasticity… whereas previous work with novelty as an objective has concentrated on deterministic domains (yet still ‘deceptive’). You will need to cover the types of tasks in which novelty as an objective has been employed in your literature review section. I can imagine you constructing a table to characterize what types of task novelty as an objective has been applied to, and the relative amounts of ambiguity present in the task domain…
+
+I have attached a couple of papers that might help you frame the issue… (TO READ from Malcolm, novelty_x)
+
+----
+
+
+
+
+
+
+
+
+
 
 ####################################
 
-- what is the baseline?
-    - simplest: static opponents
-    - ideal: bayesian opponent
-        - alternative: the one from 'Adaptive Learning for Poker' (too troublesome)
-    - resultados para river only e para fullgame?
+opcional:
+# PokerSBBBayesianOpponent(anti_tp_teams, anti_ta_teams, anti_lp_teams, anti_la_teams)
+# - gerar teams usando os properties per salvos (salvar lista ordenada por score dos paths dos teams)
+# - fazer por run
 
-- next step:
-    - evolve bayesian opponent against static opponents
-    - compare best evolved bayesian opponents against best evolved sbb opponents
-    - if sbb > bayesian: good, else: improve sbb
 
-- goal: have final results around mid of March and then write/polish the paper
+- comprar diversar metricas para diversity? (sem bayes, apenas layer1)
+    - ncd4+genotype, no profile
+    - ncd4
+    - genotype
+    - x+genotype
+
+
+
+- why bayesian and best SBB have similar scores?
+
+
+#################################
 
 - notes:
     - fullgame or river only?
@@ -59,70 +50,13 @@ new config: 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3
         - cold start
         - use heuristics (4 main player styles, best strategies against them, risk assesment againt multiple players)
         - learn over matches against the same opponent
-        - eu mesma gerei os valores dos anti-players (pares de alfa e beta, em incrementos de 0.1, 0 <= x <= 1)
 
 #################################
 
-metrics (box plots de acc curves):
-- sbb x bayesian
-- sbb x static (comparar)
-- bayesian x static (comparar)
-- gen0 sbb x static
-- gen0 sbb x bayesian?
-- comparar performance do first layer com o do second layer?
-
-- implementar simplified ttt analysis (se possivel, standalone) + maneira de plugar nele outro oponente
-    - comecar fazendo calls para o SBB (copiar e ir editando do poker)
-
-- fazer maneira facil de pegar teams nao treinadas da gen1? (?) (fazer gambiarra, mas gerando logo todos os 30 runs?)
-- pegar teams da gen1 e fazer acc curve (fazer gambiarra comentando codigo?) (tanto para first como para second layer? para ql das configs?)
-- fazer report dos resultados e mandar para o malcolm e o andy (question: focar o q no paper?)
-
-
-- conferir alfa e beta que eu gerei com o do paper (?)
-- fazer set de 25 runs (5 sets de 5 runs) com a best config, com outras seeds (?)
-- fazer runs com river only (?)
-
-- fazer 25 runs de poker para top10, e alguns extras de 5 testando as outras opções?
-
-
-pc:
-- ttt test
-- ttt for real
-- seed1 no bayes
-- seed1 with bayes
-
-server:
-1)
-- without bayes, top10_overall [27936, 27938, 27940, 27942], top10_overall_subcats [27946, 27948, 27950, 27952]
-2)
-- with bayes, top10_overall [7768, 7770, 7772, 7774], top10_overall_subcats [7778, 7780, 7782, 7784]
-
-
-
-
-new_config (baseline2): 16 teams, 20 hf, 2 opps hf, 'river_only_to_fullgame' after gens/3, 4 bets
-new_config3: 300gens, sem bayes, +genotype, sem 'river_only_to_fullgame', diversity: ncd_c4
-- best second layer: top10_overall (still considering top5 and overall_subcats)
-
-
 - implementar gerador de familia de points?
 - more players?
-- second layer
-    - usar outra seed, fullgame_only
-- performance profiling
-    - passar operations para c?
-    - melhorar codigo generate_profile em team.py? (ou chamadas a esse codigo em selection)
-- conferir como papers validaram os resultados (em especial, os em journals bons)
-    - + fazer doc com exemplos de charts usados nos papers de SBB + outros papers
-    - ver como hall of fame foi usado nos papers
-- adiantar mais o literature_review
-    - comecar a escrever com os papers q já tenho (nao escrever coisas q podem mudar ainda)
-    - selecionar references que parecem promissoras (apenas dos papers mais recentes ou mais classicas, ou do Billings)
-    - define pages/paragraphs for each section
-    - write (nao necessariamente rpeciso usar todos os papers para cada section)
+- conferir como papers validaram os resultados/que charts usaram
 - extras
-    - fazer printar avg de behaviors do time no poker analysis
     - refatorar classe OpponentModel (separar self e opponent)
     - coevolving opponents? (evolving rule-based opponents e opponents q maximizam a diversity?)
 - monte carlo?

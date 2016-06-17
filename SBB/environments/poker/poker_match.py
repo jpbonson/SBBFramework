@@ -212,9 +212,9 @@ class PokerMatch():
         if self.opponent.opponent_id == 'hall_of_fame':
             self._get_opponent_model_for_hall_of_fame().update_overall_agressiveness(self.round_id, opponent_actions, player_actions, self.point.label_, showdown_happened)
 
-        if self.team.opponent_id == 'bayesian_opponent':
+        if self.team.opponent_id == 'bayesian_opponent' or self.team.opponent_id == 'sbb_bayesian_opponent':
             self.team.update_opponent_actions(opponent_actions)
-        if self.opponent.opponent_id == 'bayesian_opponent':
+        if self.opponent.opponent_id == 'bayesian_opponent' or self.opponent.opponent_id == 'sbb_bayesian_opponent':
             self.opponent.update_opponent_actions(player_actions)
 
         if self.is_training:

@@ -6,7 +6,8 @@ from ...sbb import SBB
 TEST_CONFIG = {
     'task': 'classification',
     'classification_parameters': { # only used if 'task' is 'classification'
-        'dataset': 'iris', # must have a .train and a .test file in the pSBB/datasets folder
+        'dataset': 'iris', # must have a .train and a .test file
+        'working_path': "SBB/datasets/",
     },
     'training_parameters': {
         'runs_total': 1,
@@ -53,6 +54,7 @@ TEST_CONFIG = {
             'use_and_show': [], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 8,
+            'only_diversity': False,
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used

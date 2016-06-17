@@ -47,8 +47,8 @@ class ClassificationEnvironment(DefaultEnvironment):
         """
         dataset_filename = Config.USER['classification_parameters']['dataset']
         print("\nReading inputs from data: "+dataset_filename)
-        train = self._read_space_separated_file(Config.RESTRICTIONS['working_path']+"datasets/"+dataset_filename+".train")
-        test = self._read_space_separated_file(Config.RESTRICTIONS['working_path']+"datasets/"+dataset_filename+".test")
+        train = self._read_space_separated_file(Config.USER['classification_parameters']['working_path']+dataset_filename+".train")
+        test = self._read_space_separated_file(Config.USER['classification_parameters']['working_path']+dataset_filename+".test")
         normalization_params = self._get_normalization_params(train, test)
         train = self._normalize(normalization_params, train)
         test = self._normalize(normalization_params, test)
