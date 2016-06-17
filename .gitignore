@@ -1,5 +1,9 @@
 # Project specific
 outputs/*
+analysis_files/*
+actions_reference/*
+tools/*.json
+tools/*.pdf
 SBB/environments/poker/ACPC/dealer
 SBB/environments/poker/ACPC/all_in_expectation
 SBB/environments/poker/ACPC/bm_run_matches
