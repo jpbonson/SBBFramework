@@ -418,6 +418,7 @@ class PokerAnalysis():
                 player2 = self._create_player("static", balanced, second_layer_enabled, None, classname=player2_file_or_opponent_type)
         print "...finished loading player 2."
 
+        cont_folders = 0
         individual_performances_summary = []
         accumulative_performances_summary = []
         properties_per_team = defaultdict(list)
@@ -425,6 +426,7 @@ class PokerAnalysis():
             print "Executing folder "+str(folder)+"..."
             for subfolder in glob.glob(folder+"/*"):
                 print "Executing subfolder "+str(subfolder)+"..."
+                cont_folders += 1
                 teams_population = []
                 run_seed_id = subfolder.split("/")[-2]+"_"+subfolder.split("/")[-1]
                 for filename in glob.glob(subfolder+"/last_generation_teams/json/*"):
@@ -471,7 +473,10 @@ class PokerAnalysis():
                     # with open(debug_folder+"acc_curves.log", 'w') as f:
                     #     f.write(msg)
         msg = ""
-        msg += "individual_values = "+str(individual_performances_summary)
+        msg += "best_individual_values = "+str([x[0] for x in individual_performances_summary])
+        msg += "\nbest_acc_values = "+str([x[-1] for x in accumulative_performances_summary])
+        msg += "\n"
+        msg += "\nindividual_values = "+str(individual_performances_summary)
         msg += "\nacc_values = "+str(accumulative_performances_summary)
         print msg
         with open(debug_folder+"acc_curves_summary_"+output_file_name+".log", 'w') as f:
@@ -479,6 +484,7 @@ class PokerAnalysis():
         with open(debug_folder+"properties_per_team_"+output_file_name+".json", 'w') as f:
             json.dump(properties_per_team, f)
         print "\ntotal points: "+str(len(points))
+        print "\ntotal folders: "+str(cont_folders)
 
     def _hand_player_metrics(self, team):
         mode = 'validation'

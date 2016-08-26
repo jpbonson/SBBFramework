@@ -98,10 +98,10 @@ if __name__ == "__main__":
 
 
 
-    balanced_type = True
-    balanced_type2 = "balanced"
-    # balanced_type = False
-    # balanced_type2 = "unbalanced"
+    # balanced_type = True
+    # balanced_type2 = "balanced"
+    balanced_type = False
+    balanced_type2 = "unbalanced"
 
     # # layer2_type = "overall"
     # # layer2_type = "overall_subcats"
@@ -115,16 +115,25 @@ if __name__ == "__main__":
         # matches=9,
         balanced=balanced_type, 
         # folder_path="../outputs/outputs_for_paper/config_layer1_with_bayes_seed",
-        folder_path="../outputs/outputs_for_paper/diversities_entropy_c2",
-        # folder_path="../outputs/outputs_for_paper/config_layer1_without_bayes_with_metrics_no_profiling_seed",
-        player2_file_or_opponent_type=PokerBayesianOpponent,
-        # second_layer_enabled = False,
+        # folder_path="../outputs/outputs_for_paper/config_layer1_without_bayes_seed",
+        # folder_path="../outputs/outputs_for_paper/config_layer1_without_bayes_no_diversity_seed",
+        # folder_path="../outputs/outputs_for_paper/config_layer1_without_bayes_no_metrics_with_profiling_seed",
+        folder_path="../outputs/outputs_for_paper/recent/only_genotype_no_profiling_seed",
+        # folder_path="../outputs/outputs_for_paper/recent/novelty_and_fitness_no_profiling_seed",
+        # folder_path="../outputs/outputs_for_paper/diversities_hamming_c3",
+        # player2_file_or_opponent_type=PokerTightPassiveOpponent,
+        player2_file_or_opponent_type=PokerTightAgressiveOpponent,
+        # player2_file_or_opponent_type=PokerLoosePassiveOpponent,
+        # player2_file_or_opponent_type=PokerLooseAgressiveOpponent,
+        # player2_file_or_opponent_type=PokerBayesianOpponent,
         second_layer_enabled = False,
         second_layer_action_folder = "../outputs/outputs_for_paper/config_layer1_"+opp_type+"_[seed_id]/[run_id]/second_layer_files/actions_all_teams.json",
         player2_is_sbb = False,
         generate_debug_files_per_match=False,
         debug_folder='analysis_files/poker/',
-        output_file_name="diversities_entropy_c2",
+        output_file_name="only_genotype__"+balanced_type2+"__TA",
+        # output_file_name="novelty_and_fitness__"+balanced_type2+"__TP",
+        # output_file_name="no_diversity__"+balanced_type2+"__TA",
         # output_file_name="_sbb_trained_against_bayesian_vs_TP_opponent__1260_unbalanced_points",
         # output_file_name="_sbb_with_metrics_no_profiling_vs_bayesian_opponent__1260_"+balanced_type2+"_points",
         # output_file_name="_sbb_not_trained_against_bayesian_vs_TP_opponent__1260_"+balanced_type2+"_points_by_won_matches",

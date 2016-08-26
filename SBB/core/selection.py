@@ -55,8 +55,18 @@ class Selection:
             if len(diversities_to_apply) > 1 and self.previous_diversity_:
                 options.remove(self.previous_diversity_)
             novelty = random.choice(options)
-            DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population())
-            if Config.USER['advanced_training_parameters']['diversity']['only_diversity']:
+            if Config.USER['advanced_training_parameters']['diversity']['use_novelty_archive']:
+                DiversityMaintenance.calculate_diversities(teams_population+list(Config.RESTRICTIONS['novelty_archive']['samples']), self.environment.point_population())
+                sorted_solutions = sorted(teams_population, key=lambda solution: solution.diversity_[novelty], reverse=True)
+                sorted_samples = sorted(Config.RESTRICTIONS['novelty_archive']['samples'], key=lambda solution: solution.diversity_[novelty], reverse=False)
+                if len(Config.RESTRICTIONS['novelty_archive']['samples']) == Config.RESTRICTIONS['novelty_archive']['samples'].maxlen:
+                    for team in sorted_samples[0:Config.RESTRICTIONS['novelty_archive']['threshold']]:
+                        Config.RESTRICTIONS['novelty_archive']['samples'].remove(team)
+                for team in sorted_solutions[0:Config.RESTRICTIONS['novelty_archive']['threshold']]:
+                    Config.RESTRICTIONS['novelty_archive']['samples'].append(team)
+            else:
+                DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population())
+            if Config.USER['advanced_training_parameters']['diversity']['only_novelty']:
                 sorted_solutions = sorted(teams_population, key=lambda solution: solution.diversity_[novelty], reverse=True)
                 keep_teams = sorted_solutions[0:teams_to_keep]
                 remove_teams = sorted_solutions[teams_to_keep:]

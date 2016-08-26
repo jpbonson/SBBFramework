@@ -91,7 +91,8 @@ class Config():
                 'use_and_show': ['ncd_c4', 'genotype'], # will be applied to fitness and show in the outputs
                 'only_show': [], # will be only show in the outputs
                 'k': 10,
-                'only_diversity': False,
+                'only_novelty': False,
+                'use_novelty_archive': False,
             },
             'run_initialization_step2': False,
             'use_weighted_probability_selection': False, # if False, uniform probability will be used
@@ -138,6 +139,10 @@ class Config():
         'profile': {
             'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*2.0)),
             'update_chance': 0.05,
+        },
+        'novelty_archive':{
+            'samples': deque(maxlen=int(USER['training_parameters']['populations']['teams']*1.0)),
+            'threshold': 10,
         },
         'diversity': {
             'options': ['genotype', 'fitness_sharing', 'entropy_c2', 'hamming_c3', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
@@ -210,7 +215,7 @@ class Config():
 # Config.USER = poker_config.POKER_LAYER2_WITH_BAYES
 # Config.USER = poker_config.POKER_LAYER1_WITH_DIVERSITY
 # Config.USER = poker_config.POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING
-Config.USER = poker_config.POKER_LAYER1_ONLY_DIVERSITY
+Config.USER = poker_config.POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING
 
 # Config.USER = classification_config.CLASS_CONFIG
 # Config.USER = classification_config.THYROID_CONFIG

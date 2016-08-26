@@ -5,7 +5,7 @@ from ..environments.poker.poker_opponents import (PokerAlwaysCallOpponent, Poker
 
 # How to use: Either copy and paste this on config.py, or uncomment the last line in config.py
 
-SEED = 5
+SEED = 1
 
 POKER_CONFIG3 = {
     'task': 'reinforcement',
@@ -83,7 +83,8 @@ POKER_CONFIG3 = {
             'use_and_show': ['ncd_c4', 'genotype'], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 10,
-            'only_diversity': False,
+            'only_novelty': False,
+            'use_novelty_archive': False,
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used
@@ -145,4 +146,29 @@ POKER_LAYER1_WITH_DIVERSITY_NO_PROFILING['advanced_training_parameters']['use_pr
 
 POKER_LAYER1_ONLY_DIVERSITY = copy.deepcopy(POKER_LAYER1)
 POKER_LAYER1_ONLY_DIVERSITY['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
-POKER_LAYER1_ONLY_DIVERSITY['advanced_training_parameters']['diversity']['only_diversity'] = True
+POKER_LAYER1_ONLY_DIVERSITY['advanced_training_parameters']['diversity']['only_novelty'] = True
+
+POKER_LAYER1_NCD = copy.deepcopy(POKER_LAYER1)
+POKER_LAYER1_NCD['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+
+POKER_LAYER1_WITH_HAMMING_NO_PROFILING = copy.deepcopy(POKER_LAYER1)
+POKER_LAYER1_WITH_HAMMING_NO_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = ['hamming_c3']
+POKER_LAYER1_WITH_HAMMING_NO_PROFILING['advanced_training_parameters']['use_profiling'] = False
+
+POKER_LAYER1_WITH_GENOTYPE_NO_PROFILING = copy.deepcopy(POKER_LAYER1)
+POKER_LAYER1_WITH_GENOTYPE_NO_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype']
+POKER_LAYER1_WITH_GENOTYPE_NO_PROFILING['advanced_training_parameters']['use_profiling'] = False
+
+POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING = copy.deepcopy(POKER_LAYER1)
+POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['training_parameters']['runs_total'] = 2
+POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['advanced_training_parameters']['diversity']['only_novelty'] = True
+POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['advanced_training_parameters']['use_profiling'] = False
+POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['advanced_training_parameters']['diversity']['use_novelty_archive'] = True
+
+POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING = copy.deepcopy(POKER_LAYER1)
+POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['training_parameters']['runs_total'] = 1
+POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['diversity']['only_novelty'] = False
+POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['use_profiling'] = False
+POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['diversity']['use_novelty_archive'] = True

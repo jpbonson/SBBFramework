@@ -7,8 +7,12 @@ def round_value(value, round_decimals_to = 4):
     number = float(10**round_decimals_to)
     return int(value * number) / number
 
-filename = 'properties_per_team__sbb_trained_against_bayesian_vs_bayesian_opponent__1260_balanced_points.json'
-filename2 = 'properties_per_team__sbb_trained_against_bayesian_vs_bayesian_opponent__1260_unbalanced_points.json'
+# filename = 'properties_per_team__sbb_trained_against_bayesian_vs_bayesian_opponent__1260_balanced_points.json'
+# filename2 = 'properties_per_team__sbb_trained_against_bayesian_vs_bayesian_opponent__1260_unbalanced_points.json'
+
+blah = "hamming_and_genotype"
+filename = 'genotype_vs_ncd/'+blah+'/properties_per_team_'+blah+'_with_profiling__balanced.json'
+filename2 = 'genotype_vs_ncd/'+blah+'/properties_per_team_'+blah+'_with_profiling__unbalanced.json'
 
 with open(filename) as data_file:    
     data = json.load(data_file)
@@ -28,10 +32,10 @@ y = []
 x2 = []
 y2 = []
 
-# metric_name = 'wins'
+metric_name = 'wins'
 # metric_name = 'played'
 # metric_name = 'agressiveness'
-metric_name = 'bluffing'
+# metric_name = 'bluffing'
 # metric_name = 'bluffing_only_raise'
 # metric_name = 'passive_aggressive'
 # metric_name = 'tight_loose'
@@ -65,6 +69,15 @@ for value in all_teams2:
         x2.append(value.values()[0]['properties'][metric_name])
 
     y2.append(value.values()[0]['properties']['normalized_result_mean'])
+
+print
+print "Properties"
+print "- metric_name1: "+str(round_value(numpy.mean(x)))
+print "- metric_name2: "+str(round_value(numpy.mean(x2)))
+print
+print "balanced: "+str([round_value(a, 2) for a in x])
+print
+print "unbalanced: "+str([round_value(a, 2) for a in x2])
 
 
 plt.grid(b=True, which='both', color='0.65',linestyle='-')
@@ -101,10 +114,15 @@ plt.scatter(x2, y2, c='b',marker='o', label='unbalanced')
 plt.scatter(x, y, c='r',marker='x', label='balanced')
 plt.legend()
 
-temp1 = 0.1345
+temp1 = round_value(numpy.mean(x))
 plt.plot([temp1, temp1], [0, 700], 'k-', lw=2, color='red', linestyle='--')
-temp2 = 0.3298
+temp2 = round_value(numpy.mean(x2))
 plt.plot([temp2, temp2], [0, 700], 'k-', lw=2, color='blue', linestyle='--')
+
+# temp1 = round_value(numpy.mean(y))
+# plt.plot([0, 700], [temp1, temp1], 'k-', lw=2, color='red', linestyle='--')
+# temp2 = round_value(numpy.mean(y2))
+# plt.plot([0, 700], [temp2, temp2], 'k-', lw=2, color='blue', linestyle='--')
 
 
 # %Properties (balanced)
@@ -122,5 +140,6 @@ plt.plot([temp2, temp2], [0, 700], 'k-', lw=2, color='blue', linestyle='--')
 # %- normalized_result_mean: 0.5055
 
 
-# plt.show()
-plt.savefig(metric_name+'_vs_score_for_unbalanced_and_balanced_points.png', bbox_inches='tight')
+plt.show()
+# plt.savefig("with_metrics_no_profiling__"+metric_name+'_vs_score_for_unbalanced_and_balanced_points.png', bbox_inches='tight')
+# plt.savefig("win_rate.png", bbox_inches='tight')
