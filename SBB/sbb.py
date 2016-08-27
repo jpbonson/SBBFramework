@@ -14,6 +14,7 @@ from collections import Counter, defaultdict
 from core.program import Program, reset_programs_ids
 from core.team import Team, reset_teams_ids
 from core.instruction import Instruction
+from environments.reinforcement_environment_for_sockets import ReinforcementEnvironmentForSockets
 from environments.classification_environment import ClassificationEnvironment
 from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
 from environments.poker.poker_environment import PokerEnvironment
@@ -171,6 +172,8 @@ class SBB:
                 environment = TictactoeEnvironment()
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':
                 environment = PokerEnvironment()
+            if Config.USER['reinforcement_parameters']['environment'] == 'sockets':
+                environment = ReinforcementEnvironmentForSockets()
         if environment is None:
             raise ValueError("No environment exists for "+str(Config.USER['task']))
         return environment

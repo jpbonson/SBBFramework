@@ -1,7 +1,7 @@
 import sys
 import numpy
 from collections import deque
-from config_examples import tictactoe_config, poker_config, classification_config
+from config_examples import tictactoe_config, poker_config, classification_config, tictactoe_for_sockets_config
 from environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
     PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent,
     PokerBayesianOpponent)
@@ -108,7 +108,7 @@ class Config():
     # restrictions used to validate CONFIG and to control the system low-level configurations
     RESTRICTIONS = {
         'task_types': ['classification', 'reinforcement'],
-        'environment_types': ['tictactoe', 'poker'],
+        'environment_types': ['tictactoe', 'poker', 'sockets'],
         'round_to_decimals': 5, # if you change this value, you must update the unit tests
         'max_seed': numpy.iinfo(numpy.int32).max + abs(numpy.iinfo(numpy.int32).min), # so it works for both Windows and Ubuntu
         'is_nearly_equal_threshold': 0.0001,
@@ -206,6 +206,8 @@ class Config():
 
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /config_examples
 
+Config.USER = tictactoe_for_sockets_config.TICTACTOE_QUICK
+
 # Config.USER = tictactoe_config.TICTACTOE_DEFAULT
 # Config.USER = tictactoe_config.TICTACTOE_QUICK
 
@@ -215,7 +217,7 @@ class Config():
 # Config.USER = poker_config.POKER_LAYER2_WITH_BAYES
 # Config.USER = poker_config.POKER_LAYER1_WITH_DIVERSITY
 # Config.USER = poker_config.POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING
-Config.USER = poker_config.POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING
+# Config.USER = poker_config.POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING
 
 # Config.USER = classification_config.CLASS_CONFIG
 # Config.USER = classification_config.THYROID_CONFIG

@@ -84,7 +84,7 @@ TEST_CONFIG = {
     },
 }
 
-class ClassificationTests(unittest.TestCase):
+class TictactoeTests(unittest.TestCase):
     def setUp(self):
         Config.RESTRICTIONS['write_output_files'] = False
         Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['points']*1.0))

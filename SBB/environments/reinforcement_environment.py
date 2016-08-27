@@ -29,7 +29,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
     __metaclass__  = abc.ABCMeta
 
     @abc.abstractmethod
-    def _play_match(self, team, point, mode, match_id):
+    def _play_match(self, team, opponent, point, mode, match_id):
         """
         
         """
