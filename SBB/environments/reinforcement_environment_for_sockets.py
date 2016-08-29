@@ -1,6 +1,8 @@
 import random
 import copy
 import numpy
+import socket
+import json
 from collections import defaultdict
 from default_environment import DefaultEnvironment, DefaultPoint, reset_points_ids
 from reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
@@ -20,6 +22,8 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     
     """
 
+    # TODO: implementar tictactoe_game com tictactoe_environment para sockets
+
     def __init__(self):
         # TODO: ler de um arquivo configuravel? (e o CONFIG tambem)
         # super(ReinforcementEnvironmentForSockets, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
@@ -38,6 +42,14 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
             '[2,0]': 6, '[2,1]': 7, '[2,2]': 8,
         }
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind(('localhost', 7800)) # TODO: porta configuravel (porta diferente para tests)
+        self.server_socket.listen(1)
+        self.connection, self.address = self.server_socket.accept()
+        message = {
+            'connection': True,
+        }
+        self.connection.send(json.dumps(message))
 
     def _play_match(self, team, opponent, point, mode, match_id):
         """
