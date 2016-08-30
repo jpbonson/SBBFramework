@@ -19,10 +19,12 @@ TICTACTOE_QUICK = {
         },
         'debug': {
             'print': False,
+            'matches': False,
+            'players': False,
+            'debug_output_path': '',
         },
         'save_partial_files_per_validation': False,
     },
-
     'training_parameters': {
         'runs_total': 1,
         'generations_total': 20,
@@ -68,6 +70,8 @@ TICTACTOE_QUICK = {
             'use_and_show': ['genotype'], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 10,
+            'only_novelty': False,
+            'use_novelty_archive': False,
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used
@@ -97,10 +101,12 @@ TICTACTOE_DEFAULT = {
         },
         'debug': {
             'print': False,
+            'matches': False,
+            'players': False,
+            'debug_output_path': '',
         },
         'save_partial_files_per_validation': True,
     },
-
     'training_parameters': {
         'runs_total': 1,
         'generations_total': 50,
@@ -146,6 +152,8 @@ TICTACTOE_DEFAULT = {
             'use_and_show': ['genotype'], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 10,
+            'only_novelty': False,
+            'use_novelty_archive': False,
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used

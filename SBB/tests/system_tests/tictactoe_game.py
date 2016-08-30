@@ -12,13 +12,15 @@ class TictactoeGame():
     DRAW = 0
 
     CONFIG = {
-        'debug': True,
+        'debug': False,
         'multiply_normalization_by': 10.0,
         'player1_label': 'p1',
         'player2_label': 'p2',
         'timeout': 60,
-        'buffer': 2048,
+        'buffer': 5000,
         'port': 7800,
+        'host': 'localhost',
+        'requests_timeout': 120,
     }
 
     def __init__(self):
@@ -33,14 +35,13 @@ class TictactoeGame():
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.settimeout(TictactoeGame.CONFIG['timeout'])
         try:
-            self.client_socket.connect(('localhost', TictactoeGame.CONFIG['port']))
+            self.client_socket.connect((TictactoeGame.CONFIG['host'], TictactoeGame.CONFIG['port']))
             ready = select.select([self.client_socket], [], [], TictactoeGame.CONFIG['timeout'])
             if ready[0]:
                 data = self.client_socket.recv(TictactoeGame.CONFIG['buffer'])
                 data = json.loads(data)
-                if data['connection']:
-                    if TictactoeGame.CONFIG['debug']:
-                        print "Connected to SBB server."
+                if 'connection' in data and data['connection']:
+                    print "Connected to SBB server."
                 else:
                     raise socket.error("Server did not answer with a 'success connection' message")
             else:
@@ -49,8 +50,31 @@ class TictactoeGame():
             print "\n<< It was not possible to connect to the SBB server. >>\n"
             raise e
 
-        # time.sleep(5)
-        # self.client_socket.send('Connect:TestGame')
+    def wait_for_requests(self):
+        while True:
+            try:
+                ready = select.select([self.client_socket], [], [self.client_socket], TictactoeGame.CONFIG['requests_timeout'])
+                if ready[0]:
+                    data = self.client_socket.recv(TictactoeGame.CONFIG['buffer'])
+                    if TictactoeGame.CONFIG['debug']:
+                        print "data: "+str(data)
+                    data = json.loads(data)
+                    if 'request' in data and data['request'] == 'new_match':
+                        if TictactoeGame.CONFIG['debug']:
+                            print "Starting new match."
+                        # TODO
+                        message = {
+                            'request_result': True,
+                        }
+                        self.client_socket.send(json.dumps(message))
+                    else:
+                        raise socket.error("Server did not send a valid request")
+                else:
+                    raise socket.timeout("Timeout to receive requests messages")
+                time.sleep(1)
+            except Exception as e:
+                print "\n<< It was not possible to connect to the SBB server. >>\n"
+                raise e
 
     def perform_action(self, current_player, action):
         """
@@ -127,3 +151,4 @@ class TictactoeGame():
 
 if __name__ == "__main__":
     game = TictactoeGame()
+    # game.wait_for_requests()

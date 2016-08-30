@@ -1,6 +1,7 @@
 import random
 import copy
 import numpy
+import select
 import socket
 import json
 from collections import defaultdict
@@ -21,6 +22,15 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     """
     
     """
+
+    CONFIG = {
+        'debug': False,
+        'timeout': 60,
+        'buffer': 5000,
+        'port': 7800,
+        'host': 'localhost',
+        'requests_timeout': 120,
+    }
 
     # TODO: implementar tictactoe_game com tictactoe_environment para sockets
 
@@ -43,26 +53,60 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
             '[2,0]': 6, '[2,1]': 7, '[2,2]': 8,
         }
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.bind(('localhost', 7800)) # TODO: porta configuravel (porta diferente para tests)
+        self.server_socket.bind((ReinforcementEnvironmentForSockets.CONFIG['host'], ReinforcementEnvironmentForSockets.CONFIG['port'])) # TODO: porta configuravel (porta diferente para tests)
         self.server_socket.listen(1)
+        print "\nWaiting for client socket connection...\n"
         self.connection, self.address = self.server_socket.accept()
         message = {
             'connection': True,
         }
         self.connection.send(json.dumps(message))
+        print "\nConnection established.\n"
+
+    def _request_match(self, team, opponent, point, mode, match_id):
+        # parameters:
+        #   team? acessado por uma port?
+        #   opponent? acessado por uma port?
+        #   point?
+
+        if ReinforcementEnvironmentForSockets.CONFIG['debug']:
+            print "\nAsking for a new match... match_id: "+str(match_id)+"\n"
+        message = {
+            'request': 'new_match',
+            'request_params': {
+                'mode': mode, # internal use + debug?
+                'match_id': match_id, # for debug
+            }
+        }
+        self.connection.send(json.dumps(message))
+
+        try:
+            ready = select.select([self.connection], [], [self.connection], ReinforcementEnvironmentForSockets.CONFIG['requests_timeout'])
+            if ready[0]:
+                data = self.connection.recv(ReinforcementEnvironmentForSockets.CONFIG['buffer'])
+                if ReinforcementEnvironmentForSockets.CONFIG['debug']:
+                    print "data: "+str(data)
+                data = json.loads(data)
+                if 'request_result' in data and data['request_result']:
+                    if ReinforcementEnvironmentForSockets.CONFIG['debug']:
+                        print "Request accepted."
+                else:
+                    raise socket.error("Client did not answer with a valid message")
+            else:
+                raise socket.timeout("Timeout to receive results of requests messages")
+        except Exception as e:
+            print "\n<< It was not possible to connect to the SBB client. >>\n"
+            raise e
+
+        if ReinforcementEnvironmentForSockets.CONFIG['debug']:
+            print "\nNew match ready.\n"
 
     def _play_match(self, team, opponent, point, mode, match_id):
         """
         
         """
-        # send message:
-        # team? acessado por uma port?
-        # opponent? acessado por uma port?
-        # point?
-        # <mode: mode> (uso interno + para debug)
-        # <match_id: match_id> (para debug)
-
-        # enquanto match nao terminar:
+        
+        # self._request_match(team, opponent, point, mode, match_id)        
 
         if mode == Config.RESTRICTIONS['mode']['training']:
             is_training = True
