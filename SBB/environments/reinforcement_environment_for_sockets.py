@@ -14,7 +14,7 @@ from ..core.pareto_dominance_for_teams import ParetoDominanceForTeams
 from ..utils.helpers import round_value, flatten, accumulative_performances, rank_teams_by_accumulative_score
 from ..config import Config
 
-# AQUI
+# TODO
 from tictactoe.tictactoe_opponents import TictactoeRandomOpponent, TictactoeSmartOpponent
 
 class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
@@ -23,12 +23,15 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     """
 
     # TODO:
-    # - implementar tictactoe_game com tictactoe_environment para sockets
-    # - limpar codigo de requests
     # - fazer arquivo externo para config
     # - atualizar testes para usar setUp e tearDown
     # - fazer reinforcement para sockets ser generico
-    # - fazer oponentes se comunicarem via socket
+    # - fazer oponentes se comunicarem via socket? e quando nao tiver oponentes? 
+    #       oponentes eh problema do SBB, ou do client?
+    # - fazer mais tests (system para sockets, e unit tests)
+    # - clean code
+    # - mandar rodar run longo e ver se produz bons resultados
+    # - usar um logger?
 
     def __init__(self):
         total_actions = 9 # spaces in the board
@@ -37,7 +40,8 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         coded_opponents_for_training = [TictactoeRandomOpponent, TictactoeSmartOpponent]
         coded_opponents_for_validation = [TictactoeRandomOpponent, TictactoeSmartOpponent]
         point_class = ReinforcementPoint
-        super(ReinforcementEnvironmentForSockets, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
+        super(ReinforcementEnvironmentForSockets, self).__init__(total_actions, total_inputs, total_labels, 
+            coded_opponents_for_training, coded_opponents_for_validation, point_class)
         
         self.total_positions_ = 2
         self.action_mapping_ = {
@@ -45,8 +49,12 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
             '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
             '[2,0]': 6, '[2,1]': 7, '[2,2]': 8,
         }
+        self._start_server()
+
+    def _start_server(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.bind((Config.USER['advanced_training_parameters']['sockets_parameters']['host'], Config.USER['advanced_training_parameters']['sockets_parameters']['port'])) # TODO: porta configuravel (porta diferente para tests)
+        self.server_socket.bind((Config.USER['advanced_training_parameters']['sockets_parameters']['host'], 
+            Config.USER['advanced_training_parameters']['sockets_parameters']['port']))
         self.server_socket.listen(1)
         print "\nWaiting for client socket connection...\n"
         self.connection, self.address = self.server_socket.accept()
@@ -80,18 +88,20 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
                 is_training_for_second_player = False
                 sbb_player = 1
 
-            self._request_match(team, opponent, point, mode, match_id, 
-                player1_label = first_player.__repr__(), player2_label = second_player.__repr__())
+            args = {'player1_label': first_player.__repr__(), 'player2_label': second_player.__repr__()}
+            self._request(mode, match_id, 'new_match', args = args)
 
             opponent.initialize(point.seed_)
             while True:
                 player = 1
 
-                inputs = self._request_inputs_from_the_point_of_view_of(player, mode, match_id)
+                inputs = self._request(mode, match_id, 'inputs', 
+                    args = {'player': player}, response = 'inputs')
 
-                valid_actions = self._request_valid_actions(mode, match_id)
+                valid_actions = self._request(mode, match_id, 'valid_actions', response = 'actions')
 
-                action = first_player.execute(point.point_id_, inputs, valid_actions, is_training_for_first_player)
+                action = first_player.execute(point.point_id_, inputs, valid_actions, 
+                    is_training_for_first_player)
                 if action is None:
                     action = random.choice(valid_actions)
 
@@ -99,86 +109,59 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
                     first_player.action_sequence_['coding2'].append(str(action))
                     first_player.action_sequence_['coding4'].append(str(action))
 
-                self._request_perform_action(player, action, mode, match_id)
+                self._request(mode, match_id, 'perform_action', args = {'player': player, 'action': action})
 
-                if self._request_is_over(mode, match_id):
-                    result = self._request_result_for_player(sbb_player, mode, match_id)
+                if self._request(mode, match_id, 'is_over', response = 'is_over'):
+                    result = self._request(mode, match_id, 'match_result', 
+                        args = {'player': sbb_player}, response = 'match_result')
                     outputs.append(result)
                     team.action_sequence_['coding3'].append(int(result*2))
                     break
                 player = 2
 
-                inputs = self._request_inputs_from_the_point_of_view_of(player, mode, match_id)
+                inputs = self._request(mode, match_id, 'inputs', 
+                    args = {'player': player}, response = 'inputs')
 
-                valid_actions = self._request_valid_actions(mode, match_id)
+                valid_actions = self._request(mode, match_id, 'valid_actions', response = 'actions')
 
-                action = second_player.execute(point.point_id_, inputs, valid_actions, is_training_for_second_player)
+                action = second_player.execute(point.point_id_, inputs, valid_actions, 
+                    is_training_for_second_player)
                 if action is None:
                     action = random.choice(valid_actions)
                 if is_training_for_second_player:
                     second_player.action_sequence_['coding2'].append(str(action))
                     second_player.action_sequence_['coding4'].append(str(action))
 
-                self._request_perform_action(player, action, mode, match_id)
+                self._request(mode, match_id, 'perform_action', args = {'player': player, 'action': action})
 
-                if self._request_is_over(mode, match_id):
-                    result = self._request_result_for_player(sbb_player, mode, match_id)
+                if self._request(mode, match_id, 'is_over', response = 'is_over'):
+                    result = self._request(mode, match_id, 'match_result', 
+                        args = {'player': sbb_player}, response = 'match_result')
                     outputs.append(result)
                     team.action_sequence_['coding3'].append(int(result*2))
                     break
+
         return numpy.mean(outputs)
 
-    def _request_match(self, team, opponent, point, mode, match_id, player1_label, player2_label):
+    def _request(self, mode, match_id, request_type, args = {}, response = None):
         if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nAsking for a new match... match_id: "+str(match_id)+"\n"
+            print "\nrequest type: "+request_type+", mode: "+str(mode)+", match_id: "+str(match_id)+"\n"
         message = {
-            'request_type': 'new_match',
+            'request_type': request_type,
             'request_params': {
                 'mode': mode, # internal use + debug
                 'match_id': match_id, # debug
-                'player1_label': player1_label,
-                'player2_label': player2_label,
             }
         }
-        self.connection.send(json.dumps(message))
 
-        try:
-            ready = select.select([self.connection], [], [self.connection], Config.USER['advanced_training_parameters']['sockets_parameters']['requests_timeout'])
-            if ready[0]:
-                data = self.connection.recv(Config.USER['advanced_training_parameters']['sockets_parameters']['buffer'])
-                if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-                    print "data: "+str(data)
-                data = json.loads(data)
-                if 'request_result' in data and data['request_result']:
-                    if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-                        print "Request accepted."
-                else:
-                    raise socket.error("Client did not answer with a valid message")
-            else:
-                raise socket.timeout("Timeout to receive results of requests messages")
-        except Exception as e:
-            print "\n<< It was not possible to connect to the SBB client. >>\n"
-            raise e
+        message['request_params'].update(args)
 
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nNew match ready.\n"
-
-    def _request_inputs_from_the_point_of_view_of(self, player, mode, match_id):
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nAsking for inputs for player "+str(player)+"... match_id: "+str(match_id)+"\n"
-        message = {
-            'request_type': 'inputs',
-            'request_params': {
-                'mode': mode, # internal use + debug
-                'match_id': match_id, # debug
-                'player': player,
-            }
-        }
         self.connection.send(json.dumps(message))
 
         result = []
         try:
-            ready = select.select([self.connection], [], [self.connection], Config.USER['advanced_training_parameters']['sockets_parameters']['requests_timeout'])
+            ready = select.select([self.connection], [], [self.connection], 
+                Config.USER['advanced_training_parameters']['sockets_parameters']['requests_timeout'])
             if ready[0]:
                 data = self.connection.recv(Config.USER['advanced_training_parameters']['sockets_parameters']['buffer'])
                 if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
@@ -187,7 +170,8 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
                 if 'request_result' in data and data['request_result']:
                     if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
                         print "Request accepted."
-                    result = data['result']['inputs']
+                    if response:
+                        result = data['result'][response]
                 else:
                     raise socket.error("Client did not answer with a valid message")
             else:
@@ -197,154 +181,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
             raise e
 
         if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nInputs ready.\n"
-
-        return result
-
-    def _request_valid_actions(self, mode, match_id):
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nAsking for valid actions... match_id: "+str(match_id)+"\n"
-        message = {
-            'request_type': 'valid_actions',
-            'request_params': {
-                'mode': mode, # internal use + debug
-                'match_id': match_id, # debug
-            }
-        }
-        self.connection.send(json.dumps(message))
-
-        result = []
-        try:
-            ready = select.select([self.connection], [], [self.connection], Config.USER['advanced_training_parameters']['sockets_parameters']['requests_timeout'])
-            if ready[0]:
-                data = self.connection.recv(Config.USER['advanced_training_parameters']['sockets_parameters']['buffer'])
-                if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-                    print "data: "+str(data)
-                data = json.loads(data)
-                if 'request_result' in data and data['request_result']:
-                    if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-                        print "Request accepted."
-                    result = data['result']['actions']
-                else:
-                    raise socket.error("Client did not answer with a valid message")
-            else:
-                raise socket.timeout("Timeout to receive results of requests messages")
-        except Exception as e:
-            print "\n<< It was not possible to connect to the SBB client. >>\n"
-            raise e
-
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nValid actions ready.\n"
-
-        return result
-
-    def _request_perform_action(self, player, action, mode, match_id):
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nAsking for perform action... match_id: "+str(match_id)+"\n"
-        message = {
-            'request_type': 'perform_action',
-            'request_params': {
-                'mode': mode, # internal use + debug
-                'match_id': match_id, # debug
-                'player': player,
-                'action': action,
-            }
-        }
-        self.connection.send(json.dumps(message))
-
-        try:
-            ready = select.select([self.connection], [], [self.connection], Config.USER['advanced_training_parameters']['sockets_parameters']['requests_timeout'])
-            if ready[0]:
-                data = self.connection.recv(Config.USER['advanced_training_parameters']['sockets_parameters']['buffer'])
-                if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-                    print "data: "+str(data)
-                data = json.loads(data)
-                if 'request_result' in data and data['request_result']:
-                    if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-                        print "Request accepted."
-                else:
-                    raise socket.error("Client did not answer with a valid message")
-            else:
-                raise socket.timeout("Timeout to receive results of requests messages")
-        except Exception as e:
-            print "\n<< It was not possible to connect to the SBB client. >>\n"
-            raise e
-
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nPerform action ready.\n"
-
-    def _request_is_over(self, mode, match_id):
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nAsking for is_over... match_id: "+str(match_id)+"\n"
-        message = {
-            'request_type': 'is_over',
-            'request_params': {
-                'mode': mode, # internal use + debug
-                'match_id': match_id, # debug
-            }
-        }
-        self.connection.send(json.dumps(message))
-
-        result = []
-        try:
-            ready = select.select([self.connection], [], [self.connection], Config.USER['advanced_training_parameters']['sockets_parameters']['requests_timeout'])
-            if ready[0]:
-                data = self.connection.recv(Config.USER['advanced_training_parameters']['sockets_parameters']['buffer'])
-                if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-                    print "data: "+str(data)
-                data = json.loads(data)
-                if 'request_result' in data and data['request_result']:
-                    if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-                        print "Request accepted."
-                    result = data['result']['is_over']
-                else:
-                    raise socket.error("Client did not answer with a valid message")
-            else:
-                raise socket.timeout("Timeout to receive results of requests messages")
-        except Exception as e:
-            print "\n<< It was not possible to connect to the SBB client. >>\n"
-            raise e
-
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nis_over ready.\n"
-
-        return result
-
-    def _request_result_for_player(self, sbb_player, mode, match_id):
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nAsking for is_over... match_id: "+str(match_id)+"\n"
-        message = {
-            'request_type': 'match_result',
-            'request_params': {
-                'mode': mode, # internal use + debug
-                'match_id': match_id, # debug
-                'player': sbb_player,
-            }
-        }
-        self.connection.send(json.dumps(message))
-
-        result = []
-        try:
-            ready = select.select([self.connection], [], [self.connection], Config.USER['advanced_training_parameters']['sockets_parameters']['requests_timeout'])
-            if ready[0]:
-                data = self.connection.recv(Config.USER['advanced_training_parameters']['sockets_parameters']['buffer'])
-                if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-                    print "data: "+str(data)
-                data = json.loads(data)
-                if 'request_result' in data and data['request_result']:
-                    if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-                        print "Request accepted."
-                    result = data['result']['match_result']
-                else:
-                    raise socket.error("Client did not answer with a valid message")
-            else:
-                raise socket.timeout("Timeout to receive results of requests messages")
-        except Exception as e:
-            print "\n<< It was not possible to connect to the SBB client. >>\n"
-            raise e
-
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
-            print "\nis_over ready.\n"
+            print "\n"+request_type+" done.\n"
 
         return result
 

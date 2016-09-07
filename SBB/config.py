@@ -216,6 +216,7 @@ class Config():
 # To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /config_examples
 
 Config.USER = tictactoe_for_sockets_config.TICTACTOE_QUICK
+# Config.USER = tictactoe_for_sockets_config.TICTACTOE_DEFAULT
 
 # Config.USER = tictactoe_config.TICTACTOE_DEFAULT
 # Config.USER = tictactoe_config.TICTACTOE_QUICK
