@@ -85,15 +85,34 @@ class TictactoeGame():
                         if not self._is_valid_request(data):
                             raise socket.error("Server did not send a valid request")
                         else:
-                            if TictactoeGame.CONFIG['debug']:
-                                print "Starting new match."
-                            # TODO
-                            self.player_label[1] = 'p1'
-                            self.player_label[2] = 'p2'
-
                             message = {
                                 'request_result': True,
+                                'result': {},
                             }
+
+                            # TODO: usar cases
+                            if TictactoeGame.CONFIG['debug']:
+                                print "Request type: "+str(data['request_type'])
+
+                            if data['request_type'] == 'new_match':
+                                self._initialize_match(data)
+
+                            if data['request_type'] == 'inputs':
+                                message['result']['inputs'] = self._inputs_from_the_point_of_view_of(data['request_params']['player'])
+                            
+                            if data['request_type'] == 'valid_actions':
+                                message['result']['actions'] = self._valid_actions()
+
+                            if data['request_type'] == 'perform_action':
+                                self._perform_action(data['request_params']['player'], 
+                                    data['request_params']['action'])
+
+                            if data['request_type'] == 'is_over':
+                                message['result']['is_over'] = self._is_over()
+
+                            if data['request_type'] == 'match_result':
+                                message['result']['match_result'] = self._result_for_player(data['request_params']['player'])
+                            
                             self.client_socket.send(json.dumps(message))
             except Exception as e:
                 if TictactoeGame.CONFIG['silent_errors']:
@@ -103,33 +122,22 @@ class TictactoeGame():
                     raise e
 
     def _is_valid_request(self, data):
-        if 'request' in data and data['request'] == 'new_match':
-            return True
+        if 'request_type' in data:
+            if data['request_type'] in ['new_match', 'inputs', 'valid_actions', 
+                'perform_action', 'is_over', 'match_result']:
+                return True
         return False
 
-    def perform_action(self, current_player, action):
-        """
-        Perform the action for the current_player in the board, modifying 
-        the attribute inputs_.
-        """
-        self.inputs_[action] = current_player
-        if self.print_game_:
-            print "---"
-            print str(self.inputs_[0:3])
-            print str(self.inputs_[3:6])
-            print str(self.inputs_[6:9])
+    def _initialize_match(self, data):
+        self.player_label[1] = data['request_params']['player1_label']
+        self.player_label[2] = data['request_params']['player2_label']
 
-    def valid_actions(self):
-        """
-        The valid actions are the empty spaces.
-        """
-        valids = []
-        for index, space in enumerate(self.inputs_):
-            if space == TictactoeGame.EMPTY:
-                valids.append(index)
-        return valids
+        self.inputs_ = [TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY,
+                        TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY,
+                        TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY]
+        self.result_ = -1
 
-    def inputs_from_the_point_of_view_of(self, position):
+    def _inputs_from_the_point_of_view_of(self, position):
         """
         Get a copy of the inputs so that the player in 'position' always see the board with 
         spaces with '1' as their spaces, and '2' as the opponent's spaces.
@@ -141,12 +149,34 @@ class TictactoeGame():
             inputs = [mapping[x]*TictactoeGame.CONFIG['multiply_normalization_by'] for x in list(self.inputs_)]
             return inputs
 
-    def is_over(self):
+    def _valid_actions(self):
+        """
+        The valid actions are the empty spaces.
+        """
+        valids = []
+        for index, space in enumerate(self.inputs_):
+            if space == TictactoeGame.EMPTY:
+                valids.append(index)
+        return valids
+
+    def _perform_action(self, current_player, action):
+        """
+        Perform the action for the current_player in the board, modifying 
+        the attribute inputs_.
+        """
+        self.inputs_[action] = current_player
+        if self.print_game_:
+            print "---"
+            print str(self.inputs_[0:3])
+            print str(self.inputs_[3:6])
+            print str(self.inputs_[6:9])
+
+    def _is_over(self):
         """
         Check if all spaces were used. If yes, sets the attribute result_ with the 
         number of the winner or 0 if a draw occured.
         """
-        winner = TictactoeGame.get_winner(self.inputs_)
+        winner = self._get_winner()
         if winner:
             self.result_ = winner
             if self.print_game_:
@@ -162,23 +192,22 @@ class TictactoeGame():
             print "It is over! Draw!"
         return True
 
-    def result_for_player(self, current_player):
+    def _get_winner(self):
+        winning_configs = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6),
+                       (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
+        for config in winning_configs:
+            if self.inputs_[config[0]] == self.inputs_[config[1]] and self.inputs_[config[1]] == self.inputs_[config[2]]:
+                if self.inputs_[config[0]] != 0:
+                    return self.inputs_[config[0]]
+        return None # no winner
+
+    def _result_for_player(self, current_player):
         if self.result_ == current_player:
             return 1 # win
         if self.result_ == TictactoeGame.DRAW:
             return 0.5 # draw
         else:
             return 0 # lose
-
-    @staticmethod
-    def get_winner(inputs):
-        winning_configs = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6),
-                       (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
-        for config in winning_configs:
-            if inputs[config[0]] == inputs[config[1]] and inputs[config[1]] == inputs[config[2]]:
-                if inputs[config[0]] != 0:
-                    return inputs[config[0]]
-        return None # no winner
 
 if __name__ == "__main__":
     test_mode = False
