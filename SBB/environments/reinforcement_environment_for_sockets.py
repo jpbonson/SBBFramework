@@ -33,6 +33,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     }
 
     # TODO: implementar tictactoe_game com tictactoe_environment para sockets
+    # - mover configs de socket para config.py (depois: fazer arquivo externo)
 
     def __init__(self):
         # TODO: ler de um arquivo configuravel? (e o CONFIG tambem)
@@ -106,7 +107,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         
         """
         
-        # self._request_match(team, opponent, point, mode, match_id)        
+        self._request_match(team, opponent, point, mode, match_id)        
 
         if mode == Config.RESTRICTIONS['mode']['training']:
             is_training = True

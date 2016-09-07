@@ -28,7 +28,7 @@ TEST_CONFIG = {
         'save_partial_files_per_validation': False,
     },
     'training_parameters': {
-        'runs_total': 2,
+        'runs_total': 1,
         'generations_total': 30,
         'validate_after_each_generation': 30,
         'populations': {
@@ -66,7 +66,7 @@ TEST_CONFIG = {
     'advanced_training_parameters': {
         'seed': 1, # default = None
         'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
-        'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
+        'use_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 4,
         'diversity': {
             'use_and_show': [], # will be applied to fitness and show in the outputs
@@ -92,192 +92,13 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['points']*1.0))
         
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = []
-        config['advanced_training_parameters']['diversity']['only_show'] = []
-        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
-        config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
-        config['training_parameters']['runs_total'] = 1
-        config['advanced_training_parameters']['seed'] = 1
-        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
-        config['advanced_training_parameters']['run_initialization_step2'] = False
-        config['advanced_training_parameters']['use_weighted_probability_selection'] = False
-        config['advanced_training_parameters']['use_agressive_mutations'] = False
-        config['advanced_training_parameters']['second_layer']['enabled'] = False
-        config['advanced_training_parameters']['use_profiling'] = True
         Config.USER = config
 
         path = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(path, '')
         subprocess.Popen(["python", path+"tictactoe_game.py"])
 
-    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_for_two_runs(self):
-        Config.USER['training_parameters']['runs_total'] = 2
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 2
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents(self):
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_profiling(self):
-        Config.USER['advanced_training_parameters']['use_profiling'] = False
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_with_weighted_selection(self):
-        Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = True
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_with_run_initialization_step2(self):
-        Config.USER['advanced_training_parameters']['run_initialization_step2'] = True
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_with_use_agressive_mutations(self):
-        Config.USER['advanced_training_parameters']['use_agressive_mutations'] = True
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_with_second_layer(self):
-        Config.USER['advanced_training_parameters']['use_agressive_mutations'] = True
-        Config.USER['advanced_training_parameters']['second_layer']['enabled'] = True
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_sbb_opponents_showing_diversity(self):
-        Config.USER['advanced_training_parameters']['diversity']['only_show'] = ['genotype', 'fitness_sharing']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_genotype_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_sharing_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['fitness_sharing']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_entropy_c2_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['entropy_c2']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_hamming_c3_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['hamming_c3']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_ncd_c3_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c3']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_entropy_c3_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['entropy_c3']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_ncd_c4_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_euclidean_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['euclidean']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_two_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype', 'fitness_sharing']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_with_signal_if_instructions(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
-        Config.USER['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame(self):
-        Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
-        Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = True
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame_not_used_as_opponents(self):
-        Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame_with_diversity(self):
-        Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
-        Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = True
-        Config.USER['reinforcement_parameters']['hall_of_fame']['diversity'] = 'ncd_c4'
+    def test_reinforcement_with_sockets_for_ttt(self):
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
