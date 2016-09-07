@@ -5,7 +5,7 @@ import sys
 
 class TictactoeGame():
     """
-    Implements a TicTacToe match
+    Implements a TicTacToe match via sockets
     """
 
     EMPTY = 0
@@ -41,18 +41,27 @@ class TictactoeGame():
         else:
             TictactoeGame.CONFIG = TictactoeGame.DEFAULT_CONFIG
 
+        self.valid_requests = ['new_match', 'inputs', 'valid_actions', 
+            'perform_action', 'is_over', 'match_result']
+        self.player_label = {}
+        self._reset_game()
+        self._connect_to_sbb()
+
+    def _reset_game(self):
         self.inputs_ = [TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY,
                         TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY,
                         TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY]
         self.result_ = -1
-        self.print_game_ = TictactoeGame.CONFIG['debug']
-        self.player_label = {}
+
+    def _connect_to_sbb(self):
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.settimeout(TictactoeGame.CONFIG['timeout'])
         try:
             self.client_socket.connect((TictactoeGame.CONFIG['host'], TictactoeGame.CONFIG['port']))
             ready = select.select([self.client_socket], [], [], TictactoeGame.CONFIG['timeout'])
-            if ready[0]:
+            if not ready[0]:
+                raise socket.timeout("Timeout to receive 'success connection' message")
+            else:
                 data = self.client_socket.recv(TictactoeGame.CONFIG['buffer'])
                 data = json.loads(data)
                 if 'connection' in data and data['connection']:
@@ -60,60 +69,42 @@ class TictactoeGame():
                         print "Connected to SBB server."
                 else:
                     raise socket.error("Server did not answer with a 'success connection' message")
-            else:
-                raise socket.timeout("Timeout to receive 'success connection' message")
+                
         except Exception as e:
-            print "\n<< It was not possible to connect to the SBB server. >>\n"
-            raise e
+            if TictactoeGame.CONFIG['silent_errors']:
+                raise SystemExit
+            else:
+                print "\n<< It was not possible to connect to the SBB server. >>\n"
+                raise e
 
     def wait_for_requests(self):
         while True:
             try:
-                ready = select.select([self.client_socket], [], [self.client_socket], TictactoeGame.CONFIG['requests_timeout'])
-                if not ready[0]:
-                    raise socket.timeout("Timeout to receive requests messages")
-                else:
-                    data = self.client_socket.recv(TictactoeGame.CONFIG['buffer'])
-                    if TictactoeGame.CONFIG['debug']:
-                        print "data: "+str(data)
+                data = self._get_valid_request()
 
-                    if not data:
-                        raise socket.error("Server sent an empty request")
-                    else:
-                        data = json.loads(data)
+                message = {
+                    'request_result': True,
+                    'result': {},
+                }
 
-                        if not self._is_valid_request(data):
-                            raise socket.error("Server did not send a valid request")
-                        else:
-                            message = {
-                                'request_result': True,
-                                'result': {},
-                            }
+                if TictactoeGame.CONFIG['debug']:
+                    print "Request type: "+str(data['request_type'])
+            
+                if data['request_type'] == 'new_match':
+                    self._initialize_match(data)
+                elif data['request_type'] == 'inputs':
+                    message['result']['inputs'] = self._inputs_from_the_point_of_view_of(data['request_params']['player'])
+                elif data['request_type'] == 'valid_actions':
+                    message['result']['actions'] = self._valid_actions()
+                elif data['request_type'] == 'perform_action':
+                    self._perform_action(data['request_params']['player'], data['request_params']['action'])
+                elif data['request_type'] == 'is_over':
+                    message['result']['is_over'] = self._is_over()
+                elif data['request_type'] == 'match_result':
+                    message['result']['match_result'] = self._result_for_player(data['request_params']['player'])
+                
+                self.client_socket.send(json.dumps(message))
 
-                            # TODO: usar cases
-                            if TictactoeGame.CONFIG['debug']:
-                                print "Request type: "+str(data['request_type'])
-
-                            if data['request_type'] == 'new_match':
-                                self._initialize_match(data)
-
-                            if data['request_type'] == 'inputs':
-                                message['result']['inputs'] = self._inputs_from_the_point_of_view_of(data['request_params']['player'])
-                            
-                            if data['request_type'] == 'valid_actions':
-                                message['result']['actions'] = self._valid_actions()
-
-                            if data['request_type'] == 'perform_action':
-                                self._perform_action(data['request_params']['player'], 
-                                    data['request_params']['action'])
-
-                            if data['request_type'] == 'is_over':
-                                message['result']['is_over'] = self._is_over()
-
-                            if data['request_type'] == 'match_result':
-                                message['result']['match_result'] = self._result_for_player(data['request_params']['player'])
-                            
-                            self.client_socket.send(json.dumps(message))
             except Exception as e:
                 if TictactoeGame.CONFIG['silent_errors']:
                     raise SystemExit
@@ -121,21 +112,28 @@ class TictactoeGame():
                     print "\n<< It was not possible to connect to the SBB server. >>\n"
                     raise e
 
-    def _is_valid_request(self, data):
-        if 'request_type' in data:
-            if data['request_type'] in ['new_match', 'inputs', 'valid_actions', 
-                'perform_action', 'is_over', 'match_result']:
-                return True
-        return False
+    def _get_valid_request(self):
+        ready = select.select([self.client_socket], [], [self.client_socket], 
+        TictactoeGame.CONFIG['requests_timeout'])
+        if not ready[0]:
+            raise socket.timeout("Timeout to receive requests messages")
+        else:
+            data = self.client_socket.recv(TictactoeGame.CONFIG['buffer'])
+            if not data:
+                raise socket.error("Server sent an empty request")
+            else:
+                data = json.loads(data)
+                if TictactoeGame.CONFIG['debug']:
+                    print "request data: "+str(data)
+
+                if not ('request_type' in data and data['request_type'] in self.valid_requests):
+                    raise socket.error("Server did not send a valid request")
+        return data
 
     def _initialize_match(self, data):
         self.player_label[1] = data['request_params']['player1_label']
         self.player_label[2] = data['request_params']['player2_label']
-
-        self.inputs_ = [TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY,
-                        TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY,
-                        TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY]
-        self.result_ = -1
+        self._reset_game()
 
     def _inputs_from_the_point_of_view_of(self, position):
         """
@@ -165,7 +163,7 @@ class TictactoeGame():
         the attribute inputs_.
         """
         self.inputs_[action] = current_player
-        if self.print_game_:
+        if TictactoeGame.CONFIG['debug']:
             print "---"
             print str(self.inputs_[0:3])
             print str(self.inputs_[3:6])
@@ -179,16 +177,16 @@ class TictactoeGame():
         winner = self._get_winner()
         if winner:
             self.result_ = winner
-            if self.print_game_:
+            if TictactoeGame.CONFIG['debug']:
                 print "It is over! Player "+str(self.result_)+" ("+str(self.player_label[self.result_])+") wins!"
             return True
         for value in self.inputs_:
             if value == TictactoeGame.EMPTY:
-                if self.print_game_:
+                if TictactoeGame.CONFIG['debug']:
                     print "Go!"
                 return False
         self.result_ = TictactoeGame.DRAW
-        if self.print_game_:
+        if TictactoeGame.CONFIG['debug']:
             print "It is over! Draw!"
         return True
 
@@ -196,9 +194,10 @@ class TictactoeGame():
         winning_configs = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6),
                        (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
         for config in winning_configs:
-            if self.inputs_[config[0]] == self.inputs_[config[1]] and self.inputs_[config[1]] == self.inputs_[config[2]]:
-                if self.inputs_[config[0]] != 0:
-                    return self.inputs_[config[0]]
+            if (self.inputs_[config[0]] == self.inputs_[config[1]] 
+                and self.inputs_[config[1]] == self.inputs_[config[2]]
+                and self.inputs_[config[0]] != 0):
+                return self.inputs_[config[0]]
         return None # no winner
 
     def _result_for_player(self, current_player):
