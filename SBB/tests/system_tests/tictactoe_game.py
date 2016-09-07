@@ -1,6 +1,7 @@
 import socket
 import select
 import json
+import sys
 
 class TictactoeGame():
     """
@@ -10,27 +11,42 @@ class TictactoeGame():
     EMPTY = 0
     DRAW = 0
 
-    CONFIG = {
-        'debug': False,
+    DEFAULT_CONFIG = {
         'multiply_normalization_by': 10.0,
-        'player1_label': 'p1',
-        'player2_label': 'p2',
+        'debug': False,
         'timeout': 60,
         'buffer': 5000,
         'port': 7800,
         'host': 'localhost',
         'requests_timeout': 120,
+        'silent_errors': False,
+    }
+    
+    TEST_CONFIG = {
+        'multiply_normalization_by': 10.0,
+        'debug': False,
+        'timeout': 60,
+        'buffer': 5000,
+        'port': 7801,
+        'host': 'localhost',
+        'requests_timeout': 120,
+        'silent_errors': True,
     }
 
-    def __init__(self):
+    CONFIG = {}
+
+    def __init__(self, test_mode):
+        if test_mode:
+            TictactoeGame.CONFIG = TictactoeGame.TEST_CONFIG
+        else:
+            TictactoeGame.CONFIG = TictactoeGame.DEFAULT_CONFIG
+
         self.inputs_ = [TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY,
                         TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY,
                         TictactoeGame.EMPTY, TictactoeGame.EMPTY, TictactoeGame.EMPTY]
         self.result_ = -1
         self.print_game_ = TictactoeGame.CONFIG['debug']
         self.player_label = {}
-        self.player_label[1] = TictactoeGame.CONFIG['player1_label']
-        self.player_label[2] = TictactoeGame.CONFIG['player2_label']
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.settimeout(TictactoeGame.CONFIG['timeout'])
         try:
@@ -72,13 +88,19 @@ class TictactoeGame():
                             if TictactoeGame.CONFIG['debug']:
                                 print "Starting new match."
                             # TODO
+                            self.player_label[1] = 'p1'
+                            self.player_label[2] = 'p2'
+
                             message = {
                                 'request_result': True,
                             }
                             self.client_socket.send(json.dumps(message))
             except Exception as e:
-                print "\n<< It was not possible to connect to the SBB server. >>\n"
-                raise e
+                if TictactoeGame.CONFIG['silent_errors']:
+                    raise SystemExit
+                else:
+                    print "\n<< It was not possible to connect to the SBB server. >>\n"
+                    raise e
 
     def _is_valid_request(self, data):
         if 'request' in data and data['request'] == 'new_match':
@@ -159,5 +181,8 @@ class TictactoeGame():
         return None # no winner
 
 if __name__ == "__main__":
-    game = TictactoeGame()
+    test_mode = False
+    if len(sys.argv) > 1 and sys.argv[1] == "test":
+        test_mode = True
+    game = TictactoeGame(test_mode)
     game.wait_for_requests()

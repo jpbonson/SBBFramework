@@ -81,6 +81,14 @@ TICTACTOE_QUICK = {
             'enabled': False,
             'path': 'actions_reference/baseline/run[run_id]/second_layer_files/hall_of_fame+top10_overall_subcats/actions.json',
         },
+        'sockets_parameters': {
+            'debug': False,
+            'timeout': 60,
+            'buffer': 5000,
+            'port': 7800,
+            'host': 'localhost',
+            'requests_timeout': 120,
+        },
     },
 }
 
@@ -162,6 +170,14 @@ TICTACTOE_DEFAULT = {
         'second_layer': {
             'enabled': False,
             'path': 'actions_reference/baseline/run[run_id]/second_layer_files/hall_of_fame+top10_overall_subcats/actions.json',
+        },
+        'sockets_parameters': {
+            'debug': False,
+            'timeout': 60,
+            'buffer': 5000,
+            'port': 7800,
+            'host': 'localhost',
+            'requests_timeout': 120,
         },
     },
 }

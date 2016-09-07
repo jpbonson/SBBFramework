@@ -83,6 +83,14 @@ TEST_CONFIG = {
             'enabled': False,
             'path': 'actions_reference/ttt-test/run[run_id]/second_layer_files/hall_of_fame/actions.json',
         },
+        'sockets_parameters': {
+            'debug': False,
+            'timeout': 60,
+            'buffer': 5000,
+            'port': 7801,
+            'host': 'localhost',
+            'requests_timeout': 120,
+        },
     },
 }
 
@@ -96,7 +104,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
         path = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(path, '')
-        subprocess.Popen(["python", path+"tictactoe_game.py"])
+        subprocess.Popen(["python", path+"tictactoe_game.py", "test"])
 
     def test_reinforcement_with_sockets_for_ttt(self):
         sbb = SBB()

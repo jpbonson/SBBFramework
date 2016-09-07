@@ -102,6 +102,15 @@ class Config():
                 'enabled': False,
                 'path': 'actions_reference/baseline3_without_bayes/run[run_id]/second_layer_files/top10_overall/actions.json',
             },
+
+            'sockets_parameters': {
+                'debug': False,
+                'timeout': 60,
+                'buffer': 5000,
+                'port': 7800,
+                'host': 'localhost',
+                'requests_timeout': 120,
+            },
         },
     }
 
