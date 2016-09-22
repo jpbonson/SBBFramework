@@ -71,104 +71,51 @@ TEST_CONFIG = {
 class ClassificationTests(unittest.TestCase):
     def setUp(self):
         Config.RESTRICTIONS['write_output_files'] = False
-        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['points']*1.0))
-
-    def test_classification_for_iris_without_pareto_and_without_diversity_maintenance_for_three_runs(self):
-        """ Checking if everything for classification is still working and producing the same result. """
+        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['points']*1.0))
+        
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
-        config['training_parameters']['runs_total'] = 3
+        config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
         config['advanced_training_parameters']['use_profiling'] = True
         Config.USER = config
+
+    def test_classification_for_iris(self):
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_classification_for_iris_for_three_runs(self):
+        Config.USER['training_parameters']['runs_total'] = 3
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
         expected = 3
         self.assertEqual(expected, result)
 
-    def test_classification_for_iris_without_pareto_and_without_diversity_maintenance(self):
-        """ Checking if everything for classification is still working and producing the same result. """
-        config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = []
-        config['advanced_training_parameters']['diversity']['only_show'] = []
-        config['classification_parameters']['dataset'] = 'iris'
-        config['training_parameters']['runs_total'] = 1
-        config['advanced_training_parameters']['run_initialization_step2'] = False
-        config['advanced_training_parameters']['use_profiling'] = True
-        Config.USER = config
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
     def test_classification_for_iris_without_profiling(self):
-        """ Checking if everything for classification is still working and producing the same result. """
-        config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = []
-        config['advanced_training_parameters']['diversity']['only_show'] = []
-        config['classification_parameters']['dataset'] = 'iris'
-        config['training_parameters']['runs_total'] = 1
-        config['advanced_training_parameters']['run_initialization_step2'] = False
-        config['advanced_training_parameters']['use_profiling'] = False
-        Config.USER = config
+        Config.USER['advanced_training_parameters']['use_profiling'] = False
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
         expected = 1
         self.assertEqual(expected, result)
 
-    def test_classification_for_iris_without_pareto_and_without_diversity_maintenance_with_step2(self):
-        """ Checking if everything for classification is still working and producing the same result. """
-        config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = []
-        config['advanced_training_parameters']['diversity']['only_show'] = []
-        config['classification_parameters']['dataset'] = 'iris'
-        config['training_parameters']['runs_total'] = 1
-        config['advanced_training_parameters']['run_initialization_step2'] = True
-        config['advanced_training_parameters']['use_profiling'] = True
-        Config.USER = config
+    def test_classification_for_iris_with_step2(self):
+        Config.USER['advanced_training_parameters']['run_initialization_step2'] = True
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
         expected = 1
         self.assertEqual(expected, result)
 
-    def test_classification_for_iris_without_pareto_and_with_diversity_maintenance(self):
-        """ Checking if everything for classification is still working and producing the same result. """
-        config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype', 'fitness_sharing']
-        config['advanced_training_parameters']['diversity']['only_show'] = []
-        config['classification_parameters']['dataset'] = 'iris'
-        config['training_parameters']['runs_total'] = 1
-        config['advanced_training_parameters']['run_initialization_step2'] = False
-        config['advanced_training_parameters']['use_profiling'] = True
-        Config.USER = config
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_classification_for_iris_with_pareto_for_teams_without_pareto_for_points(self):
-        """ Checking if everything for classification is still working and producing the same result. """
-        config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = []
-        config['advanced_training_parameters']['diversity']['only_show'] = []
-        config['classification_parameters']['dataset'] = 'iris'
-        config['training_parameters']['runs_total'] = 1
-        config['advanced_training_parameters']['run_initialization_step2'] = False
-        config['advanced_training_parameters']['use_profiling'] = True
-        Config.USER = config
+    def test_classification_for_iris_with_diversity_maintenance(self):
+        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype', 'fitness_sharing']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -176,16 +123,7 @@ class ClassificationTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_classification_for_thyroid(self):
-        """ Checking if everything for classification is still working and producing the same result. """
-        config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = []
-        config['advanced_training_parameters']['diversity']['only_show'] = []
-        config['classification_parameters']['dataset'] = 'thyroid'
-        config['training_parameters']['runs_total'] = 1
-        config['advanced_training_parameters']['run_initialization_step2'] = False
-        config['advanced_training_parameters']['use_profiling'] = True
-        Config.USER = config
+        Config.USER['classification_parameters']['dataset'] = 'thyroid'
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
