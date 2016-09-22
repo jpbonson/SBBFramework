@@ -24,7 +24,6 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
 
     # TODO:
     # - fazer arquivo externo para config
-    # - atualizar testes para usar setUp e tearDown
     # - fazer reinforcement para sockets ser generico
     # - fazer oponentes se comunicarem via socket? e quando nao tiver oponentes? 
     #       oponentes eh problema do SBB, ou do client?

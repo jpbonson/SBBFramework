@@ -1,0 +1,120 @@
+# This file has a sample configuration for a very quick training of tictactoe players
+{
+    "task": "reinforcement", 
+
+    "classification_parameters": { # only used if "task" is "classification"
+        "dataset": "iris", # must have a .train and a .test file
+        "working_path": "SBB/datasets/"
+    },
+
+    "reinforcement_parameters": { # only used if "task" is "reinforcement"
+        "environment": "tictactoe",
+        "validation_population": 20,
+        "champion_population": 40,
+        "hall_of_fame": {
+            "max_opponents_per_generation": 2,
+            "use_as_opponents": false, 
+            "diversity": "genotype", 
+            "wait_generations": 100, # TODO: tirar?
+            "enabled": false, 
+            "size": 20
+        }, 
+        
+        "debug": { # TODO: tirar?
+            "print": false, 
+            "matches": false, 
+            "debug_output_path": "",
+            "players": false,
+            "output_path": "SBB/environments/poker/logs/"
+        },
+
+        "poker": { # TODO: integrar com o tictactoe
+            "opponents": "",# TODO: [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], # PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent], #[PokerLooseAgressiveOpponent],
+            "river_round_only": false,
+            "river_only_to_fullgame": false, # changed from one to another in half the generations, ignores "river_round_only"
+            "maximum_bets": 4
+        },
+
+        "save_partial_files_per_validation": false
+    },
+
+    "training_parameters": {
+        "team_size": {
+            "max": 9, 
+            "min": 2
+        }, 
+        "program_size": {
+            "max": 20, 
+            "min": 2
+        }, 
+        "mutation": {
+            "program": {
+                "change_action": 0.1, 
+                "change_instruction": 1.0, 
+                "add_instruction": 0.5, 
+                "swap_instructions": 1.0, 
+                "remove_instruction": 0.5
+            }, 
+            "team": {
+                "add_program": 0.7, 
+                "mutate_program": 0.2, 
+                "remove_program": 0.7
+            }
+        }, 
+        "populations": {
+            "points": 10, 
+            "teams": 10
+        }, 
+        "replacement_rate": {
+            "points": 0.2, 
+            "teams": 0.5
+        }, 
+        "generations_total": 20, 
+        "validate_after_each_generation": 20, 
+        "runs_total": 1
+    }, 
+    
+    "advanced_training_parameters": {
+        "use_operations": [
+            "+", 
+            "-", 
+            "*", 
+            "/", 
+            "ln", 
+            "exp", 
+            "cos", 
+            "if_lesser_than", 
+            "if_equal_or_higher_than", 
+            "if_lesser_than_for_signal", 
+            "if_equal_or_higher_than_for_signal"
+        ], 
+        "extra_registers": 4, 
+        "seed": 1, 
+        "diversity": {
+            "k": 10, 
+            "use_novelty_archive": false, 
+            "only_novelty": false, 
+            "use_and_show": [
+                "genotype"
+            ], 
+            "only_show": []
+        }, 
+        "use_weighted_probability_selection": false, 
+        "use_agressive_mutations": true, 
+        "second_layer": {
+            "path": "actions_reference/baseline/run[run_id]/second_layer_files/hall_of_fame+top10_overall_subcats/actions.json", 
+            "enabled": false
+        }, 
+        "use_profiling": true, 
+        "use_pareto_for_point_population_selection": false, 
+        "run_initialization_step2": false,
+        "sockets_parameters": {
+            "debug": false,
+            "timeout": 60,
+            "buffer": 5000,
+            "port": 7800,
+            "host": "localhost",
+            "requests_timeout": 120
+        }
+    }
+}

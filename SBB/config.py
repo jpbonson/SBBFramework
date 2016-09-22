@@ -1,10 +1,8 @@
 import sys
+import re
+import json
 import numpy
 from collections import deque
-from config_examples import tictactoe_config, poker_config, classification_config, tictactoe_for_sockets_config
-from environments.poker.poker_opponents import (PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
-    PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent,
-    PokerBayesianOpponent)
 
 class Config():
     """
@@ -13,106 +11,8 @@ class Config():
     is not recommended to modify the attribute RESTRICTIONS.
     """
 
-    # user configurable options
-    USER = {
-        'task': 'reinforcement',
-        'classification_parameters': { # only used if 'task' is 'classification'
-            'dataset': 'thyroid', # must have a .train and a .test file
-            'working_path': "/home/jpbonson/Dropbox/MCS/SBBReinforcementLearner/SBB/datasets/",
-        },
-        'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
-            'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-            'validation_population': 1200, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-            'champion_population': 2400, # at a validated generation, these are the points the champion team will play against to obtain the metrics
-            'hall_of_fame': {
-                'size': 20,
-                'enabled': True,
-                'use_as_opponents': True,
-                'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-                'max_opponents_per_generation': 2,
-                'wait_generations': 100,
-            },
-            'debug': {
-                'print': False,
-                'matches': False,
-                'output_path': 'SBB/environments/poker/logs/',
-            },
-            'poker': {
-                'opponents': [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], # PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent], #[PokerLooseAgressiveOpponent],
-                'river_round_only': False,
-                'river_only_to_fullgame': False, # changed from one to another in half the generations, ignores 'river_round_only'
-                'maximum_bets': 4,
-            },
-            'save_partial_files_per_validation': False,
-        },
-
-        'training_parameters': {
-            'runs_total': 5,
-            'generations_total': 300,
-            'validate_after_each_generation': 50,
-            'populations': {
-                'teams': 100,
-                'points': 600,
-            },
-            'replacement_rate': {
-                'teams': 0.5,
-                'points': 0.2,
-            },
-            'mutation': {
-                'team': {
-                    'remove_program': 0.7,
-                    'add_program': 0.7,
-                    'mutate_program': 0.2, # is applied to all programs in the team, until at least one program is mutated
-                },
-                'program': {
-                    'remove_instruction': 0.5,
-                    'add_instruction': 0.5,
-                    'change_instruction': 1.0,
-                    'swap_instructions': 1.0,
-                    'change_action': 0.1,
-                },
-            },
-            'team_size': { # the min and initial size are the total number of actions
-                'min': 2,
-                'max': 16,
-            },
-            'program_size': {
-                'min': 5,
-                'max': 40,
-            },
-        },
-
-        'advanced_training_parameters': {
-            'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run, WARNING: It not ensures that runs with the same seed will have the same result, just increases the chance
-            'use_pareto_for_point_population_selection': False, # if False, will select points using age
-            'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
-            'extra_registers': 4,
-            'diversity': {
-                'use_and_show': ['ncd_c4', 'genotype'], # will be applied to fitness and show in the outputs
-                'only_show': [], # will be only show in the outputs
-                'k': 10,
-                'only_novelty': False,
-                'use_novelty_archive': False,
-            },
-            'run_initialization_step2': False,
-            'use_weighted_probability_selection': False, # if False, uniform probability will be used
-            'use_agressive_mutations': True,
-            'use_profiling': True,
-            'second_layer': {
-                'enabled': False,
-                'path': 'actions_reference/baseline3_without_bayes/run[run_id]/second_layer_files/top10_overall/actions.json',
-            },
-
-            'sockets_parameters': {
-                'debug': False,
-                'timeout': 60,
-                'buffer': 5000,
-                'port': 7800,
-                'host': 'localhost',
-                'requests_timeout': 120,
-            },
-        },
-    }
+    # user configurable options, choose a .json file when initializing main.py
+    USER = {}
 
     # restrictions used to validate CONFIG and to control the system low-level configurations
     RESTRICTIONS = {
@@ -146,16 +46,16 @@ class Config():
         'used_diversities': None, # initialized by sbb.py
         'multiply_normalization_by': 10.0,
         'profile': {
-            'samples': deque(maxlen=int(USER['training_parameters']['populations']['points']*2.0)),
+            'samples': -1, # set after config is loaded
             'update_chance': 0.05,
         },
         'novelty_archive':{
-            'samples': deque(maxlen=int(USER['training_parameters']['populations']['teams']*1.0)),
+            'samples': -1, # set after config is loaded
             'threshold': 10,
         },
         'diversity': {
             'options': ['genotype', 'fitness_sharing', 'entropy_c2', 'hamming_c3', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
-            'total_bins': 3, # used to quantize the distances for the diversity metrics
+            'total_bins': 3, # used to organize the distances for the diversity metrics
             'max_ncd': 1.2,
         },
         'second_layer': {
@@ -163,6 +63,23 @@ class Config():
             'short_action_mapping': {}, # initialized by sbb.py
         },
     }
+
+    @staticmethod
+    def load_config(json_file):
+        """
+        Load user configurations from a .json file
+        """
+        # removing comments
+        content = ""
+        with open(json_file, 'r') as fp:
+            for line in fp:
+                new_line = re.sub(r'(#+.*)', r'', line)
+                content += new_line
+
+        # initializing config
+        Config.USER = json.loads(content)
+        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['points']*2.0))
+        Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['teams']*1.0))
 
     @staticmethod
     def check_parameters():
@@ -212,23 +129,3 @@ class Config():
             if len(Config.USER['advanced_training_parameters']['seed']) != Config.USER['training_parameters']['runs_total']:
                 sys.stderr.write("Error: If you are using an array of seeds, the size of the array must be equal to the total of runs.\n")
                 raise SystemExit
-
-# To run SBB with a predefined parameter set, uncomment the next line. More defaults are available in /config_examples
-
-Config.USER = tictactoe_for_sockets_config.TICTACTOE_QUICK
-# Config.USER = tictactoe_for_sockets_config.TICTACTOE_DEFAULT
-
-# Config.USER = tictactoe_config.TICTACTOE_DEFAULT
-# Config.USER = tictactoe_config.TICTACTOE_QUICK
-
-# Config.USER = poker_config.POKER_LAYER1
-# Config.USER = poker_config.POKER_LAYER1_WITH_BAYES
-# Config.USER = poker_config.POKER_LAYER2
-# Config.USER = poker_config.POKER_LAYER2_WITH_BAYES
-# Config.USER = poker_config.POKER_LAYER1_WITH_DIVERSITY
-# Config.USER = poker_config.POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING
-# Config.USER = poker_config.POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING
-
-# Config.USER = classification_config.CLASS_CONFIG
-# Config.USER = classification_config.THYROID_CONFIG
-# Config.USER = classification_config.SHUTTLE_CONFIG
