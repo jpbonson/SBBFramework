@@ -63,8 +63,10 @@ TEST_CONFIG = {
             'use_and_show': [],
             'only_show': [],
             'k': 8,
-            'only_novelty': False,
-            'use_novelty_archive': False,
+        },
+        "novelty": {
+            "enabled": False,
+            "dont_use_fitness": False,
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False,

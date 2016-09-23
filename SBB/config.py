@@ -108,9 +108,12 @@ class Config():
             if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] < 0:
                 sys.stderr.write("Error: For hall of fame, 'opponents' can't be lower than 0\n")
                 raise SystemExit
+            if Config.USER['reinforcement_parameters']['environment'] not in Config.RESTRICTIONS['environment_types']:
+                sys.stderr.write("Error: Invalid 'environment' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['environment_types'])+"\n")
+                raise SystemExit
 
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] not in Config.RESTRICTIONS['environment_types']:
-            sys.stderr.write("Error: Invalid 'environment' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['environment_types'])+"\n")
+        if Config.USER['advanced_training_parameters']['novelty']['enabled'] and len(Config.USER['advanced_training_parameters']['diversity']['use_and_show']) == 0:
+            sys.stderr.write("Error: Novelty can only be used along with a diversity metric\n")
             raise SystemExit
 
         valid_operations = Config.RESTRICTIONS['genotype_options']['simple_operations'] + Config.RESTRICTIONS['genotype_options']['complex_operations']

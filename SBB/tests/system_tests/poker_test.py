@@ -69,8 +69,10 @@ TEST_CONFIG = {
             'use_and_show': [], 
             'only_show': [], 
             'k': 10,
-            'only_novelty': False,
-            'use_novelty_archive': False,
+        },
+        "novelty": {
+            "enabled": False,
+            "dont_use_fitness": False,
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, 
@@ -93,9 +95,18 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['teams']*1.0))
 
         config = dict(TEST_CONFIG)
+        config['advanced_training_parameters']['novelty'] = False
         Config.USER = config
 
     def test_reinforcement_for_poker(self):
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_poker_with_novelty(self):
+        Config.USER['advanced_training_parameters']['novelty'] = True
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

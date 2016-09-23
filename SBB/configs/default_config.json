@@ -63,6 +63,7 @@
     }, 
     
     "advanced_training_parameters": {
+        "seed": 1, # use None for a random seed (obs.: it doesn't guarantee that the same seeds lead to the same runs)
         "use_operations": [
             "+", "-", "*", "/", 
             "ln", "exp", "cos", 
@@ -70,16 +71,17 @@
             "if_equal_or_higher_than"
         ], 
         "extra_registers": 4, 
-        "seed": 1, # use None for a random seed
         "diversity": {
             "k": 10, 
-            "use_novelty_archive": false, 
-            "only_novelty": false, 
-            "use_and_show": [ # will be applied to fitness and show in the outputs
+            "use_and_show": [ # will be applied to fitness and shown in the outputs
                 "genotype"
             ], 
-            "only_show": [] # will be only show in the outputs
+            "only_show": [] # will be only shown in the outputs
         }, 
+        "novelty": {
+            "enabled": false,
+            "dont_use_fitness": false
+        },
         "use_weighted_probability_selection": false, # if False, uniform probability will be used
         "use_agressive_mutations": true, 
         "second_layer": {
