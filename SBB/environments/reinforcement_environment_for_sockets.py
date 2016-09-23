@@ -32,6 +32,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     # - criar arquivos configs para cada config antiga
     # - reorganizar arquivo config_default (remover algumas opcoes)
 
+    # - refatorar diversities (para generalizar)
     # - fazer reinforcement para sockets ser generico
     # - fazer oponentes se comunicarem via socket? e quando nao tiver oponentes? 
     #       oponentes eh problema do SBB, ou do client?

@@ -52,7 +52,7 @@ CLASS_CONFIG = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
         'extra_registers': 4,
         'diversity': {
-            'use_and_show': ['genotype'], # will be applied to fitness and show in the outputs
+            'metrics': ['genotype'], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 10,
         },

@@ -42,16 +42,14 @@ class Selection:
         teams_to_remove = int(Config.USER['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
         teams_to_keep = len(teams_population) - teams_to_remove
 
-        diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['use_and_show']
+        diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['metrics']
         if len(diversities_to_apply) == 0:
-            if len(Config.USER['advanced_training_parameters']['diversity']['only_show']) > 0:
-                DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population())
             sorted_solutions = sorted(teams_population, key=lambda solution: solution.fitness_, reverse=True)
             keep_teams = sorted_solutions[0:teams_to_keep]
             remove_teams = sorted_solutions[teams_to_keep:]
             pareto_front = []
         else:
-            options = list(Config.USER['advanced_training_parameters']['diversity']['use_and_show'])
+            options = list(Config.USER['advanced_training_parameters']['diversity']['metrics'])
             if len(diversities_to_apply) > 1 and self.previous_diversity_:
                 options.remove(self.previous_diversity_)
             novelty = random.choice(options)
@@ -62,7 +60,7 @@ class Selection:
             else:
                 DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population())
             
-            if Config.USER['advanced_training_parameters']['novelty']['enabled'] and Config.USER['advanced_training_parameters']['novelty']['dont_use_fitness']:
+            if Config.USER['advanced_training_parameters']['novelty']['enabled'] and not Config.USER['advanced_training_parameters']['novelty']['use_fitness']:
                 sorted_solutions = sorted(teams_population, key=lambda solution: solution.diversity_[novelty], reverse=True)
                 keep_teams = sorted_solutions[0:teams_to_keep]
                 remove_teams = sorted_solutions[teams_to_keep:]

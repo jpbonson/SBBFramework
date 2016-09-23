@@ -67,7 +67,7 @@ TICTACTOE_QUICK = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
         'extra_registers': 4,
         'diversity': {
-            'use_and_show': ['genotype'], # will be applied to fitness and show in the outputs
+            'metrics': ['genotype'], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 10,
             'only_novelty': False,
@@ -149,7 +149,7 @@ TICTACTOE_DEFAULT = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
         'extra_registers': 4,
         'diversity': {
-            'use_and_show': ['genotype'], # will be applied to fitness and show in the outputs
+            'metrics': ['genotype'], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 10,
             'only_novelty': False,
@@ -171,11 +171,11 @@ TICTACTOE_RESEARCH['training_parameters']['runs_total'] = 20
 
 TICTACTOE_RESEARCH_2 = copy.deepcopy(TICTACTOE_RESEARCH)
 TICTACTOE_RESEARCH_2['advanced_training_parameters']['use_profiling'] = True
-TICTACTOE_RESEARCH_2['advanced_training_parameters']['diversity']['use_and_show'] = []
+TICTACTOE_RESEARCH_2['advanced_training_parameters']['diversity']['metrics'] = []
 TICTACTOE_RESEARCH_2['advanced_training_parameters']['diversity']['only_show'] = ['genotype']
 TICTACTOE_RESEARCH_3 = copy.deepcopy(TICTACTOE_RESEARCH)
 TICTACTOE_RESEARCH_3['advanced_training_parameters']['use_profiling'] = True
-TICTACTOE_RESEARCH_3['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype']
+TICTACTOE_RESEARCH_3['advanced_training_parameters']['diversity']['metrics'] = ['genotype']
 TICTACTOE_RESEARCH_3['advanced_training_parameters']['diversity']['only_show'] = []
 
 # TICTACTOE_RESEARCH_2_LAYER2 = copy.deepcopy(TICTACTOE_RESEARCH_2)

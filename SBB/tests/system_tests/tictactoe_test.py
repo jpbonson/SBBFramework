@@ -60,13 +60,12 @@ TEST_CONFIG = {
         'use_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 4,
         'diversity': {
-            'use_and_show': [],
-            'only_show': [],
+            'metrics': [],
             'k': 8,
         },
         "novelty": {
             "enabled": False,
-            "dont_use_fitness": False,
+            "use_fitness": True,
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False,
@@ -89,7 +88,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['teams']*1.0))
 
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['diversity']['metrics'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         config['reinforcement_parameters']['hall_of_fame']['opponents'] = 0
@@ -149,7 +148,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_genotype_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['genotype']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -157,7 +156,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_sharing_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['fitness_sharing']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['fitness_sharing']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -165,7 +164,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_entropy_c2_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['entropy_c2']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['entropy_c2']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -173,7 +172,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_hamming_c3_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['hamming_c3']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['hamming_c3']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -181,7 +180,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_ncd_c3_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c3']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['ncd_c3']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -189,7 +188,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_entropy_c3_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['entropy_c3']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['entropy_c3']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -197,7 +196,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_ncd_c4_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['ncd_c4']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -205,7 +204,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_euclidean_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['euclidean']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['euclidean']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -213,7 +212,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_two_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype', 'fitness_sharing']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['genotype', 'fitness_sharing']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -221,7 +220,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_with_complex_instructions(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['ncd_c4']
         Config.USER['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal', 'if_lesser_than', 'if_equal_or_higher_than']
         sbb = SBB()
         sbb.run()

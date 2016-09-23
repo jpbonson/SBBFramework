@@ -14,8 +14,7 @@ class DiversityMaintenance():
 
     @staticmethod
     def calculate_diversities(teams_population, point_population):
-        diversities_to_calculate = list(Config.USER['advanced_training_parameters']['diversity']['use_and_show'])
-        diversities_to_calculate += Config.USER['advanced_training_parameters']['diversity']['only_show']
+        diversities_to_calculate = list(Config.USER['advanced_training_parameters']['diversity']['metrics'])
 
         diversities_to_calculate = set(diversities_to_calculate)
         if "fitness_sharing" in diversities_to_calculate:

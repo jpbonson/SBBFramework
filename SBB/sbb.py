@@ -42,7 +42,7 @@ class SBB:
             self.seeds_per_run_ = []
             for index in range(Config.USER['training_parameters']['runs_total']):
                 self.seeds_per_run_.append(random.randint(0, Config.RESTRICTIONS['max_seed']))
-        Config.RESTRICTIONS['used_diversities'] = list(set(Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show']))
+        Config.RESTRICTIONS['used_diversities'] = list(Config.USER['advanced_training_parameters']['diversity']['metrics'])
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
     
     def run(self):

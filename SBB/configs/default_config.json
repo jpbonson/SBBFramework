@@ -73,23 +73,22 @@
         "extra_registers": 4, 
         "diversity": {
             "k": 10, 
-            "use_and_show": [ # will be applied to fitness and shown in the outputs
+            "metrics": [
                 "genotype"
             ], 
-            "only_show": [] # will be only shown in the outputs
         }, 
         "novelty": {
             "enabled": false,
-            "dont_use_fitness": false
+            "use_fitness": true
         },
         "use_weighted_probability_selection": false, # if False, uniform probability will be used
         "use_agressive_mutations": true, 
-        "second_layer": {
-            "path": "actions_reference/baseline/run[run_id]/second_layer_files/hall_of_fame+top10_overall_subcats/actions.json", 
-            "enabled": false
-        }, 
         "use_pareto_for_point_population_selection": false, # if False, will select points using uniform probability
-        "run_initialization_step2": false
+        "run_initialization_step2": false,
+        "second_layer": {
+            "path": "actions_reference/actions.json", 
+            "enabled": false
+        }
     },
 
     "debug": {

@@ -85,7 +85,7 @@ class Config():
             sys.stderr.write("Error: Invalid 'task' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['task_types'])+"\n")
             raise SystemExit
 
-        diversities = Config.USER['advanced_training_parameters']['diversity']['use_and_show'] + Config.USER['advanced_training_parameters']['diversity']['only_show']
+        diversities = Config.USER['advanced_training_parameters']['diversity']['metrics']
         
         for diversity in diversities:
             if diversity not in Config.RESTRICTIONS['diversity']['options']:
@@ -112,7 +112,7 @@ class Config():
                 sys.stderr.write("Error: Invalid 'environment' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['environment_types'])+"\n")
                 raise SystemExit
 
-        if Config.USER['advanced_training_parameters']['novelty']['enabled'] and len(Config.USER['advanced_training_parameters']['diversity']['use_and_show']) == 0:
+        if Config.USER['advanced_training_parameters']['novelty']['enabled'] and len(Config.USER['advanced_training_parameters']['diversity']['metrics']) == 0:
             sys.stderr.write("Error: Novelty can only be used along with a diversity metric\n")
             raise SystemExit
 

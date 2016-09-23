@@ -51,13 +51,12 @@ TEST_CONFIG = {
         'use_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
-            'use_and_show': [],
-            'only_show': [],
+            'metrics': [],
             'k': 8,
         },
         "novelty": {
             "enabled": False,
-            "dont_use_fitness": False,
+            "use_fitness": True,
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False,
@@ -81,7 +80,7 @@ class ClassificationTests(unittest.TestCase):
         
         config = dict(TEST_CONFIG)
         config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
-        config['advanced_training_parameters']['diversity']['use_and_show'] = []
+        config['advanced_training_parameters']['diversity']['metrics'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
@@ -120,7 +119,7 @@ class ClassificationTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype', 'fitness_sharing']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['genotype', 'fitness_sharing']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

@@ -72,13 +72,12 @@ TEST_CONFIG = {
         'use_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 4,
         'diversity': {
-            'use_and_show': [], 
-            'only_show': [], 
+            'metrics': [],
             'k': 8,
         },
         "novelty": {
             "enabled": False,
-            "dont_use_fitness": False,
+            "use_fitness": True,
         },
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, 

@@ -80,7 +80,7 @@ POKER_CONFIG3 = {
         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
         'extra_registers': 4,
         'diversity': {
-            'use_and_show': ['ncd_c4', 'genotype'], # will be applied to fitness and show in the outputs
+            'metrics': ['ncd_c4', 'genotype'], # will be applied to fitness and show in the outputs
             'only_show': [], # will be only show in the outputs
             'k': 10,
             'only_novelty': False,
@@ -108,7 +108,7 @@ POKER_LAYER_VAL0['reinforcement_parameters']['validation_population'] = 100
 POKER_LAYER_VAL0['reinforcement_parameters']['champion_population'] = 100
 POKER_LAYER_VAL0['reinforcement_parameters']['opponents'] = [PokerAlwaysFoldOpponent]
 POKER_LAYER_VAL0['training_parameters']['team_size']['min'] = 3
-POKER_LAYER_VAL0['advanced_training_parameters']['diversity']['use_and_show'] = []
+POKER_LAYER_VAL0['advanced_training_parameters']['diversity']['metrics'] = []
 # POKER_LAYER_VAL0['advanced_training_parameters']['run_initialization_step2'] = True
 
 POKER_LAYER1_WITH_BAYES = copy.deepcopy(POKER_LAYER1)
@@ -127,47 +127,47 @@ POKER_LAYER2_WITH_BAYES['advanced_training_parameters']['second_layer']['path'] 
 POKER_LAYER2_WITH_BAYES['reinforcement_parameters']['opponents'] = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent]
 
 POKER_LAYER1_NO_DIVERSITY = copy.deepcopy(POKER_LAYER1)
-POKER_LAYER1_NO_DIVERSITY['advanced_training_parameters']['diversity']['use_and_show'] = []
+POKER_LAYER1_NO_DIVERSITY['advanced_training_parameters']['diversity']['metrics'] = []
 POKER_LAYER1_NO_DIVERSITY['advanced_training_parameters']['use_profiling'] = False
 
 POKER_LAYER1_WITH_DIVERSITY = copy.deepcopy(POKER_LAYER1)
 POKER_LAYER1_WITH_DIVERSITY['training_parameters']['runs_total'] = 25
-POKER_LAYER1_WITH_DIVERSITY['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4', 'genotype']
+POKER_LAYER1_WITH_DIVERSITY['advanced_training_parameters']['diversity']['metrics'] = ['ncd_c4', 'genotype']
 POKER_LAYER1_WITH_DIVERSITY['advanced_training_parameters']['use_profiling'] = True
 
 POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING = copy.deepcopy(POKER_LAYER1)
-POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = []
+POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING['advanced_training_parameters']['diversity']['metrics'] = []
 POKER_LAYER1_NO_DIVERSITY_WITH_PROFILING['advanced_training_parameters']['use_profiling'] = True
 
 POKER_LAYER1_WITH_DIVERSITY_NO_PROFILING = copy.deepcopy(POKER_LAYER1)
-POKER_LAYER1_WITH_DIVERSITY_NO_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4', 'genotype']
+POKER_LAYER1_WITH_DIVERSITY_NO_PROFILING['advanced_training_parameters']['diversity']['metrics'] = ['ncd_c4', 'genotype']
 POKER_LAYER1_WITH_DIVERSITY_NO_PROFILING['advanced_training_parameters']['use_profiling'] = False
 
 POKER_LAYER1_ONLY_DIVERSITY = copy.deepcopy(POKER_LAYER1)
-POKER_LAYER1_ONLY_DIVERSITY['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+POKER_LAYER1_ONLY_DIVERSITY['advanced_training_parameters']['diversity']['metrics'] = ['ncd_c4']
 POKER_LAYER1_ONLY_DIVERSITY['advanced_training_parameters']['diversity']['only_novelty'] = True
 
 POKER_LAYER1_NCD = copy.deepcopy(POKER_LAYER1)
-POKER_LAYER1_NCD['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+POKER_LAYER1_NCD['advanced_training_parameters']['diversity']['metrics'] = ['ncd_c4']
 
 POKER_LAYER1_WITH_HAMMING_NO_PROFILING = copy.deepcopy(POKER_LAYER1)
-POKER_LAYER1_WITH_HAMMING_NO_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = ['hamming_c3']
+POKER_LAYER1_WITH_HAMMING_NO_PROFILING['advanced_training_parameters']['diversity']['metrics'] = ['hamming_c3']
 POKER_LAYER1_WITH_HAMMING_NO_PROFILING['advanced_training_parameters']['use_profiling'] = False
 
 POKER_LAYER1_WITH_GENOTYPE_NO_PROFILING = copy.deepcopy(POKER_LAYER1)
-POKER_LAYER1_WITH_GENOTYPE_NO_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = ['genotype']
+POKER_LAYER1_WITH_GENOTYPE_NO_PROFILING['advanced_training_parameters']['diversity']['metrics'] = ['genotype']
 POKER_LAYER1_WITH_GENOTYPE_NO_PROFILING['advanced_training_parameters']['use_profiling'] = False
 
 POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING = copy.deepcopy(POKER_LAYER1)
 POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['training_parameters']['runs_total'] = 2
-POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['advanced_training_parameters']['diversity']['metrics'] = ['ncd_c4']
 POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['advanced_training_parameters']['diversity']['only_novelty'] = True
 POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['advanced_training_parameters']['use_profiling'] = False
 POKER_LAYER1_ONLY_NOVELTY_NO_PROFILING['advanced_training_parameters']['diversity']['use_novelty_archive'] = True
 
 POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING = copy.deepcopy(POKER_LAYER1)
 POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['training_parameters']['runs_total'] = 1
-POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
+POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['diversity']['metrics'] = ['ncd_c4']
 POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['diversity']['only_novelty'] = False
 POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['use_profiling'] = False
 POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['diversity']['use_novelty_archive'] = True
@@ -250,7 +250,7 @@ POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['d
     #         'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal'],
     #         'extra_registers': 4,
     #         'diversity': {
-    #             'use_and_show': ['ncd_c4', 'genotype'], # will be applied to fitness and show in the outputs
+    #             'metrics': ['ncd_c4', 'genotype'], # will be applied to fitness and show in the outputs
     #             'only_show': [], # will be only show in the outputs
     #             'k': 10,
     #             'only_novelty': False,
