@@ -83,7 +83,6 @@
         },
         "use_weighted_probability_selection": false, # if False, uniform probability will be used
         "use_agressive_mutations": true, 
-        "use_pareto_for_point_population_selection": false, # if False, will select points using uniform probability
         "second_layer": {
             "path": "actions_reference/actions.json", 
             "enabled": false

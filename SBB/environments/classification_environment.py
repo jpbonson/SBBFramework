@@ -3,7 +3,6 @@ from collections import Counter
 import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from default_environment import DefaultEnvironment, DefaultPoint, reset_points_ids
-from ..core.pareto_dominance_for_points import ParetoDominanceForPoints
 from ..utils.helpers import round_array, flatten
 from ..config import Config
 
@@ -187,24 +186,14 @@ class ClassificationEnvironment(DefaultEnvironment):
 
         kept_subsets_per_class = []
         removed_subsets_per_class = []
-        if Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection']:
-            # obtain the pareto front for each subset
-            for subset in current_subsets_per_class:
-                keep_solutions, remove_solutions = ParetoDominanceForPoints.run(subset, teams_population, samples_per_class_to_keep)
-                kept_subsets_per_class.append(keep_solutions)
-                removed_subsets_per_class.append(remove_solutions)
 
-            # add new points
-            for subset, trainset in zip(kept_subsets_per_class, self.trainset_per_action_):
-                subset += self._sample_subset(trainset, total_samples_per_class - len(subset))
-        else:
-            # obtain the data points that will be kept and that will be removed for each subset using uniform probability
-            total_samples_per_class_to_add = total_samples_per_class - samples_per_class_to_keep
-            for i, subset in enumerate(current_subsets_per_class):
-                kept_subsets = random.sample(subset, samples_per_class_to_keep) # get points that will be kept
-                kept_subsets += self._sample_subset(self.trainset_per_action_[i], total_samples_per_class_to_add) # add new points
-                kept_subsets_per_class.append(kept_subsets)
-                removed_subsets_per_class.append(list(set(subset) - set(kept_subsets))) # find the remvoed points
+        # obtain the data points that will be kept and that will be removed for each subset using uniform probability
+        total_samples_per_class_to_add = total_samples_per_class - samples_per_class_to_keep
+        for i, subset in enumerate(current_subsets_per_class):
+            kept_subsets = random.sample(subset, samples_per_class_to_keep) # get points that will be kept
+            kept_subsets += self._sample_subset(self.trainset_per_action_[i], total_samples_per_class_to_add) # add new points
+            kept_subsets_per_class.append(kept_subsets)
+            removed_subsets_per_class.append(list(set(subset) - set(kept_subsets))) # find the remvoed points
 
         self.samples_per_class_to_keep_ = kept_subsets_per_class
         self.samples_per_class_to_remove_ = removed_subsets_per_class

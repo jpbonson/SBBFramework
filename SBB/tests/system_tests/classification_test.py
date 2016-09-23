@@ -47,7 +47,6 @@ TEST_CONFIG = {
 
     'advanced_training_parameters': {
         'seed': 1,
-        'use_pareto_for_point_population_selection': False,
         'use_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
@@ -78,7 +77,6 @@ class ClassificationTests(unittest.TestCase):
         Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['teams']*1.0))
         
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['metrics'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
@@ -98,14 +96,6 @@ class ClassificationTests(unittest.TestCase):
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
         expected = 3
-        self.assertEqual(expected, result)
-
-    def test_classification_for_iris_with_pareto(self):
-        Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
         self.assertEqual(expected, result)
 
     def test_classification_for_iris_with_diversity_maintenance(self):

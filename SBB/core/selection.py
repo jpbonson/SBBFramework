@@ -30,7 +30,7 @@ class Selection:
 
     def _evaluate_teams(self, teams_population):
         """
-        Create a point population in the environment, use it to evaluate the teams (calculate fitness_ and results_per_points_), 
+        Create a point population in the environment, use it to evaluate the teams, 
         and then use the teams results to evluate the point population.
         """
         self.environment.setup(teams_population)

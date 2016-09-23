@@ -5,13 +5,7 @@ import select
 import socket
 import json
 from collections import defaultdict
-from default_environment import DefaultEnvironment, DefaultPoint, reset_points_ids
 from reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
-from ..core.team import Team
-from ..core.diversity_maintenance import DiversityMaintenance
-from ..core.pareto_dominance_for_points import ParetoDominanceForPoints
-from ..core.pareto_dominance_for_teams import ParetoDominanceForTeams
-from ..utils.helpers import round_value, flatten, accumulative_performances, rank_teams_by_accumulative_score
 from ..config import Config
 
 # TODO

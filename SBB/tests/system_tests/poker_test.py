@@ -62,7 +62,6 @@ TEST_CONFIG = {
 
     'advanced_training_parameters': {
         'seed': 1, 
-        'use_pareto_for_point_population_selection': False, 
         'use_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 4,
         'diversity': {

@@ -6,7 +6,6 @@ from collections import defaultdict
 from default_environment import DefaultEnvironment, DefaultPoint, reset_points_ids
 from ..core.team import Team
 from ..core.diversity_maintenance import DiversityMaintenance
-from ..core.pareto_dominance_for_points import ParetoDominanceForPoints
 from ..core.pareto_dominance_for_teams import ParetoDominanceForTeams
 from ..utils.helpers import round_value, flatten, accumulative_performances, rank_teams_by_accumulative_score
 from ..config import Config
@@ -244,20 +243,14 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
         kept_subsets_per_class = []
         removed_subsets_per_class = []
-        if Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection']:
-            # obtain the pareto front for each subset
-            for subset, points_to_add in zip(current_subsets_per_class, points_to_add_per_label):
-                keep_solutions, remove_solutions = ParetoDominanceForPoints.run(subset, teams_population, samples_per_class_to_keep)
-                kept_subsets_per_class.append(keep_solutions)
-                removed_subsets_per_class.append(remove_solutions)
-        else:
-            # obtain the data points that will be kept and that will be removed for each subset using uniform probability
-            for subset, points_to_add in zip(current_subsets_per_class, points_to_add_per_label):
-                subset.sort(key=lambda x: x.age_, reverse=True)
-                remove_solutions = subset[:samples_per_class_to_remove]
-                keep_solutions = list(set(subset) - set(remove_solutions))
-                kept_subsets_per_class.append(keep_solutions)
-                removed_subsets_per_class.append(remove_solutions)
+
+        # obtain the data points that will be kept and that will be removed for each subset using uniform probability
+        for subset, points_to_add in zip(current_subsets_per_class, points_to_add_per_label):
+            subset.sort(key=lambda x: x.age_, reverse=True)
+            remove_solutions = subset[:samples_per_class_to_remove]
+            keep_solutions = list(set(subset) - set(remove_solutions))
+            kept_subsets_per_class.append(keep_solutions)
+            removed_subsets_per_class.append(remove_solutions)
 
         for subset, points_to_add in zip(kept_subsets_per_class, points_to_add_per_label):
             subset += points_to_add
