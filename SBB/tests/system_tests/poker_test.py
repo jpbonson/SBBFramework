@@ -73,7 +73,6 @@ TEST_CONFIG = {
             "enabled": False,
             "use_fitness": True,
         },
-        'run_initialization_step2': False,
         'use_weighted_probability_selection': False, 
         'use_agressive_mutations': True,
         'second_layer': {

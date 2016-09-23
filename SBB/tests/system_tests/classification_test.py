@@ -58,7 +58,6 @@ TEST_CONFIG = {
             "enabled": False,
             "use_fitness": True,
         },
-        'run_initialization_step2': False,
         'use_weighted_probability_selection': False,
         'use_agressive_mutations': False,
         'second_layer': {
@@ -84,7 +83,6 @@ class ClassificationTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
-        config['advanced_training_parameters']['run_initialization_step2'] = False
         Config.USER = config
 
     def test_classification_for_iris(self):
@@ -104,14 +102,6 @@ class ClassificationTests(unittest.TestCase):
 
     def test_classification_for_iris_with_pareto(self):
         Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_classification_for_iris_with_step2(self):
-        Config.USER['advanced_training_parameters']['run_initialization_step2'] = True
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
