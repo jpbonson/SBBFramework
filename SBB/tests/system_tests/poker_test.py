@@ -8,25 +8,25 @@ from ...environments.poker.poker_opponents import PokerRandomOpponent
 
 TEST_CONFIG = {
     'task': 'reinforcement',
-    'classification_parameters': { # only used if 'task' is 'classification'
-        'dataset': 'thyroid', # must have a .train and a .test file in the pSBB/datasets folder
+    'classification_parameters': { 
+        'dataset': 'thyroid', 
     },
-    'reinforcement_parameters': { # only used if 'task' is 'reinforcement'
-        'environment': 'poker', # edit _initialize_environment() in SBB and RESTRICTIONS['environment_types'] to add new environments (they must implement DefaultEnvironment)
-        'validation_population': 18, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-        'champion_population': 18, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+    'reinforcement_parameters': { 
+        'environment': 'poker', 
+        'validation_population': 18, 
+        'champion_population': 18, 
         'hall_of_fame': {
             'size': 20,
             'enabled': False,
             'use_as_opponents': False,
-            'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+            'diversity': 'ncd_c4',
             'max_opponents_per_generation': 2,
             'wait_generations': 100,
         },
         'poker': {
             'opponents': [PokerRandomOpponent],
             'river_round_only': False,
-            'river_only_to_fullgame': False, # changed from one to another in half the generations, ignores 'river_round_only'
+            'river_only_to_fullgame': False, 
             'maximum_bets': 4,
         },
         'save_partial_files_per_validation': False,
@@ -48,7 +48,7 @@ TEST_CONFIG = {
             'team': {
                 'remove_program': 0.7,
                 'add_program': 0.7,
-                'mutate_program': 0.2, # is applied to all programs in the team, until at least one program is mutated
+                'mutate_program': 0.2, 
             },
             'program': {
                 'remove_instruction': 0.5,
@@ -58,7 +58,7 @@ TEST_CONFIG = {
                 'change_action': 0.1,
             },
         },
-        'team_size': { # the min and initial size are the total number of actions
+        'team_size': { 
             'min': 2,
             'max': 8,
         },
@@ -69,19 +69,19 @@ TEST_CONFIG = {
     },
 
     'advanced_training_parameters': {
-        'seed': 1, # default = None, it can be a single seed for all runs, or an array of seeds per run, WARNING: It not ensures that runs with the same seed will have the same result, just increases the chance
-        'use_pareto_for_point_population_selection': False, # if False, will select points using age
+        'seed': 1, 
+        'use_pareto_for_point_population_selection': False, 
         'use_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 4,
         'diversity': {
-            'use_and_show': [], # will be applied to fitness and show in the outputs
-            'only_show': [], # will be only show in the outputs
+            'use_and_show': [], 
+            'only_show': [], 
             'k': 10,
             'only_novelty': False,
             'use_novelty_archive': False,
         },
         'run_initialization_step2': False,
-        'use_weighted_probability_selection': False, # if False, uniform probability will be used
+        'use_weighted_probability_selection': False, 
         'use_agressive_mutations': True,
         'second_layer': {
             'enabled': False,

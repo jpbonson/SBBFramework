@@ -60,8 +60,8 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
 
     def _start_server(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.bind((Config.USER['advanced_training_parameters']['sockets_parameters']['host'], 
-            Config.USER['advanced_training_parameters']['sockets_parameters']['port']))
+        self.server_socket.bind((Config.USER['reinforcement_parameters']['sockets_parameters']['host'], 
+            Config.USER['reinforcement_parameters']['sockets_parameters']['port']))
         self.server_socket.listen(1)
         print "\nWaiting for client socket connection...\n"
         self.connection, self.address = self.server_socket.accept()
@@ -168,9 +168,9 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         result = []
         try:
             ready = select.select([self.connection], [], [self.connection], 
-                Config.USER['advanced_training_parameters']['sockets_parameters']['requests_timeout'])
+                Config.USER['reinforcement_parameters']['sockets_parameters']['timeout'])
             if ready[0]:
-                data = self.connection.recv(Config.USER['advanced_training_parameters']['sockets_parameters']['buffer'])
+                data = self.connection.recv(Config.USER['reinforcement_parameters']['sockets_parameters']['buffer'])
                 if Config.USER['debug']['enabled']:
                     print "data: "+str(data)
                 data = json.loads(data)

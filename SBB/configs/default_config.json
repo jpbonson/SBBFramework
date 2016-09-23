@@ -9,12 +9,12 @@
 
     "reinforcement_parameters": { # only used if "task" is "reinforcement"
         "environment": "tictactoe",
-        "validation_population": 20,
-        "champion_population": 40,
+        "validation_population": 20, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+        "champion_population": 40, # at a validated generation, these are the points the champion team will play against to obtain the metrics
         "hall_of_fame": {
             "max_opponents_per_generation": 2,
             "use_as_opponents": false, 
-            "diversity": "genotype", 
+            "diversity": "genotype", # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
             "wait_generations": 100, # TODO: tirar?
             "enabled": false, 
             "size": 20
@@ -27,7 +27,14 @@
             "maximum_bets": 4
         },
 
-        "save_partial_files_per_validation": false
+        "save_partial_files_per_validation": false,
+
+        "sockets_parameters": { # only used if "environment" is "sockets"
+            "host": "localhost",
+            "port": 7800,
+            "timeout": 120,
+            "buffer": 5000
+        }
     },
 
     "training_parameters": {
@@ -40,7 +47,7 @@
         }, 
         "team_size": {
             "max": 9, 
-            "min": 2
+            "min": 2 # the min size is the total number of actions
         }, 
         "program_size": {
             "max": 20, 
@@ -74,32 +81,24 @@
             "if_equal_or_higher_than"
         ], 
         "extra_registers": 4, 
-        "seed": 1, 
+        "seed": 1, # use None for a random seed
         "diversity": {
             "k": 10, 
             "use_novelty_archive": false, 
             "only_novelty": false, 
-            "use_and_show": [
+            "use_and_show": [ # will be applied to fitness and show in the outputs
                 "genotype"
             ], 
-            "only_show": []
+            "only_show": [] # will be only show in the outputs
         }, 
-        "use_weighted_probability_selection": false, 
+        "use_weighted_probability_selection": false, # if False, uniform probability will be used
         "use_agressive_mutations": true, 
         "second_layer": {
             "path": "actions_reference/baseline/run[run_id]/second_layer_files/hall_of_fame+top10_overall_subcats/actions.json", 
             "enabled": false
         }, 
-        "use_pareto_for_point_population_selection": false, 
-        "run_initialization_step2": false,
-
-        "sockets_parameters": {
-            "timeout": 60,
-            "buffer": 5000,
-            "port": 7800,
-            "host": "localhost",
-            "requests_timeout": 120
-        }
+        "use_pareto_for_point_population_selection": false, # if False, will select points using uniform probability
+        "run_initialization_step2": false
     },
 
     "debug": {

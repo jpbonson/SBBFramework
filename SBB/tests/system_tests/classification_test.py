@@ -5,8 +5,8 @@ from ...sbb import SBB
 
 TEST_CONFIG = {
     'task': 'classification',
-    'classification_parameters': { # only used if 'task' is 'classification'
-        'dataset': 'iris', # must have a .train and a .test file
+    'classification_parameters': { 
+        'dataset': 'iris',
         'working_path': "SBB/datasets/",
     },
     'training_parameters': {
@@ -35,7 +35,7 @@ TEST_CONFIG = {
                 'change_action': 0.1,
             },
         },
-        'team_size': { # the min size is the total number of actions
+        'team_size': {
             'min': 2,
             'max': 5,
         },
@@ -46,23 +46,23 @@ TEST_CONFIG = {
     },
 
     'advanced_training_parameters': {
-        'seed': 1, # default = None
-        'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
+        'seed': 1,
+        'use_pareto_for_point_population_selection': False,
         'use_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
-            'use_and_show': [], # will be applied to fitness and show in the outputs
-            'only_show': [], # will be only show in the outputs
+            'use_and_show': [],
+            'only_show': [],
             'k': 8,
             'only_novelty': False,
             'use_novelty_archive': False,
         },
         'run_initialization_step2': False,
-        'use_weighted_probability_selection': False, # if False, uniform probability will be used
+        'use_weighted_probability_selection': False,
         'use_agressive_mutations': False,
         'second_layer': {
             'enabled': False,
-            'path': None, # if using layered SBB, must provie a reference file for the actions
+            'path': None,
         },
     },
 
