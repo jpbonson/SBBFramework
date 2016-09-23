@@ -61,8 +61,6 @@ class SBB:
         print overall_info
 
         run_infos = []
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['save_partial_files_per_validation']:
-            run_infos_temp = defaultdict(list)
         for run_id in range(Config.USER['training_parameters']['runs_total']):
             start_time = time.time()
             run_info = RunInfo(run_id+1, self.seeds_per_run_[run_id])
@@ -112,13 +110,6 @@ class SBB:
                     self._store_per_generation_metrics(run_info, teams_population)
                     self._print_and_store_per_validation_metrics(run_info, best_team, teams_population, programs_population)
 
-                    if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['save_partial_files_per_validation']:
-                        run_info_temp = RunInfo(-1, -1)
-                        self.environment.calculate_final_validation_metrics(run_info_temp, teams_population, self.current_generation_)
-                        older_teams = [team for team in teams_population if team.generation != self.current_generation_]
-                        run_info_temp.teams_in_last_generation = list(older_teams)
-                        run_infos_temp[str(run_info.run_id)].append(run_info_temp)
-
             # to ensure validation metrics exist for all teams in the hall of fame
             if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
                 print "Validating hall of fame..."
@@ -135,33 +126,10 @@ class SBB:
         print overall_info
         sys.stdout.flush()
 
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['save_partial_files_per_validation']:
-            total_validations = len(run_infos_temp['1'])
-            processed_runs = []
-            for index in range(total_validations):
-                run_infos_temp_for_index = [x[index] for x in run_infos_temp.values()]
-                processed_runs_for_index = self._generate_overall_metrics_output_for_acc_curves(run_infos_temp_for_index)
-                processed_runs.append(processed_runs_for_index)
-
         if Config.RESTRICTIONS['write_output_files']:
             self.filepath_ = self._create_folder()
             self._write_output_files(run_infos, overall_info)
             self._save_teams_data_per_generation(run_infos)
-            if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['save_partial_files_per_validation']:
-                for index, run in enumerate(processed_runs):
-                    with open(self.filepath_+"acc_curves_for_val"+str(index)+".txt", "w") as text_file:
-                        text_file.write(run)
-
-                path = self.filepath_+"partial_files_per_validation/"
-                os.makedirs(path)
-                for index in range(total_validations):
-                    os.makedirs(path+"val"+str(index)+"/")
-                for run_id, validations in run_infos_temp.iteritems():
-                    for index, run in enumerate(validations):
-                        self._save_teams_in_actions_file(run.teams_in_last_generation, path+"val"+str(index)+"/"+"run"+str(run_id)+"_all_", create_folder=False)
-                        self._save_teams_in_actions_file(run.second_layer_files['top5_overall'], path+"val"+str(index)+"/"+"run"+str(run_id)+"_top5_", create_folder=False)
-                        self._save_teams_in_actions_file(run.second_layer_files['top10_overall'], path+"val"+str(index)+"/"+"run"+str(run_id)+"_top10_", create_folder=False)
-                        self._save_teams_in_actions_file(run.second_layer_files['top15_overall'], path+"val"+str(index)+"/"+"run"+str(run_id)+"_top15_", create_folder=False)
     
     def _initialize_environment(self):
         environment = None

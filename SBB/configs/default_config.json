@@ -27,8 +27,6 @@
             "maximum_bets": 4
         },
 
-        "save_partial_files_per_validation": false,
-
         "sockets_parameters": { # only used if "environment" is "sockets"
             "host": "localhost",
             "port": 7800,

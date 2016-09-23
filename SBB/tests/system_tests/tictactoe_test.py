@@ -19,7 +19,6 @@ TEST_CONFIG = {
             'max_opponents_per_generation': 2,
             'wait_generations': -1,
         },
-        'save_partial_files_per_validation': False,
     },
     'training_parameters': {
         'runs_total': 2,

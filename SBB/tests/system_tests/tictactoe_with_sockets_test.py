@@ -25,7 +25,6 @@ TEST_CONFIG = {
             'players': False,
             'debug_output_path': '',
         },
-        'save_partial_files_per_validation': False,
         "sockets_parameters": {
             "host": "localhost",
             "port": 7801,

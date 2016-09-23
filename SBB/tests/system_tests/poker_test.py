@@ -29,7 +29,6 @@ TEST_CONFIG = {
             'river_only_to_fullgame': False, 
             'maximum_bets': 4,
         },
-        'save_partial_files_per_validation': False,
     },
 
     'training_parameters': {
