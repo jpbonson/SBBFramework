@@ -565,7 +565,7 @@ class PokerAnalysis():
         print "won / played / total: "+str(metrics_player.extra_metrics_['won_hands']['validation'])+" / "+str(metrics_player.extra_metrics_['hand_played']['validation'])+" / "+str(metrics_player.extra_metrics_['total_hands']['validation'])
 
         print final_message
-        # with open(Config.USER['reinforcement_parameters']['debug']['output_path']+"team_summary.log", 'w') as f:
+        # with open(Config.USER['debug']['output_path']+"team_summary.log", 'w') as f:
         #     f.write(final_message)
         if player1_is_sbb:
             result = metrics_player.get_behaviors_metrics()
@@ -582,8 +582,7 @@ class PokerAnalysis():
         Config.USER['reinforcement_parameters']['environment'] = 'poker'
         # Config.USER['advanced_training_parameters']['extra_registers'] = 4
         Config.USER['advanced_training_parameters']['second_layer']['enabled'] = second_layer_enabled
-        Config.USER['reinforcement_parameters']['debug']['matches'] = generate_debug_files_per_match
-        Config.USER['reinforcement_parameters']['debug']['print'] = False
+        Config.USER['debug']['enabled'] = generate_debug_files_per_match
         Config.USER['reinforcement_parameters']['poker']['river_round_only'] = river_round_only
         Config.USER['reinforcement_parameters']['poker']['river_only_to_fullgame'] = False
         Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
@@ -639,9 +638,9 @@ class PokerAnalysis():
             else:
                 player2 = self._create_player("static", balanced, second_layer_enabled, second_layer_action_folder, classname=player2_file_or_opponent_type)
         
-        Config.USER['reinforcement_parameters']['debug']['output_path'] = debug_folder+str(player1.OPPONENT_ID)+"/"+str(player2.OPPONENT_ID)+"/"
-        if not os.path.exists(Config.USER['reinforcement_parameters']['debug']['output_path']):
-            os.makedirs(Config.USER['reinforcement_parameters']['debug']['output_path'])
+        Config.USER['debug']['output_path'] = debug_folder+str(player1.OPPONENT_ID)+"/"+str(player2.OPPONENT_ID)+"/"
+        if not os.path.exists(Config.USER['debug']['output_path']):
+            os.makedirs(Config.USER['debug']['output_path'])
         print "...finished loading players."
         return player1, player2
 

@@ -22,8 +22,16 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     
     """
 
+    # DONE:
+    # - reorganized configs, now it is a file
+    # - removed clutter
+    # - improved tests
+    # - removed research-oriented features (like the profile of points)
+
     # TODO:
-    # - fazer arquivo externo para config
+    # - criar arquivos configs para cada config antiga
+    # - reorganizar arquivo config_default (remover algumas opcoes)
+
     # - fazer reinforcement para sockets ser generico
     # - fazer oponentes se comunicarem via socket? e quando nao tiver oponentes? 
     #       oponentes eh problema do SBB, ou do client?
@@ -143,7 +151,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         return numpy.mean(outputs)
 
     def _request(self, mode, match_id, request_type, args = {}, response = None):
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
+        if Config.USER['debug']['enabled']:
             print "\nrequest type: "+request_type+", mode: "+str(mode)+", match_id: "+str(match_id)+"\n"
         message = {
             'request_type': request_type,
@@ -163,11 +171,11 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
                 Config.USER['advanced_training_parameters']['sockets_parameters']['requests_timeout'])
             if ready[0]:
                 data = self.connection.recv(Config.USER['advanced_training_parameters']['sockets_parameters']['buffer'])
-                if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
+                if Config.USER['debug']['enabled']:
                     print "data: "+str(data)
                 data = json.loads(data)
                 if 'request_result' in data and data['request_result']:
-                    if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
+                    if Config.USER['debug']['enabled']:
                         print "Request accepted."
                     if response:
                         result = data['result'][response]
@@ -179,7 +187,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
             print "\n<< It was not possible to connect to the SBB client. >>\n"
             raise e
 
-        if Config.USER['advanced_training_parameters']['sockets_parameters']['debug']:
+        if Config.USER['debug']['enabled']:
             print "\n"+request_type+" done.\n"
 
         return result

@@ -19,12 +19,6 @@ TEST_CONFIG = {
             'max_opponents_per_generation': 2,
             'wait_generations': -1,
         },
-        'debug': {
-            'print': False,
-            'matches': False,
-            'players': False,
-            'debug_output_path': '',
-        },
         'save_partial_files_per_validation': False,
     },
     'training_parameters': {
@@ -66,7 +60,7 @@ TEST_CONFIG = {
     'advanced_training_parameters': {
         'seed': 1, # default = None
         'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
-        'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
+        'use_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 4,
         'diversity': {
             'use_and_show': [], # will be applied to fitness and show in the outputs
@@ -78,11 +72,16 @@ TEST_CONFIG = {
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used
         'use_agressive_mutations': False,
-        'use_profiling': True,
+        'use_profiling': False,
         'second_layer': {
             'enabled': False,
-            'path': 'actions_reference/ttt-test/run[run_id]/second_layer_files/hall_of_fame/actions.json',
+            'path': 'SBB/tests/system_tests/actions_reference/run[run_id]/second_layer_files/hall_of_fame/actions.json',
         },
+    },
+
+    "debug": {
+        "enabled": False,
+        "output_path": "logs/",
     },
 }
 
@@ -90,22 +89,19 @@ class TictactoeWithSocketsTests(unittest.TestCase):
     def setUp(self):
         Config.RESTRICTIONS['write_output_files'] = False
         Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['points']*1.0))
-        
+        Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['teams']*1.0))
+
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['use_pareto_for_point_population_selection'] = False
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
         config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
-        config['advanced_training_parameters']['seed'] = 1
-        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than']
-        config['advanced_training_parameters']['run_initialization_step2'] = False
+        config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than']
         config['advanced_training_parameters']['use_weighted_probability_selection'] = False
         config['advanced_training_parameters']['use_agressive_mutations'] = False
         config['advanced_training_parameters']['second_layer']['enabled'] = False
-        config['advanced_training_parameters']['use_profiling'] = True
         Config.USER = config
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_for_two_runs(self):
@@ -123,24 +119,8 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         expected = 1
         self.assertEqual(expected, result)
 
-    def test_reinforcement_for_ttt_without_profiling(self):
-        Config.USER['advanced_training_parameters']['use_profiling'] = False
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
     def test_reinforcement_for_ttt_with_weighted_selection(self):
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = True
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_with_run_initialization_step2(self):
-        Config.USER['advanced_training_parameters']['run_initialization_step2'] = True
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -156,7 +136,6 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_with_second_layer(self):
-        Config.USER['advanced_training_parameters']['use_agressive_mutations'] = True
         Config.USER['advanced_training_parameters']['second_layer']['enabled'] = True
         sbb = SBB()
         sbb.run()
@@ -244,9 +223,9 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         expected = 1
         self.assertEqual(expected, result)
 
-    def test_reinforcement_for_ttt_with_signal_if_instructions(self):
+    def test_reinforcement_for_ttt_with_complex_instructions(self):
         Config.USER['advanced_training_parameters']['diversity']['use_and_show'] = ['ncd_c4']
-        Config.USER['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal']
+        Config.USER['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal', 'if_lesser_than', 'if_equal_or_higher_than']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

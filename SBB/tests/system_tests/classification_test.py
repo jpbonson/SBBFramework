@@ -48,7 +48,7 @@ TEST_CONFIG = {
     'advanced_training_parameters': {
         'seed': 1, # default = None
         'use_pareto_for_point_population_selection': False, # if False, will select points using uniform probability
-        'use_operations': ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than', 'if_equal_or_higher_than'],
+        'use_operations': ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than'],
         'extra_registers': 1,
         'diversity': {
             'use_and_show': [], # will be applied to fitness and show in the outputs
@@ -60,11 +60,16 @@ TEST_CONFIG = {
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used
         'use_agressive_mutations': False,
-        'use_profiling': True,
+        'use_profiling': False,
         'second_layer': {
             'enabled': False,
             'path': None, # if using layered SBB, must provie a reference file for the actions
         },
+    },
+
+    "debug": {
+        "enabled": False,
+        "output_path": "logs/",
     },
 }
 
@@ -80,7 +85,6 @@ class ClassificationTests(unittest.TestCase):
         config['classification_parameters']['dataset'] = 'iris'
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['run_initialization_step2'] = False
-        config['advanced_training_parameters']['use_profiling'] = True
         Config.USER = config
 
     def test_classification_for_iris(self):
@@ -98,8 +102,8 @@ class ClassificationTests(unittest.TestCase):
         expected = 3
         self.assertEqual(expected, result)
 
-    def test_classification_for_iris_without_profiling(self):
-        Config.USER['advanced_training_parameters']['use_profiling'] = False
+    def test_classification_for_iris_with_pareto(self):
+        Config.USER['advanced_training_parameters']['use_pareto_for_point_population_selection'] = True
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

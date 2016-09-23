@@ -20,14 +20,6 @@
             "size": 20
         }, 
         
-        "debug": { # TODO: tirar?
-            "print": false, 
-            "matches": false, 
-            "debug_output_path": "",
-            "players": false,
-            "output_path": "SBB/environments/poker/logs/"
-        },
-
         "poker": { # TODO: integrar com o tictactoe
             "opponents": "",# TODO: [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], # PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent], #[PokerLooseAgressiveOpponent],
             "river_round_only": false,
@@ -108,13 +100,18 @@
         "use_profiling": true, 
         "use_pareto_for_point_population_selection": false, 
         "run_initialization_step2": false,
+        
         "sockets_parameters": {
-            "debug": false,
             "timeout": 60,
             "buffer": 5000,
             "port": 7800,
             "host": "localhost",
             "requests_timeout": 120
         }
+    },
+
+    "debug": {
+        "enabled": false,
+        "output_path": "logs/"
     }
 }

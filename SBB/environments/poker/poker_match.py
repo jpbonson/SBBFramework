@@ -41,12 +41,12 @@ class PokerMatch():
         self._setup_debug_files()
 
     def _setup_debug_files(self):
-        if Config.USER['reinforcement_parameters']['debug']['output_path'] is None:
-            Config.USER['reinforcement_parameters']['debug']['output_path'] = 'SBB/environments/poker/logs/'
+        if Config.USER['debug']['output_path'] is None:
+            Config.USER['debug']['output_path'] = 'SBB/environments/poker/logs/'
 
         self.debug_file = None
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
-            path = Config.USER['reinforcement_parameters']['debug']['output_path']+'matches_output/'
+        if Config.USER['debug']['enabled']:
+            path = Config.USER['debug']['output_path']+'matches_output/'
             if not os.path.exists(path):
                 os.makedirs(path)
             filename = self.mode+"_"+str(self.match_id)+"_"+str(self.team.__repr__())
@@ -86,7 +86,7 @@ class PokerMatch():
             sbb_position = 1
             opponent_position = 0
 
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
+        if Config.USER['debug']['enabled']:
             self.debug_file.write("PokerSBB Game: Hold'em Limit\n")
             self.debug_file.write("Table '"+str(self.match_id)+"' 2-max Seat #2 is the button\n")
             m = "Seat 1: "+self.players_info[0]['id']+" ("+str(MatchState.maximum_winning())+" chips)"
@@ -108,7 +108,7 @@ class PokerMatch():
         self.pot += big_blind
         self.players_info[1]['chips'] -= small_blind  # dealer/button
         self.pot += small_blind
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
+        if Config.USER['debug']['enabled']:
             self.debug_file.write(self.players_info[1]['id']+": posts small blind "+str(small_blind)+"\n")
             self.debug_file.write(self.players_info[0]['id']+": posts big blind "+str(big_blind)+"\n")
 
@@ -117,17 +117,17 @@ class PokerMatch():
         self.rounds = [[], [], [], []]
         if (not Config.USER['reinforcement_parameters']['poker']['river_round_only'] or 
                 (Config.USER['reinforcement_parameters']['poker']['river_only_to_fullgame'] and not self.is_training)):
-            if Config.USER['reinforcement_parameters']['debug']['matches']:
+            if Config.USER['debug']['enabled']:
                 self.debug_file.write("*** HOLE CARDS ***\n")
             self.round_id = 0 # preflop
             result = self._run_poker_round(starter_player_index = 1, initial_bet = small_blind, default_bet = PokerConfig.CONFIG['small_bet'])
             if result == "next_round":
-                if Config.USER['reinforcement_parameters']['debug']['matches']:
+                if Config.USER['debug']['enabled']:
                     self.debug_file.write("*** FLOP *** "+str(self.point.board_cards_[:3])+"\n")
                 self.round_id = 1 # flop
                 result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, default_bet = PokerConfig.CONFIG['small_bet'])
             if result == "next_round":
-                if Config.USER['reinforcement_parameters']['debug']['matches']:
+                if Config.USER['debug']['enabled']:
                     self.debug_file.write("*** TURN *** "+str(self.point.board_cards_[:4])+"\n")
                 self.round_id = 2 # turn
                 result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, default_bet = PokerConfig.CONFIG['big_bet'])
@@ -141,14 +141,14 @@ class PokerMatch():
             river_starter_player_index = 1
             self.players_info[sbb_position]['player'].extra_metrics_['played_last_hand'] = True
         if result == "next_round":
-            if Config.USER['reinforcement_parameters']['debug']['matches']:
+            if Config.USER['debug']['enabled']:
                 self.debug_file.write("*** RIVER *** "+str(self.point.board_cards_)+"\n")
             self.round_id = 3 # river
             result = self._run_poker_round(starter_player_index = river_starter_player_index, initial_bet = river_bet, default_bet = river_default_bet)
         showdown_happened = False
         if result == "next_round": # showdown
             showdown_happened = True
-            if Config.USER['reinforcement_parameters']['debug']['matches']:
+            if Config.USER['debug']['enabled']:
                 self.debug_file.write("*** SHOW DOWN ***\n")
                 self.debug_file.write(self.players_info[0]['id']+": shows "+str(self.players_info[0]['match_state'].hole_cards)+" (HS: "+str(self.players_info[0]['match_state'].hand_strength[3])+")\n")
                 self.debug_file.write(self.players_info[1]['id']+": shows "+str(self.players_info[1]['match_state'].hole_cards)+" (HS: "+str(self.players_info[1]['match_state'].hand_strength[3])+")\n")
@@ -156,22 +156,22 @@ class PokerMatch():
             player1_hs = self.players_info[1]['match_state'].hand_strength[3]
             if player0_hs > player1_hs:
                 self.players_info[0]['chips'] += self.pot
-                if Config.USER['reinforcement_parameters']['debug']['matches']:
+                if Config.USER['debug']['enabled']:
                     self.debug_file.write(self.players_info[0]['id']+" collected "+str(self.pot)+" from main pot\n")
                 showdown_winner = 0
             elif player0_hs < player1_hs:
                 self.players_info[1]['chips'] += self.pot
-                if Config.USER['reinforcement_parameters']['debug']['matches']:
+                if Config.USER['debug']['enabled']:
                     self.debug_file.write(self.players_info[1]['id']+" collected "+str(self.pot)+" from main pot\n")
                 showdown_winner = 1
             else:
                 self.players_info[0]['chips'] += self.pot/2.0
                 self.players_info[1]['chips'] += self.pot/2.0
-                if Config.USER['reinforcement_parameters']['debug']['matches']:
+                if Config.USER['debug']['enabled']:
                     self.debug_file.write("Draw! The players shared "+str(self.pot)+" from main pot\n")
                 showdown_winner = -1
         if result == "player_folded":
-            if Config.USER['reinforcement_parameters']['debug']['matches']:
+            if Config.USER['debug']['enabled']:
                 if self.players_info[0]['folded']:
                     last_player = self.players_info[1]['id']
                 else:
@@ -179,7 +179,7 @@ class PokerMatch():
                 self.debug_file.write(last_player+" collected "+str(self.pot)+" from pot\n")
                 self.debug_file.write(last_player+": doesn't show hand\n")
 
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
+        if Config.USER['debug']['enabled']:
             self.debug_file.write("*** SUMMARY ***\n")
             self.debug_file.write("Total pot "+str(self.pot)+" | Rake 0\n")
             self.debug_file.write("Board "+str(self.point.board_cards_)+"\n")
@@ -227,8 +227,9 @@ class PokerMatch():
 
         normalized_value = self._normalize_winning(float(sbb_chips))
 
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
+        if Config.USER['debug']['enabled']:
             self.debug_file.write("\n\n### Result Information: ")
+            self.debug_file.write("\nmatch: "+str(self.match_id))
             self.debug_file.write("\nsbb_chips: "+str(sbb_chips))
             self.debug_file.write("\nopponent_chips: "+str(opponent_chips))
             self.debug_file.write("\nnormalized_value: "+str(normalized_value))
@@ -239,14 +240,7 @@ class PokerMatch():
         if self.opponent.opponent_id == "hall_of_fame":
             self._get_chips_for_hall_of_fame().append(self._normalize_winning(float(opponent_chips)))
 
-        if Config.USER['reinforcement_parameters']['debug']['print']:
-            print "---"
-            print "match: "+str(self.match_id)
-            print "sbb_chips: "+str(sbb_chips)
-            print "opponent_chips: "+str(opponent_chips)
-            print "normalized_value: "+str(normalized_value)
-
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
+        if Config.USER['debug']['enabled']:
             self.debug_file.close()
 
         return normalized_value
@@ -265,7 +259,7 @@ class PokerMatch():
             if action == 'f':
                 if self.players_info[current_index]['key'] == 'team' and not self.is_training and self.round_id == 0:
                     self.players_info[current_index]['player'].extra_metrics_['played_last_hand'] = False
-                if Config.USER['reinforcement_parameters']['debug']['matches']:
+                if Config.USER['debug']['enabled']:
                     self.debug_file.write(self.players_info[current_index]['id']+": folds (pot: "+str(self.pot)+")\n")
                 self.players_info[self.opponent_indeces[current_index]]['chips'] += self.pot
                 self.players_info[current_index]['folded'] = True
@@ -273,7 +267,7 @@ class PokerMatch():
             elif action == 'c':
                 self.players_info[current_index]['chips'] -= bet
                 self.pot += bet
-                if Config.USER['reinforcement_parameters']['debug']['matches']:
+                if Config.USER['debug']['enabled']:
                     self.debug_file.write(self.players_info[current_index]['id']+": calls "+str(bet)+" (pot: "+str(self.pot)+")\n")
                 bet = 0.0
                 if last_action_was_a_bet:
@@ -286,7 +280,7 @@ class PokerMatch():
                 bet = default_bet
                 self.players_info[current_index]['chips'] -= bet
                 self.pot += bet
-                if Config.USER['reinforcement_parameters']['debug']['matches']:
+                if Config.USER['debug']['enabled']:
                     self.debug_file.write(self.players_info[current_index]['id']+": raises "+str(default_bet)+" (pot: "+str(self.pot)+")\n")
                 last_action_was_a_bet = False
             else:
@@ -323,12 +317,12 @@ class PokerMatch():
             else:
                 inputs = match_state.inputs_for_rule_based_opponents(bet, self.round_id)
 
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
+        if Config.USER['debug']['enabled']:
             if match_state.player_key == 'team' or self.opponent.opponent_id == 'hall_of_fame':
                 self.debug_file.write("    >> registers: "+str([(p.program_id_, [round_value(r, 2) for r in p.general_registers]) for p in player.programs])+"\n")
             self.debug_file.write("    >> inputs: "+str(inputs)+"\n")
         action = player.execute(self.point.point_id_, inputs, self._valid_actions(), self.is_training)
-        if Config.USER['reinforcement_parameters']['debug']['matches']:
+        if Config.USER['debug']['enabled']:
             if match_state.player_key == 'team' or self.opponent.opponent_id == 'hall_of_fame':
                 self.debug_file.write("    << program: "+str(player.last_selected_program_)+"\n")
 

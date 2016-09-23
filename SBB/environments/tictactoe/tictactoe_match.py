@@ -13,7 +13,6 @@ class TictactoeMatch():
                         TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY,
                         TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY]
         self.result_ = -1
-        self.print_game_ = Config.USER['reinforcement_parameters']['debug']['print']
         self.player_label = {}
         self.player_label[1] = player1_label
         self.player_label[2] = player2_label
@@ -24,7 +23,7 @@ class TictactoeMatch():
         the attribute inputs_.
         """
         self.inputs_[action] = current_player
-        if self.print_game_:
+        if Config.USER['debug']['enabled']:
             print "---"
             print str(self.inputs_[0:3])
             print str(self.inputs_[3:6])
@@ -60,16 +59,16 @@ class TictactoeMatch():
         winner = TictactoeMatch.get_winner(self.inputs_)
         if winner:
             self.result_ = winner
-            if self.print_game_:
+            if Config.USER['debug']['enabled']:
                 print "It is over! Player "+str(self.result_)+" ("+str(self.player_label[self.result_])+") wins!"
             return True
         for value in self.inputs_:
             if value == TictactoeMatch.EMPTY:
-                if self.print_game_:
+                if Config.USER['debug']['enabled']:
                     print "Go!"
                 return False
         self.result_ = TictactoeMatch.DRAW
-        if self.print_game_:
+        if Config.USER['debug']['enabled']:
             print "It is over! Draw!"
         return True
 
