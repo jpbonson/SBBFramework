@@ -17,12 +17,6 @@ TEST_CONFIG = {
             'diversity': None,
             'opponents': 0,
         },
-        'debug': {
-            'print': False,
-            'matches': False,
-            'players': False,
-            'debug_output_path': '',
-        },
         "sockets_parameters": {
             "host": "localhost",
             "port": 7801,

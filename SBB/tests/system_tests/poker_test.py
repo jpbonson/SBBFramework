@@ -4,7 +4,6 @@ import subprocess
 from collections import deque
 from ...config import Config
 from ...sbb import SBB
-from ...environments.poker.poker_opponents import PokerRandomOpponent
 
 TEST_CONFIG = {
     'task': 'reinforcement',
@@ -14,8 +13,7 @@ TEST_CONFIG = {
     'reinforcement_parameters': { 
         'environment': 'poker', 
         'validation_population': 18, 
-        'champion_population': 18, 
-        'opponents': [PokerRandomOpponent],
+        'champion_population': 18,
         'hall_of_fame': {
             'size': 20,
             'enabled': False,

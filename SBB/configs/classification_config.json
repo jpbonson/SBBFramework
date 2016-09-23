@@ -1,6 +1,7 @@
-# This file has a sample configuration for a very quick training of tictactoe players
+# This file has a sample configuration for a training of a classifier for the iris dataset
+# Other sample datasets: 'thyroid' and 'shuttle'
 {
-    "task": "reinforcement", 
+    "task": "classification", 
 
     "classification_parameters": { # only used if "task" is "classification"
         "dataset": "iris", # must have a .train and a .test file
@@ -9,8 +10,8 @@
 
     "reinforcement_parameters": { # only used if "task" is "reinforcement"
         "environment": "tictactoe",
-        "validation_population": 20, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-        "champion_population": 40, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+        "validation_population": 200, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+        "champion_population": 400, # at a validated generation, these are the points the champion team will play against to obtain the metrics
         "hall_of_fame": {
             "enabled": false, 
             "size": 20,
@@ -26,20 +27,20 @@
     },
 
     "training_parameters": {
-        "runs_total": 1,
-        "generations_total": 20, 
-        "validate_after_each_generation": 20,
+        "runs_total": 5,
+        "generations_total": 300, 
+        "validate_after_each_generation": 25,
         "populations": {
-            "points": 10, 
-            "teams": 10
+            "points": 100, 
+            "teams": 100
         }, 
         "team_size": {
-            "max": 9, 
+            "max": 16, 
             "min": 2 # the min size is the total number of actions
         }, 
         "program_size": {
-            "max": 20, 
-            "min": 2
+            "max": 40, 
+            "min": 5
         }, 
         "mutation": {
             "program": {
@@ -74,7 +75,7 @@
             "k": 10, 
             "metrics": [
                 "genotype"
-            ]
+            ], 
         }, 
         "novelty": {
             "enabled": false,

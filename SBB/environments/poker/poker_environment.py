@@ -16,7 +16,7 @@ from poker_point import PokerPoint
 from poker_config import PokerConfig
 from match_state import MatchState
 from poker_match import PokerMatch
-from poker_opponents import PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
+from poker_opponents import PokerRandomOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
 from ..reinforcement_environment import ReinforcementEnvironment
 from ...utils.helpers import round_value, flatten, accumulative_performances, rank_teams_by_accumulative_score
 from ...config import Config
@@ -32,8 +32,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_inputs = len(PokerConfig.CONFIG['inputs'])
         total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
 
-        coded_opponents_for_training = Config.USER['reinforcement_parameters']['opponents']
-        coded_opponents_for_validation = Config.USER['reinforcement_parameters']['opponents']
+        coded_opponents_for_training = [PokerRandomOpponent]
+        coded_opponents_for_validation = [PokerRandomOpponent]
 
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)

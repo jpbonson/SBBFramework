@@ -23,13 +23,11 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     # - removed usually-not-useful features (like the bid diversity), to focus on support the relevant parts of the code
 
     # TODO:
-    # - criar arquivos configs para cada config antiga
-    # - reorganizar arquivo config_default (remover algumas opcoes)
-
+    # - testar as configs predefinidas
     # - refatorar diversities (para generalizar)
     # - fazer reinforcement para sockets ser generico
     # - fazer oponentes se comunicarem via socket? e quando nao tiver oponentes? 
-    #       oponentes eh problema do SBB, ou do client?
+    #       oponentes eh problema do SBB, ou do client? do client
     # - fazer mais tests (system para sockets, e unit tests)
     # - clean code
     # - mandar rodar run longo e ver se produz bons resultados
