@@ -8,6 +8,8 @@ class MatchState():
 
     INPUTS = ['hand strength', 'effective potential', 'pot odds', 'betting position', 'round', 'chips']
 
+    MAX_BETS = 4
+
     def __init__(self, point, player_key):
         self.point = point
         self.player_key = player_key
@@ -51,16 +53,13 @@ class MatchState():
 
     @staticmethod
     def maximum_winning():
-        max_raises_overall = Config.USER['reinforcement_parameters']['poker']['maximum_bets']
+        max_raises_overall = MatchState.MAX_BETS
         max_small_bet_turn_winning = PokerConfig.CONFIG['small_bet']*max_raises_overall
-        if Config.USER['reinforcement_parameters']['poker']['river_round_only']:  
-            return max_small_bet_turn_winning
-        else:
-            max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*max_raises_overall
-            return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
+        max_big_bet_turn_winning = PokerConfig.CONFIG['big_bet']*max_raises_overall
+        return max_small_bet_turn_winning*2 + max_big_bet_turn_winning*2
 
     def _betting_position(self, round_id):
-        if round_id == 0 or Config.USER['reinforcement_parameters']['poker']['river_round_only']: # reverse blinds
+        if round_id == 0: # reverse blinds
             if self.position == 0:
                 return 1
             else:

@@ -14,10 +14,8 @@ TEST_CONFIG = {
         'hall_of_fame': {
             'size': 6,
             'enabled': False,
-            'use_as_opponents': False,
             'diversity': None,
-            'max_opponents_per_generation': 2,
-            'wait_generations': -1,
+            'opponents': 0,
         },
     },
     'training_parameters': {
@@ -92,7 +90,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         config['advanced_training_parameters']['diversity']['use_and_show'] = []
         config['advanced_training_parameters']['diversity']['only_show'] = []
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
+        config['reinforcement_parameters']['hall_of_fame']['opponents'] = 0
         config['reinforcement_parameters']['hall_of_fame']['diversity'] = None
         config['training_parameters']['runs_total'] = 1
         config['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'if_lesser_than', 'if_equal_or_higher_than']
@@ -231,7 +229,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame(self):
         Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
-        Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = True
+        Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] = 2
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -248,7 +246,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame_with_diversity(self):
         Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
-        Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = True
+        Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] = 2
         Config.USER['reinforcement_parameters']['hall_of_fame']['diversity'] = 'ncd_c4'
         sbb = SBB()
         sbb.run()

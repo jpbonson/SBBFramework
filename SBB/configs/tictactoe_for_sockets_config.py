@@ -14,7 +14,7 @@ TICTACTOE_QUICK = {
             'enabled': False,
             'use_as_opponents': False,
             'diversity': 'genotype', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-            'max_opponents_per_generation': 2,
+            'opponents': 2,
             'wait_generations': 100,
         },
         'debug': {
@@ -104,7 +104,7 @@ TICTACTOE_DEFAULT = {
             'enabled': False,
             'use_as_opponents': False,
             'diversity': 'genotype', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-            'max_opponents_per_generation': 2,
+            'opponents': 2,
             'wait_generations': 100,
         },
         'debug': {

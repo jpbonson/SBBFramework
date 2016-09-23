@@ -14,10 +14,8 @@ TEST_CONFIG = {
         'hall_of_fame': {
             'size': 6,
             'enabled': False,
-            'use_as_opponents': False,
             'diversity': None,
-            'max_opponents_per_generation': 2,
-            'wait_generations': -1,
+            'opponents': 0,
         },
         'debug': {
             'print': False,

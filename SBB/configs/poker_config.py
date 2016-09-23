@@ -21,7 +21,7 @@ POKER_CONFIG3 = {
             'enabled': True,
             'use_as_opponents': True,
             'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-            'max_opponents_per_generation': 2,
+            'opponents': 2,
             'wait_generations': 100,
         },
         'debug': {
@@ -106,13 +106,13 @@ POKER_LAYER_VAL0['reinforcement_parameters']['hall_of_fame']['enabled'] = False
 POKER_LAYER_VAL0['reinforcement_parameters']['hall_of_fame']['use_as_opponents'] = False
 POKER_LAYER_VAL0['reinforcement_parameters']['validation_population'] = 100
 POKER_LAYER_VAL0['reinforcement_parameters']['champion_population'] = 100
-POKER_LAYER_VAL0['reinforcement_parameters']['poker']['opponents'] = [PokerAlwaysFoldOpponent]
+POKER_LAYER_VAL0['reinforcement_parameters']['opponents'] = [PokerAlwaysFoldOpponent]
 POKER_LAYER_VAL0['training_parameters']['team_size']['min'] = 3
 POKER_LAYER_VAL0['advanced_training_parameters']['diversity']['use_and_show'] = []
 # POKER_LAYER_VAL0['advanced_training_parameters']['run_initialization_step2'] = True
 
 POKER_LAYER1_WITH_BAYES = copy.deepcopy(POKER_LAYER1)
-POKER_LAYER1_WITH_BAYES['reinforcement_parameters']['poker']['opponents'] = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent]
+POKER_LAYER1_WITH_BAYES['reinforcement_parameters']['opponents'] = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent]
 
 POKER_LAYER2 = copy.deepcopy(POKER_CONFIG3)
 POKER_LAYER2['training_parameters']['generations_total'] = 200
@@ -124,7 +124,7 @@ POKER_LAYER2['advanced_training_parameters']['second_layer']['path'] = "../outpu
 POKER_LAYER2_WITH_BAYES = copy.deepcopy(POKER_LAYER2)
 # POKER_LAYER2_WITH_BAYES['advanced_training_parameters']['second_layer']['path'] = 'actions_reference/baseline_poker_paper/with_bayes/seed'+str(SEED)+'_run[run_id]/top10_overall_subcats/actions.json'
 POKER_LAYER2_WITH_BAYES['advanced_training_parameters']['second_layer']['path'] = "../outputs/outputs_for_paper/config_layer1_with_bayes_seed"+str(SEED)+"/run[run_id]/second_layer_files/actions_all_teams.json"
-POKER_LAYER2_WITH_BAYES['reinforcement_parameters']['poker']['opponents'] = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent]
+POKER_LAYER2_WITH_BAYES['reinforcement_parameters']['opponents'] = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent]
 
 POKER_LAYER1_NO_DIVERSITY = copy.deepcopy(POKER_LAYER1)
 POKER_LAYER1_NO_DIVERSITY['advanced_training_parameters']['diversity']['use_and_show'] = []
@@ -191,7 +191,7 @@ POKER_LAYER1_NOVELTY_AND_FITNESS_NO_PROFILING['advanced_training_parameters']['d
     #             'enabled': True,
     #             'use_as_opponents': True,
     #             'diversity': 'ncd_c4', # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-    #             'max_opponents_per_generation': 2,
+    #             'opponents': 2,
     #             'wait_generations': 100,
     #         },
     #         'debug': {

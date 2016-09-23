@@ -11,22 +11,13 @@
         "environment": "tictactoe",
         "validation_population": 20, # at a validated generation, all the teams with be tested against this population, the best one is the champion
         "champion_population": 40, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+        "opponents": "", # TODO: integrar com ttt [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], # PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent], #[PokerLooseAgressiveOpponent],
         "hall_of_fame": {
-            "max_opponents_per_generation": 2,
-            "use_as_opponents": false, 
-            "diversity": "genotype", # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-            "wait_generations": 100, # TODO: tirar?
             "enabled": false, 
-            "size": 20
+            "size": 20,
+            "opponents": 2, # set to 0 if you want a hall of fame, but not as opponents
+            "diversity": "genotype" # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
         }, 
-        
-        "poker": { # TODO: integrar com o tictactoe
-            "opponents": "",# TODO: [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent], # PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent, PokerBayesianOpponent], #[PokerLooseAgressiveOpponent],
-            "river_round_only": false,
-            "river_only_to_fullgame": false, # changed from one to another in half the generations, ignores "river_round_only"
-            "maximum_bets": 4
-        },
-
         "sockets_parameters": { # only used if "environment" is "sockets"
             "host": "localhost",
             "port": 7800,

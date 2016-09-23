@@ -102,8 +102,11 @@ class Config():
                 if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity'] not in Config.RESTRICTIONS['diversity']['options']:
                     sys.stderr.write("Error: Invalid 'diversity' for 'hall_of_fame' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['diversity']['options'])+"\n")
                     raise SystemExit
-            if not Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and Config.USER['reinforcement_parameters']['hall_of_fame']['use_as_opponents']:
-                sys.stderr.write("Error: For hall of fame, 'use_as_opponents' can't be True if 'enabled' is False\n")
+            if not Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] != 0:
+                sys.stderr.write("Error: For hall of fame, 'opponents' can't be higher than 0 if 'enabled' is False\n")
+                raise SystemExit
+            if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] and Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] < 0:
+                sys.stderr.write("Error: For hall of fame, 'opponents' can't be lower than 0\n")
                 raise SystemExit
 
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] not in Config.RESTRICTIONS['environment_types']:

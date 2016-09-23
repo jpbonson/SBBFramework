@@ -32,17 +32,14 @@ class PokerEnvironment(ReinforcementEnvironment):
         total_inputs = len(PokerConfig.CONFIG['inputs'])
         total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
 
-        coded_opponents_for_training = Config.USER['reinforcement_parameters']['poker']['opponents']
-        coded_opponents_for_validation = Config.USER['reinforcement_parameters']['poker']['opponents']
+        coded_opponents_for_training = Config.USER['reinforcement_parameters']['opponents']
+        coded_opponents_for_validation = Config.USER['reinforcement_parameters']['opponents']
 
         point_class = PokerPoint
         super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
         PokerConfig.CONFIG['labels_per_subdivision']['opponent'] = self.opponent_names_for_validation_
         self.num_lines_per_file_ = []
         self.backup_points_per_label = None
-
-        if Config.USER['reinforcement_parameters']['poker']['river_only_to_fullgame']:
-            Config.USER['reinforcement_parameters']['poker']['river_round_only'] = True
 
     def _initialize_random_population_of_points(self, population_size, ignore_cache = False):
         if len(self.num_lines_per_file_) == 0:
@@ -238,10 +235,6 @@ class PokerEnvironment(ReinforcementEnvironment):
             point.teams_results_ = []
 
         best_team = super(PokerEnvironment, self).validate(current_generation, teams_population)
-
-        if Config.USER['reinforcement_parameters']['poker']['river_only_to_fullgame']:
-            if current_generation >= 90:
-                Config.USER['reinforcement_parameters']['poker']['river_round_only'] = False
 
         return best_team
 

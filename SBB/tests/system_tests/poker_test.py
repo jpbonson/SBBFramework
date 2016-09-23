@@ -15,19 +15,12 @@ TEST_CONFIG = {
         'environment': 'poker', 
         'validation_population': 18, 
         'champion_population': 18, 
+        'opponents': [PokerRandomOpponent],
         'hall_of_fame': {
             'size': 20,
             'enabled': False,
-            'use_as_opponents': False,
             'diversity': 'ncd_c4',
-            'max_opponents_per_generation': 2,
-            'wait_generations': 100,
-        },
-        'poker': {
-            'opponents': [PokerRandomOpponent],
-            'river_round_only': False,
-            'river_only_to_fullgame': False, 
-            'maximum_bets': 4,
+            'opponents': 0,
         },
     },
 
