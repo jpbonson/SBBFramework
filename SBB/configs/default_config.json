@@ -31,6 +31,13 @@
     },
 
     "training_parameters": {
+        "runs_total": 1,
+        "generations_total": 20, 
+        "validate_after_each_generation": 20,
+        "populations": {
+            "points": 10, 
+            "teams": 10
+        }, 
         "team_size": {
             "max": 9, 
             "min": 2
@@ -53,32 +60,18 @@
                 "remove_program": 0.7
             }
         }, 
-        "populations": {
-            "points": 10, 
-            "teams": 10
-        }, 
         "replacement_rate": {
             "points": 0.2, 
             "teams": 0.5
-        }, 
-        "generations_total": 20, 
-        "validate_after_each_generation": 20, 
-        "runs_total": 1
+        }
     }, 
     
     "advanced_training_parameters": {
         "use_operations": [
-            "+", 
-            "-", 
-            "*", 
-            "/", 
-            "ln", 
-            "exp", 
-            "cos", 
+            "+", "-", "*", "/", 
+            "ln", "exp", "cos", 
             "if_lesser_than", 
-            "if_equal_or_higher_than", 
-            "if_lesser_than_for_signal", 
-            "if_equal_or_higher_than_for_signal"
+            "if_equal_or_higher_than"
         ], 
         "extra_registers": 4, 
         "seed": 1, 
@@ -97,10 +90,9 @@
             "path": "actions_reference/baseline/run[run_id]/second_layer_files/hall_of_fame+top10_overall_subcats/actions.json", 
             "enabled": false
         }, 
-        "use_profiling": true, 
         "use_pareto_for_point_population_selection": false, 
         "run_initialization_step2": false,
-        
+
         "sockets_parameters": {
             "timeout": 60,
             "buffer": 5000,

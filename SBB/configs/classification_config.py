@@ -59,7 +59,6 @@ CLASS_CONFIG = {
         'run_initialization_step2': False,
         'use_weighted_probability_selection': False, # if False, uniform probability will be used
         'use_agressive_mutations': True,
-        'use_profiling': True,
         'second_layer': {
             'enabled': False,
             'path': 'actions_reference/baseline3_without_bayes/run[run_id]/second_layer_files/top10_overall/actions.json',

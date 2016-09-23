@@ -26,7 +26,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     # - reorganized configs, now it is a file
     # - removed clutter
     # - improved tests
-    # - removed research-oriented features (like the profile of points)
+    # - removed usually-not-useful features (like the bid diversity), to focus on support the relevant parts of the code
 
     # TODO:
     # - criar arquivos configs para cada config antiga

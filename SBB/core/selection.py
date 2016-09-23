@@ -119,45 +119,15 @@ class Selection:
         Create new mutated teams, cloning the old ones and mutating. New programs are be added to the program population 
         for the mutated programs in the new teams.
         """
-        if Config.USER['advanced_training_parameters']['use_profiling']:
-            bid_profiles = self._generate_bid_profiles(teams_to_clone)
-            teams_population, programs_population = self._clone_teams_with_profiling(current_generation, teams_to_clone, teams_population, programs_population, bid_profiles)
-        else:
-            teams_population, programs_population = self._clone_teams_without_profiling(current_generation, teams_to_clone, teams_population, programs_population)
+        teams_population, programs_population = self._clone_teams(current_generation, teams_to_clone, teams_population, programs_population)
         return teams_population, programs_population
 
-    def _generate_bid_profiles(self, teams_to_clone):
-        bid_profiles = []
-        for team in teams_to_clone:
-            bid_profiles.append(team.generate_profile())
-        return bid_profiles
-
-    def _clone_teams_with_profiling(self, current_generation, teams_to_clone, teams_population, programs_population, bid_profiles):
-        for team, parent_profile in zip(teams_to_clone, bid_profiles):
-            clone = Team(current_generation, team.programs)
-            programs_population = clone.mutate(programs_population)
-            child_profile = clone.generate_profile()
-            while parent_profile == child_profile:
-                programs_population = clone.mutate(programs_population)
-                child_profile = clone.generate_profile()
-            while not self._team_has_different_bid_profile_overall(child_profile, bid_profiles):
-                programs_population = clone.mutate(programs_population)
-                child_profile = clone.generate_profile()
-            teams_population.append(clone)
-        return teams_population, programs_population
-
-    def _clone_teams_without_profiling(self, current_generation, teams_to_clone, teams_population, programs_population):
+    def _clone_teams(self, current_generation, teams_to_clone, teams_population, programs_population):
         for team in teams_to_clone:
             clone = Team(current_generation, team.programs)
             programs_population = clone.mutate(programs_population)
             teams_population.append(clone)
         return teams_population, programs_population
-
-    def _team_has_different_bid_profile_overall(self, team_profile, bid_profiles):
-        for other_profile in bid_profiles:
-            if team_profile == other_profile:
-                return False
-        return True
 
     def _check_for_bugs(self, teams_population, programs_population):
         if len(teams_population) != Config.USER['training_parameters']['populations']['teams']:

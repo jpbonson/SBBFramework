@@ -45,10 +45,6 @@ class Config():
         },
         'used_diversities': None, # initialized by sbb.py
         'multiply_normalization_by': 10.0,
-        'profile': {
-            'samples': -1, # set after config is loaded
-            'update_chance': 0.05,
-        },
         'novelty_archive':{
             'samples': -1, # set after config is loaded
             'threshold': 10,
@@ -78,7 +74,6 @@ class Config():
 
         # initializing config
         Config.USER = json.loads(content)
-        Config.RESTRICTIONS['profile']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['points']*2.0))
         Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(Config.USER['training_parameters']['populations']['teams']*1.0))
 
     @staticmethod

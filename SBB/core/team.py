@@ -69,14 +69,6 @@ class Team(DefaultOpponent):
 
         # if there is a least one program that can produce a valid action, execute the programs
         if is_training:
-            if Config.USER['advanced_training_parameters']['use_profiling'] and update_profile:
-                if len(Config.RESTRICTIONS['profile']['samples']) < Config.RESTRICTIONS['profile']['samples'].maxlen:
-                    # add everything until it is full
-                    Config.RESTRICTIONS['profile']['samples'].append(inputs)
-                else:
-                    # give a chance of adding or not
-                    if random.random() < Config.RESTRICTIONS['profile']['update_chance']:
-                        Config.RESTRICTIONS['profile']['samples'].append(inputs)
 
             # run the programs
             if Config.RESTRICTIONS['use_memmory_for_actions'] and point_id in self.memory_actions_per_points_:
@@ -123,20 +115,6 @@ class Team(DefaultOpponent):
                 valid_programs.append(program)
         selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
         return selected_program
-
-    def generate_profile(self):
-        profile = []
-        for inputs in Config.RESTRICTIONS['profile']['samples']:
-            partial_outputs = []
-            valid_programs = []
-            for program in self.programs:
-                partial_outputs.append(program.execute(inputs, force_reset = True))
-                valid_programs.append(program)
-            selected_program = valid_programs[partial_outputs.index(max(partial_outputs))]
-            action_result = selected_program._get_action_result(point_id = -1, inputs = inputs, 
-                valid_actions = range(Config.RESTRICTIONS['total_actions']), is_training = False)
-            profile.append(action_result)
-        return profile
 
     def mutate(self, programs_population):
         """
