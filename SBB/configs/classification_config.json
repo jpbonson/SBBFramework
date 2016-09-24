@@ -1,29 +1,15 @@
 # This file has a sample configuration for a training of a classifier for the iris dataset
-# Other sample datasets: 'thyroid' and 'shuttle'
+# Other sample datasets: "thyroid" and "shuttle"
+
+# Sample result:
+# 
+
 {
     "task": "classification", 
 
     "classification_parameters": { # only used if "task" is "classification"
         "dataset": "iris", # must have a .train and a .test file
         "working_path": "SBB/datasets/"
-    },
-
-    "reinforcement_parameters": { # only used if "task" is "reinforcement"
-        "environment": "tictactoe",
-        "validation_population": 200, # at a validated generation, all the teams with be tested against this population, the best one is the champion
-        "champion_population": 400, # at a validated generation, these are the points the champion team will play against to obtain the metrics
-        "hall_of_fame": {
-            "enabled": false, 
-            "size": 20,
-            "opponents": 0, # set to 0 if you want a hall of fame, but not as opponents
-            "diversity": "genotype" # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-        }, 
-        "sockets_parameters": { # only used if "environment" is "sockets"
-            "host": "localhost",
-            "port": 7800,
-            "timeout": 120,
-            "buffer": 5000
-        }
     },
 
     "training_parameters": {
@@ -63,7 +49,7 @@
     }, 
     
     "advanced_training_parameters": {
-        "seed": 1, # use None for a random seed (obs.: it doesn't guarantee that the same seeds lead to the same runs)
+        "seed": 1, # use None for a random seed (obs.: it doesn"t guarantee that the same seeds lead to the same runs)
         "use_operations": [
             "+", "-", "*", "/", 
             "ln", "exp", "cos", 
@@ -75,7 +61,7 @@
             "k": 10, 
             "metrics": [
                 "genotype"
-            ], 
+            ]
         }, 
         "novelty": {
             "enabled": false,

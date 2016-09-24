@@ -2,11 +2,6 @@
 {
     "task": "reinforcement", 
 
-    "classification_parameters": { # only used if "task" is "classification"
-        "dataset": "iris", # must have a .train and a .test file
-        "working_path": "SBB/datasets/"
-    },
-
     "reinforcement_parameters": { # only used if "task" is "reinforcement"
         "environment": "tictactoe",
         "validation_population": 200, # at a validated generation, all the teams with be tested against this population, the best one is the champion
@@ -17,12 +12,6 @@
             "opponents": 0, # set to 0 if you want a hall of fame, but not as opponents
             "diversity": "genotype" # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
         }, 
-        "sockets_parameters": { # only used if "environment" is "sockets"
-            "host": "localhost",
-            "port": 7800,
-            "timeout": 120,
-            "buffer": 5000
-        }
     },
 
     "training_parameters": {

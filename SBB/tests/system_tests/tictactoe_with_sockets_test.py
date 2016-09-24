@@ -17,12 +17,21 @@ TEST_CONFIG = {
             'diversity': None,
             'opponents': 0,
         },
-        "sockets_parameters": {
-            "host": "localhost",
-            "port": 7801,
-            "timeout": 120,
-            "buffer": 5000,
-        }
+        'sockets_parameters': {
+            'connection': {
+                'host': 'localhost',
+                'port': 7801,
+                'timeout': 120,
+                'buffer': 5000
+            },
+            'environment': {
+                'actions_total': 9, # for tictactoe: spaces in the board
+                'inputs_total': 9, # for tictactoe: spaces in the board
+                'point_labels_total': 1, # for tictactoe: since no labels are being used
+                'training_opponents_total': 2, # if there are no opponents, set as 1
+                'validation_opponents_total': 2, # if there are no opponents, set as 1
+            },
+        },
     },
     'training_parameters': {
         'runs_total': 1,
@@ -68,9 +77,9 @@ TEST_CONFIG = {
             'metrics': [],
             'k': 8,
         },
-        "novelty": {
-            "enabled": False,
-            "use_fitness": True,
+        'novelty': {
+            'enabled': False,
+            'use_fitness': True,
         },
         'use_weighted_probability_selection': False, 
         'use_agressive_mutations': False,
@@ -80,9 +89,9 @@ TEST_CONFIG = {
         },
     },
 
-    "debug": {
-        "enabled": False,
-        "output_path": "logs/",
+    'debug': {
+        'enabled': False,
+        'output_path': 'logs/',
     },
 }
 
@@ -96,7 +105,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
         path = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(path, '')
-        subprocess.Popen(["python", path+"tictactoe_game.py", "test"])
+        subprocess.Popen(['python', path+'tictactoe_game.py', 'test'])
 
     def test_reinforcement_with_sockets_for_ttt(self):
         sbb = SBB()

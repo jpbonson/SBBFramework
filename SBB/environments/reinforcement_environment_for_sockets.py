@@ -17,44 +17,46 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     """
 
     # DONE:
-    # - reorganized configs, now it is a file
-    # - removed clutter
-    # - improved tests
+    # - reorganized configs, now it is a .json file
+    # - removed clutter / cleaned the code
+    # - improved tests (more tests, more organized, and faster)
     # - removed usually-not-useful features (like the bid diversity), to focus on support the relevant parts of the code
 
     # TODO:
+    # - mover partes que chamam o oponente para o socket client (fornecer oponente dummy para _play_match?)
     # - testar as configs predefinidas
     # - refatorar diversities (para generalizar)
     # - fazer reinforcement para sockets ser generico
     # - fazer oponentes se comunicarem via socket? e quando nao tiver oponentes? 
     #       oponentes eh problema do SBB, ou do client? do client
+    # - saber lidar quando nao tiver nenhum oponente
     # - fazer mais tests (system para sockets, e unit tests)
     # - clean code
     # - mandar rodar run longo e ver se produz bons resultados
     # - usar um logger?
+    # - melhorar README, com tutorial
+    # - melhorar outputs?
 
     def __init__(self):
-        total_actions = 9 # spaces in the board
-        total_inputs = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
-        total_labels = 1 # since no labels are being used, group everything is just one label
-        coded_opponents_for_training = [TictactoeRandomOpponent, TictactoeSmartOpponent]
-        coded_opponents_for_validation = [TictactoeRandomOpponent, TictactoeSmartOpponent]
+        total_actions = Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['actions_total']
+        total_inputs = Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['inputs_total']
+        total_labels = Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['point_labels_total']
+        # Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['training_opponents_total']
+        # Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['validation_opponents_total']
+        coded_opponents_for_training = [TictactoeRandomOpponent, TictactoeSmartOpponent] # TODO
+        coded_opponents_for_validation = [TictactoeRandomOpponent, TictactoeSmartOpponent] # TODO
         point_class = ReinforcementPoint
         super(ReinforcementEnvironmentForSockets, self).__init__(total_actions, total_inputs, total_labels, 
             coded_opponents_for_training, coded_opponents_for_validation, point_class)
-        
-        self.total_positions_ = 2
-        self.action_mapping_ = {
-            '[0,0]': 0, '[0,1]': 1, '[0,2]': 2,
-            '[1,0]': 3, '[1,1]': 4, '[1,2]': 5,
-            '[2,0]': 6, '[2,1]': 7, '[2,2]': 8,
-        }
+
+        self.total_positions_ = 2 # TODO
+
         self._start_server()
 
     def _start_server(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.bind((Config.USER['reinforcement_parameters']['sockets_parameters']['host'], 
-            Config.USER['reinforcement_parameters']['sockets_parameters']['port']))
+        self.server_socket.bind((Config.USER['reinforcement_parameters']['sockets_parameters']['connection']['host'], 
+            Config.USER['reinforcement_parameters']['sockets_parameters']['connection']['port']))
         self.server_socket.listen(1)
         print "\nWaiting for client socket connection...\n"
         self.connection, self.address = self.server_socket.accept()
@@ -161,9 +163,9 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         result = []
         try:
             ready = select.select([self.connection], [], [self.connection], 
-                Config.USER['reinforcement_parameters']['sockets_parameters']['timeout'])
+                Config.USER['reinforcement_parameters']['sockets_parameters']['connection']['timeout'])
             if ready[0]:
-                data = self.connection.recv(Config.USER['reinforcement_parameters']['sockets_parameters']['buffer'])
+                data = self.connection.recv(Config.USER['reinforcement_parameters']['sockets_parameters']['connection']['buffer'])
                 if Config.USER['debug']['enabled']:
                     print "data: "+str(data)
                 data = json.loads(data)
@@ -190,6 +192,4 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         msg += "\n### Environment Info:"
         msg += "\ntotal inputs: "+str(self.total_inputs_)
         msg += "\ntotal actions: "+str(self.total_actions_)
-        msg += "\nactions mapping: "+str(self.action_mapping_)
-        msg += "\npositions: "+str(self.total_positions_)
         return msg
