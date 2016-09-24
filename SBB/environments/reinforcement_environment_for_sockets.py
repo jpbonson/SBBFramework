@@ -45,6 +45,8 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     # - usar um logger?
     # - melhorar README, com tutorial
     # - melhorar outputs?
+    # - conferir run de poker
+    # - bug no classification? validation mean muito baixa
 
     def __init__(self):
         total_actions = Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['actions_total']
