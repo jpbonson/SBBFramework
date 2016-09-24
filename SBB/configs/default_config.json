@@ -1,8 +1,13 @@
-# This file has a sample configuration for a very quick training of tictactoe players
-# This file contains all possible configurations for SBB
+# This file has a sample configuration for a very quick training of tictactoe players.
+# The goal is just to see if everything is working, to train actual good players
+# check the other configuration files.
+
+# This file contains all possible configurations for SBB.
 
 # Sample result:
-#   
+#   Global Mean Validation Score per Validation per Run: [0.3875]
+#   Best Team Validation Score per Validation per Run (champion): [0.3875]
+#   Runtime: 0.04 mins
 {
     "task": "reinforcement", 
 

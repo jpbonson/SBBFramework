@@ -7,13 +7,11 @@ from ...sbb import SBB
 
 TEST_CONFIG = {
     'task': 'reinforcement',
-    'classification_parameters': { 
-        'dataset': 'thyroid', 
-    },
+
     'reinforcement_parameters': { 
         'environment': 'poker', 
-        'validation_population': 18, 
-        'champion_population': 18,
+        'validation_population': 40, 
+        'champion_population': 40,
         'hall_of_fame': {
             'size': 20,
             'enabled': False,
@@ -28,7 +26,7 @@ TEST_CONFIG = {
         'validate_after_each_generation': 5,
         'populations': {
             'teams': 10,
-            'points': 18,
+            'points': 40,
         },
         'replacement_rate': {
             'teams': 0.5,

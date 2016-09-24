@@ -1,10 +1,12 @@
 # This file has a sample configuration for a training of a classifier for the iris dataset
 # Other sample datasets: "thyroid" and "shuttle"
 
+# This file contains only configurations for classification.
+
 # Sample result:
-#   champions with the following validation scores:
-#   [0.9, 1.0, 0.96666, 0.96666, 0.96666]
-#   runtime: 74 mins (14.8 mins per run)
+#   Global Mean Validation Score per Validation per Run: 
+#   Best Team Validation Score per Validation per Run (champion): [0.9, 1.0]
+#   Runtime: 30 mins (15 mins per run)
 
 {
     "task": "classification", 
@@ -16,8 +18,8 @@
 
     "training_parameters": {
         "runs_total": 2,
-        "generations_total": 100, 
-        "validate_after_each_generation": 25,
+        "generations_total": 300, 
+        "validate_after_each_generation": 50,
         "populations": {
             "points": 100, 
             "teams": 100

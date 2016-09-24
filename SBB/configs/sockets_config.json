@@ -1,6 +1,8 @@
 # This file has a sample configuration for a training of tictactoe players via sockets
 # To execute the client socket, run 'python SBB\tests\system_tests\tictactoe_game.py' on the root folder
 
+# This file contains only configurations for reinforcement learning (with sockets).
+
 # Sample result:
 #   
 {

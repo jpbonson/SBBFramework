@@ -1,7 +1,12 @@
-# This file has a sample configuration for a training of tictactoe players
+# This file has a sample configuration for a training of tictactoe players.
+
+# This file contains only configurations for reinforcement learning (without sockets).
 
 # Sample result:
-#   
+#   Global Mean Validation Score per Validation per Run: [0.43949]
+#   Best Team Validation Score per Validation per Run (champion): [0.56937]
+#   Runtime: 25 mins
+
 {
     "task": "reinforcement", 
 

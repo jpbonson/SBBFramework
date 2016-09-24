@@ -176,7 +176,7 @@ class TictactoeGame():
 
         current_opponent = data['params']['opponent_id']
         seed = data['params']['seed']
-        if current_opponent == 'random':
+        if current_opponent == 'random': # TODO
             opponent = TictactoeRandomOpponent()
         else:
             opponent = TictactoeSmartOpponent()

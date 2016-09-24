@@ -1,5 +1,7 @@
 # This file has a sample configuration for a training of poker players
 
+# This file contains only configurations for reinforcement learning (without sockets).
+
 # Sample result:
 #  
 {

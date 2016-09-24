@@ -37,6 +37,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     # - testar as configs predefinidas
     # - refatorar diversities (para generalizar)
     # - fazer multiplos oponentes funcionarem para sockets
+    # - fazer training_opponents_labels ser usado tambem sem o env de sockets?
     # - saber lidar quando nao tiver nenhum oponente
     # - fazer mais tests (system para sockets, e unit tests)
     # - clean code
