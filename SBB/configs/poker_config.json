@@ -1,4 +1,7 @@
 # This file has a sample configuration for a training of poker players
+
+# Sample result:
+#  
 {
     "task": "reinforcement", 
 
@@ -11,7 +14,7 @@
             "size": 20,
             "opponents": 0, # set to 0 if you want a hall of fame, but not as opponents
             "diversity": "genotype" # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
-        }, 
+        }
     },
 
     "training_parameters": {
@@ -62,8 +65,8 @@
         "diversity": {
             "k": 10, 
             "metrics": [
-                'ncd_c4', "genotype"
-            ], 
+                "ncd_c4", "genotype"
+            ]
         }, 
         "novelty": {
             "enabled": false,

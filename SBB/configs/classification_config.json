@@ -2,7 +2,9 @@
 # Other sample datasets: "thyroid" and "shuttle"
 
 # Sample result:
-# 
+#   champions with the following validation scores:
+#   [0.9, 1.0, 0.96666, 0.96666, 0.96666]
+#   runtime: 74 mins (14.8 mins per run)
 
 {
     "task": "classification", 
@@ -13,8 +15,8 @@
     },
 
     "training_parameters": {
-        "runs_total": 5,
-        "generations_total": 300, 
+        "runs_total": 2,
+        "generations_total": 100, 
         "validate_after_each_generation": 25,
         "populations": {
             "points": 100, 

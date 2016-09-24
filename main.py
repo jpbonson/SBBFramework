@@ -8,7 +8,7 @@ if __name__ == "__main__":
                       help="configuration file that will be used by SBB", 
                       default="SBB/configs/default_config.json")
     (options, args) = parser.parse_args()
-    
+
     Config.load_config(options.config_file)
     Config.check_parameters()
     SBB().run()

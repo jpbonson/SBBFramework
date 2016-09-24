@@ -1,4 +1,8 @@
 # This file has a sample configuration for a very quick training of tictactoe players
+# This file contains all possible configurations for SBB
+
+# Sample result:
+#   
 {
     "task": "reinforcement", 
 
@@ -24,12 +28,12 @@
                 "timeout": 120,
                 "buffer": 5000
             },
-            'environment': {
-                'actions_total': 9, # for tictactoe: spaces in the board
-                'inputs_total': 9, # for tictactoe: spaces in the board
-                'point_labels_total': 1, # for tictactoe: since no labels are being used
-                'training_opponents_total': 2, # if there are no opponents, set as 1
-                'validation_opponents_total': 2 # if there are no opponents, set as 1
+            "environment": {
+                "actions_total": 9, # for tictactoe: spaces in the board
+                "inputs_total": 9, # for tictactoe: spaces in the board
+                "point_labels_total": 1, # for tictactoe: since no labels are being used
+                "training_opponents_labels": ["random", "smart"], # if there are no opponents, set as 1
+                "validation_opponents_labels": ["random", "smart"] # if there are no opponents, set as 1
             }
         }
     },
@@ -71,7 +75,7 @@
     }, 
     
     "advanced_training_parameters": {
-        "seed": 1, # use None for a random seed (obs.: it doesn't guarantee that the same seeds lead to the same runs)
+        "seed": 1, # use None for a random seed (obs.: it doesn"t guarantee that the same seeds lead to the same runs)
         "use_operations": [
             "+", "-", "*", "/", 
             "ln", "exp", "cos", 

@@ -84,7 +84,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         pop_size = (pop_size/temp)*temp
         Config.USER['reinforcement_parameters'][population_key] = pop_size
 
-    def _instantiate_coded_opponent(self, opponent_class): # TODO: refactor? parece que isso nao precisa ser heranca
+    def _instantiate_coded_opponent(self, opponent_class):
         return opponent_class()
 
     def _instantiate_sbb_opponent(self, team, opponent_id):

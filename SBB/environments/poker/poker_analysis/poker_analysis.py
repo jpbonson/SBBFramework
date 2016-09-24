@@ -682,7 +682,6 @@ class PokerAnalysis():
         Create a player.
         - sbb player: read a .json file with the team structure
         - static player: select one of the classes available in poker_opponents.py
-        - human player: [TODO]
         """
         if player_type == "sbb":
             print "Loading 'sbb' player"

@@ -50,12 +50,11 @@ class Team(DefaultOpponent):
         self.programs.append(program)
         program.add_team(self)
 
-    def initialize(self, seed): # REFACTOR / TODO : remove?
+    def initialize(self, seed):
         """
         This method is called by the reinforcement learning environments to set 
         the opponent configurations before a match. This class implements this 
-        method only in order to be transparent if the opponent is a sbb or 
-        a coded opponent.
+        method only because it inherits DefaultOpponent.
         """
         pass
 
