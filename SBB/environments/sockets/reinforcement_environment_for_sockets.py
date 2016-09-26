@@ -14,27 +14,6 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     
     """
 
-    # DONE:
-    # - reorganized and improved configs, now it is a .json file
-    # - removed clutter / cleaned the code
-    # - improved tests (more tests, more organized, and faster)
-    # - removed usually-not-useful features (like the bid diversity), to focus on support the relevant parts of the code
-    # - generalized sockets code
-
-    # TODO:
-    # - testar/melhorar as configs predefinidas
-    # - refatorar diversities (para generalizar)
-    # - fazer mais tests (system para sockets, e unit tests)
-    # - clean code
-    # - usar um logger?
-    # - melhorar README, com tutorial
-    # - melhorar outputs?
-    # - conferir run de poker
-    # - bug no classification? validation mean muito baixa
-    # - remover 'metrics_per_generation'
-    # - renomear arquivos em 'second_layer_files'
-    # - hall of fame can be used with sockets?
-
     def __init__(self):
         total_actions = Config.USER['reinforcement_parameters']['environment_parameters']['actions_total']
         total_inputs = Config.USER['reinforcement_parameters']['environment_parameters']['inputs_total']
@@ -48,7 +27,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         self._start_server()
 
         self.valid_messages = ['match_running', 'match_ended']
-        self.valid_params = ['inputs', 'valid_actions', 'result']
+        self.valid_params = ['inputs', 'valid_actions', 'current_player', 'result']
 
     def _initialize_labels_for_opponents(self, key):
         opponents = []
@@ -95,11 +74,15 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
             if data['message_type'] == 'match_running':
                 inputs = data['params']['inputs']
                 valid_actions = data['params']['valid_actions']
-                action = team.execute(point.point_id_, inputs, valid_actions, is_training)
+                if data['params']['current_player'] == 'sbb':
+                    player = team
+                else:
+                    player = opponent
+                action = player.execute(point.point_id_, inputs, valid_actions, is_training)
                 if action is None:
                     action = random.choice(valid_actions)
 
-                if is_training:
+                if data['params']['current_player'] == 'sbb' and is_training:
                     team.action_sequence_['coding2'].append(str(action))
                     team.action_sequence_['coding4'].append(str(action))
 

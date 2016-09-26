@@ -265,9 +265,10 @@ class Team(DefaultOpponent):
                         msg += "\n"+key+": "+str(dict(self.extra_metrics_['champion_points'][key]))
 
             if 'champion_score' in self.extra_metrics_:
-                msg += "\n\nscore per opponent (no hall of fame) (champion): "+str(self.extra_metrics_['champion_score'])
+                msg += "\n\nscore per opponent (except hall of fame) (champion): "+str(self.extra_metrics_['champion_score'])
                 for key in self.extra_metrics_['opponents']:
-                    msg += "\n"+key+": "+str(self.extra_metrics_['champion_opponents'][key])
+                    if key in Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels']+['hall_of_fame']:
+                        msg += "\n"+key+": "+str(self.extra_metrics_['champion_opponents'][key])
             if Config.USER['task'] == 'reinforcement' and 'validation_score' in self.extra_metrics_:
                 msg += "\n\nscore per opponent (validation): "+str(self.extra_metrics_['validation_score'])
                 for key in self.extra_metrics_['validation_opponents']:
@@ -276,7 +277,8 @@ class Team(DefaultOpponent):
                 if 'training_opponents' in self.extra_metrics_:
                     msg += "\n\nscore per opponent (training): "+str(round_value(self.fitness_))
                     for key in self.extra_metrics_['training_opponents']:
-                        msg += "\n"+key+": "+str(self.extra_metrics_['training_opponents'][key])
+                        if key in Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels']+['hall_of_fame']:
+                            msg += "\n"+key+": "+str(self.extra_metrics_['training_opponents'][key])
             msg += "\n"
         if full_version:
             if Config.USER['task'] == 'classification' and self.extra_metrics_:

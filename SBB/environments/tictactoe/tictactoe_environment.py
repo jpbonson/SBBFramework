@@ -102,4 +102,5 @@ class TictactoeEnvironment(ReinforcementEnvironment):
         msg += "\ntotal actions: "+str(self.total_actions_)
         msg += "\nactions mapping: "+str(self.action_mapping_)
         msg += "\npositions: "+str(self.total_positions_)
+        msg += "\ntraining opponents: "+str(self.opponent_names_for_training_)
         return msg

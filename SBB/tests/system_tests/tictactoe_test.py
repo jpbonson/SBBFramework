@@ -244,6 +244,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame_not_used_as_opponents(self):
         Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
+        Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] = 2
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

@@ -176,10 +176,14 @@ class TictactoeGame():
 
         current_opponent = data['params']['opponent_label']
         seed = data['params']['seed']
-        if current_opponent == 'random':
-            opponent = TictactoeRandomOpponent()
+        if current_opponent == "hall_of_fame":
+            opp_is_hall_of_fame = True
         else:
-            opponent = TictactoeSmartOpponent()
+            opp_is_hall_of_fame = False  
+            if current_opponent == 'random':
+                opponent = TictactoeRandomOpponent()
+            else:
+                opponent = TictactoeSmartOpponent()
         
         outputs = []
         self.player_label = {}
@@ -193,18 +197,24 @@ class TictactoeGame():
                 self.player_label[1] = 'sbb'
                 self.player_label[2] = 'opponent'
 
-            opponent.initialize(seed)
+            if not opp_is_hall_of_fame:
+                opponent.initialize(seed)
             while True:
                 player = 1
 
                 inputs = self._inputs_from_the_point_of_view_of(player)
                 valid_actions = self._valid_actions()
-                if player == sbb_player:
+                if player == sbb_player or opp_is_hall_of_fame:
+                    if player == sbb_player:
+                        current_player = 'sbb'
+                    else:
+                        current_player = 'hall_of_fame'
                     message = {
                         'message_type': 'match_running',
                         'params': {
                             'inputs': inputs,
                             'valid_actions': valid_actions,
+                            'current_player': current_player,
                         },
                     }
                     if TictactoeGame.CONFIG['debug']:
@@ -225,12 +235,17 @@ class TictactoeGame():
 
                 inputs = self._inputs_from_the_point_of_view_of(player)
                 valid_actions = self._valid_actions()
-                if player == sbb_player:
+                if player == sbb_player or opp_is_hall_of_fame:
+                    if player == sbb_player:
+                        current_player = 'sbb'
+                    else:
+                        current_player = 'hall_of_fame'
                     message = {
                         'message_type': 'match_running',
                         'params': {
                             'inputs': inputs,
                             'valid_actions': valid_actions,
+                            'current_player': current_player,
                         },
                     }
                     if TictactoeGame.CONFIG['debug']:
