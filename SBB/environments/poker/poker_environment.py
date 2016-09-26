@@ -36,11 +36,20 @@ class PokerEnvironment(ReinforcementEnvironment):
         if total_labels != len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label']):
             raise ValueError("Wrong value for 'total_labels'")
 
-        coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
-        coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
+        available_opponents = [PokerRandomOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
+            PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, 
+            PokerTightPassiveOpponent]
+        t_opponents = []
+        for opponent in available_opponents:
+            if opponent.OPPONENT_ID in Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels']:
+                t_opponents.append(opponent)
+        v_opponents = []
+        for opponent in available_opponents:
+            if opponent.OPPONENT_ID in Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels']:
+                v_opponents.append(opponent)
 
         point_class = PokerPoint
-        super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class)
+        super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, t_opponents, v_opponents, point_class)
         PokerConfig.CONFIG['labels_per_subdivision']['opponent'] = self.opponent_names_for_validation_
         self.num_lines_per_file_ = []
         self.backup_points_per_label = None

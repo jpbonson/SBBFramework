@@ -46,6 +46,8 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     # - melhorar outputs?
     # - conferir run de poker
     # - bug no classification? validation mean muito baixa
+    # - remover 'metrics_per_generation'
+    # - renomear arquivos em 'second_layer_files'
 
     def __init__(self):
         total_actions = Config.USER['reinforcement_parameters']['environment_parameters']['actions_total']
