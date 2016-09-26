@@ -31,7 +31,6 @@ class RunInfo:
         self.global_mean_validation_score_per_validation = []
         self.global_max_validation_score_per_validation = []
         self.global_opponent_results_per_validation = []
-        self.info_per_team_per_generation = []
         self.global_mean_fitness_per_generation = []
         self.global_max_fitness_per_generation = []
         self.global_fitness_per_diversity_per_generation = defaultdict(list)

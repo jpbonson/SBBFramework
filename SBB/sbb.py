@@ -129,7 +129,6 @@ class SBB:
         if Config.RESTRICTIONS['write_output_files']:
             self.filepath_ = self._create_folder()
             self._write_output_files(run_infos, overall_info)
-            self._save_teams_data_per_generation(run_infos)
     
     def _initialize_environment(self):
         environment = None
@@ -322,19 +321,6 @@ class SBB:
 
     def _store_per_generation_metrics(self, run_info, teams_population):
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]
-        generation_info = []
-        for team in older_teams:
-            team_info = []
-            team_info.append(round_value(team.fitness_, round_decimals_to = 3))
-            team_info.append(round_value(team.score_testset_, round_decimals_to = 3))
-            for diversity in Config.RESTRICTIONS['used_diversities']:
-                if diversity in team.diversity_:
-                    value = round_value(team.diversity_[diversity], round_decimals_to = 3)
-                else:
-                    value = 0.0
-                team_info.append(value)
-            generation_info.append(team_info)
-        run_info.info_per_team_per_generation.append(generation_info)
         mean_fitness = round_value(numpy.mean([team.fitness_ for team in older_teams]), 3)
         run_info.global_mean_fitness_per_generation.append(mean_fitness)
         run_info.global_max_fitness_per_generation.append(round_value(max([team.fitness_ for team in older_teams])))
@@ -519,16 +505,6 @@ class SBB:
             if 'top10_overall' in run.second_layer_files:
                 self._save_teams_in_actions_file(run.second_layer_files['top10_overall']+run.hall_of_fame_in_last_generation, path+"second_layer_files/hall_of_fame+top10_overall/")
         print "\n### Files saved at "+self.filepath_+"\n"
-
-    def _save_teams_data_per_generation(self, run_infos):
-        for run_info in run_infos:
-            path = self.filepath_+"run"+str(run_info.run_id)+"/metrics_per_generation/"
-            os.makedirs(path)
-            for generation_index, generation_info in enumerate(run_info.info_per_team_per_generation):
-                filename = str(generation_index+1)+".gen"
-                with open(path+filename, "w") as text_file:
-                    for team_info in generation_info:
-                        text_file.write(" ".join([str(info) for info in team_info])+"\n")     
 
     def _save_teams(self, teams, path):
         if len(teams) > 0:
