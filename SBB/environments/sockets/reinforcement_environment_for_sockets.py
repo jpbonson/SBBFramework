@@ -5,21 +5,9 @@ import select
 import socket
 import json
 from collections import defaultdict
-from reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
-from default_opponent import DefaultOpponent
-from ..config import Config
-
-class DummyOpponent(DefaultOpponent): # TODO
-    OPPONENT_ID = "dummy"
-
-    def __init__(self):
-        super(DummyOpponent, self).__init__(DummyOpponent.OPPONENT_ID)
-
-    def initialize(self, seed):
-        pass
-
-    def execute(self, point_id_, inputs, valid_actions, is_training):
-        return 0
+from opponent_factory import opponent_factory
+from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
+from ...config import Config
 
 class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     """
@@ -27,7 +15,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     """
 
     # DONE:
-    # - reorganized configs, now it is a .json file
+    # - reorganized and improved configs, now it is a .json file
     # - removed clutter / cleaned the code
     # - improved tests (more tests, more organized, and faster)
     # - removed usually-not-useful features (like the bid diversity), to focus on support the relevant parts of the code
@@ -36,9 +24,6 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     # TODO:
     # - testar/melhorar as configs predefinidas
     # - refatorar diversities (para generalizar)
-    # - fazer multiplos oponentes funcionarem para sockets
-    # - fazer training_opponents_labels ser usado tambem sem o env de sockets?
-    # - saber lidar quando nao tiver nenhum oponente
     # - fazer mais tests (system para sockets, e unit tests)
     # - clean code
     # - usar um logger?
@@ -48,29 +33,31 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     # - bug no classification? validation mean muito baixa
     # - remover 'metrics_per_generation'
     # - renomear arquivos em 'second_layer_files'
+    # - hall of fame can be used with sockets?
 
     def __init__(self):
         total_actions = Config.USER['reinforcement_parameters']['environment_parameters']['actions_total']
         total_inputs = Config.USER['reinforcement_parameters']['environment_parameters']['inputs_total']
         total_labels = Config.USER['reinforcement_parameters']['environment_parameters']['point_labels_total']
-        # t_opponents = []
-        # for label in Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels']:
-        #     t_opponents.append(DummyOpponent(label))
-        # coded_opponents_for_training = t_opponents
-        # v_opponents = []
-        # for label in Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels']:
-        #     v_opponents.append(DummyOpponent(label))
-        # coded_opponents_for_validation = v_opponents
-        coded_opponents_for_training = [DummyOpponent] # TODO
-        coded_opponents_for_validation = [DummyOpponent] # TODO
+        t_opponents = self._initialize_labels_for_opponents('training_opponents_labels')
+        v_opponents = self._initialize_labels_for_opponents('validation_opponents_labels')
         point_class = ReinforcementPoint
         super(ReinforcementEnvironmentForSockets, self).__init__(total_actions, total_inputs, total_labels, 
-            coded_opponents_for_training, coded_opponents_for_validation, point_class)
+            t_opponents, v_opponents, point_class)
 
         self._start_server()
 
         self.valid_messages = ['match_running', 'match_ended']
         self.valid_params = ['inputs', 'valid_actions', 'result']
+
+    def _initialize_labels_for_opponents(self, key):
+        opponents = []
+        if Config.USER['reinforcement_parameters']['environment_parameters'][key]:
+            for label in Config.USER['reinforcement_parameters']['environment_parameters'][key]:
+                opponents.append(opponent_factory("CustomOpponent", label))
+        else:
+            opponents.append(opponent_factory("DummyOpponent", 'dummy'))
+        return opponents
 
     def _start_server(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -25,8 +25,8 @@
             "actions_total": 9, # for tictactoe: spaces in the board
             "inputs_total": 9, # for tictactoe: spaces in the board
             "point_labels_total": 1, # for tictactoe: since no labels are being used
-            "training_opponents_labels": ["random", "smart"], # if there are no opponents, set as 1
-            "validation_opponents_labels": ["random", "smart"] # if there are no opponents, set as 1
+            "training_opponents_labels": ["random", "smart"], # if there are no opponents, set as None or []
+            "validation_opponents_labels": ["random", "smart"] # if there are no opponents, set as None or []
         },
         "sockets_parameters": { # only used if "environment" is "sockets"
             "connection": {
