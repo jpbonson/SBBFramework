@@ -111,6 +111,20 @@ class Config():
             if Config.USER['reinforcement_parameters']['environment'] not in Config.RESTRICTIONS['environment_types']:
                 sys.stderr.write("Error: Invalid 'environment' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['environment_types'])+"\n")
                 raise SystemExit
+            total_labels = Config.USER['reinforcement_parameters']['environment_parameters']['point_labels_total']
+            total_opponents = len(Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels'])
+            minimum_pop_size = total_labels*total_opponents
+            if Config.USER['training_parameters']['populations']['points'] < minimum_pop_size:
+                sys.stderr.write("Error: Point population for training is too small, minimum size: "+str(minimum_pop_size)+"\n")
+                raise SystemExit
+            total_opponents = len(Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels'])
+            minimum_pop_size = total_labels*total_opponents
+            if Config.USER['reinforcement_parameters']['validation_population'] < minimum_pop_size:
+                sys.stderr.write("Error: Point population for validation is too small, minimum size: "+str(minimum_pop_size)+"\n")
+                raise SystemExit
+            if Config.USER['reinforcement_parameters']['champion_population'] < minimum_pop_size:
+                sys.stderr.write("Error: Point population for champion is too small, minimum size: "+str(minimum_pop_size)+"\n")
+                raise SystemExit
 
         if Config.USER['advanced_training_parameters']['novelty']['enabled'] and len(Config.USER['advanced_training_parameters']['diversity']['metrics']) == 0:
             sys.stderr.write("Error: Novelty can only be used along with a diversity metric\n")

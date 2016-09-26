@@ -21,19 +21,19 @@
             "opponents": 0, # set to 0 if you want a hall of fame, but not as opponents
             "diversity": "genotype" # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
         }, 
+        "environment_parameters": {
+            "actions_total": 9, # for tictactoe: spaces in the board
+            "inputs_total": 9, # for tictactoe: spaces in the board
+            "point_labels_total": 1, # for tictactoe: since no labels are being used
+            "training_opponents_labels": ["random", "smart"], # if there are no opponents, set as 1
+            "validation_opponents_labels": ["random", "smart"] # if there are no opponents, set as 1
+        },
         "sockets_parameters": { # only used if "environment" is "sockets"
             "connection": {
                 "host": "localhost",
                 "port": 7800,
                 "timeout": 120,
                 "buffer": 5000
-            },
-            "environment": {
-                "actions_total": 9, # for tictactoe: spaces in the board
-                "inputs_total": 9, # for tictactoe: spaces in the board
-                "point_labels_total": 1, # for tictactoe: since no labels are being used
-                "training_opponents_labels": ["random", "smart"], # if there are no opponents, set as 1
-                "validation_opponents_labels": ["random", "smart"] # if there are no opponents, set as 1
             }
         }
     },

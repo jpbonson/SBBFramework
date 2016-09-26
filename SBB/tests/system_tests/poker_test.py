@@ -18,6 +18,13 @@ TEST_CONFIG = {
             'diversity': 'ncd_c4',
             'opponents': 0,
         },
+        "environment_parameters": {
+            "actions_total": 3, # for poker: fold, call, raise
+            "inputs_total": 14, # for poker: hand strength, hand potential, opponent model, etc...
+            "point_labels_total": 9, # for poker: combinations of [weak, intermediate, strong] for player's and opponent's hands
+            "training_opponents_labels": ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"],
+            "validation_opponents_labels": ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"],
+        },
     },
 
     'training_parameters': {

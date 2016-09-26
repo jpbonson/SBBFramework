@@ -18,9 +18,9 @@ class TictactoeEnvironment(ReinforcementEnvironment):
     This environment encapsulates all methods to deal with a reinforcement learning task for TicTacToe.
     """
     def __init__(self):
-        total_actions = 9 # spaces in the board
-        total_inputs = 9 # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
-        total_labels = 1 # since no labels are being used, group everything is just one label
+        total_actions = Config.USER['reinforcement_parameters']['environment_parameters']['actions_total'] # spaces in the board
+        total_inputs = Config.USER['reinforcement_parameters']['environment_parameters']['inputs_total'] # spaces in the board (0, 1, 2 as the states, 0: no player, 1: player 1, 2: player 2)
+        total_labels = Config.USER['reinforcement_parameters']['environment_parameters']['point_labels_total'] # since no labels are being used, group everything is just one label
         coded_opponents = [TictactoeRandomOpponent, TictactoeSmartOpponent]
         point_class = TictactoePoint
         super(TictactoeEnvironment, self).__init__(total_actions, total_inputs, total_labels, coded_opponents, coded_opponents, point_class)

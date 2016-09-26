@@ -27,10 +27,14 @@ class PokerEnvironment(ReinforcementEnvironment):
     """
 
     def __init__(self):
-        total_actions = 3 # fold, call, raise
+        total_actions = Config.USER['reinforcement_parameters']['environment_parameters']['actions_total'] # fold, call, raise
+        total_inputs = Config.USER['reinforcement_parameters']['environment_parameters']['inputs_total']
+        total_labels = Config.USER['reinforcement_parameters']['environment_parameters']['point_labels_total']
         PokerConfig.CONFIG['inputs'] = MatchState.INPUTS+OpponentModel.INPUTS
-        total_inputs = len(PokerConfig.CONFIG['inputs'])
-        total_labels = len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        if total_inputs != len(PokerConfig.CONFIG['inputs']):
+            raise ValueError("Wrong value for 'total_inputs'")
+        if total_labels != len(PokerConfig.CONFIG['labels_per_subdivision']['sbb_label']):
+            raise ValueError("Wrong value for 'total_labels'")
 
         coded_opponents_for_training = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]
         coded_opponents_for_validation = [PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent]

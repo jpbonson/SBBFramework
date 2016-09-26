@@ -17,6 +17,13 @@ TEST_CONFIG = {
             'diversity': None,
             'opponents': 0,
         },
+        "environment_parameters": {
+            "actions_total": 9, # for tictactoe: spaces in the board
+            "inputs_total": 9, # for tictactoe: spaces in the board
+            "point_labels_total": 1, # for tictactoe: since no labels are being used
+            "training_opponents_labels": ["random", "smart"],
+            "validation_opponents_labels": ["random", "smart"],
+        },
     },
     'training_parameters': {
         'runs_total': 2,

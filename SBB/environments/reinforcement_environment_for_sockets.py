@@ -48,15 +48,15 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     # - bug no classification? validation mean muito baixa
 
     def __init__(self):
-        total_actions = Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['actions_total']
-        total_inputs = Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['inputs_total']
-        total_labels = Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['point_labels_total']
+        total_actions = Config.USER['reinforcement_parameters']['environment_parameters']['actions_total']
+        total_inputs = Config.USER['reinforcement_parameters']['environment_parameters']['inputs_total']
+        total_labels = Config.USER['reinforcement_parameters']['environment_parameters']['point_labels_total']
         # t_opponents = []
-        # for label in Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['training_opponents_labels']:
+        # for label in Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels']:
         #     t_opponents.append(DummyOpponent(label))
         # coded_opponents_for_training = t_opponents
         # v_opponents = []
-        # for label in Config.USER['reinforcement_parameters']['sockets_parameters']['environment']['validation_opponents_labels']:
+        # for label in Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels']:
         #     v_opponents.append(DummyOpponent(label))
         # coded_opponents_for_validation = v_opponents
         coded_opponents_for_training = [DummyOpponent] # TODO

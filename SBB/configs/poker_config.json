@@ -16,6 +16,13 @@
             "size": 20,
             "opponents": 0, # set to 0 if you want a hall of fame, but not as opponents
             "diversity": "genotype" # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+        },
+        "environment_parameters": {
+            "actions_total": 3, # for poker: fold, call, raise
+            "inputs_total": 14, # for poker: hand strength, hand potential, opponent model, etc...
+            "point_labels_total": 9, # for poker: combinations of [weak, intermediate, strong] for player's and opponent's hands
+            "training_opponents_labels": ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"], # if there are no opponents, set as 1
+            "validation_opponents_labels": ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"] # if there are no opponents, set as 1
         }
     },
 
