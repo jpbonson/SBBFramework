@@ -37,7 +37,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.total_actions_ = total_actions
         self.total_inputs_ = total_inputs
         self.total_labels_ = total_labels
+        if not coded_opponents_for_training:
+            coded_opponents_for_training = [opponent_factory("DummyOpponent", 'dummy')]
         self.coded_opponents_for_training_ = coded_opponents_for_training
+        if not coded_opponents_for_validation:
+            coded_opponents_for_validation = [opponent_factory("DummyOpponent", 'dummy')]
         self.coded_opponents_for_validation_ = coded_opponents_for_validation
         self.point_class = point_class
         Config.RESTRICTIONS['total_actions'] = self.total_actions_

@@ -3,7 +3,10 @@
 # This file contains only configurations for reinforcement learning (without sockets).
 
 # Sample result:
-#  
+#   Global Mean Validation Score per Validation per Run: [0.49097]
+#   Best Team Validation Score per Validation per Run (champion): [0.51271]
+#   Runtime: 1901.38277 mins (31.68 hours)
+
 {
     "task": "reinforcement", 
 

@@ -5,7 +5,7 @@ import select
 import socket
 import json
 from collections import defaultdict
-from opponent_factory import opponent_factory
+from ..opponent_factory import opponent_factory
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
 from ...config import Config
 

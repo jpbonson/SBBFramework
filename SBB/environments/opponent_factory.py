@@ -1,4 +1,4 @@
-from ..default_opponent import DefaultOpponent
+from default_opponent import DefaultOpponent
 
 class DummyOpponent(DefaultOpponent):
     OPPONENT_ID = "dummy"
