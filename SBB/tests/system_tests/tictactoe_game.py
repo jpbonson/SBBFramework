@@ -174,7 +174,7 @@ class TictactoeGame():
     def _initialize_match(self, data):
         self._reset_game()
 
-        current_opponent = data['params']['opponent_id']
+        current_opponent = data['params']['opponent_label']
         seed = data['params']['seed']
         if current_opponent == 'random':
             opponent = TictactoeRandomOpponent()

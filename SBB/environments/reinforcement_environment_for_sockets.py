@@ -34,14 +34,13 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     # - generalized sockets code
 
     # TODO:
-    # - testar as configs predefinidas
+    # - testar/melhorar as configs predefinidas
     # - refatorar diversities (para generalizar)
     # - fazer multiplos oponentes funcionarem para sockets
     # - fazer training_opponents_labels ser usado tambem sem o env de sockets?
     # - saber lidar quando nao tiver nenhum oponente
     # - fazer mais tests (system para sockets, e unit tests)
     # - clean code
-    # - mandar rodar run longo e ver se produz bons resultados
     # - usar um logger?
     # - melhorar README, com tutorial
     # - melhorar outputs?
@@ -95,7 +94,8 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
             is_training = False
 
         self._request(mode, match_id, 'new_match', args = {
-            'opponent_id': opponent.opponent_id,
+            'opponent_label': opponent.opponent_id,
+            'point_label': point.label_,
             'seed': point.seed_}
         )
 
