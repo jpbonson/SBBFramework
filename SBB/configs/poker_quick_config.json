@@ -1,0 +1,99 @@
+# This file has a sample configuration for a very quick training of poker players
+# The goal is just to see if everything is working, to train actual good players
+# check the other configuration files.
+
+# Sample result:
+#   Global Mean Validation Score per Validation per Run: [0.56967]
+#   Best Team Validation Score per Validation per Run (champion): [0.54629]
+#   Runtime: 0.02 mins
+
+{
+    "task": "reinforcement", 
+
+    "reinforcement_parameters": { # only used if "task" is "reinforcement"
+        "environment": "poker",
+        "validation_population": 18, # at a validated generation, all the teams with be tested against this population, the best one is the champion
+        "champion_population": 18, # at a validated generation, these are the points the champion team will play against to obtain the metrics
+        "hall_of_fame": {
+            "enabled": false, 
+            "size": 20,
+            "opponents": 0, # set to 0 if you want a hall of fame, but not as opponents
+            "diversity": "genotype" # if None, use the fitness as the criteria to remove teams when the Hall of Fame is full
+        },
+        "environment_parameters": {
+            "actions_total": 3, # for poker: fold, call, raise
+            "inputs_total": 14, # for poker: hand strength, hand potential, opponent model, etc...
+            "point_labels_total": 9, # for poker: combinations of [weak, intermediate, strong] for player's and opponent's hands
+            "training_opponents_labels": ["random"],
+            "validation_opponents_labels": ["random"]
+        }
+    },
+
+    "training_parameters": {
+        "runs_total": 1,
+        "generations_total": 5, 
+        "validate_after_each_generation": 5,
+        "populations": {
+            "points": 18, 
+            "teams": 10
+        }, 
+        "team_size": {
+            "max": 16, 
+            "min": 2 # the min size is the total number of actions
+        }, 
+        "program_size": {
+            "max": 40, 
+            "min": 5
+        }, 
+        "mutation": {
+            "program": {
+                "change_action": 0.1, 
+                "change_instruction": 1.0, 
+                "add_instruction": 0.5, 
+                "swap_instructions": 1.0, 
+                "remove_instruction": 0.5
+            }, 
+            "team": {
+                "add_program": 0.7, 
+                "mutate_program": 0.2, 
+                "remove_program": 0.7
+            }
+        }, 
+        "replacement_rate": {
+            "points": 0.2, 
+            "teams": 0.5
+        }
+    }, 
+    
+    "advanced_training_parameters": {
+        "seed": 1, # use None for a random seed (obs.: it doesn't guarantee that the same seeds lead to the same runs)
+        "use_operations": [
+            "+", "-", "*", "/", 
+            "ln", "exp", "cos", 
+            "if_lesser_than", 
+            "if_equal_or_higher_than"
+        ], 
+        "extra_registers": 4, 
+        "diversity": {
+            "k": 10, 
+            "metrics": [
+                "ncd_c4", "genotype"
+            ]
+        }, 
+        "novelty": {
+            "enabled": false,
+            "use_fitness": true
+        },
+        "use_weighted_probability_selection": false, # if False, uniform probability will be used
+        "use_agressive_mutations": true, 
+        "second_layer": {
+            "path": "actions_reference/actions.json", 
+            "enabled": false
+        }
+    },
+
+    "debug": {
+        "enabled": false,
+        "output_path": "logs/"
+    }
+}

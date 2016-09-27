@@ -353,10 +353,11 @@ class SBB:
         msg += "\nmean: "+str(score_means)
         msg += "\nstd. deviation: "+str(score_stds)
 
-        score_means, score_stds = self._process_scores([run.global_max_validation_score_per_validation for run in run_infos])
-        msg += "\n\nGlobal Max. Validation Score per Validation:"
-        msg += "\nmean: "+str(score_means)
-        msg += "\nstd. deviation: "+str(score_stds)
+        if Config.USER['task'] == 'reinforcement':
+            score_means, score_stds = self._process_scores([run.global_max_validation_score_per_validation for run in run_infos])
+            msg += "\n\nGlobal Max. Validation Score per Validation:"
+            msg += "\nmean: "+str(score_means)
+            msg += "\nstd. deviation: "+str(score_stds)
 
         msg += "\n\nGlobal Diversities per Validation:"
         for key in Config.RESTRICTIONS['used_diversities']:

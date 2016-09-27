@@ -57,10 +57,10 @@ def rank_teams_by_accumulative_score(ind_scores, acc_scores, list_ids, threshold
     if len(ind_scores) == 0:
         return []
     best_teams = {}
-    # check if first score is good enough (must be better than the others by at least 1.0 point)
-    for score in ind_scores:
-        if (ind_scores[0] - score) > threshold_for_score_improvement:
-            best_teams[list_ids[0]] = acc_scores[0]
+    
+    # adds the first score
+    best_teams[list_ids[0]] = acc_scores[0]
+
     # check if the other scores are good enough
     previous_score = acc_scores[0]
     for score, team_id in zip(acc_scores, list_ids):

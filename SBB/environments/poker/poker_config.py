@@ -27,7 +27,6 @@ class PokerConfig():
             'sbb_sd': lambda x: x.sbb_sd_label_,
             'opponent': lambda x: x.last_validation_opponent_id_,
         },
-        'main_subcategories': ['sbb_label', 'position', 'opponent'],
         'label_mapping': {'00': 0, '01': 1, '02': 2, '10': 3, '11': 4, '12': 5, '20': 6, '21': 7, '22': 8},
     }
 

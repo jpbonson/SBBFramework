@@ -58,20 +58,20 @@ class RunInfo:
         msg += "\n\n\n#################### MAIN METRICS"
         msg += "\n"
         msg += "\nGlobal Mean Validation Score per Validation: "+str(self.global_mean_validation_score_per_validation)
-        msg += "\nGlobal Max. Validation Score per Validation: "+str(self.global_max_validation_score_per_validation)
+        if Config.USER['task'] == 'reinforcement':
+            msg += "\nGlobal Max. Validation Score per Validation: "+str(self.global_max_validation_score_per_validation)
+        msg += "\n"
+        msg += "\nBest Team Validation Score per Validation (champion): "+str(round_array(self.test_score_per_validation))
+        msg += "\n"
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
             msg += "\nGlobal Diversities per Validation"
             for key in self.global_diversity_per_validation:
                 msg += "\n"+str(key)+": "+str(self.global_diversity_per_validation[key])
         msg += "\n"
-        msg += "\nBest Team Validation Score per Validation (champion): "+str(round_array(self.test_score_per_validation))
-        msg += "\n"
         msg += "\nGlobal Mean Fitness Score per Training: "+str(self.global_mean_fitness_per_generation)
         msg += "\nGlobal Max. Fitness Score per Training: "+str(self.global_max_fitness_per_generation)
         msg += "\n"
-        if Config.USER['task'] == 'reinforcement':
-            msg += "\nFinal Teams Validations: "+str(self.final_teams_validations)
-        msg += "\n"
+
         msg += "\nDistribution of Actions per Validation (last gen.): "+str(self.actions_distribution_per_validation[-1])
         msg += "\nDistribution of Inputs per Validation (per program) (last gen.): "+str(self.inputs_distribution_per_instruction_per_validation[-1])
         msg += "\nDistribution of Inputs per Validation (per team) (last gen.): "+str(self.inputs_distribution_per_team_per_validation[-1])
@@ -79,7 +79,10 @@ class RunInfo:
         msg += "\nMean Program Sizes (with introns) (last gen.): "+str(self.mean_program_size_with_introns_per_validation[-1])
         msg += "\nMean Program Sizes (without introns) (last gen.): "+str(self.mean_program_size_without_introns_per_validation[-1])
         msg += "\n"
+
         if Config.USER['task'] == 'reinforcement':
+            msg += "\nFinal Teams Validations: "+str(self.final_teams_validations)
+            msg += "\n"
             metric = "score"
             msg += "\nOverall Accumulative Results ("+str(metric)+"):"
             msg += "\n- Individual Team Performance: "+str(self.individual_performance_in_last_generation[metric])
@@ -90,7 +93,8 @@ class RunInfo:
         msg += "\n\n\n#################### ALL METRICS"
         msg += "\n\n\n##### GLOBAL METRICS PER VALIDATION"
         msg += "\n\nGlobal Mean Validation Score per Validation: "+str(self.global_mean_validation_score_per_validation)
-        msg += "\n\nGlobal Max. Validation Score per Validation: "+str(self.global_max_validation_score_per_validation)
+        if Config.USER['task'] == 'reinforcement':
+            msg += "\n\nGlobal Max. Validation Score per Validation: "+str(self.global_max_validation_score_per_validation)
         if Config.USER['task'] == 'reinforcement':
             msg += "\n\nGlobal Opponent Results per Validation"
             for key in self.global_opponent_results_per_validation[-1]:
@@ -146,14 +150,17 @@ class RunInfo:
         msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
         msg += "\n\nGlobal Mean Fitness Score per Training: "+str(self.global_mean_fitness_per_generation)
         msg += "\n\nGlobal Max. Fitness Score per Training: "+str(self.global_max_fitness_per_generation)
-        msg += "\n\nGlobal Fitness Score per Training (per diversity):"
+        
         if len(Config.RESTRICTIONS['used_diversities']) > 1:
+            msg += "\n\nGlobal Fitness Score per Training (per diversity):"
             for key in self.global_fitness_per_diversity_per_generation:
                 msg += "\n"+str(key)+": "+str(self.global_fitness_per_diversity_per_generation[key])
-        msg += "\n\nGlobal Fitness Score per Training (per opponent):"
+        
         if Config.USER['task'] == 'reinforcement':
+            msg += "\n\nGlobal Fitness Score per Training (per opponent):"
             for key in self.global_fitness_per_opponent_per_generation:
                 msg += "\n"+str(key)+": "+str(self.global_fitness_per_opponent_per_generation[key])
+
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
             msg += "\n\nGlobal Diversities per Training"
             for key in self.global_diversity_per_generation:
@@ -162,34 +169,15 @@ class RunInfo:
                 msg += "\n\nDiversity Type per Training: "+str(self.novelty_type_per_generation)
         
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE (summary)"
+            msg += "\n\n\n##### TEAMS RANKED BY ACCUMULATIVE PERFORMANCE"
             for metric in self.accumulative_performance_summary:
-                msg += "\n\n==="
-                msg += "\nOverall Accumulative Results ("+str(metric)+"):"
-                msg += "\noverall+subcats (len: "+str(len(self.accumulative_performance_summary[metric]['overall+subcats']['ids_only']))+"):"
-                msg += "\n- Rank: "+str(self.accumulative_performance_summary[metric]['overall+subcats']['rank'])
-                msg += "\n- Team ids: "+str(self.accumulative_performance_summary[metric]['overall+subcats']['ids_only'])
-                top5 = self.accumulative_performance_summary[metric]['overall+subcats']['rank'][:5]
-                msg += "\n- Team ids (top5): "+str(sorted([r[0] for r in top5]))
-                top10 = self.accumulative_performance_summary[metric]['overall+subcats']['rank'][:10]
-                msg += "\n- Team ids (top10): "+str(sorted([r[0] for r in top10]))
-                top15 = self.accumulative_performance_summary[metric]['overall+subcats']['rank'][:15]
-                msg += "\n- Team ids (top15): "+str(sorted([r[0] for r in top15]))
-
-                msg += "\noverall (len: "+str(len(self.accumulative_performance_summary[metric]['overall']['ids_only']))+"):"
+                msg += "\noverall ("+str(metric)+", len: "+str(len(self.accumulative_performance_summary[metric]['overall']['ids_only']))+"):"
                 msg += "\n- Rank: "+str(self.accumulative_performance_summary[metric]['overall']['rank'])
                 msg += "\n- Team ids: "+str(self.accumulative_performance_summary[metric]['overall']['ids_only'])
-                keys = list(self.accumulative_performance_summary[metric])
-                keys.remove('overall+subcats')
-                keys.remove('overall')
-                for key in keys:
-                    msg += "\n"+key+" (len: "+str(len(self.accumulative_performance_summary[metric][key]['ids_only']))+"):"
-                    msg += "\n- Rank: "+str(self.accumulative_performance_summary[metric][key]['rank'])
-                    msg += "\n- Team ids: "+str(self.accumulative_performance_summary[metric][key]['ids_only'])
 
-            msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE (full)"
+            msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE"
             for metric in self.individual_performance_in_last_generation:
-                msg += "\n\n\n\n====="
+                msg += "\n\n====="
                 msg += "\nOverall Accumulative Results ("+str(metric)+"):"
                 msg += "\n- Individual Team Performance: "+str(self.individual_performance_in_last_generation[metric])
                 msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation[metric])

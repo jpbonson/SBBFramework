@@ -352,42 +352,13 @@ class PokerEnvironment(ReinforcementEnvironment):
                     run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][label] = accumulative_performance
                     run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][label] = teams_ids
 
-    def _summarize_accumulative_performances(self, run_info):
-        metrics = ['score', 'hands_played', 'hands_won']
-        run_info.accumulative_performance_summary = {}
-        for metric in metrics:
-            run_info.accumulative_performance_summary[metric] = {}
-            ind_score = run_info.individual_performance_in_last_generation[metric]
-            acc_score = run_info.accumulative_performance_in_last_generation[metric]
-            ids = run_info.ids_for_acc_performance_in_last_generation[metric]
-            rank = rank_teams_by_accumulative_score(ind_score, acc_score, ids)
-            run_info.accumulative_performance_summary[metric]['overall'] = {}
-            run_info.accumulative_performance_summary[metric]['overall']['rank'] = rank
-            run_info.accumulative_performance_summary[metric]['overall']['ids_only'] = sorted([r[0] for r in rank])
-            ranks = []
-            ranks += rank
-
-            for subdivision in PokerConfig.CONFIG['main_subcategories']:
-                for label in PokerConfig.CONFIG['labels_per_subdivision'][subdivision]:
-                    ind_score = run_info.individual_performance_per_label_in_last_generation[metric][subdivision][label]
-                    acc_score = run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][label]
-                    ids = run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][label]
-
-                    rank = rank_teams_by_accumulative_score(ind_score, acc_score, ids)
-                    run_info.accumulative_performance_summary[metric]['subcat_'+subdivision+'_'+str(label)] = {}
-                    run_info.accumulative_performance_summary[metric]['subcat_'+subdivision+'_'+str(label)]['rank'] = rank
-                    run_info.accumulative_performance_summary[metric]['subcat_'+subdivision+'_'+str(label)]['ids_only'] = sorted([r[0] for r in rank])
-                    ranks += rank
-
-            rank = self._get_highest_ranks(ranks)
-            run_info.accumulative_performance_summary[metric]['overall+subcats'] = {}
-            run_info.accumulative_performance_summary[metric]['overall+subcats']['rank'] = rank
-            run_info.accumulative_performance_summary[metric]['overall+subcats']['ids_only'] = sorted([r[0] for r in rank])
+    def _summarize_accumulative_performances(self, run_info, metrics = ['score', 'hands_played', 'hands_won']):
+        super(PokerEnvironment, self)._summarize_accumulative_performances(run_info, metrics)
 
     def _get_validation_scores_per_subcategory(self, run_info, teams_population, current_generation):
         older_teams = [team for team in teams_population if team.generation != current_generation]
         run_info.final_teams_validations_ids = [team.__repr__() for team in older_teams]
-        for subcategory in PokerConfig.CONFIG['main_subcategories']:
+        for subcategory in PokerConfig.CONFIG['labels_per_subdivision'].keys():
             for subdivision in PokerConfig.CONFIG['labels_per_subdivision'][subcategory]:
                 run_info.final_teams_validations_per_subcategory[subcategory][subdivision] = []
                 for team in older_teams:
