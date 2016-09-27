@@ -103,6 +103,7 @@ class RunInfo:
             msg += "\n\nGlobal Diversities per Validation"
             for key in self.global_diversity_per_validation:
                 msg += "\n"+str(key)+": "+str(self.global_diversity_per_validation[key])
+
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\nGlobal Team Results per Validation" # Global Results per Validation
             for attribute in self.global_result_per_validation:
@@ -131,6 +132,7 @@ class RunInfo:
         msg += "\n\nDistribution of Actions per Validation: "+str(self.actions_distribution_per_validation)
         msg += "\n\nDistribution of Inputs per Validation (per program): "+str(self.inputs_distribution_per_instruction_per_validation)
         msg += "\n\nDistribution of Inputs per Validation (per team): "+str(self.inputs_distribution_per_team_per_validation)
+        
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
             msg += "\n\nPoints Distribution for the Validation Population: "+str(self.validation_population_distribution_per_validation) # Validation Population Distribution per Validation
             msg += "\n\nPoints Distribution for the Champion Population: "+str(self.champion_population_distribution_per_validation) # Champion Population Distribution per Validation
@@ -168,13 +170,7 @@ class RunInfo:
             if len(Config.RESTRICTIONS['used_diversities']) > 1:
                 msg += "\n\nDiversity Type per Training: "+str(self.novelty_type_per_generation)
         
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            msg += "\n\n\n##### TEAMS RANKED BY ACCUMULATIVE PERFORMANCE"
-            for metric in self.accumulative_performance_summary:
-                msg += "\noverall ("+str(metric)+", len: "+str(len(self.accumulative_performance_summary[metric]['overall']['ids_only']))+"):"
-                msg += "\n- Rank: "+str(self.accumulative_performance_summary[metric]['overall']['rank'])
-                msg += "\n- Team ids: "+str(self.accumulative_performance_summary[metric]['overall']['ids_only'])
-
+        if Config.USER['task'] == 'reinforcement':
             msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE"
             for metric in self.individual_performance_in_last_generation:
                 msg += "\n\n====="
@@ -182,14 +178,22 @@ class RunInfo:
                 msg += "\n- Individual Team Performance: "+str(self.individual_performance_in_last_generation[metric])
                 msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation[metric])
                 msg += "\n- Team ids: "+str(self.ids_for_acc_performance_in_last_generation[metric])
-                
-                for subdivision in self.individual_performance_per_label_in_last_generation[metric]:
-                    msg += "\n---"
-                    msg += "\nAccumulative Results ("+str(subdivision)+"):"
-                    for key in self.individual_performance_per_label_in_last_generation[metric][subdivision]:
-                        msg += "\n"+str(key)+":"
-                        msg += "\n- Individual Team Performance: "+str(self.individual_performance_per_label_in_last_generation[metric][subdivision][key])
-                        msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_per_label_in_last_generation[metric][subdivision][key])
-                        msg += "\n- Team ids: "+str(self.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][key])
+        
+                if Config.USER['reinforcement_parameters']['environment'] == 'poker':
+                    for subdivision in self.individual_performance_per_label_in_last_generation[metric]:
+                        msg += "\n---"
+                        msg += "\nAccumulative Results ("+str(subdivision)+"):"
+                        for key in self.individual_performance_per_label_in_last_generation[metric][subdivision]:
+                            msg += "\n"+str(key)+":"
+                            msg += "\n- Individual Team Performance: "+str(self.individual_performance_per_label_in_last_generation[metric][subdivision][key])
+                            msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_per_label_in_last_generation[metric][subdivision][key])
+                            msg += "\n- Team ids: "+str(self.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][key])
+        
+            if Config.USER['reinforcement_parameters']['environment'] == 'poker':
+                msg += "\n\n\n##### TEAMS RANKED BY ACCUMULATIVE PERFORMANCE"
+                for metric in self.accumulative_performance_summary:
+                    msg += "\noverall ("+str(metric)+", len: "+str(len(self.accumulative_performance_summary[metric]['overall']['ids_only']))+"):"
+                    msg += "\n- Rank: "+str(self.accumulative_performance_summary[metric]['overall']['rank'])
+                    msg += "\n- Team ids: "+str(self.accumulative_performance_summary[metric]['overall']['ids_only'])
 
         return msg
