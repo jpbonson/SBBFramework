@@ -7,8 +7,6 @@ from collections import deque
 class Config():
     """
     This class contain all the configurations and restrictions that will be used by SBB.
-    You may change the attribute USER to run SBB with different configurations, but it 
-    is not recommended to modify the attribute RESTRICTIONS.
     """
 
     # user configurable options, choose a .json file when initializing main.py
@@ -79,7 +77,7 @@ class Config():
     @staticmethod
     def check_parameters():
         """
-        Check if the parameters in CONFIG are valid using RESTRICTIONS
+        Check if the parameters in CONFIG are valid
         """
         if Config.USER['task'] not in Config.RESTRICTIONS['task_types']:
             sys.stderr.write("Error: Invalid 'task' in CONFIG! The valid values are "+str(Config.RESTRICTIONS['task_types'])+"\n")

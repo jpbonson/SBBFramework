@@ -312,22 +312,8 @@ class PokerEnvironment(ReinforcementEnvironment):
             run_info.champion_population_distribution_per_validation[key][label] = len(point_per_distribution[label])
 
     def calculate_final_validation_metrics(self, run_info, teams_population, current_generation):
-        self._calculate_accumulative_performances(run_info, teams_population, current_generation)
-        self._summarize_accumulative_performances(run_info)
+        super(PokerEnvironment, self).calculate_final_validation_metrics(run_info, teams_population, current_generation)
         self._get_validation_scores_per_subcategory(run_info, teams_population, current_generation)
-
-        top5_overall_subcats_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall+subcats']['rank'][:5]]
-        top10_overall_subcats_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall+subcats']['rank'][:10]]
-        top15_overall_subcats_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall+subcats']['rank'][:15]]
-        top5_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:5]]
-        top10_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:10]]
-        top15_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:15]]
-        run_info.second_layer_files['top5_overall_subcats'] = [t for t in teams_population if t.__repr__() in top5_overall_subcats_ids]
-        run_info.second_layer_files['top10_overall_subcats'] = [t for t in teams_population if t.__repr__() in top10_overall_subcats_ids]
-        run_info.second_layer_files['top15_overall_subcats'] = [t for t in teams_population if t.__repr__() in top15_overall_subcats_ids]
-        run_info.second_layer_files['top5_overall'] = [t for t in teams_population if t.__repr__() in top5_overall_ids]
-        run_info.second_layer_files['top10_overall'] = [t for t in teams_population if t.__repr__() in top10_overall_ids]
-        run_info.second_layer_files['top15_overall'] = [t for t in teams_population if t.__repr__() in top15_overall_ids]
 
     def _calculate_accumulative_performances(self, run_info, teams_population, current_generation):
         older_teams = [team for team in teams_population if team.generation != current_generation]

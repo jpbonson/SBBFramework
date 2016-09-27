@@ -404,6 +404,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
         run_info.second_layer_files['top5_overall'] = [t for t in teams_population if t.__repr__() in top5_overall_ids]
         run_info.second_layer_files['top10_overall'] = [t for t in teams_population if t.__repr__() in top10_overall_ids]
         run_info.second_layer_files['top15_overall'] = [t for t in teams_population if t.__repr__() in top15_overall_ids]
+        run_info.second_layer_files['all'] = teams_population
+
+        older_teams = [team for team in teams_population if team.generation != current_generation]
+        run_info.final_teams_validations_ids = [team.__repr__() for team in older_teams]
 
     def _calculate_accumulative_performances(self, run_info, teams_population, current_generation):
         older_teams = [team for team in teams_population if team.generation != current_generation]
