@@ -19,6 +19,7 @@ TEST_CONFIG = {
         },
         "environment_parameters": {
             "actions_total": 9, # for tictactoe: spaces in the board
+            "points_per_action": [1, 1, 1, 1, 1, 1, 1, 1, 1],
             "inputs_total": 9, # for tictactoe: spaces in the board
             "point_labels_total": 1, # for tictactoe: since no labels are being used
             "training_opponents_labels": ["random", "smart"],

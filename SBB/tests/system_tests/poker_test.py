@@ -20,6 +20,7 @@ TEST_CONFIG = {
         },
         "environment_parameters": {
             "actions_total": 3, # for poker: fold, call, raise
+            "points_per_action": [0.0, 0.5, 1.0],
             "inputs_total": 14, # for poker: hand strength, hand potential, opponent model, etc...
             "point_labels_total": 9, # for poker: combinations of [weak, intermediate, strong] for player's and opponent's hands
             "training_opponents_labels": ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"],

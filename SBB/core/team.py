@@ -42,7 +42,7 @@ class Team(DefaultOpponent):
         self.diversity_ = {}
         self.action_sequence_ = {} # only used by reinforcement learning
         self.action_sequence_['coding2'] = []
-        self.action_sequence_['coding3'] = []
+        self.action_sequence_['encoding_for_pattern_of_actions_per_match'] = []
         self.action_sequence_['coding4'] = []
         self.last_selected_program_ = None
 

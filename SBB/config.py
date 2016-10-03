@@ -49,12 +49,12 @@ class Config():
             'threshold': 10,
         },
         'diversity': {
-            'options': ['genotype', 'fitness_sharing', 'entropy_c2', 'hamming_c3', 'ncd_c3', 
+            'options': ['genotype', 'fitness_sharing', 'entropy_c2', 'hamming', 'ncd_c3', 
                 'entropy_c3', 'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
             'classification_compatible_diversities': ['genotype', 'fitness_sharing'],
             'reinforcement_compatible_diversities': ['genotype', 'fitness_sharing', 'entropy_c2', 
-                'hamming_c3', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'],
-            'total_bins': 3, # used to organize the distances for the diversity metrics
+                'hamming', 'ncd_c3', 'entropy_c3', 'ncd_c4', 'euclidean'],
+            'total_bins': 3, # used to organize the distances for the action-based diversity metrics
             'max_ncd': 1.2, # used to normalize NCD
         },
         'second_layer': {

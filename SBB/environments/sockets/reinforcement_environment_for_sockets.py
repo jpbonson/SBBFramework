@@ -7,6 +7,7 @@ import json
 from collections import defaultdict
 from ..opponent_factory import opponent_factory
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
+from ...core.diversity_maintenance import DiversityMaintenance
 from ...utils.helpers import flatten
 from ...config import Config
 
@@ -86,6 +87,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
             }
         )
 
+        actions = []
         is_over = False
         while not is_over:
             data = self._get_valid_client_message()
@@ -102,6 +104,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
                     action = random.choice(valid_actions)
 
                 if data['params']['current_player'] == 'sbb' and is_training:
+                    actions.append(action)
                     team.action_sequence_['coding2'].append(str(action))
                     team.action_sequence_['coding4'].append(str(action))
 
@@ -109,7 +112,8 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
             elif data['message_type'] == 'match_ended':
                 is_over = True
                 result = data['params']['result']
-                team.action_sequence_['coding3'].append(int(result*2))
+                bin_label = DiversityMaintenance.define_bin_for_actions(actions)
+                team.action_sequence_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
             else:
                 raise ValueError("Unexpected value for 'message_type'")
         return result

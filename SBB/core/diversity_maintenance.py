@@ -13,6 +13,34 @@ class DiversityMaintenance():
     """
 
     @staticmethod
+    def define_bin_for_actions(actions):
+        if len(actions) == 0:
+            return 0.0
+        points_per_action = Config.USER['reinforcement_parameters']['environment_parameters']['points_per_action']
+        points = 0.0
+        for action in actions:
+            points += points_per_action[action]
+        points = points/float(len(actions))
+        return DiversityMaintenance.define_bin_for_value(points)
+
+    @staticmethod
+    def define_bin_for_value(value, is_normalized = False):
+        if is_normalized:
+            normalization_parameter = Config.RESTRICTIONS['multiply_normalization_by']
+        else:
+            normalization_parameter = 1.0
+
+        interval_amount = 1/float(Config.RESTRICTIONS['diversity']['total_bins'])
+        previous_interval = 0.0
+        for bin_number in range(Config.RESTRICTIONS['diversity']['total_bins']):
+            min_value = previous_interval*normalization_parameter
+            max_value = (bin_number+1)*interval_amount*normalization_parameter
+            if value >= min_value and value < max_value:
+                return bin_number
+            previous_interval += interval_amount
+        return Config.RESTRICTIONS['diversity']['total_bins']-1
+
+    @staticmethod
     def calculate_diversities(teams_population, point_population):
         diversities_to_calculate = list(Config.USER['advanced_training_parameters']['diversity']['metrics'])
 
@@ -102,22 +130,22 @@ class DiversityMaintenance():
         return distance
 
     @staticmethod
-    def _hamming_c3(team, other_team):
-        return hamming(team.action_sequence_['coding3'], other_team.action_sequence_['coding3'])
+    def _hamming(team, other_team):
+        return hamming(team.action_sequence_['encoding_for_pattern_of_actions_per_match'], other_team.action_sequence_['encoding_for_pattern_of_actions_per_match'])
 
     @staticmethod
     def _ncd_c3(team, other_team):
-        action_sequence = list(team.action_sequence_['coding3'])
+        action_sequence = list(team.action_sequence_['encoding_for_pattern_of_actions_per_match'])
         action_sequence = [str(a) for a in action_sequence]
-        other_action_sequence = list(other_team.action_sequence_['coding3'])
+        other_action_sequence = list(other_team.action_sequence_['encoding_for_pattern_of_actions_per_match'])
         other_action_sequence = [str(a) for a in other_action_sequence]
         distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
         return distance
 
     @staticmethod
     def _entropy_c3(team, other_team):
-        action_sequence = team.action_sequence_['coding3']
-        other_action_sequence = other_team.action_sequence_['coding3']
+        action_sequence = team.action_sequence_['encoding_for_pattern_of_actions_per_match']
+        other_action_sequence = other_team.action_sequence_['encoding_for_pattern_of_actions_per_match']
         options = Config.RESTRICTIONS['diversity']['total_bins']
         distance = DiversityMaintenance._general_relative_entropy_distance(action_sequence, other_action_sequence, options)
         return distance
@@ -131,7 +159,7 @@ class DiversityMaintenance():
 
     @staticmethod
     def _euclidean(team, other_team):
-        value = euclidean(team.action_sequence_['coding3'], other_team.action_sequence_['coding3'])
+        value = euclidean(team.action_sequence_['encoding_for_pattern_of_actions_per_match'], other_team.action_sequence_['encoding_for_pattern_of_actions_per_match'])
         max_value = DiversityMaintenance._get_max_euclidean(Config.RESTRICTIONS['diversity']['total_bins'])
         result = value/float(max_value)
         return result

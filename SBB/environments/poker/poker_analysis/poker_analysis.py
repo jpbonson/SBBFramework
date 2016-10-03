@@ -23,6 +23,8 @@ from ....utils.team_reader import read_team_from_json, initialize_actions_for_se
 from ....utils.helpers import round_value, flatten, accumulative_performances
 from ....config import Config
 
+########### !!!!!!!!! THIS CODE IS OUT OF DATE !!!!!!!!! ###########
+
 class PokerFranksteinOpponent(DefaultOpponent):
 
     OPPONENT_ID = "frankstein_opponent"
@@ -732,7 +734,7 @@ class PokerAnalysis():
         team.chips = {} # Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
 
         team.action_sequence_['coding2'] = []
-        team.action_sequence_['coding3'] = []
+        team.action_sequence_['encoding_for_pattern_of_actions_per_match'] = []
         team.action_sequence_['coding4'] = []
 
         keys = ['validation']

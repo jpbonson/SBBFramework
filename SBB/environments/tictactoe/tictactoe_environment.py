@@ -3,6 +3,7 @@ import numpy
 from tictactoe_match import TictactoeMatch
 from tictactoe_opponents import TictactoeRandomOpponent, TictactoeSmartOpponent
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
+from ...core.diversity_maintenance import DiversityMaintenance
 from ...config import Config
 
 class TictactoePoint(ReinforcementPoint):
@@ -64,6 +65,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
 
             match = TictactoeMatch(player1_label = first_player.__repr__(), player2_label = second_player.__repr__())
             opponent.initialize(point.seed_)
+            actions = []
             while True:
                 player = 1
                 inputs = match.inputs_from_the_point_of_view_of(player)
@@ -71,13 +73,15 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                 if action is None:
                     action = random.choice(match.valid_actions())
                 if is_training_for_first_player:
+                    actions.append(action)
                     first_player.action_sequence_['coding2'].append(str(action))
                     first_player.action_sequence_['coding4'].append(str(action))
                 match.perform_action(player, action)
                 if match.is_over():
                     result = match.result_for_player(sbb_player)
                     outputs.append(result)
-                    team.action_sequence_['coding3'].append(int(result*2))
+                    bin_label = DiversityMaintenance.define_bin_for_actions(actions)
+                    team.action_sequence_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
                     break
                 player = 2
                 inputs = match.inputs_from_the_point_of_view_of(player)
@@ -85,14 +89,17 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                 if action is None:
                     action = random.choice(match.valid_actions())
                 if is_training_for_second_player:
+                    actions.append(action)
                     second_player.action_sequence_['coding2'].append(str(action))
                     second_player.action_sequence_['coding4'].append(str(action))
                 match.perform_action(player, action)
                 if match.is_over():
                     result = match.result_for_player(sbb_player)
                     outputs.append(result)
-                    team.action_sequence_['coding3'].append(int(result*2))
+                    bin_label = DiversityMaintenance.define_bin_for_actions(actions)
+                    team.action_sequence_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
                     break
+
         return numpy.mean(outputs)
 
     def metrics(self):

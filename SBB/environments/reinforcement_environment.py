@@ -279,7 +279,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
     def evaluate_teams_population_for_training(self, teams_population):
         for team in teams_population:
             team.action_sequence_['coding2'] = []
-            team.action_sequence_['coding3'] = []
+            team.action_sequence_['encoding_for_pattern_of_actions_per_match'] = []
             team.action_sequence_['coding4'] = []
             self.evaluate_team(team, Config.RESTRICTIONS['mode']['training'])
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:

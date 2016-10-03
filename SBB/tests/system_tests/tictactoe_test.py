@@ -19,6 +19,7 @@ TEST_CONFIG = {
         },
         "environment_parameters": {
             "actions_total": 9, # for tictactoe: spaces in the board
+            "points_per_action": [1, 1, 1, 1, 1, 1, 1, 1, 1],
             "inputs_total": 9, # for tictactoe: spaces in the board
             "point_labels_total": 1, # for tictactoe: since no labels are being used
             "training_opponents_labels": ["random", "smart"],
@@ -176,8 +177,8 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         expected = 1
         self.assertEqual(expected, result)
 
-    def test_reinforcement_for_ttt_without_pareto_and_with_hamming_c3_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['hamming_c3']
+    def test_reinforcement_for_ttt_without_pareto_and_with_hamming_diversity_maintenance(self):
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['hamming']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

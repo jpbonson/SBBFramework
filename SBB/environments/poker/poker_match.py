@@ -2,6 +2,7 @@ import os
 from match_state import MatchState
 from poker_config import PokerConfig
 from opponent_model import OpponentModel
+from ...core.diversity_maintenance import DiversityMaintenance
 from ...utils.helpers import round_value
 from ...config import Config
 
@@ -213,9 +214,9 @@ class PokerMatch():
             self.opponent.update_opponent_actions(player_actions)
 
         if self.is_training:
-            points = OpponentModel.calculate_points(player_actions)
-            hamming_label = self._quantitize_value(points)
-            self.team.action_sequence_['coding3'].append(hamming_label)
+            original_player_actions =  [PokerConfig.CONFIG['inverted_action_mapping'][a] for a in player_actions]
+            bin_label = DiversityMaintenance.define_bin_for_actions(original_player_actions)
+            self.team.action_sequence_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
 
         sbb_chips = self.players_info[sbb_position]['chips']
         opponent_chips = self.players_info[opponent_position]['chips']
@@ -330,28 +331,12 @@ class PokerMatch():
         action = PokerConfig.CONFIG['action_mapping'][action]
 
         if match_state.player_key == 'team' and self.is_training:
-            player.action_sequence_['coding4'].append(str(self._quantitize_value(match_state.hand_strength[self.round_id], is_normalized = True)))
-            player.action_sequence_['coding4'].append(str(self._quantitize_value(match_state.effective_potential[self.round_id], is_normalized = True)))
+            player.action_sequence_['coding4'].append(str(DiversityMaintenance.define_bin_for_value(match_state.hand_strength[self.round_id], is_normalized = True)))
+            player.action_sequence_['coding4'].append(str(DiversityMaintenance.define_bin_for_value(match_state.effective_potential[self.round_id], is_normalized = True)))
             player.action_sequence_['coding4'].append(str(action))
 
         match_state.actions.append(action)
         return action
-
-    def _quantitize_value(self, value, is_normalized = False):
-        if is_normalized:
-            normalization_parameter = Config.RESTRICTIONS['multiply_normalization_by']
-        else:
-            normalization_parameter = 1.0
-        if Config.RESTRICTIONS['diversity']['total_bins'] == 3:
-            if value >= 0.0*normalization_parameter and value < 0.33*normalization_parameter:
-                label = 0
-            elif value >= 0.33*normalization_parameter and value < 0.66*normalization_parameter:
-                label = 1
-            else:
-                label = 2
-        else:
-            raise ValueError("Invalid value for Config.RESTRICTIONS['diversity']['total_bins']")
-        return label
 
     def _get_opponent_model_for_team(self):
         opponent_id = self.opponent.opponent_id

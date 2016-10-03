@@ -6,6 +6,9 @@ from SBB.environments.poker.poker_opponents import (PokerAlwaysCallOpponent, Pok
 from SBB.utils.helpers import round_value
 import itertools
 
+########### !!!!!!!!! THIS CODE IS OUT OF DATE !!!!!!!!! ###########
+
+
 # usar actions.json files
 # automatizar mais os charts?
 
@@ -120,7 +123,7 @@ if __name__ == "__main__":
         # folder_path="../outputs/outputs_for_paper/config_layer1_without_bayes_no_metrics_with_profiling_seed",
         folder_path="../outputs/outputs_for_paper/recent/only_genotype_no_profiling_seed",
         # folder_path="../outputs/outputs_for_paper/recent/novelty_and_fitness_no_profiling_seed",
-        # folder_path="../outputs/outputs_for_paper/diversities_hamming_c3",
+        # folder_path="../outputs/outputs_for_paper/diversities_hamming",
         # player2_file_or_opponent_type=PokerTightPassiveOpponent,
         player2_file_or_opponent_type=PokerTightAgressiveOpponent,
         # player2_file_or_opponent_type=PokerLoosePassiveOpponent,
