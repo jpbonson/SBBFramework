@@ -16,13 +16,33 @@ class DiversityMaintenance():
     def calculate_diversities(teams_population, point_population):
         diversities_to_calculate = list(Config.USER['advanced_training_parameters']['diversity']['metrics'])
 
-        diversities_to_calculate = set(diversities_to_calculate)
         if "fitness_sharing" in diversities_to_calculate:
             DiversityMaintenance._fitness_sharing(teams_population, point_population)
             diversities_to_calculate.remove("fitness_sharing")
         if len(diversities_to_calculate) > 0:
             DiversityMaintenance.calculate_diversities_based_on_distances(teams_population, 
                 Config.USER['advanced_training_parameters']['diversity']['k'], diversities_to_calculate)
+
+    @staticmethod
+    def _fitness_sharing(population, point_population):
+        """
+        Uses the fitness sharing algorithm, so that individuals obtains more fitness by being able to solve
+        points that other individuals can't. It assumes that all dimension have the same weight (if it is not
+        true, normalize the dimensions before applying fitness sharing).
+        """
+        # calculate denominators in each dimension
+        denominators = [1.0] * len(point_population) # initialized to 1 so we don't divide by zero
+        for index, point in enumerate(point_population):
+            for team in population:
+                denominators[index] += float(team.results_per_points_[point.point_id_])
+
+        # calculate fitness
+        for team in population:
+            score = 0.0
+            for index, point in enumerate(point_population):
+                score += float(team.results_per_points_[point.point_id_]) / denominators[index]
+            diversity = score/float(len(point_population))
+            team.diversity_['fitness_sharing'] = round_value(diversity)
 
     @staticmethod
     def calculate_diversities_based_on_distances(population, k, distances):
@@ -45,27 +65,6 @@ class DiversityMaintenance():
                 min_values = sorted_list[:k]
                 diversity = numpy.mean(min_values)
                 team.diversity_[distance] = round_value(diversity)
-
-    @staticmethod
-    def _fitness_sharing(population, point_population):
-        """
-        Uses the fitness sharing algorithm, so that individuals obtains more fitness by being able to solve
-        points that other individuals can't. It assumes that all dimension have the same weight (if it is not
-        true, normalize the dimensions before applying fitness sharing).
-        """
-        # calculate denominators in each dimension
-        denominators = [1.0] * len(point_population) # initialized to 1 so we don't divide by zero
-        for index, point in enumerate(point_population):
-            for team in population:
-                denominators[index] += float(team.results_per_points_[point.point_id_])
-
-        # calculate fitness
-        for team in population:
-            score = 0.0
-            for index, point in enumerate(point_population):
-                score += float(team.results_per_points_[point.point_id_]) / denominators[index]
-            diversity = score/float(len(point_population))
-            team.diversity_['fitness_sharing'] = round_value(diversity)
 
     @staticmethod
     def _genotype(team, other_team):
