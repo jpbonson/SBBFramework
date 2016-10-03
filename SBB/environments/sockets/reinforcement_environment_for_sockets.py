@@ -64,7 +64,9 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         self._request(mode, match_id, 'new_match', args = {
             'opponent_label': opponent.opponent_id,
             'point_label': point.label_,
-            'seed': point.seed_}
+            'point_seed': point.seed_,
+            'point_id': point.point_id_
+            }
         )
 
         is_over = False

@@ -175,7 +175,7 @@ class TictactoeGame():
         self._reset_game()
 
         current_opponent = data['params']['opponent_label']
-        seed = data['params']['seed']
+        seed = data['params']['point_seed']
         if current_opponent == "hall_of_fame":
             opp_is_hall_of_fame = True
         else:
