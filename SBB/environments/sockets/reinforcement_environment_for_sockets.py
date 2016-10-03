@@ -7,12 +7,16 @@ import json
 from collections import defaultdict
 from ..opponent_factory import opponent_factory
 from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
+from ...utils.helpers import flatten
 from ...config import Config
 
-class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
-    """
+class ReinforcementForSocketsPoint(ReinforcementPoint):
     
-    """
+    def __init__(self, label):
+        super(ReinforcementForSocketsPoint, self).__init__()
+        self.label_ = label
+
+class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
 
     def __init__(self):
         total_actions = Config.USER['reinforcement_parameters']['environment_parameters']['actions_total']
@@ -20,7 +24,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         total_labels = Config.USER['reinforcement_parameters']['environment_parameters']['point_labels_total']
         t_opponents = self._initialize_labels_for_opponents('training_opponents_labels')
         v_opponents = self._initialize_labels_for_opponents('validation_opponents_labels')
-        point_class = ReinforcementPoint
+        point_class = ReinforcementForSocketsPoint
         super(ReinforcementEnvironmentForSockets, self).__init__(total_actions, total_inputs, total_labels, 
             t_opponents, v_opponents, point_class)
 
@@ -51,11 +55,24 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         self.connection.send(json.dumps(message))
         print "\nConnection established.\n"
 
-    def _play_match(self, team, opponent, point, mode, match_id):
-        """
-        
-        """
-        
+    def _initialize_random_population_of_points(self, population_size, ignore_cache = False):
+        population_size_per_label = population_size/self.total_labels_
+        data = self._sample_point_per_label(population_size_per_label)
+        data = flatten(data)
+        random.shuffle(data)
+        return data
+
+    def _points_to_add_per_label(self, total_points_to_add):
+        total_points_to_add_per_label = total_points_to_add/self.total_labels_
+        return self._sample_point_per_label(total_points_to_add_per_label)
+
+    def _sample_point_per_label(self, population_size_per_label):
+        data = []
+        for label in range(self.total_labels_):
+            data.append([ReinforcementForSocketsPoint(label) for _ in range(population_size_per_label)])
+        return data
+
+    def _play_match(self, team, opponent, point, mode, match_id):      
         if mode == Config.RESTRICTIONS['mode']['training']:
             is_training = True
         else:

@@ -247,7 +247,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         kept_subsets_per_class = []
         removed_subsets_per_class = []
 
-        # obtain the data points that will be kept and that will be removed for each subset using uniform probability
+        # obtain the data points that will be kept and that will be removed for each subset using age
         for subset, points_to_add in zip(current_subsets_per_class, points_to_add_per_label):
             subset.sort(key=lambda x: x.age_, reverse=True)
             remove_solutions = subset[:samples_per_class_to_remove]
