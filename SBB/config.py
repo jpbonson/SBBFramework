@@ -174,6 +174,11 @@ class Config():
             raise SystemExit
 
         total_labels = Config.USER['reinforcement_parameters']['environment_parameters']['point_labels_total']
+        if total_labels < 1:
+            sys.stderr.write("Error: Invalid 'point_labels_total' in CONFIG! "
+                "The minimum number of labels must always be at least 1.\n")
+            raise SystemExit
+
         total_opponents = len(Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels'])
         minimum_pop_size = total_labels*total_opponents
         if Config.USER['training_parameters']['populations']['points'] < minimum_pop_size:

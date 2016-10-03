@@ -109,16 +109,6 @@ class PokerEnvironment(ReinforcementEnvironment):
             self._update_team_hand_metrics_for_poker(team, point, normalized_value, 'validation')
             point.last_validation_opponent_id_ = opponent.opponent_id
 
-            # if team.extra_metrics_['played_last_hand']:
-            #     team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 1.0
-            #     if normalized_value > 0.5:
-            #         team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 1.0
-            #     else:
-            #         team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
-            # else:
-            #     team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 0.0
-            #     team.extra_metrics_['hands_won_or_lost_per_point'][point.point_id_] = 0.0
-
             if team.extra_metrics_['played_last_hand']:
                 team.extra_metrics_['hands_played_or_not_per_point'][point.point_id_] = 1.0
             else:
