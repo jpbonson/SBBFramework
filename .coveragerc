@@ -1,4 +1,7 @@
 [run]
+source =
+    SBB/*
+
 omit =
     docs/*
     SBB/configs/*
