@@ -1,6 +1,5 @@
 [run]
-source =
-    SBB/*
+source =.
 
 omit =
     docs/*
