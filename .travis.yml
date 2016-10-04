@@ -17,7 +17,11 @@ addons:
     - python-scipy
 
 install:
- - pip install -r requirements/requirements1.txt
+ - pip install -r requirements.txt
 
 script:
  - nosetests
+
+cache:
+ - apt
+ - pip
