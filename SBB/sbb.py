@@ -33,6 +33,11 @@ class SBB:
     def __init__(self):
         self.current_generation_ = 0
         self.best_scores_per_runs_ = [] # used by tests
+        Config.RESTRICTIONS['used_diversities'] = list(Config.USER['advanced_training_parameters']['diversity']['metrics'])
+        Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
+        self._initialize_seeds()
+
+    def _initialize_seeds(self):
         if isinstance(Config.USER['advanced_training_parameters']['seed'], list):
             self.seeds_per_run_ = Config.USER['advanced_training_parameters']['seed']
         else:
@@ -42,9 +47,7 @@ class SBB:
             self.seeds_per_run_ = []
             for index in range(Config.USER['training_parameters']['runs_total']):
                 self.seeds_per_run_.append(random.randint(0, Config.RESTRICTIONS['max_seed']))
-        Config.RESTRICTIONS['used_diversities'] = list(Config.USER['advanced_training_parameters']['diversity']['metrics'])
-        Config.RESTRICTIONS['genotype_options']['total_registers'] = Config.RESTRICTIONS['genotype_options']['output_registers'] + Config.USER['advanced_training_parameters']['extra_registers']
-    
+
     def run(self):
         print "\n### Starting pSBB"
 
