@@ -442,7 +442,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         run_info.champion_population_distribution_per_validation_ = {}
         run_info.validation_population_distribution_per_validation_ = {}
         run_info.point_population_distribution_per_validation_ = defaultdict(dict)
-        run_info.accumulative_performance_summary_ = {} # TODO
         run_info.individual_performance_per_label_in_last_generation_ = defaultdict(dict)
         run_info.accumulative_performance_per_label_in_last_generation_ = defaultdict(dict)
         run_info.ids_for_acc_performance_per_label_in_last_generation_ = defaultdict(dict)
@@ -475,14 +474,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\n\nPoints Distribution for the Training Population per Validation"
         msg += self._list_run_info_attributes(run_info.point_population_distribution_per_validation_)
 
-
-        msg += "\n\n\n##### TEAMS RANKED BY ACCUMULATIVE PERFORMANCE"
-
-        msg += "\n\nTeams Ranked by Accumulative Score per Metric"
-        for metric in run_info.accumulative_performance_summary_:
-            msg += "\n - metric: "+str(metric)+" (len: "+str(len(run_info.accumulative_performance_summary_[metric]['overall']['ids_only']))+"):"
-            msg += "\n    - Rank: "+str(run_info.accumulative_performance_summary_[metric]['overall']['rank'])
-            msg += "\n    - Team ids: "+str(run_info.accumulative_performance_summary_[metric]['overall']['ids_only'])
 
         msg += "\n\n\n##### ACCUMULATIVE PERFORMANCES"
         for metric in run_info.individual_performance_in_last_generation_:

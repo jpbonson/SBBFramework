@@ -414,7 +414,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
         run_info.ids_for_acc_performance_in_last_generation_[metric] = teams_ids
 
     def _summarize_accumulative_performances(self, run_info, metrics = ['score']):
-        run_info.accumulative_performance_summary_ = {}
         for metric in metrics:
             run_info.accumulative_performance_summary_[metric] = {}
             ind_score = run_info.individual_performance_in_last_generation_[metric]
@@ -472,6 +471,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         run_info.individual_performance_in_last_generation_ = defaultdict(list)
         run_info.accumulative_performance_in_last_generation_ = defaultdict(list)
         run_info.ids_for_acc_performance_in_last_generation_ = defaultdict(list)
+        run_info.accumulative_performance_summary_ = {}
 
     def generate_output_for_attributes_for_run_info(self, run_info):
         msg = ""
@@ -516,6 +516,15 @@ class ReinforcementEnvironment(DefaultEnvironment):
             msg += "\n- Individual Team Performance: "+str(run_info.individual_performance_in_last_generation_[metric])
             msg += "\n- Accumulative Team Performance: "+str(run_info.accumulative_performance_in_last_generation_[metric])
             msg += "\n- Team ids: "+str(run_info.ids_for_acc_performance_in_last_generation_[metric])
+
+        
+        msg += "\n\n\n##### TEAMS RANKED BY ACCUMULATIVE PERFORMANCE"
+
+        msg += "\n\nTeams Ranked by Accumulative Score per Metric"
+        for metric in run_info.accumulative_performance_summary_:
+            msg += "\n - metric: "+str(metric)+" (len: "+str(len(run_info.accumulative_performance_summary_[metric]['overall']['ids_only']))+"):"
+            msg += "\n    - Rank: "+str(run_info.accumulative_performance_summary_[metric]['overall']['rank'])
+            msg += "\n    - Team ids: "+str(run_info.accumulative_performance_summary_[metric]['overall']['ids_only'])
 
         return msg
 
