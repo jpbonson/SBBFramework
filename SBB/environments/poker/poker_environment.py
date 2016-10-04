@@ -454,42 +454,27 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         msg += "\n\n\n##### GLOBAL METRICS PER VALIDATION"
 
-        msg += "\n\nGlobal Team Results per Validation" # Global Results per Validation
-        for attribute in run_info.global_result_per_validation:
-            msg += "\n - "+str(attribute)+":"
-            for key in run_info.global_result_per_validation[attribute]:
-                msg += "\n    - "+str(key)+": "+str(run_info.global_result_per_validation[attribute][key])
+        msg += "\n\nGlobal Team Results per Validation"
+        msg += self._list_run_info_attributes(run_info.global_result_per_validation)
 
 
         msg += "\n\n\n##### FINAL TEAMS METRICS"
 
         msg += "\n\nFinal Teams Validation per Subcategory"
-        for subdivision in run_info.final_teams_validations_per_subcategory:
-            msg += "\n - "+str(subdivision)
-            for key in run_info.final_teams_validations_per_subcategory[subdivision]:
-                msg += "\n    - "+str(key)+": "+str(run_info.final_teams_validations_per_subcategory[subdivision][key])
+        msg += self._list_run_info_attributes(run_info.final_teams_validations_per_subcategory)
 
 
         msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
 
         msg += "\n\nPoints Distribution for the Champion Population"
-        for attribute in run_info.champion_population_distribution_per_validation:
-            msg += "\n - "+str(attribute)+":"
-            for key in run_info.champion_population_distribution_per_validation[attribute]:
-                msg += "\n    - "+str(key)+": "+str(run_info.champion_population_distribution_per_validation[attribute][key])
+        msg += self._list_run_info_attributes(run_info.champion_population_distribution_per_validation)
 
         msg += "\n\nPoints Distribution for the Validation Population"
-        for attribute in run_info.validation_population_distribution_per_validation:
-            msg += "\n - "+str(attribute)+":"
-            for key in run_info.validation_population_distribution_per_validation[attribute]:
-                msg += "\n    - "+str(key)+": "+str(run_info.validation_population_distribution_per_validation[attribute][key])
-        
+        msg += self._list_run_info_attributes(run_info.validation_population_distribution_per_validation)
+
         msg += "\n\nPoints Distribution for the Training Population per Validation"
-        for attribute in run_info.point_population_distribution_per_validation:
-            msg += "\n - "+str(attribute)+":"
-            for key in run_info.point_population_distribution_per_validation[attribute]:
-                msg += "\n    - "+str(key)+": "+str(run_info.point_population_distribution_per_validation[attribute][key])
-        
+        msg += self._list_run_info_attributes(run_info.point_population_distribution_per_validation)
+
 
         msg += "\n\n\n##### TEAMS RANKED BY ACCUMULATIVE PERFORMANCE"
 
@@ -501,15 +486,23 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         msg += "\n\n\n##### ACCUMULATIVE PERFORMANCES"
         for metric in run_info.individual_performance_in_last_generation:
-            msg += "\n\n=== metric: "+str(metric)
+            msg += "\n\n\n=== metric: "+str(metric)
             for subdivision in run_info.individual_performance_per_label_in_last_generation[metric]:
                 msg += "\n---"
                 msg += "\nAccumulative Results ("+str(subdivision)+"):"
                 for key in run_info.individual_performance_per_label_in_last_generation[metric][subdivision]:
-                    msg += "\n"+str(key)+":"
-                    msg += "\n- Individual Team Performance: "+str(run_info.individual_performance_per_label_in_last_generation[metric][subdivision][key])
-                    msg += "\n- Accumulative Team Performance: "+str(run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][key])
-                    msg += "\n- Team ids: "+str(run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][key])
+                    msg += "\n - "+str(key)+":"
+                    msg += "\n    - Individual Team Performance: "+str(run_info.individual_performance_per_label_in_last_generation[metric][subdivision][key])
+                    msg += "\n    - Accumulative Team Performance: "+str(run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][key])
+                    msg += "\n    - Team ids: "+str(run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][key])
+        return msg
+
+    def _list_run_info_attributes(self, run_info_attribute):
+        msg = ""
+        for attribute in run_info_attribute:
+            msg += "\n - "+str(attribute)+":"
+            for key in run_info_attribute[attribute]:
+                msg += "\n    - "+str(key)+": "+str(run_info_attribute[attribute][key])
         return msg
 
     def metrics(self):
