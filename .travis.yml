@@ -1,10 +1,23 @@
 language: python
 
+sudo: false
+
+branches:
+  only:
+    - master
+
 python:
   - "2.7"
 
-# command to install dependencies
-install: "pip install -r requirements/requirements1.txt; pip install -r requirements/requirements2.txt"
+addons:
+  apt:
+    packages:
+    - libatlas3gf-base
+    - python-numpy
+    - python-scipy
 
-# command to run tests
-script: nosetests
+install:
+ - pip install -r requirements/requirements1.txt
+
+script:
+ - nosetests
