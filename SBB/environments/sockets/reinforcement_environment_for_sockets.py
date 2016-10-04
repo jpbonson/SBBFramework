@@ -105,7 +105,6 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
 
                 if data['params']['current_player'] == 'sbb' and is_training:
                     actions.append(action)
-                    team.action_sequence_['coding2'].append(str(action))
                     team.action_sequence_['coding4'].append(str(action))
 
                 self._request(mode, match_id, 'perform_action', args = {'action': action}) 

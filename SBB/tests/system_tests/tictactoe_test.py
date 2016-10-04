@@ -170,7 +170,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_with_entropy_c2_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['entropy_c2']
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['entropy']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -187,14 +187,6 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_with_ncd_c3_diversity_maintenance(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['ncd_c3']
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_for_ttt_without_pareto_and_with_entropy_c3_diversity_maintenance(self):
-        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['entropy_c3']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

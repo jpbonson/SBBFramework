@@ -122,14 +122,6 @@ class DiversityMaintenance():
         return distance
 
     @staticmethod
-    def _entropy_c2(team, other_team):
-        action_sequence = team.action_sequence_['coding2']
-        other_action_sequence = other_team.action_sequence_['coding2']
-        options = Config.RESTRICTIONS['total_raw_actions']
-        distance = DiversityMaintenance._general_relative_entropy_distance(action_sequence, other_action_sequence, options)
-        return distance
-
-    @staticmethod
     def _hamming(team, other_team):
         return hamming(team.action_sequence_['encoding_for_pattern_of_actions_per_match'], other_team.action_sequence_['encoding_for_pattern_of_actions_per_match'])
 
@@ -143,7 +135,7 @@ class DiversityMaintenance():
         return distance
 
     @staticmethod
-    def _entropy_c3(team, other_team):
+    def _entropy(team, other_team):
         action_sequence = team.action_sequence_['encoding_for_pattern_of_actions_per_match']
         other_action_sequence = other_team.action_sequence_['encoding_for_pattern_of_actions_per_match']
         options = Config.RESTRICTIONS['diversity']['total_bins']

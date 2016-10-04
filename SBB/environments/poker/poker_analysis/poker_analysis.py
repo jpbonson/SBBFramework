@@ -733,7 +733,6 @@ class PokerAnalysis():
         team.opponent_model = {}
         team.chips = {} # Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
 
-        team.action_sequence_['coding2'] = []
         team.action_sequence_['encoding_for_pattern_of_actions_per_match'] = []
         team.action_sequence_['coding4'] = []
 

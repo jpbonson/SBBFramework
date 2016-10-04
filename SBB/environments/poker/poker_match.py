@@ -325,9 +325,6 @@ class PokerMatch():
         if action is None:
             action = 1
         
-        if match_state.player_key == 'team' and self.is_training:
-            player.action_sequence_['coding2'].append(str(action))
-
         action = PokerConfig.CONFIG['action_mapping'][action]
 
         if match_state.player_key == 'team' and self.is_training:
