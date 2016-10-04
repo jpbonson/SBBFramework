@@ -39,10 +39,12 @@ class Program:
         instructions = self.instructions_without_introns_
         if Config.USER['task'] == 'classification' or force_reset:
             self.reset_registers()
+        
         if_instruction = None
         skip_next = False
         for instruction in instructions:
-            if if_instruction and not Operation.execute_if(if_instruction.op, if_instruction.target, if_instruction.source):
+            if if_instruction and not Operation.execute_if(if_instruction.op, if_instruction.target, 
+                    if_instruction.source):
                 if_instruction = None
                 if instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                     skip_next = True
@@ -54,25 +56,28 @@ class Program:
             elif instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                 if_instruction = instruction
             elif instruction.op in Config.RESTRICTIONS['genotype_options']['one-operand-instructions']:
-                self.general_registers[instruction.target] = Operation.execute(instruction.op, self.general_registers[instruction.target])
+                self.general_registers[instruction.target] = Operation.execute(instruction.op, 
+                    self.general_registers[instruction.target])
             else:
                 if instruction.mode == 'read-register':
                     source =  self.general_registers[instruction.source]
                 else:
                     source =  input_registers[instruction.source]
-                self.general_registers[instruction.target] = Operation.execute(instruction.op, self.general_registers[instruction.target], source)
+                self.general_registers[instruction.target] = Operation.execute(instruction.op, 
+                    self.general_registers[instruction.target], source)
 
         return self.general_registers[0] # get bid output
 
     def _inputs_list(self):
         inputs = []
         for instruction in self.instructions_without_introns_:
-            if instruction.mode == 'read-input' and instruction.op not in Config.RESTRICTIONS['genotype_options']['one-operand-instructions']:
-                if instruction.source not in inputs:
-                    inputs.append(instruction.source)
+            if (instruction.mode == 'read-input' 
+                and instruction.op not in Config.RESTRICTIONS['genotype_options']['one-operand-instructions']
+                and instruction.source not in inputs):
+                inputs.append(instruction.source)
         return inputs
 
-    def _get_action_result(self, point_id, inputs, valid_actions, is_training):
+    def get_action_result(self, point_id, inputs, valid_actions, is_training):
         if self.is_atomic_action():
             return self.action
         else:
@@ -84,7 +89,7 @@ class Program:
             return True
         else:
             if self.generation == -1:
-                return True # WARNING: Incompatible for more than 2 layers, also need to use gambiarra/workaround to load teams with 2 layers
+                return True # WARNING: Incompatible for more than 2 layers
             else:
                 return False
 
@@ -99,8 +104,8 @@ class Program:
 
     def mutate(self):
         mutation_chance = random.random()
-        if (mutation_chance <= Config.USER['training_parameters']['mutation']['program']['remove_instruction'] and 
-                len(self.instructions) > Config.USER['training_parameters']['program_size']['min']):
+        if (mutation_chance <= Config.USER['training_parameters']['mutation']['program']['remove_instruction'] 
+                and len(self.instructions) > Config.USER['training_parameters']['program_size']['min']):
             self.instructions.remove(random.choice(self.instructions))
 
         mutation_chance = random.random()
@@ -109,14 +114,14 @@ class Program:
             instruction.mutate()
  
         mutation_chance = random.random()
-        if (mutation_chance <= Config.USER['training_parameters']['mutation']['program']['add_instruction'] and 
-                len(self.instructions) < Config.USER['training_parameters']['program_size']['max']):
+        if (mutation_chance <= Config.USER['training_parameters']['mutation']['program']['add_instruction'] 
+                and len(self.instructions) < Config.USER['training_parameters']['program_size']['max']):
             index = random.randrange(len(self.instructions))
             self.instructions.insert(index, Instruction())
         
         mutation_chance = random.random()
-        if (mutation_chance <= Config.USER['training_parameters']['mutation']['program']['swap_instructions']and 
-                len(self.instructions) > Config.USER['training_parameters']['program_size']['min']):
+        if (mutation_chance <= Config.USER['training_parameters']['mutation']['program']['swap_instructions'] 
+                and len(self.instructions) > Config.USER['training_parameters']['program_size']['min']):
             available_indeces = range(len(self.instructions))
             index1 = random.choice(available_indeces)
             available_indeces.remove(index1)
@@ -193,7 +198,8 @@ class Program:
         relevant_registers = [0]
         ignore_previous_if = True
         for instruction in reversed(instructions):
-            if instruction.target in relevant_registers or instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
+            if (instruction.target in relevant_registers 
+                or instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']):
                 if ignore_previous_if and instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                     continue
                 else:
@@ -202,7 +208,8 @@ class Program:
                     if not instruction.op in Config.RESTRICTIONS['genotype_options']['one-operand-instructions']:
                         if instruction.mode == 'read-register' and instruction.source not in relevant_registers:
                             relevant_registers.append(instruction.source)
-                    if instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions'] or instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions-for-signal']:
+                    if (instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions'] 
+                        or instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions-for-signal']):
                         if instruction.target not in relevant_registers:
                             relevant_registers.append(instruction.target)
             else:

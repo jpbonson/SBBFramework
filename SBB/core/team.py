@@ -74,7 +74,7 @@ class Team(DefaultOpponent):
                 return self.memory_actions_per_points_[point_id]
             else:
                 selected_program = self._select_program(inputs, valid_actions, force_reset)
-                output_class = selected_program._get_action_result(point_id, inputs, valid_actions, is_training)
+                output_class = selected_program.get_action_result(point_id, inputs, valid_actions, is_training)
                 if Config.RESTRICTIONS['use_memmory_for_actions']:
                     self.memory_actions_per_points_[point_id] = output_class
                 if selected_program not in self.active_programs_:
@@ -85,7 +85,7 @@ class Team(DefaultOpponent):
             self.last_selected_program_ = selected_program.program_id_
             if selected_program not in self.validation_active_programs_:
                 self.validation_active_programs_.append(selected_program)
-            return selected_program._get_action_result(point_id, inputs, valid_actions, is_training)
+            return selected_program.get_action_result(point_id, inputs, valid_actions, is_training)
 
     def _actions_are_available(self, valid_actions):
         """
@@ -121,12 +121,14 @@ class Team(DefaultOpponent):
         """
         if Config.USER['advanced_training_parameters']['use_agressive_mutations']:
             mutation_chance = 1
-            while mutation_chance > random.random() and len(self.programs) > Config.USER['training_parameters']['team_size']['min']:
+            while (mutation_chance > random.random() 
+                and len(self.programs) > Config.USER['training_parameters']['team_size']['min']):
                 self._randomly_remove_program()
                 mutation_chance = mutation_chance * Config.USER['training_parameters']['mutation']['team']['remove_program']
 
             mutation_chance = 1
-            while mutation_chance > random.random() and len(self.programs) < Config.USER['training_parameters']['team_size']['max']:
+            while (mutation_chance > random.random() 
+                and len(self.programs) < Config.USER['training_parameters']['team_size']['max']):
                 self._randomly_add_program(programs_population)
                 mutation_chance = mutation_chance * Config.USER['training_parameters']['mutation']['team']['add_program']
         else:
@@ -157,7 +159,8 @@ class Team(DefaultOpponent):
 
     def _randomly_remove_program(self):
         """
-        Remove a program from the team. A program can be removed only if removing it will maintain ['team_size']['min'] distinct actions in the team.
+        Remove a program from the team. A program can be removed only if removing it will 
+        maintain ['team_size']['min'] distinct actions in the team.
         """
         while True:
             candidate_to_remove = random.choice(self.programs)
@@ -226,9 +229,12 @@ class Team(DefaultOpponent):
         inactive_programs = list(set(self.programs) - set(self.active_programs_))
         inactive_teams_members_ids = [p.__repr__() for p in inactive_programs]
         msg = self.__repr__()
-        msg += "\nteam members ("+str(len(self.programs))+"), A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids)
-        msg += "\n- validation: A: "+str(validation_active_teams_members_ids)+", I: "+str(validation_inactive_teams_members_ids)
-        msg += "\nfitness: "+str(round_value(self.fitness_))+", test score: "+str(round_value(self.score_testset_))
+        msg += ("\nteam members ("+str(len(self.programs))+"), "
+            "A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids))
+        msg += ("\n- validation: A: "+str(validation_active_teams_members_ids)+", "
+            "I: "+str(validation_inactive_teams_members_ids))
+        msg += ("\nfitness: "+str(round_value(self.fitness_))+", "
+            "test score: "+str(round_value(self.score_testset_)))
         msg += "\ninputs distribution: "+str(self.inputs_distribution())
         if Config.USER['task'] == 'classification' and self.extra_metrics_:
             msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
@@ -246,12 +252,16 @@ class Team(DefaultOpponent):
                     msg += "\npassive_aggressive: "+str(self.extra_metrics_['passive_aggressive'])
                     msg += "\nbluffing: "+str(self.extra_metrics_['bluffing'])
                     msg += "\nbluffing_only_raise: "+str(self.extra_metrics_['bluffing_only_raise'])
-                    msg += "\nnormalized result (mean): "+str(round_value(numpy.mean(self.results_per_points_for_validation_.values())))
-                    msg += "\nnormalized result (std): "+str(round_value(numpy.std(self.results_per_points_for_validation_.values())))
+                    msg += ("\nnormalized result (mean): "
+                        ""+str(round_value(numpy.mean(self.results_per_points_for_validation_.values()))))
+                    msg += ("\nnormalized result (std): "
+                        ""+str(round_value(numpy.std(self.results_per_points_for_validation_.values()))))
                 if 'agressiveness_champion' in self.extra_metrics_:
-                    msg += "\n\nagressiveness (champion): "+str(self.extra_metrics_['agressiveness_champion'])
+                    msg += ("\n\nagressiveness (champion): "
+                        ""+str(self.extra_metrics_['agressiveness_champion']))
                     msg += "\ntight_loose (champion): "+str(self.extra_metrics_['tight_loose_champion'])
-                    msg += "\npassive_aggressive (champion): "+str(self.extra_metrics_['passive_aggressive_champion'])
+                    msg += ("\npassive_aggressive (champion): "
+                        ""+str(self.extra_metrics_['passive_aggressive_champion']))
                     msg += "\nbluffing (champion): "+str(self.extra_metrics_['bluffing_champion'])
 
                 if 'validation_points' in self.extra_metrics_:
@@ -265,20 +275,22 @@ class Team(DefaultOpponent):
                         msg += "\n"+key+": "+str(dict(self.extra_metrics_['champion_points'][key]))
 
             if 'champion_score' in self.extra_metrics_:
-                msg += "\n\nscore per opponent (except hall of fame) (champion): "+str(self.extra_metrics_['champion_score'])
+                msg += ("\n\nscore per opponent (except hall of fame) (champion): "
+                    ""+str(self.extra_metrics_['champion_score']))
+                total_opponents = Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels']+['hall_of_fame']
                 for key in self.extra_metrics_['opponents']:
-                    if key in Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels']+['hall_of_fame']:
+                    if key in total_opponents:
                         msg += "\n"+key+": "+str(self.extra_metrics_['champion_opponents'][key])
             if Config.USER['task'] == 'reinforcement' and 'validation_score' in self.extra_metrics_:
                 msg += "\n\nscore per opponent (validation): "+str(self.extra_metrics_['validation_score'])
                 for key in self.extra_metrics_['validation_opponents']:
                     msg += "\n"+key+": "+str(self.extra_metrics_['validation_opponents'][key])
-            if Config.USER['task'] == 'reinforcement':
-                if 'training_opponents' in self.extra_metrics_:
-                    msg += "\n\nscore per opponent (training): "+str(round_value(self.fitness_))
-                    for key in self.extra_metrics_['training_opponents']:
-                        if key in Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels']+['hall_of_fame']:
-                            msg += "\n"+key+": "+str(self.extra_metrics_['training_opponents'][key])
+            if Config.USER['task'] == 'reinforcement' and 'training_opponents' in self.extra_metrics_:
+                msg += "\n\nscore per opponent (training): "+str(round_value(self.fitness_))
+                total_opponents = Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels']+['hall_of_fame']
+                for key in self.extra_metrics_['training_opponents']:
+                    if key in total_opponents:
+                        msg += "\n"+key+": "+str(self.extra_metrics_['training_opponents'][key])
             msg += "\n"
         if full_version:
             if Config.USER['task'] == 'classification' and self.extra_metrics_:
@@ -315,9 +327,11 @@ class Team(DefaultOpponent):
                 b = None
                 c = None
                 if a > 0:
-                    b = round_value(self.extra_metrics_['hand_played_per_point_type'][mode][metric][key]/float(self.extra_metrics_['total_hands_per_point_type'][mode][metric][key]))
+                    b = round_value(self.extra_metrics_['hand_played_per_point_type'][mode][metric][key]
+                        /float(self.extra_metrics_['total_hands_per_point_type'][mode][metric][key]))
                     if self.extra_metrics_['hand_played_per_point_type'][mode][metric][key] > 0:
-                        c = round_value(self.extra_metrics_['won_hands_per_point_type'][mode][metric][key]/float(self.extra_metrics_['hand_played_per_point_type'][mode][metric][key]))
+                        c = round_value(self.extra_metrics_['won_hands_per_point_type'][mode][metric][key]
+                            /float(self.extra_metrics_['hand_played_per_point_type'][mode][metric][key]))
                 msg += "\n"+str(metric)+", "+str(key)+" ("+str(a)+"): played: "+str(b)+", won: "+str(c)
         return msg
 

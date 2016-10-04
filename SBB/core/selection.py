@@ -19,11 +19,13 @@ class Selection:
 
     def run(self, current_generation, teams_population, programs_population, validation = False):
         teams_population = self._evaluate_teams(teams_population)
-        keep_teams, remove_teams, pareto_front = self._select_teams_to_keep_and_remove(teams_population, validation)
+        keep_teams, remove_teams, pareto_front = self._select_teams_to_keep_and_remove(teams_population, 
+            validation)
         teams_to_clone = self._select_teams_to_clone(keep_teams)
         teams_population = self._remove_teams(teams_population, remove_teams)
         teams_population = self._prune_teams(teams_population)
-        teams_population, programs_population = self._create_mutated_teams(current_generation, teams_to_clone, teams_population, programs_population)
+        teams_population, programs_population = self._create_mutated_teams(current_generation, teams_to_clone, 
+            teams_population, programs_population)
         programs_population = self._remove_programs_with_no_teams(programs_population)
         self._check_for_bugs(teams_population, programs_population)
         return teams_population, programs_population, pareto_front
@@ -39,7 +41,8 @@ class Selection:
         return teams_population
 
     def _select_teams_to_keep_and_remove(self, teams_population, is_validation):
-        teams_to_remove = int(Config.USER['training_parameters']['replacement_rate']['teams']*float(len(teams_population)))
+        teams_to_remove = int(Config.USER['training_parameters']['replacement_rate']['teams']
+            *float(len(teams_population)))
         teams_to_keep = len(teams_population) - teams_to_remove
 
         diversities_to_apply = Config.USER['advanced_training_parameters']['diversity']['metrics']
@@ -52,28 +55,39 @@ class Selection:
             options = list(Config.USER['advanced_training_parameters']['diversity']['metrics'])
             if len(diversities_to_apply) > 1 and self.previous_diversity_:
                 options.remove(self.previous_diversity_)
-            novelty = random.choice(options)
-            
-            if Config.USER['advanced_training_parameters']['novelty']['enabled']:
-                DiversityMaintenance.calculate_diversities(teams_population+list(Config.RESTRICTIONS['novelty_archive']['samples']), self.environment.point_population())
-                self._update_novelty_archive(teams_population, novelty)
-            else:
-                DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population())
-            
-            if Config.USER['advanced_training_parameters']['novelty']['enabled'] and not Config.USER['advanced_training_parameters']['novelty']['use_fitness']:
-                sorted_solutions = sorted(teams_population, key=lambda solution: solution.diversity_[novelty], reverse=True)
-                keep_teams = sorted_solutions[0:teams_to_keep]
-                remove_teams = sorted_solutions[teams_to_keep:]
-                pareto_front = []
-            else:
-                keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams_population, novelty, teams_to_keep)
-            self.previous_diversity_ = novelty
+            diversity = random.choice(options)
+            keep_teams, remove_teams, pareto_front = self._apply_diversity(teams_population, teams_to_keep, 
+                diversity)
+            self.previous_diversity_ = diversity
+        return keep_teams, remove_teams, pareto_front
+
+    def _apply_diversity(self, teams_population, teams_to_keep, diversity):
+        if Config.USER['advanced_training_parameters']['novelty']['enabled']:
+            archive = teams_population+list(Config.RESTRICTIONS['novelty_archive']['samples'])
+            DiversityMaintenance.calculate_diversities(archive, self.environment.point_population())
+            self._update_novelty_archive(teams_population, diversity)
+        else:
+            DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population())
+        
+        if (Config.USER['advanced_training_parameters']['novelty']['enabled'] 
+            and not Config.USER['advanced_training_parameters']['novelty']['use_fitness']):
+            sorted_solutions = sorted(teams_population, key=lambda solution: solution.diversity_[diversity], 
+                reverse=True)
+            keep_teams = sorted_solutions[0:teams_to_keep]
+            remove_teams = sorted_solutions[teams_to_keep:]
+            pareto_front = []
+        else:
+            keep_teams, remove_teams, pareto_front = ParetoDominanceForTeams.run(teams_population, diversity, 
+                teams_to_keep)
         return keep_teams, remove_teams, pareto_front
 
     def _update_novelty_archive(self, teams_population, novelty):
-        sorted_solutions = sorted(teams_population, key=lambda solution: solution.diversity_[novelty], reverse=True)
-        sorted_samples = sorted(Config.RESTRICTIONS['novelty_archive']['samples'], key=lambda solution: solution.diversity_[novelty], reverse=False)
-        if len(Config.RESTRICTIONS['novelty_archive']['samples']) == Config.RESTRICTIONS['novelty_archive']['samples'].maxlen:
+        sorted_solutions = sorted(teams_population, key=lambda solution: solution.diversity_[novelty], 
+            reverse=True)
+        sorted_samples = sorted(Config.RESTRICTIONS['novelty_archive']['samples'], 
+            key=lambda solution: solution.diversity_[novelty], reverse=False)
+        novelty_archive_max_len = Config.RESTRICTIONS['novelty_archive']['samples'].maxlen
+        if len(Config.RESTRICTIONS['novelty_archive']['samples']) == novelty_archive_max_len:
             for team in sorted_samples[0:Config.RESTRICTIONS['novelty_archive']['threshold']]:
                 Config.RESTRICTIONS['novelty_archive']['samples'].remove(team)
         for team in sorted_solutions[0:Config.RESTRICTIONS['novelty_archive']['threshold']]:
@@ -90,7 +104,8 @@ class Selection:
                     fitness.append(team.fitness_)
             total_fitness = sum(fitness)
             probabilities = [f/float(total_fitness) for f in fitness]
-            result =  numpy.random.choice(teams_population, size = new_teams_to_create, replace = True, p = probabilities)
+            result =  numpy.random.choice(teams_population, size = new_teams_to_create, 
+                replace = True, p = probabilities)
             return result
         else:
             return numpy.random.choice(teams_population, size = new_teams_to_create, replace = True)
@@ -122,7 +137,8 @@ class Selection:
         Create new mutated teams, cloning the old ones and mutating. New programs are be added to the program population 
         for the mutated programs in the new teams.
         """
-        teams_population, programs_population = self._clone_teams(current_generation, teams_to_clone, teams_population, programs_population)
+        teams_population, programs_population = self._clone_teams(current_generation, teams_to_clone, 
+            teams_population, programs_population)
         return teams_population, programs_population
 
     def _clone_teams(self, current_generation, teams_to_clone, teams_population, programs_population):
