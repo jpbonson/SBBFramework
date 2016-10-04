@@ -463,7 +463,15 @@ class ReinforcementEnvironment(DefaultEnvironment):
         return msg
 
     def initialize_attributes_for_run_info(self, run_info):
-        pass
+        run_info.global_max_validation_score_per_validation = []
+        run_info.global_opponent_results_per_validation = []
+        run_info.hall_of_fame_per_validation = []
+        run_info.global_fitness_per_opponent_per_generation = defaultdict(list)
+        run_info.final_teams_validations = []
+        run_info.final_teams_validations_ids = []
+        run_info.individual_performance_in_last_generation = defaultdict(list)
+        run_info.accumulative_performance_in_last_generation = defaultdict(list)
+        run_info.ids_for_acc_performance_in_last_generation = defaultdict(list)
 
     def generate_output_for_attributes_for_run_info(self, run_info):
         msg = ""
@@ -500,7 +508,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         msg += "\n\nFinal Teams Validations: "+str(run_info.final_teams_validations)
         msg += "\nFinal Teams Ids: "+str(run_info.final_teams_validations_ids)
         
-        
+
         msg += "\n\n\n##### ACCUMULATIVE PERFORMANCES"
 
         for metric in run_info.individual_performance_in_last_generation:

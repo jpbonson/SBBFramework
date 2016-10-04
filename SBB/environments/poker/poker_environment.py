@@ -436,7 +436,16 @@ class PokerEnvironment(ReinforcementEnvironment):
         return msg
 
     def initialize_attributes_for_run_info(self, run_info):
-        pass
+        super(PokerEnvironment, self).initialize_attributes_for_run_info(run_info)
+        run_info.global_result_per_validation = defaultdict(dict)
+        run_info.final_teams_validations_per_subcategory = defaultdict(dict)
+        run_info.champion_population_distribution_per_validation = {}
+        run_info.validation_population_distribution_per_validation = {}
+        run_info.point_population_distribution_per_validation = defaultdict(dict)
+        run_info.accumulative_performance_summary = {}
+        run_info.individual_performance_per_label_in_last_generation = defaultdict(dict)
+        run_info.accumulative_performance_per_label_in_last_generation = defaultdict(dict)
+        run_info.ids_for_acc_performance_per_label_in_last_generation = defaultdict(dict)
 
     def generate_output_for_attributes_for_run_info(self, run_info):
         msg = ""
@@ -463,17 +472,17 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
 
-        msg += "\n\nPoints Distribution for the Validation Population"
-        for attribute in run_info.validation_population_distribution_per_validation:
-            msg += "\n - "+str(attribute)+":"
-            for key in run_info.validation_population_distribution_per_validation[attribute]:
-                msg += "\n    - "+str(key)+": "+str(run_info.validation_population_distribution_per_validation[attribute][key])
-        
         msg += "\n\nPoints Distribution for the Champion Population"
         for attribute in run_info.champion_population_distribution_per_validation:
             msg += "\n - "+str(attribute)+":"
             for key in run_info.champion_population_distribution_per_validation[attribute]:
                 msg += "\n    - "+str(key)+": "+str(run_info.champion_population_distribution_per_validation[attribute][key])
+
+        msg += "\n\nPoints Distribution for the Validation Population"
+        for attribute in run_info.validation_population_distribution_per_validation:
+            msg += "\n - "+str(attribute)+":"
+            for key in run_info.validation_population_distribution_per_validation[attribute]:
+                msg += "\n    - "+str(key)+": "+str(run_info.validation_population_distribution_per_validation[attribute][key])
         
         msg += "\n\nPoints Distribution for the Training Population per Validation"
         for attribute in run_info.point_population_distribution_per_validation:
