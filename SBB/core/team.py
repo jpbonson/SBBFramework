@@ -208,17 +208,6 @@ class Team(DefaultOpponent):
         for program in inactive_programs:
             self.remove_program(program)
 
-    def get_behaviors_metrics(self):
-        result = {}
-        result['agressiveness'] = self.extra_metrics_['agressiveness']
-        result['tight_loose'] = self.extra_metrics_['tight_loose']
-        result['passive_aggressive'] = self.extra_metrics_['passive_aggressive']
-        result['bluffing'] = self.extra_metrics_['bluffing']
-        result['bluffing_only_raise'] = self.extra_metrics_['bluffing_only_raise']
-        result['normalized_result_mean'] = round_value(numpy.mean(self.results_per_points_for_validation_.values()))
-        result['normalized_result_std'] = round_value(numpy.std(self.results_per_points_for_validation_.values()))
-        return result
-
     def metrics(self):
         validation_active_teams_members_ids = [p.__repr__() for p in self.validation_active_programs_]
         validation_inactive_programs = list(set(self.programs) - set(self.validation_active_programs_))

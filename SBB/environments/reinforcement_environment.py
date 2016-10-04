@@ -400,7 +400,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self._generate_second_layer_files(run_info, teams_population)
         
         older_teams = [team for team in teams_population if team.generation != current_generation]
-        run_info.final_teams_validations_ids = [team.__repr__() for team in older_teams]
+        run_info.final_teams_validations_ids_ = [team.__repr__() for team in older_teams]
 
     def _calculate_accumulative_performances(self, run_info, teams_population, current_generation):
         older_teams = [team for team in teams_population if team.generation != current_generation]
@@ -409,26 +409,26 @@ class ReinforcementEnvironment(DefaultEnvironment):
         get_results_per_points = lambda x: x.results_per_points_for_validation_
         point_ids = [point.point_id_ for point in self.validation_population()]
         individual_performance, accumulative_performance, teams_ids = accumulative_performances(older_teams, point_ids, sorting_criteria, get_results_per_points)
-        run_info.individual_performance_in_last_generation[metric] = individual_performance
-        run_info.accumulative_performance_in_last_generation[metric] = accumulative_performance
-        run_info.ids_for_acc_performance_in_last_generation[metric] = teams_ids
+        run_info.individual_performance_in_last_generation_[metric] = individual_performance
+        run_info.accumulative_performance_in_last_generation_[metric] = accumulative_performance
+        run_info.ids_for_acc_performance_in_last_generation_[metric] = teams_ids
 
     def _summarize_accumulative_performances(self, run_info, metrics = ['score']):
-        run_info.accumulative_performance_summary = {}
+        run_info.accumulative_performance_summary_ = {}
         for metric in metrics:
-            run_info.accumulative_performance_summary[metric] = {}
-            ind_score = run_info.individual_performance_in_last_generation[metric]
-            acc_score = run_info.accumulative_performance_in_last_generation[metric]
-            ids = run_info.ids_for_acc_performance_in_last_generation[metric]
+            run_info.accumulative_performance_summary_[metric] = {}
+            ind_score = run_info.individual_performance_in_last_generation_[metric]
+            acc_score = run_info.accumulative_performance_in_last_generation_[metric]
+            ids = run_info.ids_for_acc_performance_in_last_generation_[metric]
             rank = rank_teams_by_accumulative_score(ind_score, acc_score, ids)
-            run_info.accumulative_performance_summary[metric]['overall'] = {}
-            run_info.accumulative_performance_summary[metric]['overall']['rank'] = rank
-            run_info.accumulative_performance_summary[metric]['overall']['ids_only'] = sorted([r[0] for r in rank])
+            run_info.accumulative_performance_summary_[metric]['overall'] = {}
+            run_info.accumulative_performance_summary_[metric]['overall']['rank'] = rank
+            run_info.accumulative_performance_summary_[metric]['overall']['ids_only'] = sorted([r[0] for r in rank])
 
     def _generate_second_layer_files(self, run_info, teams_population):
-        top5_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:5]]
-        top10_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:10]]
-        top15_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:15]]
+        top5_overall_ids = [r[0] for r in run_info.accumulative_performance_summary_['score']['overall']['rank'][:5]]
+        top10_overall_ids = [r[0] for r in run_info.accumulative_performance_summary_['score']['overall']['rank'][:10]]
+        top15_overall_ids = [r[0] for r in run_info.accumulative_performance_summary_['score']['overall']['rank'][:15]]
         if len(top5_overall_ids) == 5:
             run_info.second_layer_files_['top5_overall'] = [t for t in teams_population if t.__repr__() in top5_overall_ids]
         if len(top5_overall_ids) == 10:
@@ -463,15 +463,15 @@ class ReinforcementEnvironment(DefaultEnvironment):
         return msg
 
     def initialize_attributes_for_run_info(self, run_info):
-        run_info.global_max_validation_score_per_validation = []
-        run_info.global_opponent_results_per_validation = []
-        run_info.hall_of_fame_per_validation = []
-        run_info.global_fitness_per_opponent_per_generation = defaultdict(list)
-        run_info.final_teams_validations = []
-        run_info.final_teams_validations_ids = []
-        run_info.individual_performance_in_last_generation = defaultdict(list)
-        run_info.accumulative_performance_in_last_generation = defaultdict(list)
-        run_info.ids_for_acc_performance_in_last_generation = defaultdict(list)
+        run_info.global_max_validation_score_per_validation_ = []
+        run_info.global_opponent_results_per_validation_ = []
+        run_info.hall_of_fame_per_validation_ = []
+        run_info.global_fitness_per_opponent_per_generation_ = defaultdict(list)
+        run_info.final_teams_validations_ = []
+        run_info.final_teams_validations_ids_ = []
+        run_info.individual_performance_in_last_generation_ = defaultdict(list)
+        run_info.accumulative_performance_in_last_generation_ = defaultdict(list)
+        run_info.ids_for_acc_performance_in_last_generation_ = defaultdict(list)
 
     def generate_output_for_attributes_for_run_info(self, run_info):
         msg = ""
@@ -479,14 +479,14 @@ class ReinforcementEnvironment(DefaultEnvironment):
 
         msg += "\n\n\n##### GLOBAL METRICS PER VALIDATION"
 
-        msg += "\n\nGlobal Max. Validation Score per Validation: "+str(run_info.global_max_validation_score_per_validation)
+        msg += "\n\nGlobal Max. Validation Score per Validation: "+str(run_info.global_max_validation_score_per_validation_)
         
         msg += "\n\nGlobal Opponent Results per Validation"
-        for key in run_info.global_opponent_results_per_validation[-1]:
-            msg += "\n - "+str(key)+": "+str([item[key] if key in item else 0.0 for item in run_info.global_opponent_results_per_validation])
+        for key in run_info.global_opponent_results_per_validation_[-1]:
+            msg += "\n - "+str(key)+": "+str([item[key] if key in item else 0.0 for item in run_info.global_opponent_results_per_validation_])
         
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            msg += "\n\nHall of Fame per Validation: "+str(run_info.hall_of_fame_per_validation)
+            msg += "\n\nHall of Fame per Validation: "+str(run_info.hall_of_fame_per_validation_)
 
 
         msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
@@ -494,28 +494,28 @@ class ReinforcementEnvironment(DefaultEnvironment):
         msg += "\n\nGlobal Fitness Score per Training (per opponent):"
         msg += "\n - predefined:"
         for opponent in self.opponent_names_for_training_:
-            msg += "\n    - "+str(opponent)+": "+str(run_info.global_fitness_per_opponent_per_generation[opponent])
+            msg += "\n    - "+str(opponent)+": "+str(run_info.global_fitness_per_opponent_per_generation_[opponent])
 
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             msg += "\n - hall of fame:"
-            hall_of_fame = [x for x in run_info.global_fitness_per_opponent_per_generation if x not in self.opponent_names_for_training_]
+            hall_of_fame = [x for x in run_info.global_fitness_per_opponent_per_generation_ if x not in self.opponent_names_for_training_]
             for key in hall_of_fame:
-                msg += "\n    - "+str(key)+": "+str(run_info.global_fitness_per_opponent_per_generation[key])
+                msg += "\n    - "+str(key)+": "+str(run_info.global_fitness_per_opponent_per_generation_[key])
 
 
         msg += "\n\n\n##### FINAL TEAMS METRICS"
 
-        msg += "\n\nFinal Teams Validations: "+str(run_info.final_teams_validations)
-        msg += "\nFinal Teams Ids: "+str(run_info.final_teams_validations_ids)
+        msg += "\n\nFinal Teams Validations: "+str(run_info.final_teams_validations_)
+        msg += "\nFinal Teams Ids: "+str(run_info.final_teams_validations_ids_)
         
 
         msg += "\n\n\n##### ACCUMULATIVE PERFORMANCES"
 
-        for metric in run_info.individual_performance_in_last_generation:
+        for metric in run_info.individual_performance_in_last_generation_:
             msg += "\n\nOverall Accumulative Results ("+str(metric)+"):"
-            msg += "\n- Individual Team Performance: "+str(run_info.individual_performance_in_last_generation[metric])
-            msg += "\n- Accumulative Team Performance: "+str(run_info.accumulative_performance_in_last_generation[metric])
-            msg += "\n- Team ids: "+str(run_info.ids_for_acc_performance_in_last_generation[metric])
+            msg += "\n- Individual Team Performance: "+str(run_info.individual_performance_in_last_generation_[metric])
+            msg += "\n- Accumulative Team Performance: "+str(run_info.accumulative_performance_in_last_generation_[metric])
+            msg += "\n- Team ids: "+str(run_info.ids_for_acc_performance_in_last_generation_[metric])
 
         return msg
 

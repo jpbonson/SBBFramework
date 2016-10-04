@@ -226,10 +226,10 @@ class SBB:
             if 'hall_of_fame' in best_team.extra_metrics_['champion_opponents']:
                 opponent_means['hall_of_fame(champion)'] = best_team.extra_metrics_['champion_opponents']['hall_of_fame']
             run_info.global_mean_validation_score_per_validation_.append(validation_score_mean)
-            run_info.global_max_validation_score_per_validation.append(round_value(max([team.extra_metrics_['validation_score'] for team in older_teams])))
-            run_info.global_opponent_results_per_validation.append(opponent_means)               
+            run_info.global_max_validation_score_per_validation_.append(round_value(max([team.extra_metrics_['validation_score'] for team in older_teams])))
+            run_info.global_opponent_results_per_validation_.append(opponent_means)               
             print "\nglobal validation score (mean): "+str(validation_score_mean)+"\n"
-            run_info.final_teams_validations = [team.extra_metrics_['validation_score'] for team in older_teams]
+            run_info.final_teams_validations_ = [team.extra_metrics_['validation_score'] for team in older_teams]
         if Config.USER['task'] == 'classification':
             validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
             run_info.global_mean_validation_score_per_validation_.append(validation_score_mean)
@@ -287,25 +287,25 @@ class SBB:
             self.environment.calculate_poker_metrics_per_validation(run_info)
             print
             print "Point Population Distribution per Validation (last gen.):"
-            for attribute in run_info.point_population_distribution_per_validation:
+            for attribute in run_info.point_population_distribution_per_validation_:
                 temp = []
-                for key in run_info.point_population_distribution_per_validation[attribute]:
-                    temp.append(str(key)+": "+str(run_info.point_population_distribution_per_validation[attribute][key][-1]))
+                for key in run_info.point_population_distribution_per_validation_[attribute]:
+                    temp.append(str(key)+": "+str(run_info.point_population_distribution_per_validation_[attribute][key][-1]))
                 print "- "+str(attribute)+" = "+", ".join(temp)
             print
-            print "Validation Population Distribution per Validation: "+str(run_info.validation_population_distribution_per_validation)
+            print "Validation Population Distribution per Validation: "+str(run_info.validation_population_distribution_per_validation_)
             print "Global Point Results per Validation: "
-            for attribute in run_info.global_result_per_validation:
+            for attribute in run_info.global_result_per_validation_:
                 temp = []
-                for key in run_info.global_result_per_validation[attribute]:
-                    temp.append(str(key)+": "+str(run_info.global_result_per_validation[attribute][key][-1]))
+                for key in run_info.global_result_per_validation_[attribute]:
+                    temp.append(str(key)+": "+str(run_info.global_result_per_validation_[attribute][key][-1]))
                 print "- "+str(attribute)+" = "+", ".join(temp)
             print
-            print "Champion Population Distribution per Validation: "+str(run_info.champion_population_distribution_per_validation)
+            print "Champion Population Distribution per Validation: "+str(run_info.champion_population_distribution_per_validation_)
             
         if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            run_info.hall_of_fame_per_validation.append([p.__repr__() for p in self.environment.hall_of_fame()])
-            print "\nHall of Fame: "+str(run_info.hall_of_fame_per_validation[-1])
+            run_info.hall_of_fame_per_validation_.append([p.__repr__() for p in self.environment.hall_of_fame()])
+            print "\nHall of Fame: "+str(run_info.hall_of_fame_per_validation_[-1])
 
         avg_team_size = round_value(numpy.mean([len(team.programs) for team in older_teams]))
         avg_program_with_intros_size = round_value(numpy.mean(flatten([[len(program.instructions) for program in team.programs] for team in older_teams])))
@@ -333,7 +333,7 @@ class SBB:
             opponents = older_teams[0].extra_metrics_['training_opponents'].keys()
             for opponent in opponents:
                 mean_fitness_per_opponent = round_value(numpy.mean([team.extra_metrics_['training_opponents'][opponent] for team in older_teams]), 3)
-                run_info.global_fitness_per_opponent_per_generation[opponent].append(mean_fitness_per_opponent)
+                run_info.global_fitness_per_opponent_per_generation_[opponent].append(mean_fitness_per_opponent)
 
     def _store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front):
         run_info.best_team_ = best_team
@@ -354,7 +354,7 @@ class SBB:
         msg += "\nstd. deviation: "+str(score_stds)
 
         if Config.USER['task'] == 'reinforcement':
-            score_means, score_stds = self._process_scores([run.global_max_validation_score_per_validation for run in run_infos])
+            score_means, score_stds = self._process_scores([run.global_max_validation_score_per_validation_ for run in run_infos])
             msg += "\n\nGlobal Max. Validation Score per Validation:"
             msg += "\nmean: "+str(score_means)
             msg += "\nstd. deviation: "+str(score_stds)
@@ -369,15 +369,15 @@ class SBB:
         if Config.USER['task'] == 'reinforcement':
             msg += "\n\nGlobal Fitness per Opponent per Training:"
             for key in self.environment.opponent_names_for_training_:
-                score_means, score_stds = self._process_scores([run.global_fitness_per_opponent_per_generation[key] for run in run_infos])
+                score_means, score_stds = self._process_scores([run.global_fitness_per_opponent_per_generation_[key] for run in run_infos])
                 msg += "\n- "+str(key)+":"
                 msg += "\n- mean: "+str(round_array(score_means, 2))
                 msg += "\n- std. deviation: "+str(round_array(score_stds, 2))
             for run_id, run in enumerate(run_infos):
                 valid_names = [t.__repr__() for t in run.hall_of_fame_in_last_generation_]
-                for key in run.global_fitness_per_opponent_per_generation.keys():
+                for key in run.global_fitness_per_opponent_per_generation_.keys():
                     if key in valid_names:
-                        msg += "\n- run "+str(run_id+1)+", "+str(key)+": "+str(run.global_fitness_per_opponent_per_generation[key])
+                        msg += "\n- run "+str(run_id+1)+", "+str(key)+": "+str(run.global_fitness_per_opponent_per_generation_[key])
 
         score_means, score_stds = self._process_scores([run.test_score_per_validation_ for run in run_infos])
         msg += "\n\nBest Team Validation Score per Validation (champion):"
@@ -395,7 +395,7 @@ class SBB:
         msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
 
         if Config.USER['task'] == 'reinforcement':
-            msg += "\n\nFinal Teams Validations: "+str(flatten([round_array(run.final_teams_validations, 3) for run in run_infos]))
+            msg += "\n\nFinal Teams Validations: "+str(flatten([round_array(run.final_teams_validations_, 3) for run in run_infos]))
         
         if not Config.USER['advanced_training_parameters']['second_layer']['enabled']:
             score_means, score_stds = self._process_scores([run.actions_distribution_per_validation_[-1] for run in run_infos])
@@ -459,22 +459,22 @@ class SBB:
         msg = ""
         metric = "score"
         msg += "\nOverall Accumulative Results ("+str(metric)+"):"
-        score_means, score_stds = self._process_scores([run.individual_performance_in_last_generation[metric] for run in run_infos])
+        score_means, score_stds = self._process_scores([run.individual_performance_in_last_generation_[metric] for run in run_infos])
         msg += "\n- Individual Team Performance:"
         msg += "\nmean: "+str(round_array(score_means, 3))
         msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
-        score_means, score_stds = self._process_scores([run.accumulative_performance_in_last_generation[metric] for run in run_infos])
+        score_means, score_stds = self._process_scores([run.accumulative_performance_in_last_generation_[metric] for run in run_infos])
         msg += "\n- Accumulative Team Performance:"
         msg += "\nmean: "+str(round_array(score_means, 3))
         msg += "\nstd. deviation: "+str(round_array(score_stds, 3))
         msg += "\n\nAccumulative Results per Run ("+str(metric)+"):"
         msg += "\nindividual_values = ["
         for run in run_infos:
-            msg += "\n"+str(run.individual_performance_in_last_generation[metric])+","
+            msg += "\n"+str(run.individual_performance_in_last_generation_[metric])+","
         msg += "\n]"
         msg += "\nacc_values = ["
         for run in run_infos:
-            msg += "\n"+str(run.accumulative_performance_in_last_generation[metric])+","
+            msg += "\n"+str(run.accumulative_performance_in_last_generation_[metric])+","
         msg += "\n]"
         return msg
 

@@ -253,9 +253,9 @@ class PokerEnvironment(ReinforcementEnvironment):
     def _calculate_point_population_metric_per_validation(self, run_info, get_attribute, key, labels):
         for label in labels:
             total = len([point for point in self.point_population() if get_attribute(point) == label])
-            if label not in run_info.point_population_distribution_per_validation[key]:
-                run_info.point_population_distribution_per_validation[key][label] = []
-            run_info.point_population_distribution_per_validation[key][label].append(total)
+            if label not in run_info.point_population_distribution_per_validation_[key]:
+                run_info.point_population_distribution_per_validation_[key][label] = []
+            run_info.point_population_distribution_per_validation_[key][label].append(total)
 
     def _calculate_validation_population_metrics_per_validation(self, run_info):
         self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
@@ -266,9 +266,9 @@ class PokerEnvironment(ReinforcementEnvironment):
         point_per_distribution = {}
         for label in labels:
             point_per_distribution[label] = [point for point in self.validation_population() if get_attribute(point) == label]
-        run_info.validation_population_distribution_per_validation[key] = {}
+        run_info.validation_population_distribution_per_validation_[key] = {}
         for label in labels:
-            run_info.validation_population_distribution_per_validation[key][label] = len(point_per_distribution[label])
+            run_info.validation_population_distribution_per_validation_[key][label] = len(point_per_distribution[label])
 
         for label in labels:
             temp = flatten([point.teams_results_ for point in point_per_distribution[label]])
@@ -276,16 +276,16 @@ class PokerEnvironment(ReinforcementEnvironment):
                 means_per_position = round_value(numpy.mean(temp))
             else:
                 means_per_position = 0.0
-            if label not in run_info.global_result_per_validation[key]:
-                run_info.global_result_per_validation[key][label] = []
-            run_info.global_result_per_validation[key][label].append(means_per_position)
+            if label not in run_info.global_result_per_validation_[key]:
+                run_info.global_result_per_validation_[key][label] = []
+            run_info.global_result_per_validation_[key][label].append(means_per_position)
 
         point_per_distribution = {}
         for label in labels:
             point_per_distribution[label] = [point for point in self.champion_population() if get_attribute(point) == label]
-        run_info.champion_population_distribution_per_validation[key] = {}
+        run_info.champion_population_distribution_per_validation_[key] = {}
         for label in labels:
-            run_info.champion_population_distribution_per_validation[key][label] = len(point_per_distribution[label])
+            run_info.champion_population_distribution_per_validation_[key][label] = len(point_per_distribution[label])
 
     def calculate_final_validation_metrics(self, run_info, teams_population, current_generation):
         super(PokerEnvironment, self).calculate_final_validation_metrics(run_info, teams_population, current_generation)
@@ -307,14 +307,14 @@ class PokerEnvironment(ReinforcementEnvironment):
                 get_results_per_points = lambda x: x.extra_metrics_['hands_won_or_lost_per_point']
             point_ids = [point.point_id_ for point in self.validation_population()]
             individual_performance, accumulative_performance, teams_ids = accumulative_performances(older_teams, point_ids, sorting_criteria, get_results_per_points)
-            run_info.individual_performance_in_last_generation[metric] = individual_performance
-            run_info.accumulative_performance_in_last_generation[metric] = accumulative_performance
-            run_info.ids_for_acc_performance_in_last_generation[metric] = teams_ids
+            run_info.individual_performance_in_last_generation_[metric] = individual_performance
+            run_info.accumulative_performance_in_last_generation_[metric] = accumulative_performance
+            run_info.ids_for_acc_performance_in_last_generation_[metric] = teams_ids
 
             for subdivision in PokerConfig.CONFIG['labels_per_subdivision'].keys():
-                run_info.individual_performance_per_label_in_last_generation[metric][subdivision] = {}
-                run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision] = {}
-                run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision] = {}
+                run_info.individual_performance_per_label_in_last_generation_[metric][subdivision] = {}
+                run_info.accumulative_performance_per_label_in_last_generation_[metric][subdivision] = {}
+                run_info.ids_for_acc_performance_per_label_in_last_generation_[metric][subdivision] = {}
                 for label in PokerConfig.CONFIG['labels_per_subdivision'][subdivision]:
                     point_ids = [point.point_id_ for point in self.validation_population() if PokerConfig.CONFIG['attributes_per_subdivision'][subdivision](point) == label]
                     if metric == 'score':
@@ -324,19 +324,19 @@ class PokerEnvironment(ReinforcementEnvironment):
                     if metric == 'hands_won':
                         sorting_criteria_per_label = lambda x: numpy.mean([x.extra_metrics_['hands_won_or_lost_per_point'][point_id] for point_id in point_ids])
                     individual_performance, accumulative_performance, teams_ids = accumulative_performances(older_teams, point_ids, sorting_criteria_per_label, get_results_per_points)
-                    run_info.individual_performance_per_label_in_last_generation[metric][subdivision][label] = individual_performance
-                    run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][label] = accumulative_performance
-                    run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][label] = teams_ids
+                    run_info.individual_performance_per_label_in_last_generation_[metric][subdivision][label] = individual_performance
+                    run_info.accumulative_performance_per_label_in_last_generation_[metric][subdivision][label] = accumulative_performance
+                    run_info.ids_for_acc_performance_per_label_in_last_generation_[metric][subdivision][label] = teams_ids
 
     def _summarize_accumulative_performances(self, run_info, metrics = ['score', 'hands_played', 'hands_won']):
         super(PokerEnvironment, self)._summarize_accumulative_performances(run_info, metrics)
 
     def _get_validation_scores_per_subcategory(self, run_info, teams_population, current_generation):
         older_teams = [team for team in teams_population if team.generation != current_generation]
-        run_info.final_teams_validations_ids = [team.__repr__() for team in older_teams]
+        run_info.final_teams_validations_ids_ = [team.__repr__() for team in older_teams]
         for subcategory in PokerConfig.CONFIG['labels_per_subdivision'].keys():
             for subdivision in PokerConfig.CONFIG['labels_per_subdivision'][subcategory]:
-                run_info.final_teams_validations_per_subcategory[subcategory][subdivision] = []
+                run_info.final_teams_validations_per_subcategory_[subcategory][subdivision] = []
                 for team in older_teams:
                     if subcategory == 'opponent':
                         scores = team.extra_metrics_['opponents'][subdivision]
@@ -345,7 +345,7 @@ class PokerEnvironment(ReinforcementEnvironment):
                     mean_score = numpy.mean(scores)
                     if not math.isnan(mean_score):
                         mean_score = round_value(mean_score)
-                    run_info.final_teams_validations_per_subcategory[subcategory][subdivision].append(mean_score)
+                    run_info.final_teams_validations_per_subcategory_[subcategory][subdivision].append(mean_score)
 
     def _initialize_extra_metrics_for_points(self):
         extra_metrics_points = {}
@@ -437,15 +437,15 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def initialize_attributes_for_run_info(self, run_info):
         super(PokerEnvironment, self).initialize_attributes_for_run_info(run_info)
-        run_info.global_result_per_validation = defaultdict(dict)
-        run_info.final_teams_validations_per_subcategory = defaultdict(dict)
-        run_info.champion_population_distribution_per_validation = {}
-        run_info.validation_population_distribution_per_validation = {}
-        run_info.point_population_distribution_per_validation = defaultdict(dict)
-        run_info.accumulative_performance_summary = {}
-        run_info.individual_performance_per_label_in_last_generation = defaultdict(dict)
-        run_info.accumulative_performance_per_label_in_last_generation = defaultdict(dict)
-        run_info.ids_for_acc_performance_per_label_in_last_generation = defaultdict(dict)
+        run_info.global_result_per_validation_ = defaultdict(dict)
+        run_info.final_teams_validations_per_subcategory_ = defaultdict(dict)
+        run_info.champion_population_distribution_per_validation_ = {}
+        run_info.validation_population_distribution_per_validation_ = {}
+        run_info.point_population_distribution_per_validation_ = defaultdict(dict)
+        run_info.accumulative_performance_summary_ = {} # TODO
+        run_info.individual_performance_per_label_in_last_generation_ = defaultdict(dict)
+        run_info.accumulative_performance_per_label_in_last_generation_ = defaultdict(dict)
+        run_info.ids_for_acc_performance_per_label_in_last_generation_ = defaultdict(dict)
 
     def generate_output_for_attributes_for_run_info(self, run_info):
         msg = ""
@@ -455,46 +455,46 @@ class PokerEnvironment(ReinforcementEnvironment):
         msg += "\n\n\n##### GLOBAL METRICS PER VALIDATION"
 
         msg += "\n\nGlobal Team Results per Validation"
-        msg += self._list_run_info_attributes(run_info.global_result_per_validation)
+        msg += self._list_run_info_attributes(run_info.global_result_per_validation_)
 
 
         msg += "\n\n\n##### FINAL TEAMS METRICS"
 
         msg += "\n\nFinal Teams Validation per Subcategory"
-        msg += self._list_run_info_attributes(run_info.final_teams_validations_per_subcategory)
+        msg += self._list_run_info_attributes(run_info.final_teams_validations_per_subcategory_)
 
 
         msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
 
         msg += "\n\nPoints Distribution for the Champion Population"
-        msg += self._list_run_info_attributes(run_info.champion_population_distribution_per_validation)
+        msg += self._list_run_info_attributes(run_info.champion_population_distribution_per_validation_)
 
         msg += "\n\nPoints Distribution for the Validation Population"
-        msg += self._list_run_info_attributes(run_info.validation_population_distribution_per_validation)
+        msg += self._list_run_info_attributes(run_info.validation_population_distribution_per_validation_)
 
         msg += "\n\nPoints Distribution for the Training Population per Validation"
-        msg += self._list_run_info_attributes(run_info.point_population_distribution_per_validation)
+        msg += self._list_run_info_attributes(run_info.point_population_distribution_per_validation_)
 
 
         msg += "\n\n\n##### TEAMS RANKED BY ACCUMULATIVE PERFORMANCE"
 
         msg += "\n\nTeams Ranked by Accumulative Score per Metric"
-        for metric in run_info.accumulative_performance_summary:
-            msg += "\n - metric: "+str(metric)+" (len: "+str(len(run_info.accumulative_performance_summary[metric]['overall']['ids_only']))+"):"
-            msg += "\n    - Rank: "+str(run_info.accumulative_performance_summary[metric]['overall']['rank'])
-            msg += "\n    - Team ids: "+str(run_info.accumulative_performance_summary[metric]['overall']['ids_only'])
+        for metric in run_info.accumulative_performance_summary_:
+            msg += "\n - metric: "+str(metric)+" (len: "+str(len(run_info.accumulative_performance_summary_[metric]['overall']['ids_only']))+"):"
+            msg += "\n    - Rank: "+str(run_info.accumulative_performance_summary_[metric]['overall']['rank'])
+            msg += "\n    - Team ids: "+str(run_info.accumulative_performance_summary_[metric]['overall']['ids_only'])
 
         msg += "\n\n\n##### ACCUMULATIVE PERFORMANCES"
-        for metric in run_info.individual_performance_in_last_generation:
+        for metric in run_info.individual_performance_in_last_generation_:
             msg += "\n\n\n=== metric: "+str(metric)
-            for subdivision in run_info.individual_performance_per_label_in_last_generation[metric]:
+            for subdivision in run_info.individual_performance_per_label_in_last_generation_[metric]:
                 msg += "\n---"
                 msg += "\nAccumulative Results ("+str(subdivision)+"):"
-                for key in run_info.individual_performance_per_label_in_last_generation[metric][subdivision]:
+                for key in run_info.individual_performance_per_label_in_last_generation_[metric][subdivision]:
                     msg += "\n - "+str(key)+":"
-                    msg += "\n    - Individual Team Performance: "+str(run_info.individual_performance_per_label_in_last_generation[metric][subdivision][key])
-                    msg += "\n    - Accumulative Team Performance: "+str(run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][key])
-                    msg += "\n    - Team ids: "+str(run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][key])
+                    msg += "\n    - Individual Team Performance: "+str(run_info.individual_performance_per_label_in_last_generation_[metric][subdivision][key])
+                    msg += "\n    - Accumulative Team Performance: "+str(run_info.accumulative_performance_per_label_in_last_generation_[metric][subdivision][key])
+                    msg += "\n    - Team ids: "+str(run_info.ids_for_acc_performance_per_label_in_last_generation_[metric][subdivision][key])
         return msg
 
     def _list_run_info_attributes(self, run_info_attribute):
