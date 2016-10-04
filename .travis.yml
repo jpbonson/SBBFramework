@@ -9,10 +9,12 @@ branches:
 python:
   - "2.7"
 
+virtualenv:
+  system_site_packages: true
+
 addons:
   apt:
     packages:
-    - libatlas3gf-base
     - python-numpy
     - python-scipy
 
