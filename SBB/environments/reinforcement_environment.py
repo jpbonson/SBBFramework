@@ -430,12 +430,12 @@ class ReinforcementEnvironment(DefaultEnvironment):
         top10_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:10]]
         top15_overall_ids = [r[0] for r in run_info.accumulative_performance_summary['score']['overall']['rank'][:15]]
         if len(top5_overall_ids) == 5:
-            run_info.second_layer_files['top5_overall'] = [t for t in teams_population if t.__repr__() in top5_overall_ids]
+            run_info.second_layer_files_['top5_overall'] = [t for t in teams_population if t.__repr__() in top5_overall_ids]
         if len(top5_overall_ids) == 10:
-            run_info.second_layer_files['top10_overall'] = [t for t in teams_population if t.__repr__() in top10_overall_ids]
+            run_info.second_layer_files_['top10_overall'] = [t for t in teams_population if t.__repr__() in top10_overall_ids]
         if len(top5_overall_ids) == 15:
-            run_info.second_layer_files['top15_overall'] = [t for t in teams_population if t.__repr__() in top15_overall_ids]
-        run_info.second_layer_files['all'] = teams_population
+            run_info.second_layer_files_['top15_overall'] = [t for t in teams_population if t.__repr__() in top15_overall_ids]
+        run_info.second_layer_files_['all'] = teams_population
 
     def metrics_for_team(self, team):
         msg = ""
