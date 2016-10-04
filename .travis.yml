@@ -23,7 +23,7 @@ install:
  - pip install coveralls
 
 script:
- - nosetests -s --with-coverage SBB
+ - nosetests --with-coverage SBB
 
 after_success:
  - coveralls
