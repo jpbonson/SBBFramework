@@ -63,7 +63,7 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                 is_training_for_second_player = False
                 sbb_player = 1
 
-            team.action_sequence_['encoding_custom_info_per_match'].append("<"+str(point.seed_)+"_"+str(position)+">")
+            team.encodings_['encoding_custom_info_per_match'].append("<"+str(point.seed_)+"_"+str(position)+">")
 
             match = TictactoeMatch(player1_label = first_player.__repr__(), player2_label = second_player.__repr__())
             opponent.initialize(point.seed_)
@@ -76,15 +76,15 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                     action = random.choice(match.valid_actions())
                 if is_training_for_first_player:
                     actions.append(action)
-                    first_player.action_sequence_['encoding_for_actions_per_match'].append(str(action))
-                    first_player.action_sequence_['encoding_custom_info_per_match'].append(str(action))
+                    first_player.encodings_['encoding_for_actions_per_match'].append(str(action))
+                    first_player.encodings_['encoding_custom_info_per_match'].append(str(action))
                 match.perform_action(player, action)
                 if match.is_over():
                     result = match.result_for_player(sbb_player)
                     outputs.append(result)
                     if Config.USER['reinforcement_parameters']['environment_parameters']['weights_per_action']:
                         bin_label = DiversityMaintenance.define_bin_for_actions(actions)
-                        team.action_sequence_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
+                        team.encodings_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
                     break
                 player = 2
                 inputs = match.inputs_from_the_point_of_view_of(player)
@@ -93,15 +93,15 @@ class TictactoeEnvironment(ReinforcementEnvironment):
                     action = random.choice(match.valid_actions())
                 if is_training_for_second_player:
                     actions.append(action)
-                    second_player.action_sequence_['encoding_for_actions_per_match'].append(str(action))
-                    second_player.action_sequence_['encoding_custom_info_per_match'].append(str(action))
+                    second_player.encodings_['encoding_for_actions_per_match'].append(str(action))
+                    second_player.encodings_['encoding_custom_info_per_match'].append(str(action))
                 match.perform_action(player, action)
                 if match.is_over():
                     result = match.result_for_player(sbb_player)
                     outputs.append(result)
                     if Config.USER['reinforcement_parameters']['environment_parameters']['weights_per_action']:
                         bin_label = DiversityMaintenance.define_bin_for_actions(actions)
-                        team.action_sequence_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
+                        team.encodings_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
                     break
 
         return numpy.mean(outputs)

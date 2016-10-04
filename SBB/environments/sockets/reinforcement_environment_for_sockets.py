@@ -87,7 +87,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
             }
         )
 
-        team.action_sequence_['encoding_custom_info_per_match'].append("<"+str(point.seed_)+">")
+        team.encodings_['encoding_custom_info_per_match'].append("<"+str(point.seed_)+">")
 
         actions = []
         is_over = False
@@ -107,8 +107,8 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
 
                 if data['params']['current_player'] == 'sbb' and is_training:
                     actions.append(action)
-                    team.action_sequence_['encoding_for_actions_per_match'].append(str(action))
-                    team.action_sequence_['encoding_custom_info_per_match'].append(str(action))
+                    team.encodings_['encoding_for_actions_per_match'].append(str(action))
+                    team.encodings_['encoding_custom_info_per_match'].append(str(action))
 
                 self._request(mode, match_id, 'perform_action', args = {'action': action}) 
             elif data['message_type'] == 'match_ended':
@@ -116,7 +116,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
                 result = data['params']['result']
                 if Config.USER['reinforcement_parameters']['environment_parameters']['weights_per_action']:
                     bin_label = DiversityMaintenance.define_bin_for_actions(actions)
-                    team.action_sequence_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
+                    team.encodings_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
             else:
                 raise ValueError("Unexpected value for 'message_type'")
         return result

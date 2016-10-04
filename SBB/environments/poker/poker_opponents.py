@@ -115,7 +115,7 @@ class PokerBayesianTesterOpponent(PokerRuleBasedOpponent):
         self.programs = []
         self.extra_metrics_ = {}
         self.results_per_points_for_validation_ = {}
-        self.action_sequence_ = {}
+        self.encodings_ = {}
         self.last_selected_program_ = None
 
     def reset_registers(self):
@@ -251,7 +251,7 @@ class PokerBayesianOpponent(DefaultOpponent):
         self.programs = []
         self.extra_metrics_ = {}
         self.results_per_points_for_validation_ = {}
-        self.action_sequence_ = {}
+        self.encodings_ = {}
         self.last_selected_program_ = None
         self.opponent_past_actions_history = []
         self.initial_prob = {

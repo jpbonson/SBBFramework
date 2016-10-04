@@ -24,10 +24,10 @@ class Program:
         self.teams_ = []
         self.instructions_without_introns_ = []
         self.inputs_list_ = []
-        self.general_registers = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
+        self.general_registers_ = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
 
     def reset_registers(self):
-        self.general_registers = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
+        self.general_registers_ = [0] * Config.RESTRICTIONS['genotype_options']['total_registers']
 
     def execute(self, input_registers, force_reset = False):
         """
@@ -56,17 +56,17 @@ class Program:
             elif instruction.op in Config.RESTRICTIONS['genotype_options']['if-instructions']:
                 if_instruction = instruction
             elif instruction.op in Config.RESTRICTIONS['genotype_options']['one-operand-instructions']:
-                self.general_registers[instruction.target] = Operation.execute(instruction.op, 
-                    self.general_registers[instruction.target])
+                self.general_registers_[instruction.target] = Operation.execute(instruction.op, 
+                    self.general_registers_[instruction.target])
             else:
                 if instruction.mode == 'read-register':
-                    source =  self.general_registers[instruction.source]
+                    source =  self.general_registers_[instruction.source]
                 else:
                     source =  input_registers[instruction.source]
-                self.general_registers[instruction.target] = Operation.execute(instruction.op, 
-                    self.general_registers[instruction.target], source)
+                self.general_registers_[instruction.target] = Operation.execute(instruction.op, 
+                    self.general_registers_[instruction.target], source)
 
-        return self.general_registers[0] # get bid output
+        return self.general_registers_[0] # get bid output
 
     def _inputs_list(self):
         inputs = []

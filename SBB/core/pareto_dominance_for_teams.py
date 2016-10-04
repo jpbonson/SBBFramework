@@ -30,8 +30,8 @@ class ParetoDominanceForTeams():
         Finds the pareto front, i.e. the pareto dominant solutions.
         """
         for team in teams_population:
-            team.domBy_ = 0
-            team.domOf_ = 0
+            team.dom_by_ = 0
+            team.dom_of_ = 0
 
         front = []
         dominateds = []
@@ -40,17 +40,17 @@ class ParetoDominanceForTeams():
                 # check if there are teams that have a better or equal [fitness, novelty] and that are better in at least 
                 # one of the dimensions. If yes, then teamA is dominated by these teams.
                 if ParetoDominanceForTeams._is_dominated(teamA, teamB, novelty):
-                    teamA.domBy_ += 1
-                    teamB.domOf_ += 1
+                    teamA.dom_by_ += 1
+                    teamB.dom_of_ += 1
                     if teamA not in dominateds:
                         dominateds.append(teamA)
-            if teamA.domBy_ == 0:
+            if teamA.dom_by_ == 0:
                 front.append(teamA)
 
         # use this score to balance the teams between remove and keep
         for team in teams_population:
-            team.submission_score_ = team.domBy_/float(len(teams_population)) # use it to add teams to the front (the lower, the better)
-            team.dominance_score_ = team.domOf_/float(len(teams_population)) # use it to remove teams from the front (the higher, the better)
+            team.submission_score_ = team.dom_by_/float(len(teams_population)) # use it to add teams to the front (the lower, the better)
+            team.dominance_score_ = team.dom_of_/float(len(teams_population)) # use it to remove teams from the front (the higher, the better)
         return front, dominateds
 
     @staticmethod
