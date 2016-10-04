@@ -188,7 +188,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
             hall_of_fame = self.opponent_population_['hall_of_fame']
             if self.team_to_add_to_hall_of_fame_:
                 team_to_copy = self.team_to_add_to_hall_of_fame_
-                copied_team = Team(team_to_copy.generation, list(team_to_copy.programs))
+                copied_team = Team(team_to_copy.generation, list(team_to_copy.programs), team_to_copy.environment)
                 copied_team.team_id_ = team_to_copy.team_id_
                 copied_team.fitness_ = team_to_copy.fitness_
                 copied_team.active_programs_ = list(team_to_copy.active_programs_)
@@ -436,3 +436,27 @@ class ReinforcementEnvironment(DefaultEnvironment):
         if len(top5_overall_ids) == 15:
             run_info.second_layer_files['top15_overall'] = [t for t in teams_population if t.__repr__() in top15_overall_ids]
         run_info.second_layer_files['all'] = teams_population
+
+    def metrics_for_team(self, team):
+        msg = ""
+        if team.extra_metrics_:
+            if 'champion_score' in team.extra_metrics_:
+                msg += ("\n\nscore per opponent (except hall of fame) (champion): "
+                    ""+str(team.extra_metrics_['champion_score']))
+                total_opponents = Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels']+['hall_of_fame']
+                for key in team.extra_metrics_['opponents']:
+                    if key in total_opponents:
+                        msg += "\n"+key+": "+str(team.extra_metrics_['champion_opponents'][key])
+
+            if 'validation_score' in team.extra_metrics_:
+                msg += "\n\nscore per opponent (validation): "+str(team.extra_metrics_['validation_score'])
+                for key in team.extra_metrics_['validation_opponents']:
+                    msg += "\n"+key+": "+str(team.extra_metrics_['validation_opponents'][key])
+                    
+            if 'training_opponents' in team.extra_metrics_:
+                msg += "\n\nscore per opponent (training): "+str(round_value(team.fitness_))
+                total_opponents = Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels']+['hall_of_fame']
+                for key in team.extra_metrics_['training_opponents']:
+                    if key in total_opponents:
+                        msg += "\n"+key+": "+str(team.extra_metrics_['training_opponents'][key])
+        return msg

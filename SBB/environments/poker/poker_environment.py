@@ -384,3 +384,67 @@ class PokerEnvironment(ReinforcementEnvironment):
                     best_teams[team_id] = score
         rank = sorted(best_teams.items(), key=operator.itemgetter(1), reverse=True)
         return rank
+
+    def metrics_for_team(self, team):
+        msg = ""
+        msg += super(PokerEnvironment, self).metrics_for_team(team)
+        msg += "\n\n### Poker-specific metrics ###"
+        
+        if 'total_hands' in team.extra_metrics_:
+            if team.extra_metrics_['total_hands']['validation'] > 0:
+                msg += self._hand_player_metrics(team, 'validation')
+            if 'champion' in team.extra_metrics_:
+                if team.extra_metrics_['total_hands']['champion'] > 0:
+                    msg += self._hand_player_metrics(team, 'champion')
+
+        if 'agressiveness' in team.extra_metrics_:
+            msg += "\n\nagressiveness: "+str(team.extra_metrics_['agressiveness'])
+            msg += "\ntight_loose: "+str(team.extra_metrics_['tight_loose'])
+            msg += "\npassive_aggressive: "+str(team.extra_metrics_['passive_aggressive'])
+            msg += "\nbluffing: "+str(team.extra_metrics_['bluffing'])
+            msg += "\nbluffing_only_raise: "+str(team.extra_metrics_['bluffing_only_raise'])
+            msg += ("\nnormalized result (mean): "
+                ""+str(round_value(numpy.mean(team.results_per_points_for_validation_.values()))))
+            msg += ("\nnormalized result (std): "
+                ""+str(round_value(numpy.std(team.results_per_points_for_validation_.values()))))
+
+        if 'agressiveness_champion' in team.extra_metrics_:
+            msg += ("\n\nagressiveness (champion): "
+                ""+str(team.extra_metrics_['agressiveness_champion']))
+            msg += "\ntight_loose (champion): "+str(team.extra_metrics_['tight_loose_champion'])
+            msg += ("\npassive_aggressive (champion): "
+                ""+str(team.extra_metrics_['passive_aggressive_champion']))
+            msg += "\nbluffing (champion): "+str(team.extra_metrics_['bluffing_champion'])
+
+        if 'validation_points' in team.extra_metrics_:
+            msg += "\n\nscore per point (validation): "
+            for key in team.extra_metrics_['validation_points']:
+                msg += "\n"+key+": "+str(dict(team.extra_metrics_['validation_points'][key]))
+
+        if 'champion_score' in team.extra_metrics_:
+            msg += "\n\nscore per point (champion): "
+            for key in team.extra_metrics_['champion_points']:
+                msg += "\n"+key+": "+str(dict(team.extra_metrics_['champion_points'][key]))
+        return msg
+
+    def _hand_player_metrics(self, team, mode):
+        msg = ""
+        msg += "\n\nhands ("+mode+"):"
+        a = round_value(team.extra_metrics_['hand_played'][mode]/float(team.extra_metrics_['total_hands'][mode]))
+        b = None
+        if team.extra_metrics_['hand_played'][mode] > 0:
+            b = round_value(team.extra_metrics_['won_hands'][mode]/float(team.extra_metrics_['hand_played'][mode]))
+        msg += "\ntotal: "+str(team.extra_metrics_['total_hands'][mode])+", played: "+str(a)+", won: "+str(b)
+        for metric in team.extra_metrics_['total_hands_per_point_type'][mode]:
+            for key in team.extra_metrics_['total_hands_per_point_type'][mode][metric]:
+                a = team.extra_metrics_['total_hands_per_point_type'][mode][metric][key]
+                b = None
+                c = None
+                if a > 0:
+                    b = round_value(team.extra_metrics_['hand_played_per_point_type'][mode][metric][key]
+                        /float(team.extra_metrics_['total_hands_per_point_type'][mode][metric][key]))
+                    if team.extra_metrics_['hand_played_per_point_type'][mode][metric][key] > 0:
+                        c = round_value(team.extra_metrics_['won_hands_per_point_type'][mode][metric][key]
+                            /float(team.extra_metrics_['hand_played_per_point_type'][mode][metric][key]))
+                msg += "\n"+str(metric)+", "+str(key)+" ("+str(a)+"): played: "+str(b)+", won: "+str(c)
+        return msg

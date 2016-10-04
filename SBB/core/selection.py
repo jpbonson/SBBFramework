@@ -143,7 +143,7 @@ class Selection:
 
     def _clone_teams(self, current_generation, teams_to_clone, teams_population, programs_population):
         for team in teams_to_clone:
-            clone = Team(current_generation, team.programs)
+            clone = Team(current_generation, team.programs, team.environment)
             programs_population = clone.mutate(programs_population)
             teams_population.append(clone)
         return teams_population, programs_population

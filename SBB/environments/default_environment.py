@@ -98,5 +98,11 @@ class DefaultEnvironment(object):
         start and at the end of the execution, and it is also saved in the output file.
         """
 
+    @abc.abstractmethod
+    def metrics_for_team(self, team):
+        """
+        Generate a string with the metrics for the team specific of the environment.
+        """
+
     def hall_of_fame(self):
         return []

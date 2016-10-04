@@ -73,7 +73,7 @@ class SBB:
                 path = str(Config.USER['advanced_training_parameters']['second_layer']['path']).replace("[run_id]", str(run_info.run_id))
                 if not os.path.exists(path):
                     raise ValueError("Path for second layer actions doesn't exist: "+str(path))
-                initialize_actions_for_second_layer(path)
+                initialize_actions_for_second_layer(path, self.environment)
                 total_team_actions = len(Config.RESTRICTIONS['second_layer']['action_mapping'])
                 Config.RESTRICTIONS['total_actions'] = total_team_actions
 
@@ -183,7 +183,7 @@ class SBB:
                 program = self._initialize_random_program(available_actions)
                 available_actions.remove(program.action)
                 programs.append(program)
-            team = Team(self.current_generation_, programs)
+            team = Team(self.current_generation_, programs, self.environment)
             teams_population.append(team)
             programs_population += programs
 
@@ -211,11 +211,13 @@ class SBB:
             run_info.recall_per_validation.append(best_team.extra_metrics_['recall_per_action'])
         print("\n### Best Team Metrics: "+best_team.metrics()+"\n")
 
+        print "\n### Global Metrics:"
+
         older_teams = [team for team in teams_population if team.generation != self.current_generation_]
 
         fitness_score_mean = round_value(numpy.mean([team.fitness_ for team in older_teams]))
         fitness_score_std = round_value(numpy.std([team.fitness_ for team in older_teams]))
-
+        
         if Config.USER['task'] == 'reinforcement':
             validation_score_mean = round_value(numpy.mean([team.extra_metrics_['validation_score'] for team in older_teams]))
             opponent_means = {}
@@ -226,18 +228,16 @@ class SBB:
             run_info.global_mean_validation_score_per_validation.append(validation_score_mean)
             run_info.global_max_validation_score_per_validation.append(round_value(max([team.extra_metrics_['validation_score'] for team in older_teams])))
             run_info.global_opponent_results_per_validation.append(opponent_means)               
-            print "\nglobal validation score (mean): "+str(validation_score_mean)
+            print "\nglobal validation score (mean): "+str(validation_score_mean)+"\n"
             run_info.final_teams_validations = [team.extra_metrics_['validation_score'] for team in older_teams]
         if Config.USER['task'] == 'classification':
             validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
             run_info.global_mean_validation_score_per_validation.append(validation_score_mean)
+            print "\nglobal validation score (mean): "+str(validation_score_mean)+"\n"
 
-        print
         for key in best_team.diversity_:
             run_info.global_diversity_per_validation[key].append(run_info.global_diversity_per_generation[key][-1])
             print str(key)+": "+str(best_team.diversity_[key])+" (global: "+str(run_info.global_diversity_per_generation[key][-1])+")"
-
-        print "\n### Global Metrics:"
 
         print "\nfitness, mean (global): "+str(fitness_score_mean)
         print "\nfitness, std (global): "+str(fitness_score_std)

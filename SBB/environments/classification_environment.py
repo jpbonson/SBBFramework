@@ -3,7 +3,7 @@ from collections import Counter
 import numpy
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from default_environment import DefaultEnvironment, DefaultPoint, reset_points_ids
-from ..utils.helpers import round_array, flatten
+from ..utils.helpers import round_array, flatten, round_value
 from ..config import Config
 
 class ClassificationPoint(DefaultPoint):
@@ -248,6 +248,18 @@ class ClassificationEnvironment(DefaultEnvironment):
         best_team = teams_population[fitness.index(max(fitness))]
         self.evaluate_team(best_team, Config.RESTRICTIONS['mode']['validation'])
         return best_team
+
+    def metrics_for_team(self, team):
+        msg = ""
+        if team.extra_metrics_:
+            msg += "\nrecall per action: "+str(team.extra_metrics_['recall_per_action'])
+            msg += "\n\naccuracy: "+str(round_value(team.extra_metrics_['accuracy']))
+            msg += "\n\nconfusion matrix:\n"+str(team.extra_metrics_['confusion_matrix'])
+            if team.diversity_:
+                msg += "\n\ndiversities:"
+                for key, value in team.diversity_.iteritems():
+                    msg += "\n - "+str(key)+": "+str(value)
+        return msg
 
     def metrics(self):
         msg = ""

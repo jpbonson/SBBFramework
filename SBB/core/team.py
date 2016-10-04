@@ -21,7 +21,7 @@ class Team(DefaultOpponent):
 
     OPPONENT_ID = "sbb"
 
-    def __init__(self, generation, programs, team_id = None):
+    def __init__(self, generation, programs, environment, team_id = None):
         if team_id is None:
             self.team_id_ = get_team_id()
         else:
@@ -31,6 +31,7 @@ class Team(DefaultOpponent):
         self.programs = []
         for program in programs:
             self._add_program(program)
+        self.environment = environment
         self.fitness_ = 0
         self.score_testset_ = 0
         self.extra_metrics_ = {}
@@ -221,83 +222,29 @@ class Team(DefaultOpponent):
         result['normalized_result_std'] = round_value(numpy.std(self.results_per_points_for_validation_.values()))
         return result
 
-    def metrics(self, full_version = False):
+    def metrics(self):
         validation_active_teams_members_ids = [p.__repr__() for p in self.validation_active_programs_]
         validation_inactive_programs = list(set(self.programs) - set(self.validation_active_programs_))
         validation_inactive_teams_members_ids = [p.__repr__() for p in validation_inactive_programs]
         active_teams_members_ids = [p.__repr__() for p in self.active_programs_]
         inactive_programs = list(set(self.programs) - set(self.active_programs_))
         inactive_teams_members_ids = [p.__repr__() for p in inactive_programs]
+
         msg = self.__repr__()
         msg += ("\nteam members ("+str(len(self.programs))+"), "
             "A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids))
         msg += ("\n- validation: A: "+str(validation_active_teams_members_ids)+", "
             "I: "+str(validation_inactive_teams_members_ids))
+
         msg += ("\nfitness: "+str(round_value(self.fitness_))+", "
             "test score: "+str(round_value(self.score_testset_)))
         msg += "\ninputs distribution: "+str(self.inputs_distribution())
-        if Config.USER['task'] == 'classification' and self.extra_metrics_:
-            msg += "\nrecall per action: "+str(self.extra_metrics_['recall_per_action'])
-        if Config.USER['task'] == 'reinforcement' and self.extra_metrics_:
-            if Config.USER['reinforcement_parameters']['environment'] == 'poker':
-                if 'total_hands' in self.extra_metrics_:
-                    if self.extra_metrics_['total_hands']['validation'] > 0:
-                        msg += self._hand_player_metrics('validation')
-                    if 'champion' in self.extra_metrics_:
-                        if self.extra_metrics_['total_hands']['champion'] > 0:
-                            msg += self._hand_player_metrics('champion')
-                if 'agressiveness' in self.extra_metrics_:
-                    msg += "\n\nagressiveness: "+str(self.extra_metrics_['agressiveness'])
-                    msg += "\ntight_loose: "+str(self.extra_metrics_['tight_loose'])
-                    msg += "\npassive_aggressive: "+str(self.extra_metrics_['passive_aggressive'])
-                    msg += "\nbluffing: "+str(self.extra_metrics_['bluffing'])
-                    msg += "\nbluffing_only_raise: "+str(self.extra_metrics_['bluffing_only_raise'])
-                    msg += ("\nnormalized result (mean): "
-                        ""+str(round_value(numpy.mean(self.results_per_points_for_validation_.values()))))
-                    msg += ("\nnormalized result (std): "
-                        ""+str(round_value(numpy.std(self.results_per_points_for_validation_.values()))))
-                if 'agressiveness_champion' in self.extra_metrics_:
-                    msg += ("\n\nagressiveness (champion): "
-                        ""+str(self.extra_metrics_['agressiveness_champion']))
-                    msg += "\ntight_loose (champion): "+str(self.extra_metrics_['tight_loose_champion'])
-                    msg += ("\npassive_aggressive (champion): "
-                        ""+str(self.extra_metrics_['passive_aggressive_champion']))
-                    msg += "\nbluffing (champion): "+str(self.extra_metrics_['bluffing_champion'])
-
-                if 'validation_points' in self.extra_metrics_:
-                    msg += "\n\nscore per point (validation): "
-                    for key in self.extra_metrics_['validation_points']:
-                        msg += "\n"+key+": "+str(dict(self.extra_metrics_['validation_points'][key]))
-
-                if 'champion_score' in self.extra_metrics_:
-                    msg += "\n\nscore per point (champion): "
-                    for key in self.extra_metrics_['champion_points']:
-                        msg += "\n"+key+": "+str(dict(self.extra_metrics_['champion_points'][key]))
-
-            if 'champion_score' in self.extra_metrics_:
-                msg += ("\n\nscore per opponent (except hall of fame) (champion): "
-                    ""+str(self.extra_metrics_['champion_score']))
-                total_opponents = Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels']+['hall_of_fame']
-                for key in self.extra_metrics_['opponents']:
-                    if key in total_opponents:
-                        msg += "\n"+key+": "+str(self.extra_metrics_['champion_opponents'][key])
-            if Config.USER['task'] == 'reinforcement' and 'validation_score' in self.extra_metrics_:
-                msg += "\n\nscore per opponent (validation): "+str(self.extra_metrics_['validation_score'])
-                for key in self.extra_metrics_['validation_opponents']:
-                    msg += "\n"+key+": "+str(self.extra_metrics_['validation_opponents'][key])
-            if Config.USER['task'] == 'reinforcement' and 'training_opponents' in self.extra_metrics_:
-                msg += "\n\nscore per opponent (training): "+str(round_value(self.fitness_))
-                total_opponents = Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels']+['hall_of_fame']
-                for key in self.extra_metrics_['training_opponents']:
-                    if key in total_opponents:
-                        msg += "\n"+key+": "+str(self.extra_metrics_['training_opponents'][key])
-            msg += "\n"
-        if full_version:
-            if Config.USER['task'] == 'classification' and self.extra_metrics_:
-                msg += "\n\naccuracy: "+str(round_value(self.extra_metrics_['accuracy']))
-                msg += "\n\nconfusion matrix:\n"+str(self.extra_metrics_['confusion_matrix'])
-            for key, value in self.diversity_.iteritems():
-                msg += "\n"+str(key)+": "+str(value)
+        
+        msg += "\n"
+        env_msg = self.environment.metrics_for_team(self)
+        if env_msg:
+            msg += "\n\n### Environment-specific metrics for the best team:"
+            msg += env_msg
         return msg
 
     def inputs_distribution(self):
@@ -312,28 +259,6 @@ class Team(DefaultOpponent):
                     inputs += program.inputs_list_
         inputs_dist = Counter(inputs)
         return inputs_dist
-
-    def _hand_player_metrics(self, mode):
-        msg = ""
-        msg += "\n\nhands ("+mode+"):"
-        a = round_value(self.extra_metrics_['hand_played'][mode]/float(self.extra_metrics_['total_hands'][mode]))
-        b = None
-        if self.extra_metrics_['hand_played'][mode] > 0:
-            b = round_value(self.extra_metrics_['won_hands'][mode]/float(self.extra_metrics_['hand_played'][mode]))
-        msg += "\ntotal: "+str(self.extra_metrics_['total_hands'][mode])+", played: "+str(a)+", won: "+str(b)
-        for metric in self.extra_metrics_['total_hands_per_point_type'][mode]:
-            for key in self.extra_metrics_['total_hands_per_point_type'][mode][metric]:
-                a = self.extra_metrics_['total_hands_per_point_type'][mode][metric][key]
-                b = None
-                c = None
-                if a > 0:
-                    b = round_value(self.extra_metrics_['hand_played_per_point_type'][mode][metric][key]
-                        /float(self.extra_metrics_['total_hands_per_point_type'][mode][metric][key]))
-                    if self.extra_metrics_['hand_played_per_point_type'][mode][metric][key] > 0:
-                        c = round_value(self.extra_metrics_['won_hands_per_point_type'][mode][metric][key]
-                            /float(self.extra_metrics_['hand_played_per_point_type'][mode][metric][key]))
-                msg += "\n"+str(metric)+", "+str(key)+" ("+str(a)+"): played: "+str(b)+", won: "+str(c)
-        return msg
 
     def dict(self):
         info = {}
@@ -358,7 +283,7 @@ class Team(DefaultOpponent):
     def __str__(self):
         text = "TEAM "+self.__repr__()
         text += "\n\n#### METRICS\n"
-        text += self.metrics(full_version = True)
+        text += self.metrics()
         text += "\n\n######## PROGRAMS (ACTIVE)"
         for p in self.active_programs_:
             text += "\n"+str(p)

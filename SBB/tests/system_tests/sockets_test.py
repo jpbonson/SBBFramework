@@ -100,26 +100,12 @@ class TictactoeWithSocketsTests(unittest.TestCase):
     def setUp(self):
         Config.RESTRICTIONS['write_output_files'] = False
         Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['teams']*1.0))
-        
-        config = dict(TEST_CONFIG)
-        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
-        config['reinforcement_parameters']['hall_of_fame']['opponents'] = 0
-        Config.USER = config
 
         path = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(path, '')
         subprocess.Popen(['python', path+'tictactoe_game.py', 'test'])
 
     def test_reinforcement_with_sockets_for_ttt(self):
-        sbb = SBB()
-        sbb.run()
-        result = len(sbb.best_scores_per_runs_)
-        expected = 1
-        self.assertEqual(expected, result)
-
-    def test_reinforcement_with_sockets_for_ttt_with_hall_of_fame(self):
-        Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
-        Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] = 2
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
