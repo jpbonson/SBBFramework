@@ -58,8 +58,8 @@ class PokerMatch():
         if not self.is_training:
             self.team.extra_metrics_['played_last_hand'] = True
 
-        self.team.action_sequence_['coding4'].append(str(self.point.seed_))
-        self.team.action_sequence_['coding4'].append(str(self.point.players['team']['position']))
+        self.team.action_sequence_['encoding_custom_info_per_match'].append(str(self.point.seed_))
+        self.team.action_sequence_['encoding_custom_info_per_match'].append(str(self.point.players['team']['position']))
 
         self.opponent.initialize(self.point.seed_)
             
@@ -215,8 +215,9 @@ class PokerMatch():
 
         if self.is_training:
             original_player_actions =  [PokerConfig.CONFIG['inverted_action_mapping'][a] for a in player_actions]
-            bin_label = DiversityMaintenance.define_bin_for_actions(original_player_actions)
-            self.team.action_sequence_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
+            if Config.USER['reinforcement_parameters']['environment_parameters']['weights_per_action']:
+                bin_label = DiversityMaintenance.define_bin_for_actions(original_player_actions)
+                self.team.action_sequence_['encoding_for_pattern_of_actions_per_match'].append(bin_label)
 
         sbb_chips = self.players_info[sbb_position]['chips']
         opponent_chips = self.players_info[opponent_position]['chips']
@@ -324,13 +325,16 @@ class PokerMatch():
 
         if action is None:
             action = 1
+
+        if match_state.player_key == 'team' and self.is_training:
+            player.action_sequence_['encoding_for_actions_per_match'].append(str(action))
         
         action = PokerConfig.CONFIG['action_mapping'][action]
 
         if match_state.player_key == 'team' and self.is_training:
-            player.action_sequence_['coding4'].append(str(DiversityMaintenance.define_bin_for_value(match_state.hand_strength[self.round_id], is_normalized = True)))
-            player.action_sequence_['coding4'].append(str(DiversityMaintenance.define_bin_for_value(match_state.effective_potential[self.round_id], is_normalized = True)))
-            player.action_sequence_['coding4'].append(str(action))
+            player.action_sequence_['encoding_custom_info_per_match'].append(str(DiversityMaintenance.define_bin_for_value(match_state.hand_strength[self.round_id], is_normalized = True)))
+            player.action_sequence_['encoding_custom_info_per_match'].append(str(DiversityMaintenance.define_bin_for_value(match_state.effective_potential[self.round_id], is_normalized = True)))
+            player.action_sequence_['encoding_custom_info_per_match'].append(str(action))
 
         match_state.actions.append(action)
         return action

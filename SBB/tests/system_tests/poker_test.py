@@ -15,12 +15,12 @@ TEST_CONFIG = {
         'hall_of_fame': {
             'size': 20,
             'enabled': False,
-            'diversity': 'ncd_c4',
+            'diversity': 'ncd',
             'opponents': 0,
         },
         "environment_parameters": {
             "actions_total": 3, # for poker: fold, call, raise
-            "points_per_action": [0.0, 0.5, 1.0],
+            "weights_per_action": [0.0, 0.5, 1.0],
             "inputs_total": 14, # for poker: hand strength, hand potential, opponent model, etc...
             "point_labels_total": 9, # for poker: combinations of [weak, intermediate, strong] for player's and opponent's hands
             "training_opponents_labels": ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"],
@@ -96,7 +96,8 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['teams']*1.0))
 
         config = dict(TEST_CONFIG)
-        config['advanced_training_parameters']['novelty'] = False
+        config['advanced_training_parameters']['diversity']['metrics'] = []
+        config['advanced_training_parameters']['novelty']['enabled'] = False
         Config.USER = config
 
     def test_reinforcement_for_poker(self):
@@ -107,7 +108,31 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_poker_with_novelty(self):
-        Config.USER['advanced_training_parameters']['novelty'] = True
+        Config.USER['advanced_training_parameters']['novelty']['enabled'] = True
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_poker_with_ncd_custom_diversity(self):
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['ncd_custom']
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_poker_with_hamming_diversity(self):
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['hamming']
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_poker_with_euclidean_diversity(self):
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['euclidean']
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

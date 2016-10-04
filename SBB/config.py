@@ -49,11 +49,11 @@ class Config():
             'threshold': 10,
         },
         'diversity': {
-            'options': ['genotype', 'fitness_sharing', 'entropy', 'hamming', 'ncd_c3', 
-                'ncd_c4', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
+            'options': ['genotype', 'fitness_sharing', 'entropy', 'ncd', 'ncd_custom', 
+            'hamming', 'euclidean'], # must have the same name as the methods in DiversityMaintenance
             'classification_compatible_diversities': ['genotype', 'fitness_sharing'],
-            'reinforcement_compatible_diversities': ['genotype', 'fitness_sharing', 'entropy', 
-                'hamming', 'ncd_c3', 'ncd_c4', 'euclidean'],
+            'reinforcement_compatible_diversities': ['genotype', 'fitness_sharing', 'entropy', 'ncd', 
+                'ncd_custom', 'hamming', 'euclidean'],
             'total_bins': 3, # used to organize the distances for the action-based diversity metrics
             'max_ncd': 1.2, # used to normalize NCD
         },
@@ -147,6 +147,17 @@ class Config():
         for diversity in diversities:
             if diversity not in Config.RESTRICTIONS['diversity']['reinforcement_compatible_diversities']:
                 sys.stderr.write("Error: Can't calculate this diversity for a reinforcement task!\n")
+                raise SystemExit
+
+        if 'hamming' in diversities or 'euclidean' in diversities:
+            if not Config.USER['reinforcement_parameters']['environment_parameters']['weights_per_action']:
+                sys.stderr.write("Error: Can't calculate 'hamming' and 'euclidean' diversities "
+                    " if there are no 'weights_per_action'!\n")
+                raise SystemExit
+            if (Config.USER['reinforcement_parameters']['environment_parameters']['actions_total'] 
+                    != len(Config.USER['reinforcement_parameters']['environment_parameters']['weights_per_action'])):
+                sys.stderr.write("Error: Can't calculate 'hamming' and 'euclidean' diversities "
+                    " if there 'weights_per_action' is not the same size as 'actions_total'!\n")
                 raise SystemExit
 
         if Config.USER['reinforcement_parameters']['hall_of_fame']['diversity']:

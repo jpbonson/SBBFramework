@@ -734,7 +734,8 @@ class PokerAnalysis():
         team.chips = {} # Chips (the stacks are infinite, but it may be useful to play more conservative if it is losing a lot)
 
         team.action_sequence_['encoding_for_pattern_of_actions_per_match'] = []
-        team.action_sequence_['coding4'] = []
+        team.action_sequence_['encoding_for_actions_per_match'] = []
+        self.action_sequence_['encoding_custom_info_per_match'] = []
 
         keys = ['validation']
         subkeys = ['position', 'sbb_label', 'sbb_sd']

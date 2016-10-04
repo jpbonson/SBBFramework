@@ -42,7 +42,8 @@ class Team(DefaultOpponent):
         self.diversity_ = {}
         self.action_sequence_ = {} # only used by reinforcement learning
         self.action_sequence_['encoding_for_pattern_of_actions_per_match'] = []
-        self.action_sequence_['coding4'] = []
+        self.action_sequence_['encoding_for_actions_per_match'] = []
+        self.action_sequence_['encoding_custom_info_per_match'] = []
         self.last_selected_program_ = None
 
     def _add_program(self, program):

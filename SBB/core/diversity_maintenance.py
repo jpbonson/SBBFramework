@@ -16,10 +16,10 @@ class DiversityMaintenance():
     def define_bin_for_actions(actions):
         if len(actions) == 0:
             return 0.0
-        points_per_action = Config.USER['reinforcement_parameters']['environment_parameters']['points_per_action']
+        weights_per_action = Config.USER['reinforcement_parameters']['environment_parameters']['weights_per_action']
         points = 0.0
         for action in actions:
-            points += points_per_action[action]
+            points += weights_per_action[action]
         points = points/float(len(actions))
         return DiversityMaintenance.define_bin_for_value(points)
 
@@ -122,35 +122,43 @@ class DiversityMaintenance():
         return distance
 
     @staticmethod
-    def _hamming(team, other_team):
-        return hamming(team.action_sequence_['encoding_for_pattern_of_actions_per_match'], other_team.action_sequence_['encoding_for_pattern_of_actions_per_match'])
-
-    @staticmethod
-    def _ncd_c3(team, other_team):
-        action_sequence = list(team.action_sequence_['encoding_for_pattern_of_actions_per_match'])
-        action_sequence = [str(a) for a in action_sequence]
-        other_action_sequence = list(other_team.action_sequence_['encoding_for_pattern_of_actions_per_match'])
-        other_action_sequence = [str(a) for a in other_action_sequence]
-        distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
-        return distance
-
-    @staticmethod
     def _entropy(team, other_team):
-        action_sequence = team.action_sequence_['encoding_for_pattern_of_actions_per_match']
-        other_action_sequence = other_team.action_sequence_['encoding_for_pattern_of_actions_per_match']
-        options = Config.RESTRICTIONS['diversity']['total_bins']
+        if not team.action_sequence_['encoding_custom_info_per_match']:
+            raise ValueError("No 'encoding_for_actions_per_match' for 'entropy'")
+        action_sequence = team.action_sequence_['encoding_for_actions_per_match']
+        other_action_sequence = other_team.action_sequence_['encoding_for_actions_per_match']
+        options = Config.RESTRICTIONS['total_raw_actions']
         distance = DiversityMaintenance._general_relative_entropy_distance(action_sequence, other_action_sequence, options)
         return distance
 
     @staticmethod
-    def _ncd_c4(team, other_team):
-        action_sequence = team.action_sequence_['coding4']
-        other_action_sequence = other_team.action_sequence_['coding4']
+    def _ncd(team, other_team):
+        if not team.action_sequence_['encoding_custom_info_per_match']:
+            raise ValueError("No 'encoding_for_actions_per_match' for 'ncd'")
+        action_sequence = team.action_sequence_['encoding_for_actions_per_match']
+        other_action_sequence = other_team.action_sequence_['encoding_for_actions_per_match']
         distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
         return distance
 
     @staticmethod
+    def _ncd_custom(team, other_team):
+        if not team.action_sequence_['encoding_custom_info_per_match']:
+            raise ValueError("No custom encoding was defined for 'ncd_custom'")
+        action_sequence = team.action_sequence_['encoding_custom_info_per_match']
+        other_action_sequence = other_team.action_sequence_['encoding_custom_info_per_match']
+        distance = DiversityMaintenance._general_normalized_compression_distance(action_sequence, other_action_sequence)
+        return distance
+
+    @staticmethod
+    def _hamming(team, other_team):
+        if not team.action_sequence_['encoding_for_pattern_of_actions_per_match']:
+            raise ValueError("No 'encoding_for_pattern_of_actions_per_match' for 'hamming'")
+        return hamming(team.action_sequence_['encoding_for_pattern_of_actions_per_match'], other_team.action_sequence_['encoding_for_pattern_of_actions_per_match'])
+
+    @staticmethod
     def _euclidean(team, other_team):
+        if not team.action_sequence_['encoding_for_pattern_of_actions_per_match']:
+            raise ValueError("No 'encoding_for_pattern_of_actions_per_match' for 'euclidean'")
         value = euclidean(team.action_sequence_['encoding_for_pattern_of_actions_per_match'], other_team.action_sequence_['encoding_for_pattern_of_actions_per_match'])
         max_value = DiversityMaintenance._get_max_euclidean(Config.RESTRICTIONS['diversity']['total_bins'])
         result = value/float(max_value)

@@ -4,8 +4,8 @@
 # This file contains only configurations for classification.
 
 # Sample result:
-#   Global Mean Validation Score per Validation per Run: 
-#   Best Team Validation Score per Validation per Run (champion): [0.9, 1.0]
+#   Global Mean Validation Score per Validation per Run: [0.01933, 0.01933]
+#   Best Team Validation Score per Validation per Run (champion): [0.96666, 1.0]
 #   Runtime: 30 mins (15 mins per run)
 
 {
@@ -26,7 +26,7 @@
         }, 
         "team_size": {
             "max": 16, 
-            "min": 2 # the min size is the total number of actions
+            "min": 2 
         }, 
         "program_size": {
             "max": 40, 

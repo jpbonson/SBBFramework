@@ -22,7 +22,7 @@
         },
         "environment_parameters": {
             "actions_total": 3, # for poker: fold, call, raise
-            "points_per_action": [0.0, 0.5, 1.0], # used for action-based diversities (0: 'f', 1: 'c', 2: 'r')
+            "weights_per_action": [0.0, 0.5, 1.0], # used by diversities 'hamming' and 'euclidean', only relevant if different actions have different weights (0: 'f', 1: 'c', 2: 'r')
             "inputs_total": 14, # for poker: hand strength, hand potential, opponent model, etc...
             "point_labels_total": 9, # for poker: combinations of [weak, intermediate, strong] for player's and opponent's hands
             "training_opponents_labels": ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"],
@@ -40,7 +40,7 @@
         }, 
         "team_size": {
             "max": 16, 
-            "min": 2 # the min size is the total number of actions
+            "min": 2 
         }, 
         "program_size": {
             "max": 40, 
@@ -78,7 +78,7 @@
         "diversity": {
             "k": 10, 
             "metrics": [
-                "ncd_c4", "genotype"
+                "ncd", "genotype"
             ]
         }, 
         "novelty": {
