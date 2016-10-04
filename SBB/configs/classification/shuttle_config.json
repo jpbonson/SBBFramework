@@ -1,23 +1,22 @@
 # This file has a sample configuration for a training of a classifier for the iris dataset
-# Other sample datasets: "thyroid" and "shuttle"
 
 # This file contains only configurations for classification.
 
 # Sample result:
-#   Global Mean Validation Score per Validation per Run: [0.01933, 0.01933]
-#   Best Team Validation Score per Validation per Run (champion): [0.96666, 1.0]
-#   Runtime: 30 mins (15 mins per run)
+#   Global Mean Validation Score per Validation per Run: [0.00758]
+#   Best Team Validation Score per Validation per Run (champion): [0.37936]
+#   Runtime: 16 mins
 
 {
     "task": "classification", 
 
     "classification_parameters": { # only used if "task" is "classification"
-        "dataset": "iris", # must have a .train and a .test file
+        "dataset": "thyroid", # must have a .train and a .test file
         "working_path": "SBB/datasets/"
     },
 
     "training_parameters": {
-        "runs_total": 2,
+        "runs_total": 1,
         "generations_total": 300, 
         "validate_after_each_generation": 50,
         "populations": {

@@ -4,6 +4,10 @@
 
 # This file contains all possible configurations for SBB.
 
+# Sample result:
+#   Global Mean Validation Score per Validation per Run: [0.3875]
+#   Best Team Validation Score per Validation per Run (champion): [0.3875]
+#   Runtime: 0.04 mins
 {
     "task": "reinforcement", 
 

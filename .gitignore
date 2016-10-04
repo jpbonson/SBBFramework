@@ -1,6 +1,7 @@
 # Project specific
 outputs/*
 SBB/datasets/temp
+SBB/configs/temp
 TODO.md
 
 # Byte-compiled / optimized / DLL files
