@@ -1,5 +1,5 @@
 # This file has a sample configuration for a training of a classifier for the iris dataset
-# Other sample datasets: "thyroid" and "shuttle"
+# Other sample datasets: "thyroid", "shuttle", and "gisette"
 
 # This file contains only configurations for classification.
 
@@ -12,7 +12,7 @@
     "task": "classification", 
 
     "classification_parameters": { # only used if "task" is "classification"
-        "dataset": "thyroid", # must have a .train and a .test file
+        "dataset": "gisette", # must have a .train and a .test file
         "working_path": "SBB/datasets/"
     },
 

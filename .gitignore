@@ -1,17 +1,6 @@
 # Project specific
 outputs/*
-analysis_files/*
-actions_reference/*
-tools/*.json
-tools/*.pdf
-poker_analysis_files/*
-SBB/environments/poker/ACPC/dealer
-SBB/environments/poker/ACPC/all_in_expectation
-SBB/environments/poker/ACPC/bm_run_matches
-SBB/environments/poker/ACPC/example_player
-SBB/environments/poker/ACPC/outputs
-tools/r_scripts/*.gif
-tools/r_scripts/data/*
+SBB/datasets/temp
 TODO.md
 
 # Byte-compiled / optimized / DLL files
