@@ -109,6 +109,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_poker_with_novelty(self):
+        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['ncd']
         Config.USER['advanced_training_parameters']['novelty']['enabled'] = True
         Config.check_parameters()
         sbb = SBB()
