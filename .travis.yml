@@ -20,9 +20,13 @@ addons:
 
 install:
  - pip install -r requirements.txt
+ - pip install coveralls
 
 script:
- - nosetests
+ - nosetests -s --with-coverage SBB
+
+after_success:
+ - coveralls
 
 cache:
  - apt
