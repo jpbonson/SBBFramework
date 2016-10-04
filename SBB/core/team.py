@@ -238,10 +238,7 @@ class Team(DefaultOpponent):
         msg += "\ninputs distribution: "+str(self.inputs_distribution())
         
         msg += "\n"
-        env_msg = self.environment.metrics_for_team(self)
-        if env_msg:
-            msg += "\n\n### Environment-specific metrics for the best team:"
-            msg += env_msg
+        msg += self.environment.metrics_for_team(self)
         return msg
 
     def inputs_distribution(self):
@@ -279,12 +276,12 @@ class Team(DefaultOpponent):
 
     def __str__(self):
         text = "TEAM "+self.__repr__()
-        text += "\n\n#### METRICS\n"
+        text += "\n\n\n######## METRICS\n"
         text += self.metrics()
-        text += "\n\n######## PROGRAMS (ACTIVE)"
+        text += "\n\n\n######## PROGRAMS (ACTIVE)"
         for p in self.active_programs_:
             text += "\n"+str(p)
-        text += "\n\n######## PROGRAMS (INACTIVE)"
+        text += "\n\n\n######## PROGRAMS (INACTIVE)"
         inactive_programs = list(set(self.programs) - set(self.active_programs_))
         if inactive_programs:
             for p in inactive_programs:

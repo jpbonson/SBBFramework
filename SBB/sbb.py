@@ -63,7 +63,7 @@ class SBB:
         run_infos = []
         for run_id in range(Config.USER['training_parameters']['runs_total']):
             start_time = time.time()
-            run_info = RunInfo(run_id+1, self.seeds_per_run_[run_id])
+            run_info = RunInfo(run_id+1, self.environment, self.seeds_per_run_[run_id])
             print "\nStarting run: "+str(run_info.run_id)
 
             self._set_seed(run_info.seed)
@@ -208,7 +208,7 @@ class SBB:
         run_info.train_score_per_validation.append(best_team.fitness_)
         run_info.test_score_per_validation.append(best_team.score_testset_)
         if Config.USER['task'] == 'classification':
-            run_info.recall_per_validation.append(best_team.extra_metrics_['recall_per_action'])
+            run_info.recall_per_validation_.append(best_team.extra_metrics_['recall_per_action'])
         print("\n### Best Team Metrics: "+best_team.metrics()+"\n")
 
         print "\n### Global Metrics:"

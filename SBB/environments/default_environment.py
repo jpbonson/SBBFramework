@@ -92,16 +92,28 @@ class DefaultEnvironment(object):
         """
 
     @abc.abstractmethod
+    def metrics_for_team(self, team):
+        """
+        Generate a string with the metrics for the team specific of the environment.
+        """
+
+    @abc.abstractmethod
+    def initialize_attributes_for_run_info(self, run_info):
+        """
+        Initialize the attributes in run_info, that will be the output at the end of the run.
+        """
+
+    @abc.abstractmethod
+    def generate_output_for_attributes_for_run_info(self, run_info):
+        """
+        Generate an output of the attributes in run_info, to append it to the other results of the run.
+        """
+
+    @abc.abstractmethod
     def metrics(self):
         """
         Generate a string with the metrics for the environment. It is printed at the 
         start and at the end of the execution, and it is also saved in the output file.
-        """
-
-    @abc.abstractmethod
-    def metrics_for_team(self, team):
-        """
-        Generate a string with the metrics for the team specific of the environment.
         """
 
     def hall_of_fame(self):

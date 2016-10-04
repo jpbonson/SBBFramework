@@ -241,20 +241,6 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         return best_team
 
-    def metrics(self):
-        msg = ""
-        msg += "\n### Environment Info:"
-        msg += "\ntotal inputs: "+str(self.total_inputs_)
-        msg += "\ninputs: "+str([str(index)+": "+value for index, value in enumerate(PokerConfig.CONFIG['inputs'])])
-        msg += "\ntotal actions: "+str(self.total_actions_)
-        msg += "\nactions mapping: "+str(PokerConfig.CONFIG['action_mapping'])
-        msg += "\npositions: "+str(PokerConfig.CONFIG['positions'])
-        msg += "\ntraining opponents: "+str(self.opponent_names_for_training_)
-        msg += "\nvalidation opponents: "+str(self.opponent_names_for_validation_)
-        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            msg += "\nhall of fame size: "+str(Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
-        return msg
-
     def calculate_poker_metrics_per_validation(self, run_info):
         self._calculate_point_population_metrics_per_validation(run_info)
         self._calculate_validation_population_metrics_per_validation(run_info)
@@ -388,7 +374,7 @@ class PokerEnvironment(ReinforcementEnvironment):
     def metrics_for_team(self, team):
         msg = ""
         msg += super(PokerEnvironment, self).metrics_for_team(team)
-        msg += "\n\n### Poker-specific metrics ###"
+        msg += "\n\n\n### Poker-specific metrics ###"
         
         if 'total_hands' in team.extra_metrics_:
             if team.extra_metrics_['total_hands']['validation'] > 0:
@@ -447,4 +433,86 @@ class PokerEnvironment(ReinforcementEnvironment):
                         c = round_value(team.extra_metrics_['won_hands_per_point_type'][mode][metric][key]
                             /float(team.extra_metrics_['hand_played_per_point_type'][mode][metric][key]))
                 msg += "\n"+str(metric)+", "+str(key)+" ("+str(a)+"): played: "+str(b)+", won: "+str(c)
+        return msg
+
+    def initialize_attributes_for_run_info(self, run_info):
+        pass
+
+    def generate_output_for_attributes_for_run_info(self, run_info):
+        msg = ""
+        msg += super(PokerEnvironment, self).generate_output_for_attributes_for_run_info(run_info)
+        msg += "\n\n\n\n#################### Poker-specific Metrics:"
+
+        msg += "\n\n\n##### GLOBAL METRICS PER VALIDATION"
+
+        msg += "\n\nGlobal Team Results per Validation" # Global Results per Validation
+        for attribute in run_info.global_result_per_validation:
+            msg += "\n - "+str(attribute)+":"
+            for key in run_info.global_result_per_validation[attribute]:
+                msg += "\n    - "+str(key)+": "+str(run_info.global_result_per_validation[attribute][key])
+
+
+        msg += "\n\n\n##### FINAL TEAMS METRICS"
+
+        msg += "\n\nFinal Teams Validation per Subcategory"
+        for subdivision in run_info.final_teams_validations_per_subcategory:
+            msg += "\n - "+str(subdivision)
+            for key in run_info.final_teams_validations_per_subcategory[subdivision]:
+                msg += "\n    - "+str(key)+": "+str(run_info.final_teams_validations_per_subcategory[subdivision][key])
+
+
+        msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
+
+        msg += "\n\nPoints Distribution for the Validation Population"
+        for attribute in run_info.validation_population_distribution_per_validation:
+            msg += "\n - "+str(attribute)+":"
+            for key in run_info.validation_population_distribution_per_validation[attribute]:
+                msg += "\n    - "+str(key)+": "+str(run_info.validation_population_distribution_per_validation[attribute][key])
+        
+        msg += "\n\nPoints Distribution for the Champion Population"
+        for attribute in run_info.champion_population_distribution_per_validation:
+            msg += "\n - "+str(attribute)+":"
+            for key in run_info.champion_population_distribution_per_validation[attribute]:
+                msg += "\n    - "+str(key)+": "+str(run_info.champion_population_distribution_per_validation[attribute][key])
+        
+        msg += "\n\nPoints Distribution for the Training Population per Validation"
+        for attribute in run_info.point_population_distribution_per_validation:
+            msg += "\n - "+str(attribute)+":"
+            for key in run_info.point_population_distribution_per_validation[attribute]:
+                msg += "\n    - "+str(key)+": "+str(run_info.point_population_distribution_per_validation[attribute][key])
+        
+
+        msg += "\n\n\n##### TEAMS RANKED BY ACCUMULATIVE PERFORMANCE"
+
+        msg += "\n\nTeams Ranked by Accumulative Score per Metric"
+        for metric in run_info.accumulative_performance_summary:
+            msg += "\n - metric: "+str(metric)+" (len: "+str(len(run_info.accumulative_performance_summary[metric]['overall']['ids_only']))+"):"
+            msg += "\n    - Rank: "+str(run_info.accumulative_performance_summary[metric]['overall']['rank'])
+            msg += "\n    - Team ids: "+str(run_info.accumulative_performance_summary[metric]['overall']['ids_only'])
+
+        msg += "\n\n\n##### ACCUMULATIVE PERFORMANCES"
+        for metric in run_info.individual_performance_in_last_generation:
+            msg += "\n\n=== metric: "+str(metric)
+            for subdivision in run_info.individual_performance_per_label_in_last_generation[metric]:
+                msg += "\n---"
+                msg += "\nAccumulative Results ("+str(subdivision)+"):"
+                for key in run_info.individual_performance_per_label_in_last_generation[metric][subdivision]:
+                    msg += "\n"+str(key)+":"
+                    msg += "\n- Individual Team Performance: "+str(run_info.individual_performance_per_label_in_last_generation[metric][subdivision][key])
+                    msg += "\n- Accumulative Team Performance: "+str(run_info.accumulative_performance_per_label_in_last_generation[metric][subdivision][key])
+                    msg += "\n- Team ids: "+str(run_info.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][key])
+        return msg
+
+    def metrics(self):
+        msg = ""
+        msg += "\n### Environment Info:"
+        msg += "\ntotal inputs: "+str(self.total_inputs_)
+        msg += "\ninputs: "+str([str(index)+": "+value for index, value in enumerate(PokerConfig.CONFIG['inputs'])])
+        msg += "\ntotal actions: "+str(self.total_actions_)
+        msg += "\nactions mapping: "+str(PokerConfig.CONFIG['action_mapping'])
+        msg += "\npositions: "+str(PokerConfig.CONFIG['positions'])
+        msg += "\ntraining opponents: "+str(self.opponent_names_for_training_)
+        msg += "\nvalidation opponents: "+str(self.opponent_names_for_validation_)
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            msg += "\nhall of fame size: "+str(Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
         return msg

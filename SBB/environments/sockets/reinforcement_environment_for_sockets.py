@@ -160,10 +160,3 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         except Exception as e:
             print "\n<< It was not possible to connect to the client. >>\n"
             raise e
-
-    def metrics(self):
-        msg = ""
-        msg += "\n### Environment Info:"
-        msg += "\ntotal inputs: "+str(self.total_inputs_)
-        msg += "\ntotal actions: "+str(self.total_actions_)
-        return msg

@@ -440,6 +440,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
     def metrics_for_team(self, team):
         msg = ""
         if team.extra_metrics_:
+            msg += "\n\n### Reinforcement Learning-specific metrics for the best team:"
             if 'champion_score' in team.extra_metrics_:
                 msg += ("\n\nscore per opponent (except hall of fame) (champion): "
                     ""+str(team.extra_metrics_['champion_score']))
@@ -459,4 +460,60 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 for key in team.extra_metrics_['training_opponents']:
                     if key in total_opponents:
                         msg += "\n"+key+": "+str(team.extra_metrics_['training_opponents'][key])
+        return msg
+
+    def initialize_attributes_for_run_info(self, run_info):
+        pass
+
+    def generate_output_for_attributes_for_run_info(self, run_info):
+        msg = ""
+        msg += "\n\n\n\n#################### Reinforcement Learning-specific Metrics:"
+
+        msg += "\n\n\n##### GLOBAL METRICS PER VALIDATION"
+
+        msg += "\n\nGlobal Max. Validation Score per Validation: "+str(run_info.global_max_validation_score_per_validation)
+        
+        msg += "\n\nGlobal Opponent Results per Validation"
+        for key in run_info.global_opponent_results_per_validation[-1]:
+            msg += "\n - "+str(key)+": "+str([item[key] if key in item else 0.0 for item in run_info.global_opponent_results_per_validation])
+        
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            msg += "\n\nHall of Fame per Validation: "+str(run_info.hall_of_fame_per_validation)
+
+
+        msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
+
+        msg += "\n\nGlobal Fitness Score per Training (per opponent):"
+        msg += "\n - predefined:"
+        for opponent in self.opponent_names_for_training_:
+            msg += "\n    - "+str(opponent)+": "+str(run_info.global_fitness_per_opponent_per_generation[opponent])
+
+        if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
+            msg += "\n - hall of fame:"
+            hall_of_fame = [x for x in run_info.global_fitness_per_opponent_per_generation if x not in self.opponent_names_for_training_]
+            for key in hall_of_fame:
+                msg += "\n    - "+str(key)+": "+str(run_info.global_fitness_per_opponent_per_generation[key])
+
+
+        msg += "\n\n\n##### FINAL TEAMS METRICS"
+
+        msg += "\n\nFinal Teams Validations: "+str(run_info.final_teams_validations)
+        msg += "\nFinal Teams Ids: "+str(run_info.final_teams_validations_ids)
+        
+        
+        msg += "\n\n\n##### ACCUMULATIVE PERFORMANCES"
+
+        for metric in run_info.individual_performance_in_last_generation:
+            msg += "\n\nOverall Accumulative Results ("+str(metric)+"):"
+            msg += "\n- Individual Team Performance: "+str(run_info.individual_performance_in_last_generation[metric])
+            msg += "\n- Accumulative Team Performance: "+str(run_info.accumulative_performance_in_last_generation[metric])
+            msg += "\n- Team ids: "+str(run_info.ids_for_acc_performance_in_last_generation[metric])
+
+        return msg
+
+    def metrics(self):
+        msg = ""
+        msg += "\n### Environment Info:"
+        msg += "\ntotal inputs: "+str(self.total_inputs_)
+        msg += "\ntotal actions: "+str(self.total_actions_)
         return msg

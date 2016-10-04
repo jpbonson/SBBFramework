@@ -252,6 +252,7 @@ class ClassificationEnvironment(DefaultEnvironment):
     def metrics_for_team(self, team):
         msg = ""
         if team.extra_metrics_:
+            msg += "\n\n### Classification-specific metrics for the best team:"
             msg += "\nrecall per action: "+str(team.extra_metrics_['recall_per_action'])
             msg += "\n\naccuracy: "+str(round_value(team.extra_metrics_['accuracy']))
             msg += "\n\nconfusion matrix:\n"+str(team.extra_metrics_['confusion_matrix'])
@@ -259,6 +260,15 @@ class ClassificationEnvironment(DefaultEnvironment):
                 msg += "\n\ndiversities:"
                 for key, value in team.diversity_.iteritems():
                     msg += "\n - "+str(key)+": "+str(value)
+        return msg
+
+    def initialize_attributes_for_run_info(self, run_info):
+        run_info.recall_per_validation_ = []
+
+    def generate_output_for_attributes_for_run_info(self, run_info):
+        msg = ""
+        msg += "\n\n\n\n#################### Classification-specific Metrics:"
+        msg += "\n\nBest Team Recall per Action per Validation: "+str(run_info.recall_per_validation_)
         return msg
 
     def metrics(self):

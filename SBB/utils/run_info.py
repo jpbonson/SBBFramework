@@ -7,9 +7,11 @@ class RunInfo:
     Stores metrics for the runs.
     """
 
-    def __init__(self, run_id, seed):
+    def __init__(self, run_id, environment, seed):
         self.run_id = run_id
+        self.environment = environment
         self.seed = seed
+
         self.elapsed_time = None
         self.best_team = None
         self.teams_in_last_generation = []
@@ -23,7 +25,6 @@ class RunInfo:
         self.ids_for_acc_performance_per_label_in_last_generation = defaultdict(dict)
         self.train_score_per_validation = []
         self.test_score_per_validation = []
-        self.recall_per_validation = [] # only for classification task
         self.actions_distribution_per_validation = []
         self.inputs_distribution_per_instruction_per_validation = []
         self.inputs_distribution_per_team_per_validation = []
@@ -50,150 +51,74 @@ class RunInfo:
         self.final_teams_validations_ids = []
         self.accumulative_performance_summary = {}
         self.second_layer_files = {}
+        self.environment.initialize_attributes_for_run_info(self)
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"
         msg += "seed: "+str(self.seed)
 
-        msg += "\n\n\n#################### MAIN METRICS"
-        msg += "\n"
-        msg += "\nGlobal Mean Validation Score per Validation: "+str(self.global_mean_validation_score_per_validation)
-        if Config.USER['task'] == 'reinforcement':
-            msg += "\nGlobal Max. Validation Score per Validation: "+str(self.global_max_validation_score_per_validation)
-        msg += "\n"
-        msg += "\nBest Team Validation Score per Validation (champion): "+str(round_array(self.test_score_per_validation))
-        msg += "\n"
-        if len(Config.RESTRICTIONS['used_diversities']) > 0:
-            msg += "\nGlobal Diversities per Validation"
-            for key in self.global_diversity_per_validation:
-                msg += "\n"+str(key)+": "+str(self.global_diversity_per_validation[key])
-        msg += "\n"
-        msg += "\nGlobal Mean Fitness Score per Training: "+str(self.global_mean_fitness_per_generation)
-        msg += "\nGlobal Max. Fitness Score per Training: "+str(self.global_max_fitness_per_generation)
-        msg += "\n"
+        msg += "\n\n\n\n#################### General Metrics:"
 
-        msg += "\nDistribution of Actions per Validation (last gen.): "+str(self.actions_distribution_per_validation[-1])
-        msg += "\nDistribution of Inputs per Validation (per program) (last gen.): "+str(self.inputs_distribution_per_instruction_per_validation[-1])
-        msg += "\nDistribution of Inputs per Validation (per team) (last gen.): "+str(self.inputs_distribution_per_team_per_validation[-1])
-        msg += "\nMean Team Sizes (last gen.): "+str(self.mean_team_size_per_validation[-1])
-        msg += "\nMean Program Sizes (with introns) (last gen.): "+str(self.mean_program_size_with_introns_per_validation[-1])
-        msg += "\nMean Program Sizes (without introns) (last gen.): "+str(self.mean_program_size_without_introns_per_validation[-1])
-        msg += "\n"
-
-        if Config.USER['task'] == 'reinforcement':
-            msg += "\nFinal Teams Validations: "+str(self.final_teams_validations)
-            msg += "\n"
-            metric = "score"
-            msg += "\nOverall Accumulative Results ("+str(metric)+"):"
-            msg += "\n- Individual Team Performance: "+str(self.individual_performance_in_last_generation[metric])
-            msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation[metric])
-            msg += "\n- Team ids: "+str(self.ids_for_acc_performance_in_last_generation[metric])
-
-
-        msg += "\n\n\n#################### ALL METRICS"
         msg += "\n\n\n##### GLOBAL METRICS PER VALIDATION"
+
         msg += "\n\nGlobal Mean Validation Score per Validation: "+str(self.global_mean_validation_score_per_validation)
-        if Config.USER['task'] == 'reinforcement':
-            msg += "\n\nGlobal Max. Validation Score per Validation: "+str(self.global_max_validation_score_per_validation)
-        if Config.USER['task'] == 'reinforcement':
-            msg += "\n\nGlobal Opponent Results per Validation"
-            for key in self.global_opponent_results_per_validation[-1]:
-                msg += "\n"+str(key)+": "+str([item[key] if key in item else 0.0 for item in self.global_opponent_results_per_validation])
+        
+        msg += "\n\nBest Team Fitness per Validation: "+str(round_array(self.train_score_per_validation))
+        msg += "\nBest Team Validation Score per Validation (champion): "+str(round_array(self.test_score_per_validation))
+
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
             msg += "\n\nGlobal Diversities per Validation"
             for key in self.global_diversity_per_validation:
-                msg += "\n"+str(key)+": "+str(self.global_diversity_per_validation[key])
+                msg += "\n - "+str(key)+": "+str(self.global_diversity_per_validation[key])
 
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            msg += "\n\nGlobal Team Results per Validation" # Global Results per Validation
-            for attribute in self.global_result_per_validation:
-                msg += "\n"+str(attribute)+":"
-                for key in self.global_result_per_validation[attribute]:
-                    msg += "\n- "+str(key)+": "+str(self.global_result_per_validation[attribute][key])
-
-        msg += "\n\n\n##### BEST TEAM METRICS PER VALIDATION"
-        msg += "\n\nBest Team Fitness per Validation: "+str(round_array(self.train_score_per_validation))
-        msg += "\n\nBest Team Validation Score per Validation (champion): "+str(round_array(self.test_score_per_validation))
-        if Config.USER['task'] == 'classification':
-            msg += "\n\nBest Team Recall per Action per Validation: "+str(self.recall_per_validation)
-
-        msg += "\n\n\n##### FINAL TEAM METRICS"
-        if Config.USER['task'] == 'reinforcement':
-            msg += "\n\nFinal Teams Validations: "+str(self.final_teams_validations)
-            msg += "\nFinal Teams Ids: "+str(self.final_teams_validations_ids)
-            if Config.USER['reinforcement_parameters']['environment'] == 'poker':
-                for subdivision in self.final_teams_validations_per_subcategory:
-                    msg += "\n---"
-                    msg += "\n"+str(subdivision)+":"
-                    for key in self.final_teams_validations_per_subcategory[subdivision]:
-                        msg += "\n"+str(key)+": "+str(self.final_teams_validations_per_subcategory[subdivision][key])
-
-        msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
-        msg += "\n\nDistribution of Actions per Validation: "+str(self.actions_distribution_per_validation)
-        msg += "\n\nDistribution of Inputs per Validation (per program): "+str(self.inputs_distribution_per_instruction_per_validation)
-        msg += "\n\nDistribution of Inputs per Validation (per team): "+str(self.inputs_distribution_per_team_per_validation)
-        
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['environment'] == 'poker':
-            msg += "\n\nPoints Distribution for the Validation Population: "+str(self.validation_population_distribution_per_validation) # Validation Population Distribution per Validation
-            msg += "\n\nPoints Distribution for the Champion Population: "+str(self.champion_population_distribution_per_validation) # Champion Population Distribution per Validation
-            msg += "\n\nPoints Distribution for the Training Population per Validation" # Training Population Distribution per Validation
-            for attribute in self.point_population_distribution_per_validation:
-                msg += "\n"+str(attribute)+":"
-                for key in self.point_population_distribution_per_validation[attribute]:
-                    msg += "\n- "+str(key)+": "+str(self.point_population_distribution_per_validation[attribute][key])
-        if Config.USER['task'] == 'reinforcement' and Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
-            msg += "\n\nHall of Fame per Validation: "+str(self.hall_of_fame_per_validation)
-
-        msg += "\n\n\n##### METRICS FOR SIZES PER VALIDATION"
-        msg += "\n\nMean Team Sizes: "+str(self.mean_team_size_per_validation)
-        msg += "\n\nMean Program Sizes (with introns): "+str(self.mean_program_size_with_introns_per_validation)
-        msg += "\n\nMean Program Sizes (without introns): "+str(self.mean_program_size_without_introns_per_validation)
 
         msg += "\n\n\n##### GLOBAL METRICS PER TRAINING"
+
         msg += "\n\nGlobal Mean Fitness Score per Training: "+str(self.global_mean_fitness_per_generation)
-        msg += "\n\nGlobal Max. Fitness Score per Training: "+str(self.global_max_fitness_per_generation)
-        
+        msg += "\nGlobal Max. Fitness Score per Training: "+str(self.global_max_fitness_per_generation)
         if len(Config.RESTRICTIONS['used_diversities']) > 1:
-            msg += "\n\nGlobal Fitness Score per Training (per diversity):"
+            msg += "\n\n\nGlobal Fitness Score per Training (per diversity):"
             for key in self.global_fitness_per_diversity_per_generation:
-                msg += "\n"+str(key)+": "+str(self.global_fitness_per_diversity_per_generation[key])
-        
-        if Config.USER['task'] == 'reinforcement':
-            msg += "\n\nGlobal Fitness Score per Training (per opponent):"
-            for key in self.global_fitness_per_opponent_per_generation:
-                msg += "\n"+str(key)+": "+str(self.global_fitness_per_opponent_per_generation[key])
+                msg += "\n - "+str(key)+": "+str(self.global_fitness_per_diversity_per_generation[key])
 
         if len(Config.RESTRICTIONS['used_diversities']) > 0:
             msg += "\n\nGlobal Diversities per Training"
             for key in self.global_diversity_per_generation:
-                msg += "\n"+str(key)+": "+str(self.global_diversity_per_generation[key])
+                msg += "\n - "+str(key)+": "+str(self.global_diversity_per_generation[key])
             if len(Config.RESTRICTIONS['used_diversities']) > 1:
                 msg += "\n\nDiversity Type per Training: "+str(self.novelty_type_per_generation)
+
+
+        msg += "\n\n\n##### DISTRIBUTION METRICS PER VALIDATION"
+
+        msg += "\n\nDistribution of Actions"
+        msg += "\n - last validation: "+str(self.actions_distribution_per_validation[-1])
+        msg += "\n - per validation: "+str(self.actions_distribution_per_validation)
+
+        msg += "\n\nDistribution of Inputs (per program)"
+        msg += "\n - last validation: "+str(self.inputs_distribution_per_instruction_per_validation[-1])
+        msg += "\n - per validation: "+str(self.inputs_distribution_per_instruction_per_validation)
+
+        msg += "\n\nDistribution of Inputs (per team)"
+        msg += "\n - last validation: "+str(self.inputs_distribution_per_team_per_validation[-1])
+        msg += "\n - per validation: "+str(self.inputs_distribution_per_team_per_validation)
         
-        if Config.USER['task'] == 'reinforcement':
-            msg += "\n\n\n##### ACCUMULATIVE PERFORMANCE"
-            for metric in self.individual_performance_in_last_generation:
-                msg += "\n\n====="
-                msg += "\nOverall Accumulative Results ("+str(metric)+"):"
-                msg += "\n- Individual Team Performance: "+str(self.individual_performance_in_last_generation[metric])
-                msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_in_last_generation[metric])
-                msg += "\n- Team ids: "+str(self.ids_for_acc_performance_in_last_generation[metric])
-        
-                if Config.USER['reinforcement_parameters']['environment'] == 'poker':
-                    for subdivision in self.individual_performance_per_label_in_last_generation[metric]:
-                        msg += "\n---"
-                        msg += "\nAccumulative Results ("+str(subdivision)+"):"
-                        for key in self.individual_performance_per_label_in_last_generation[metric][subdivision]:
-                            msg += "\n"+str(key)+":"
-                            msg += "\n- Individual Team Performance: "+str(self.individual_performance_per_label_in_last_generation[metric][subdivision][key])
-                            msg += "\n- Accumulative Team Performance: "+str(self.accumulative_performance_per_label_in_last_generation[metric][subdivision][key])
-                            msg += "\n- Team ids: "+str(self.ids_for_acc_performance_per_label_in_last_generation[metric][subdivision][key])
-        
-            if Config.USER['reinforcement_parameters']['environment'] == 'poker':
-                msg += "\n\n\n##### TEAMS RANKED BY ACCUMULATIVE PERFORMANCE"
-                for metric in self.accumulative_performance_summary:
-                    msg += "\noverall ("+str(metric)+", len: "+str(len(self.accumulative_performance_summary[metric]['overall']['ids_only']))+"):"
-                    msg += "\n- Rank: "+str(self.accumulative_performance_summary[metric]['overall']['rank'])
-                    msg += "\n- Team ids: "+str(self.accumulative_performance_summary[metric]['overall']['ids_only'])
+
+        msg += "\n\n\n##### SIZE METRICS PER VALIDATION"
+
+        msg += "\n\nMean Team Sizes"
+        msg += "\n - last validation: "+str(self.mean_team_size_per_validation[-1])
+        msg += "\n - per validation: "+str(self.mean_team_size_per_validation)
+
+        msg += "\n\nMean Program Sizes (with introns)"
+        msg += "\n - last validation: "+str(self.mean_program_size_with_introns_per_validation[-1])
+        msg += "\n - per validation: "+str(self.mean_program_size_with_introns_per_validation)
+
+        msg += "\n\nMean Program Sizes (without introns)"
+        msg += "\n - last validation: "+str(self.mean_program_size_without_introns_per_validation[-1])
+        msg += "\n - per validation: "+str(self.mean_program_size_without_introns_per_validation)
+
+
+        msg += self.environment.generate_output_for_attributes_for_run_info(self)
 
         return msg
