@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jpbonson/SBBFramework.svg?branch=master)](https://travis-ci.org/jpbonson/SBBFramework)
+[![Build Status](https://travis-ci.org/jpbonson/SBBFramework.svg?branch=master)](https://travis-ci.org/jpbonson/SBBFramework) [![Coverage Status](https://coveralls.io/repos/github/jpbonson/SBBFramework/badge.svg?branch=master)](https://coveralls.io/github/jpbonson/SBBFramework?branch=master)
 
 # SBBFramework
 Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming (GP). Algorithm developed by the NIMS laboratory, Dalhousie University, Canada. This implementation can be used as an extendable code to apply GP to reinforcement learning tasks.
