@@ -108,6 +108,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_for_two_runs(self):
         Config.USER['training_parameters']['runs_total'] = 2
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -115,6 +116,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents(self):
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -123,6 +125,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_with_weighted_selection(self):
         Config.USER['advanced_training_parameters']['use_weighted_probability_selection'] = True
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -131,6 +134,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_with_use_agressive_mutations(self):
         Config.USER['advanced_training_parameters']['use_agressive_mutations'] = True
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -139,6 +143,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_with_second_layer(self):
         Config.USER['advanced_training_parameters']['second_layer']['enabled'] = True
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -147,6 +152,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_sbb_opponents_showing_diversity(self):
         Config.USER['advanced_training_parameters']['diversity']['only_show'] = ['genotype', 'fitness_sharing']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -155,6 +161,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_with_genotype_diversity_maintenance(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['genotype']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -163,6 +170,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_with_sharing_diversity_maintenance(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['fitness_sharing']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -171,6 +179,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_with_entropy_diversity_maintenance(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['entropy']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -179,6 +188,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_with_ncd_diversity_maintenance(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['ncd']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -187,6 +197,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_with_ncd_custom_diversity_maintenance(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['ncd_custom']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -195,6 +206,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_ttt_without_pareto_and_with_two_diversity_maintenance(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['genotype', 'fitness_sharing']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -204,6 +216,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
     def test_reinforcement_for_ttt_with_complex_instructions(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['ncd']
         Config.USER['advanced_training_parameters']['use_operations'] = ['+', '-', '*', '/', 'ln', 'exp', 'cos', 'if_lesser_than_for_signal', 'if_equal_or_higher_than_for_signal', 'if_lesser_than', 'if_equal_or_higher_than']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -213,6 +226,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame(self):
         Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
         Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] = 2
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -222,6 +236,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
     def test_reinforcement_for_ttt_without_pareto_and_without_diversity_maintenance_for_only_coded_opponents_with_hall_of_fame_not_used_as_opponents(self):
         Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
         Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] = 2
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -232,6 +247,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
         Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] = 2
         Config.USER['reinforcement_parameters']['hall_of_fame']['diversity'] = 'ncd'
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

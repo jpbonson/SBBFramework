@@ -92,6 +92,7 @@ class ClassificationTests(unittest.TestCase):
 
     def test_classification_for_iris_for_three_runs(self):
         Config.USER['training_parameters']['runs_total'] = 3
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -100,6 +101,7 @@ class ClassificationTests(unittest.TestCase):
 
     def test_classification_for_iris_with_diversity_maintenance(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['genotype', 'fitness_sharing']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -108,6 +110,7 @@ class ClassificationTests(unittest.TestCase):
 
     def test_classification_for_thyroid(self):
         Config.USER['classification_parameters']['dataset'] = 'thyroid'
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

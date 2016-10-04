@@ -101,6 +101,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         Config.USER = config
 
     def test_reinforcement_for_poker(self):
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -109,6 +110,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_poker_with_novelty(self):
         Config.USER['advanced_training_parameters']['novelty']['enabled'] = True
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -117,6 +119,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_poker_with_ncd_custom_diversity(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['ncd_custom']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -125,6 +128,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_poker_with_hamming_diversity(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['hamming']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
@@ -133,6 +137,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_poker_with_euclidean_diversity(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['euclidean']
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)

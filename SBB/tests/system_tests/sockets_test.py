@@ -106,6 +106,7 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         subprocess.Popen(['python', path+'tictactoe_game.py', 'test'])
 
     def test_reinforcement_with_sockets_for_ttt(self):
+        Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
