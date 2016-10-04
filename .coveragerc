@@ -1,0 +1,7 @@
+[report]
+omit =
+    docs/*
+    SBB/configs/*
+    SBB/datasets/*
+    SBB/tests/*
+    */__init__.py
