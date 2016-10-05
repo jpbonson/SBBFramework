@@ -1,5 +1,6 @@
+import time
 from collections import defaultdict
-from helpers import round_array
+from helpers import round_array, round_value
 from ..config import Config
 
 class RunInfo:
@@ -18,6 +19,7 @@ class RunInfo:
         self.hall_of_fame_in_last_generation_ = []
         self.pareto_front_in_last_generation_ = []
         self.second_layer_files_ = {}
+        self.start_time_ = time.time()
         
         self.global_mean_validation_score_per_validation_ = []
         self.train_score_per_validation_ = []
@@ -36,6 +38,9 @@ class RunInfo:
         self.mean_program_size_without_introns_per_validation_ = []
         
         self.environment.initialize_attributes_for_run_info(self)
+
+    def end(self):
+        self.elapsed_time_ = round_value((time.time() - self.start_time_)/60.0)
         
     def __str__(self):
         msg = "RUN "+str(self.run_id)+"\n"

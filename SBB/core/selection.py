@@ -17,10 +17,9 @@ class Selection:
         self.environment = environment
         self.previous_diversity_ = None
 
-    def run(self, current_generation, teams_population, programs_population, validation = False):
+    def run(self, current_generation, teams_population, programs_population):
         teams_population = self._evaluate_teams(teams_population)
-        keep_teams, remove_teams, pareto_front = self._select_teams_to_keep_and_remove(teams_population, 
-            validation)
+        keep_teams, remove_teams, pareto_front = self._select_teams_to_keep_and_remove(teams_population)
         teams_to_clone = self._select_teams_to_clone(keep_teams)
         teams_population = self._remove_teams(teams_population, remove_teams)
         teams_population = self._prune_teams(teams_population)
@@ -40,7 +39,7 @@ class Selection:
         self.environment.evaluate_point_population(teams_population)
         return teams_population
 
-    def _select_teams_to_keep_and_remove(self, teams_population, is_validation):
+    def _select_teams_to_keep_and_remove(self, teams_population):
         teams_to_remove = int(Config.USER['training_parameters']['replacement_rate']['teams']
             *float(len(teams_population)))
         teams_to_keep = len(teams_population) - teams_to_remove
