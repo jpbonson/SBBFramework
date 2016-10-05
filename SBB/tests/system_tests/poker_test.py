@@ -145,5 +145,12 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         expected = 1
         self.assertEqual(expected, result)
 
+    def test_file_content_for_poker_point(self):
+        Config.check_parameters()
+        sbb = SBB()
+        sbb.run()
+        content = str(sbb.environment_.point_population_[-1])
+        self.assertTrue(content)
+
 if __name__ == '__main__':
     unittest.main()

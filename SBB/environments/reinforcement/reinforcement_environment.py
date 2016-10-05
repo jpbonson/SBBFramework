@@ -3,34 +3,22 @@ import random
 import copy
 import numpy
 from collections import defaultdict
-from default_environment import DefaultEnvironment, DefaultPoint, reset_points_ids
-from ..core.team import Team
-from ..core.diversity_maintenance import DiversityMaintenance
-from ..core.pareto_dominance_for_teams import ParetoDominanceForTeams
-from ..utils.helpers import round_value, round_array, flatten, accumulative_performances, rank_teams_by_accumulative_score
-from ..config import Config
-
-class ReinforcementPoint(DefaultPoint):
-    """
-    
-    """
-    __metaclass__  = abc.ABCMeta
-
-    def __init__(self):
-        super(ReinforcementPoint, self).__init__()
-        self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
-        self.label_ = 0
+from ..default_environment import DefaultEnvironment
+from ..default_point import  reset_points_ids
+from ...core.team import Team
+from ...core.diversity_maintenance import DiversityMaintenance
+from ...core.pareto_dominance_for_teams import ParetoDominanceForTeams
+from ...utils.helpers import round_value, round_array, flatten, accumulative_performances, rank_teams_by_accumulative_score
+from ...config import Config
 
 class ReinforcementEnvironment(DefaultEnvironment):
-    """
-    
-    """
+
     __metaclass__  = abc.ABCMeta
 
     @abc.abstractmethod
     def _play_match(self, team, opponent, point, mode, match_id):
         """
-        
+        To be implemented via inheritance.
         """
 
     def __init__(self, total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class):

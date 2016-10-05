@@ -5,19 +5,14 @@ import select
 import socket
 import json
 from collections import defaultdict
+from reinforcement_with_sockets_point import ReinforcementWithSocketsPoint
 from ..opponent_factory import opponent_factory
-from ..reinforcement_environment import ReinforcementEnvironment, ReinforcementPoint
-from ...core.diversity_maintenance import DiversityMaintenance
-from ...utils.helpers import flatten
-from ...config import Config
+from ..reinforcement_environment import ReinforcementEnvironment
+from ....core.diversity_maintenance import DiversityMaintenance
+from ....utils.helpers import flatten
+from ....config import Config
 
-class ReinforcementForSocketsPoint(ReinforcementPoint):
-    
-    def __init__(self, label):
-        super(ReinforcementForSocketsPoint, self).__init__()
-        self.label_ = label
-
-class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
+class ReinforcementEnvironmentWithSockets(ReinforcementEnvironment):
 
     def __init__(self):
         total_actions = Config.USER['reinforcement_parameters']['environment_parameters']['actions_total']
@@ -25,8 +20,8 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
         total_labels = Config.USER['reinforcement_parameters']['environment_parameters']['point_labels_total']
         t_opponents = self._initialize_labels_for_opponents('training_opponents_labels')
         v_opponents = self._initialize_labels_for_opponents('validation_opponents_labels')
-        point_class = ReinforcementForSocketsPoint
-        super(ReinforcementEnvironmentForSockets, self).__init__(total_actions, total_inputs, total_labels, 
+        point_class = ReinforcementWithSocketsPoint
+        super(ReinforcementEnvironmentWithSockets, self).__init__(total_actions, total_inputs, total_labels, 
             t_opponents, v_opponents, point_class)
 
         self._start_server()
@@ -70,7 +65,7 @@ class ReinforcementEnvironmentForSockets(ReinforcementEnvironment):
     def _sample_point_per_label(self, population_size_per_label):
         data = []
         for label in range(self.total_labels_):
-            data.append([ReinforcementForSocketsPoint(label) for _ in range(population_size_per_label)])
+            data.append([ReinforcementWithSocketsPoint(label) for _ in range(population_size_per_label)])
         return data
 
     def _play_match(self, team, opponent, point, mode, match_id):      

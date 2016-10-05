@@ -11,10 +11,10 @@ import json
 from core.program import Program, reset_programs_ids
 from core.team import Team, reset_teams_ids
 from core.instruction import Instruction
-from environments.classification_environment import ClassificationEnvironment
-from environments.tictactoe.tictactoe_environment import TictactoeEnvironment
-from environments.poker.poker_environment import PokerEnvironment
-from environments.sockets.reinforcement_environment_for_sockets import ReinforcementEnvironmentForSockets
+from environments.classification.classification_environment import ClassificationEnvironment
+from environments.reinforcement.tictactoe.tictactoe_environment import TictactoeEnvironment
+from environments.reinforcement.poker.poker_environment import PokerEnvironment
+from environments.reinforcement.sockets.reinforcement_with_sockets_environment import ReinforcementEnvironmentWithSockets
 from core.selection import Selection
 from utils.run_info import RunInfo
 from utils.team_reader import initialize_actions_for_second_layer
@@ -133,7 +133,7 @@ class SBB:
             if Config.USER['reinforcement_parameters']['environment'] == 'poker':
                 environment = PokerEnvironment()
             if Config.USER['reinforcement_parameters']['environment'] == 'sockets':
-                environment = ReinforcementEnvironmentForSockets()
+                environment = ReinforcementEnvironmentWithSockets()
         if environment is None:
             raise ValueError("No environment exists for "+str(Config.USER['task']))
         return environment

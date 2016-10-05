@@ -254,5 +254,21 @@ class TictactoeTests(unittest.TestCase):
         expected = 1
         self.assertEqual(expected, result)
 
+    def test_file_content_for_ttt_run_info(self):
+        Config.check_parameters()
+        sbb = SBB()
+        sbb.run()
+        content = str(sbb.run_infos_[-1])
+        self.assertTrue(content)
+
+    def test_file_content_for_ttt_team(self):
+        Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
+        Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] = 2
+        Config.check_parameters()
+        sbb = SBB()
+        sbb.run()
+        content = str(sbb.environment_.hall_of_fame()[-1])
+        self.assertTrue(content)
+
 if __name__ == '__main__':
     unittest.main()
