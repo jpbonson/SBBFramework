@@ -151,14 +151,18 @@ class PokerMetrics(ReinforcementMetrics):
         return msg
 
     def store_per_validation_metrics(self, run_info, best_team, teams_population, programs_population, current_generation):
-        super(PokerMetrics, self).store_per_validation_metrics(run_info, best_team, teams_population, programs_population, current_generation)
+        super(PokerMetrics, self).store_per_validation_metrics(run_info, best_team, 
+            teams_population, programs_population, current_generation)
         self._calculate_point_population_metrics_per_validation(run_info)
         self._calculate_validation_population_metrics_per_validation(run_info)
 
     def _calculate_point_population_metrics_per_validation(self, run_info):
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
+        self._calculate_point_population_metric_per_validation(run_info, 
+            lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
+        self._calculate_point_population_metric_per_validation(run_info, 
+            lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        self._calculate_point_population_metric_per_validation(run_info, 
+            lambda x: x.sbb_sd_label_, 'sd_label', range(3))
 
     def _calculate_point_population_metric_per_validation(self, run_info, get_attribute, key, labels):
         for label in labels:
@@ -168,9 +172,12 @@ class PokerMetrics(ReinforcementMetrics):
             run_info.point_population_distribution_per_validation_[key][label].append(total)
 
     def _calculate_validation_population_metrics_per_validation(self, run_info):
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
+        self._calculate_validation_population_metric_per_validation(run_info, 
+            lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
+        self._calculate_validation_population_metric_per_validation(run_info, 
+            lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        self._calculate_validation_population_metric_per_validation(run_info, 
+            lambda x: x.sbb_sd_label_, 'sd_label', range(3))
 
     def _calculate_validation_population_metric_per_validation(self, run_info, get_attribute, key, labels):
         point_per_distribution = {}
@@ -218,7 +225,8 @@ class PokerMetrics(ReinforcementMetrics):
         print "Champion Population Distribution per Validation: "+str(run_info.champion_population_distribution_per_validation_)
 
     def store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front, current_generation):
-        super(PokerMetrics, self).store_per_run_metrics(run_info, best_team, teams_population, pareto_front, current_generation)
+        super(PokerMetrics, self).store_per_run_metrics(run_info, best_team, teams_population, 
+            pareto_front, current_generation)
         self._get_validation_scores_per_subcategory(run_info, teams_population, current_generation)
 
     def _get_validation_scores_per_subcategory(self, run_info, teams_population, current_generation):

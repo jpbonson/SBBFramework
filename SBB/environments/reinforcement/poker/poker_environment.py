@@ -11,7 +11,9 @@ from poker_config import PokerConfig
 from match_state import MatchState
 from poker_match import PokerMatch
 from poker_metrics import PokerMetrics
-from poker_opponents import PokerRandomOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, PokerTightPassiveOpponent
+from poker_opponents import (PokerRandomOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
+    PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, 
+    PokerTightPassiveOpponent, PokerBayesianOpponent)
 from ..reinforcement_environment import ReinforcementEnvironment
 from ....utils.helpers import flatten, accumulative_performances
 from ....config import Config
@@ -33,7 +35,7 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         available_opponents = [PokerRandomOpponent, PokerAlwaysCallOpponent, PokerAlwaysRaiseOpponent, 
             PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, 
-            PokerTightPassiveOpponent]
+            PokerTightPassiveOpponent, PokerBayesianOpponent]
         t_opponents = []
         for opponent in available_opponents:
             if opponent.OPPONENT_ID in Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels']:
@@ -44,7 +46,8 @@ class PokerEnvironment(ReinforcementEnvironment):
                 v_opponents.append(opponent)
 
         point_class = PokerPoint
-        super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, t_opponents, v_opponents, point_class)
+        super(PokerEnvironment, self).__init__(total_actions, total_inputs, total_labels, t_opponents, 
+            v_opponents, point_class)
         PokerConfig.CONFIG['labels_per_subdivision']['opponent'] = self.opponent_names_for_validation_
         self.num_lines_per_file_ = []
         self.backup_points_per_label = None
@@ -215,7 +218,8 @@ class PokerEnvironment(ReinforcementEnvironment):
         keys = ['validation', 'champion']
         subkeys = ['position', 'sbb_label', 'sbb_sd']
         metrics_with_counts = ['total_hands', 'hand_played', 'won_hands']
-        metrics_with_dicts = ['total_hands_per_point_type', 'hand_played_per_point_type', 'won_hands_per_point_type']
+        metrics_with_dicts = ['total_hands_per_point_type', 'hand_played_per_point_type', 
+            'won_hands_per_point_type']
         for team in teams_population:
             if team.generation != current_generation:
                 for metric in (metrics_with_counts + metrics_with_dicts):
@@ -264,11 +268,14 @@ class PokerEnvironment(ReinforcementEnvironment):
                 for label in PokerConfig.CONFIG['labels_per_subdivision'][subdivision]:
                     point_ids = [point.point_id_ for point in self.validation_population() if PokerConfig.CONFIG['attributes_per_subdivision'][subdivision](point) == label]
                     if metric == 'score':
-                        sorting_criteria_per_label = lambda x: numpy.mean([x.results_per_points_for_validation_[point_id] for point_id in point_ids])
+                        sorting_criteria_per_label = lambda x: numpy.mean(
+                            [x.results_per_points_for_validation_[point_id] for point_id in point_ids])
                     if metric == 'hands_played':
-                        sorting_criteria_per_label = lambda x: numpy.mean([x.extra_metrics_['hands_played_or_not_per_point'][point_id] for point_id in point_ids])
+                        sorting_criteria_per_label = lambda x: numpy.mean(
+                            [x.extra_metrics_['hands_played_or_not_per_point'][point_id] for point_id in point_ids])
                     if metric == 'hands_won':
-                        sorting_criteria_per_label = lambda x: numpy.mean([x.extra_metrics_['hands_won_or_lost_per_point'][point_id] for point_id in point_ids])
+                        sorting_criteria_per_label = lambda x: numpy.mean(
+                            [x.extra_metrics_['hands_won_or_lost_per_point'][point_id] for point_id in point_ids])
                     individual_performance, accumulative_performance, teams_ids = accumulative_performances(older_teams, point_ids, sorting_criteria_per_label, get_results_per_points)
                     run_info.individual_performance_per_label_in_last_generation_[metric][subdivision][label] = individual_performance
                     run_info.accumulative_performance_per_label_in_last_generation_[metric][subdivision][label] = accumulative_performance

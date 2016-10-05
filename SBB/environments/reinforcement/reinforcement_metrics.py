@@ -193,7 +193,7 @@ class ReinforcementMetrics(DefaultMetrics):
     def generate_overall_metrics_output(self, run_infos):  
         msg, best_scores_per_runs = super(ReinforcementMetrics, self).generate_overall_metrics_output(run_infos)
 
-        msg += "\n\n\n\n###### Reinforcement Learning-specific Metrics:"
+        msg += "\n\n\n###### Reinforcement Learning-specific Metrics:"
         score_means, score_stds = self._process_scores([run.global_max_validation_score_per_validation_ for run in run_infos])
         msg += "\n\nGlobal Max. Validation Score per Validation:"
         msg += "\nmean: "+str(score_means)

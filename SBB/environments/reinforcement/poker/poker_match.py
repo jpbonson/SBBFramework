@@ -120,17 +120,20 @@ class PokerMatch():
         if Config.USER['debug']['enabled']:
             self.debug_file.write("*** HOLE CARDS ***\n")
         self.round_id = 0 # preflop
-        result = self._run_poker_round(starter_player_index = 1, initial_bet = small_blind, default_bet = PokerConfig.CONFIG['small_bet'])
+        result = self._run_poker_round(starter_player_index = 1, initial_bet = small_blind, 
+            default_bet = PokerConfig.CONFIG['small_bet'])
         if result == "next_round":
             if Config.USER['debug']['enabled']:
                 self.debug_file.write("*** FLOP *** "+str(self.point.board_cards_[:3])+"\n")
             self.round_id = 1 # flop
-            result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, default_bet = PokerConfig.CONFIG['small_bet'])
+            result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, 
+                default_bet = PokerConfig.CONFIG['small_bet'])
         if result == "next_round":
             if Config.USER['debug']['enabled']:
                 self.debug_file.write("*** TURN *** "+str(self.point.board_cards_[:4])+"\n")
             self.round_id = 2 # turn
-            result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, default_bet = PokerConfig.CONFIG['big_bet'])
+            result = self._run_poker_round(starter_player_index = 0, initial_bet = 0.0, 
+                default_bet = PokerConfig.CONFIG['big_bet'])
         river_bet = 0.0
         river_default_bet = PokerConfig.CONFIG['big_bet']
         river_starter_player_index = 0
@@ -139,26 +142,33 @@ class PokerMatch():
             if Config.USER['debug']['enabled']:
                 self.debug_file.write("*** RIVER *** "+str(self.point.board_cards_)+"\n")
             self.round_id = 3 # river
-            result = self._run_poker_round(starter_player_index = river_starter_player_index, initial_bet = river_bet, default_bet = river_default_bet)
+            result = self._run_poker_round(starter_player_index = river_starter_player_index, 
+                initial_bet = river_bet, default_bet = river_default_bet)
         
         showdown_happened = False
         if result == "next_round": # showdown
             showdown_happened = True
             if Config.USER['debug']['enabled']:
                 self.debug_file.write("*** SHOW DOWN ***\n")
-                self.debug_file.write(self.players_info[0]['id']+": shows "+str(self.players_info[0]['match_state'].hole_cards)+" (HS: "+str(self.players_info[0]['match_state'].hand_strength[3])+")\n")
-                self.debug_file.write(self.players_info[1]['id']+": shows "+str(self.players_info[1]['match_state'].hole_cards)+" (HS: "+str(self.players_info[1]['match_state'].hand_strength[3])+")\n")
+                self.debug_file.write(self.players_info[0]['id']+": "
+                    "shows "+str(self.players_info[0]['match_state'].hole_cards)+" "
+                    "(HS: "+str(self.players_info[0]['match_state'].hand_strength[3])+")\n")
+                self.debug_file.write(self.players_info[1]['id']+": "
+                    "shows "+str(self.players_info[1]['match_state'].hole_cards)+" "
+                    "(HS: "+str(self.players_info[1]['match_state'].hand_strength[3])+")\n")
             player0_hs = self.players_info[0]['match_state'].hand_strength[3]
             player1_hs = self.players_info[1]['match_state'].hand_strength[3]
             if player0_hs > player1_hs:
                 self.players_info[0]['chips'] += self.pot
                 if Config.USER['debug']['enabled']:
-                    self.debug_file.write(self.players_info[0]['id']+" collected "+str(self.pot)+" from main pot\n")
+                    self.debug_file.write(self.players_info[0]['id']+" collected"
+                        " "+str(self.pot)+" from main pot\n")
                 showdown_winner = 0
             elif player0_hs < player1_hs:
                 self.players_info[1]['chips'] += self.pot
                 if Config.USER['debug']['enabled']:
-                    self.debug_file.write(self.players_info[1]['id']+" collected "+str(self.pot)+" from main pot\n")
+                    self.debug_file.write(self.players_info[1]['id']+" collected"
+                        " "+str(self.pot)+" from main pot\n")
                 showdown_winner = 1
             else:
                 self.players_info[0]['chips'] += self.pot/2.0
@@ -204,9 +214,11 @@ class PokerMatch():
 
         player_actions = self.players_info[sbb_position]['match_state'].actions
         opponent_actions = self.players_info[opponent_position]['match_state'].actions
-        self._get_opponent_model_for_team().update_overall_agressiveness(self.round_id, player_actions, opponent_actions, self.point.label_, showdown_happened)
+        self._get_opponent_model_for_team().update_overall_agressiveness(self.round_id, player_actions, 
+            opponent_actions, self.point.label_, showdown_happened)
         if self.opponent.opponent_id == 'hall_of_fame':
-            self._get_opponent_model_for_hall_of_fame().update_overall_agressiveness(self.round_id, opponent_actions, player_actions, self.point.label_, showdown_happened)
+            self._get_opponent_model_for_hall_of_fame().update_overall_agressiveness(self.round_id, 
+                opponent_actions, player_actions, self.point.label_, showdown_happened)
 
         if self.team.opponent_id == 'bayesian_opponent' or self.team.opponent_id == 'sbb_bayesian_opponent':
             self.team.update_opponent_actions(opponent_actions)
@@ -257,7 +269,8 @@ class PokerMatch():
                 if self.players_info[current_index]['key'] == 'team' and not self.is_training and self.round_id == 0:
                     self.players_info[current_index]['player'].extra_metrics_['played_last_hand'] = False
                 if Config.USER['debug']['enabled']:
-                    self.debug_file.write(self.players_info[current_index]['id']+": folds (pot: "+str(self.pot)+")\n")
+                    self.debug_file.write(self.players_info[current_index]['id']+": "
+                        "folds (pot: "+str(self.pot)+")\n")
                 self.players_info[self.opponent_indeces[current_index]]['chips'] += self.pot
                 self.players_info[current_index]['folded'] = True
                 return "player_folded"
@@ -265,7 +278,8 @@ class PokerMatch():
                 self.players_info[current_index]['chips'] -= bet
                 self.pot += bet
                 if Config.USER['debug']['enabled']:
-                    self.debug_file.write(self.players_info[current_index]['id']+": calls "+str(bet)+" (pot: "+str(self.pot)+")\n")
+                    self.debug_file.write(self.players_info[current_index]['id']+": "
+                        "calls "+str(bet)+" (pot: "+str(self.pot)+")\n")
                 bet = 0.0
                 if last_action_was_a_bet:
                     return "next_round"
@@ -278,7 +292,8 @@ class PokerMatch():
                 self.players_info[current_index]['chips'] -= bet
                 self.pot += bet
                 if Config.USER['debug']['enabled']:
-                    self.debug_file.write(self.players_info[current_index]['id']+": raises "+str(default_bet)+" (pot: "+str(self.pot)+")\n")
+                    self.debug_file.write(self.players_info[current_index]['id']+": "
+                        "raises "+str(default_bet)+" (pot: "+str(self.pot)+")\n")
                 last_action_was_a_bet = False
             else:
                 raise ValueError("Invalid action.")
@@ -304,19 +319,23 @@ class PokerMatch():
         return valid
 
     def _execute_player(self, player, match_state, bet, opponent_actions, current_index):
-        if match_state.player_key == 'team' and not player.opponent_id == 'bayesian_opponent' and not player.opponent_id == 'bayesian_tester':
+        if (match_state.player_key == 'team' and not player.opponent_id == 'bayesian_opponent' 
+            and not player.opponent_id == 'bayesian_tester'):
             inputs = match_state.inputs_for_team(self.pot, bet, self._get_chips_for_team(), self.round_id)
             inputs += self._get_opponent_model_for_team().inputs(match_state.actions, opponent_actions)
         else:
             if player.opponent_id == 'hall_of_fame':
-                inputs = match_state.inputs_for_team(self.pot, bet, self._get_chips_for_hall_of_fame(), self.round_id)
-                inputs += self._get_opponent_model_for_hall_of_fame().inputs(match_state.actions, opponent_actions)
+                inputs = match_state.inputs_for_team(self.pot, bet, self._get_chips_for_hall_of_fame(), 
+                    self.round_id)
+                inputs += self._get_opponent_model_for_hall_of_fame().inputs(match_state.actions, 
+                    opponent_actions)
             else:
                 inputs = match_state.inputs_for_rule_based_opponents(bet, self.round_id)
 
         if Config.USER['debug']['enabled']:
             if match_state.player_key == 'team' or self.opponent.opponent_id == 'hall_of_fame':
-                self.debug_file.write("    >> registers: "+str([(p.program_id_, [round_value(r, 2) for r in p.general_registers_]) for p in player.programs])+"\n")
+                self.debug_file.write("    >> registers:"
+                    " "+str([(p.program_id_, [round_value(r, 2) for r in p.general_registers_]) for p in player.programs])+"\n")
             self.debug_file.write("    >> inputs: "+str(inputs)+"\n")
         action = player.execute(self.point.point_id_, inputs, self._valid_actions(), self.is_training)
         if Config.USER['debug']['enabled']:

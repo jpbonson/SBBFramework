@@ -1,11 +1,23 @@
 import os
 import json
+import socket
 import random
 from poker_metrics_calculator import PokerMetricsCalculator
 from ..match_state import MatchState
 from ..poker_config import PokerConfig
-from .....utils.helpers import available_ports, round_value
+from .....utils.helpers import round_value
 from .....config import Config
+
+def available_ports():
+    socket_tmp1 = socket.socket()
+    socket_tmp1.bind(('', 0))
+    socket_tmp2 = socket.socket()
+    socket_tmp2.bind(('', 0))
+    port1 = socket_tmp1.getsockname()[1]
+    port2 = socket_tmp2.getsockname()[1]
+    socket_tmp1.close()
+    socket_tmp2.close()
+    return port1, port2
 
 def set_metrics(point, round_id, full_deck, key):
     s = PokerMetricsCalculator.calculate_hand_strength(point[key]['hc'], point['bc'], full_deck)

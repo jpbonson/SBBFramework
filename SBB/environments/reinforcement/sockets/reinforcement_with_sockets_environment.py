@@ -26,8 +26,8 @@ class ReinforcementEnvironmentWithSockets(ReinforcementEnvironment):
 
         self._start_server()
 
-        self.valid_messages = ['match_running', 'match_ended']
-        self.valid_params = ['inputs', 'valid_actions', 'current_player', 'result']
+        self.valid_messages_ = ['match_running', 'match_ended']
+        self.valid_params_ = ['inputs', 'valid_actions', 'current_player', 'result']
 
     def _initialize_labels_for_opponents(self, key):
         opponents = []
@@ -145,12 +145,14 @@ class ReinforcementEnvironmentWithSockets(ReinforcementEnvironment):
                         print "request data: "+str(data)
 
                     if not 'message_type' in data or not 'params' in data:
-                        raise socket.error("Client did not send a valid request, must have the following fields: 'message_type' and 'params'")
-                    if data['message_type'] not in self.valid_messages:
+                        raise socket.error("Client did not send a valid request, "
+                            "must have the following fields: 'message_type' and 'params'")
+                    if data['message_type'] not in self.valid_messages_:
                         raise socket.error("Client did not send a valid request, invalid 'message_type'")
                     for item in data['params']:
-                        if item not in self.valid_params:
-                            raise socket.error("Client did not send a valid request, invalid 'params': "+str(item))
+                        if item not in self.valid_params_:
+                            raise socket.error("Client did not send a valid request, "
+                                "invalid 'params': "+str(item))
             return data
         except Exception as e:
             print "\n<< It was not possible to connect to the client. >>\n"

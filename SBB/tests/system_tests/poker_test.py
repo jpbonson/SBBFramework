@@ -96,8 +96,13 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['teams']*1.0))
 
         config = dict(TEST_CONFIG)
+        config['training_parameters']['populations']['points'] = 40
+        config['reinforcement_parameters']['validation_population'] = 40
+        config['reinforcement_parameters']['champion_population'] = 40
         config['advanced_training_parameters']['diversity']['metrics'] = []
         config['advanced_training_parameters']['novelty']['enabled'] = False
+        config['reinforcement_parameters']['environment_parameters']['training_opponents_labels'] = ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"]
+        config['reinforcement_parameters']['environment_parameters']['validation_opponents_labels'] = ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"]
         Config.USER = config
 
     def test_reinforcement_for_poker(self):
@@ -138,6 +143,28 @@ class TictactoeWithSocketsTests(unittest.TestCase):
 
     def test_reinforcement_for_poker_with_euclidean_diversity(self):
         Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['euclidean']
+        Config.check_parameters()
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_poker_with_dumb_opponents(self):
+        opponents = ["random", "always_raise", "always_call", "always_fold"]
+        Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels'] = opponents
+        Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels'] = opponents
+        Config.check_parameters()
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_poker_with_smart_opponents(self):
+        opponents = ["bayesian_opponent"]
+        Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels'] = opponents
+        Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels'] = opponents
         Config.check_parameters()
         sbb = SBB()
         sbb.run()

@@ -13,9 +13,9 @@ class TictactoeMatch():
                         TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY,
                         TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY]
         self.result_ = -1
-        self.player_label = {}
-        self.player_label[1] = player1_label
-        self.player_label[2] = player2_label
+        self.player_label_ = {}
+        self.player_label_[1] = player1_label
+        self.player_label_[2] = player2_label
 
     def perform_action(self, current_player, action):
         """
@@ -60,7 +60,7 @@ class TictactoeMatch():
         if winner:
             self.result_ = winner
             if Config.USER['debug']['enabled']:
-                print "It is over! Player "+str(self.result_)+" ("+str(self.player_label[self.result_])+") wins!"
+                print "It is over! Player "+str(self.result_)+" ("+str(self.player_label_[self.result_])+") wins!"
             return True
         for value in self.inputs_:
             if value == TictactoeMatch.EMPTY:

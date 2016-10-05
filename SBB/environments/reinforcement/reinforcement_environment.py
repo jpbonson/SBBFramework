@@ -22,28 +22,37 @@ class ReinforcementEnvironment(DefaultEnvironment):
         To be implemented via inheritance.
         """
 
-    def __init__(self, total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class):
+    def __init__(self, total_actions, total_inputs, total_labels, coded_opponents_for_training, 
+            coded_opponents_for_validation, point_class):
         self.total_actions_ = total_actions
         self.total_inputs_ = total_inputs
         self.total_labels_ = total_labels
+
         if not coded_opponents_for_training:
             coded_opponents_for_training = [opponent_factory("DummyOpponent", 'dummy')]
         self.coded_opponents_for_training_ = coded_opponents_for_training
         if not coded_opponents_for_validation:
             coded_opponents_for_validation = [opponent_factory("DummyOpponent", 'dummy')]
         self.coded_opponents_for_validation_ = coded_opponents_for_validation
+
         self.point_class = point_class
+
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_raw_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
+
+        Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
+        
         self.opponent_names_for_training_ = [c.OPPONENT_ID for c in self.coded_opponents_for_training_]
         if Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] > 0:
             self.opponent_names_for_training_.append('hall_of_fame')
         self.opponent_names_for_validation_ = [c.OPPONENT_ID for c in self.coded_opponents_for_validation_]
+
         self.matches_per_opponent_per_generation_ = None
         self._ensure_balanced_population_size_for_training()
-        self._ensure_balanced_population_size('validation_population')
-        self._ensure_balanced_population_size('champion_population')
+        self._ensure_balanced_population_size_for_testing('validation_population')
+        self._ensure_balanced_population_size_for_testing('champion_population')
+
         self.team_to_add_to_hall_of_fame_ = None
         self.opponent_population_ = None
         self.point_population_ = []
@@ -56,7 +65,6 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.first_sampling_ = True
         self.samples_per_class_to_keep_ = []
         self.samples_per_class_to_remove_ = []
-        Config.RESTRICTIONS['use_memmory_for_actions'] = False # since the task is reinforcement learning, there is a lot of actions per point, instead of just one
         self.champion_matches_per_hall_of_fame_opponent_ = 20
         self.current_hall_of_fame_opponents_ = []
         self.metrics_ = ReinforcementMetrics(self)
@@ -71,7 +79,7 @@ class ReinforcementEnvironment(DefaultEnvironment):
         self.matches_per_opponent_per_generation_ = pop_size/total_opponents
         Config.USER['training_parameters']['populations']['points'] = pop_size
 
-    def _ensure_balanced_population_size(self, population_key):
+    def _ensure_balanced_population_size_for_testing(self, population_key):
         pop_size = Config.USER['reinforcement_parameters'][population_key]
         temp = len(self.coded_opponents_for_validation_)*self.total_labels_
         pop_size = (pop_size/temp)*temp

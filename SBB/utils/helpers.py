@@ -1,4 +1,3 @@
-import socket
 import operator
 from collections import defaultdict
 from ..config import Config
@@ -24,17 +23,6 @@ def is_nearly_equal_to(value1, value2, threshold = Config.RESTRICTIONS['is_nearl
     if abs(value1 - value2) < threshold:
         return True
     return False
-
-def available_ports():
-    socket_tmp1 = socket.socket()
-    socket_tmp1.bind(('', 0))
-    socket_tmp2 = socket.socket()
-    socket_tmp2.bind(('', 0))
-    port1 = socket_tmp1.getsockname()[1]
-    port2 = socket_tmp2.getsockname()[1]
-    socket_tmp1.close()
-    socket_tmp2.close()
-    return port1, port2
 
 def accumulative_performances(teams_population, point_ids, sorting_criteria, get_results_per_points):
     sorted_teams = sorted(teams_population, key=lambda team: sorting_criteria(team), reverse = True) # better ones first
