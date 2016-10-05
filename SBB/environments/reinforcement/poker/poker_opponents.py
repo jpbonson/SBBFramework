@@ -121,7 +121,7 @@ class PokerBayesianTesterOpponent(PokerRuleBasedOpponent):
     def reset_registers(self):
         pass
 
-    def get_behaviors_metrics(self):
+    def get_behaviors_quick_metrics(self):
         result = {}
         result['agressiveness'] = self.extra_metrics_['agressiveness']
         result['tight_loose'] = self.extra_metrics_['tight_loose']
@@ -131,7 +131,7 @@ class PokerBayesianTesterOpponent(PokerRuleBasedOpponent):
         result['normalized_result_std'] = numpy.std(self.results_per_points_for_validation_.values())
         return result
 
-    def metrics(self):
+    def quick_metrics(self):
         print "hand_played/total_hands: "+str(self.extra_metrics_['hand_played']['validation']/float(self.extra_metrics_['total_hands']['validation']))
         print "won_hands/total_hands: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['total_hands']['validation']))
         print "won_hands/hand_played: "+str(self.extra_metrics_['won_hands']['validation']/float(self.extra_metrics_['hand_played']['validation']))
@@ -302,7 +302,7 @@ class PokerBayesianOpponent(DefaultOpponent):
     def reset_registers(self):
         pass
 
-    def get_behaviors_metrics(self):
+    def get_behaviors_quick_metrics(self):
         result = {}
         result['agressiveness'] = self.extra_metrics_['agressiveness']
         result['tight_loose'] = self.extra_metrics_['tight_loose']
@@ -312,7 +312,7 @@ class PokerBayesianOpponent(DefaultOpponent):
         result['normalized_result_std'] = numpy.std(self.results_per_points_for_validation_.values())
         return result
 
-    def metrics(self):
+    def quick_metrics(self):
         print "Metrics for Played Hands:"
         print "- total_hands: "+str(float(self.extra_metrics_['total_hands']['validation']))
         print "- hand_played: "+str(self.extra_metrics_['hand_played']['validation'])

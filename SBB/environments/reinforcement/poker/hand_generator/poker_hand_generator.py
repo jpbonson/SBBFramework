@@ -1,26 +1,26 @@
 import os
 import json
 import random
-from poker_metrics import PokerMetrics
+from poker_metrics_calculator import PokerMetricsCalculator
 from ..match_state import MatchState
 from ..poker_config import PokerConfig
 from .....utils.helpers import available_ports, round_value
 from .....config import Config
 
 def set_metrics(point, round_id, full_deck, key):
-    s = PokerMetrics.calculate_hand_strength(point[key]['hc'], point['bc'], full_deck)
+    s = PokerMetricsCalculator.calculate_hand_strength(point[key]['hc'], point['bc'], full_deck)
     if round_id == 1 or round_id == 2:
-        p = PokerMetrics.calculate_hand_potential_without_heuristics(point[key]['hc'], point['bc'], round_id, full_deck)
+        p = PokerMetricsCalculator.calculate_hand_potential_without_heuristics(point[key]['hc'], point['bc'], round_id, full_deck)
     else:
         p = 0
-    e = PokerMetrics.calculate_equity(point[key]['hc'])
-    ep = PokerMetrics.calculate_ep(s, e, p, round_id)
+    e = PokerMetricsCalculator.calculate_equity(point[key]['hc'])
+    ep = PokerMetricsCalculator.calculate_ep(s, e, p, round_id)
     point[key]['str'][round_id] = round_value(s*Config.RESTRICTIONS['multiply_normalization_by'], 3)
     point[key]['ep'][round_id] = round_value(ep*Config.RESTRICTIONS['multiply_normalization_by'], 3)
     return point
 
 def initialize_metrics(seed, port_pos0, port_pos1, full_deck):
-    seeded_deck = PokerMetrics.initialize_deck()
+    seeded_deck = PokerMetricsCalculator.initialize_deck()
     random.seed(seed)
     random.shuffle(seeded_deck)
 
@@ -73,7 +73,7 @@ def generate_poker_hands(from_seed, to_seed):
     mapping = {'00': 0, '01': 1, '02': 2, '10': 3, '11': 4, '12': 5, '20': 6, '21': 7, '22': 8}
 
     print "starting"
-    full_deck = PokerMetrics.initialize_deck()
+    full_deck = PokerMetricsCalculator.initialize_deck()
     port0, port1 = available_ports()
     if not os.path.exists('hands_generated'):
         os.makedirs('hands_generated')

@@ -18,6 +18,7 @@ from environments.reinforcement.sockets.reinforcement_with_sockets_environment i
 from core.selection import Selection
 from utils.run_info import RunInfo
 from utils.team_reader import initialize_actions_for_second_layer
+from utils.helpers import round_value
 from config import Config
 
 class SBB:
@@ -94,7 +95,7 @@ class SBB:
                     for team in older_teams:
                         team.prune_total()
 
-                self.environment_.store_per_generation_metrics(run_info, teams_population, 
+                self.environment_.metrics_.store_per_generation_metrics(run_info, teams_population, 
                     self.current_generation_, self.selection_.previous_diversity_)
 
                 if not validation:
@@ -102,11 +103,11 @@ class SBB:
                     sys.stdout.flush()
                 else:
                     best_team = self.environment_.validate(self.current_generation_, teams_population)
-                    self.environment_.store_per_validation_metrics(run_info, best_team, 
+                    self.environment_.metrics_.store_per_validation_metrics(run_info, best_team, 
                         teams_population, programs_population, self.current_generation_)
-                    self.environment_.print_per_validation_metrics(run_info, best_team, self.current_generation_)
+                    self.environment_.metrics_.print_per_validation_metrics(run_info, best_team, self.current_generation_)
 
-            self.environment_.store_per_run_metrics(run_info, best_team, teams_population, pareto_front, 
+            self.environment_.metrics_.store_per_run_metrics(run_info, best_team, teams_population, pareto_front, 
                 self.current_generation_)
 
             run_info.end()
@@ -115,7 +116,12 @@ class SBB:
             sys.stdout.flush()
         
         # finalize execution (get final metrics, print to output, print to file)
-        msg, best_scores_per_runs = self.environment_.generate_overall_metrics_output(self.run_infos_)
+        msg, best_scores_per_runs = self.environment_.metrics_.generate_overall_metrics_output(self.run_infos_)
+
+        elapseds_per_run = [run.elapsed_time_ for run in self.run_infos_]
+        msg += "\n\nFinished execution, total elapsed time: "+str(round_value(sum(elapseds_per_run)))+" mins "
+        msg += "(mean: "+str(round_value(numpy.mean(elapseds_per_run)))+", std: "+str(round_value(numpy.std(elapseds_per_run)))+")"
+
         initial_info += msg
         self.best_scores_per_runs_ = best_scores_per_runs
         print initial_info
@@ -142,7 +148,7 @@ class SBB:
         initial_info = ""
         initial_info += "\n### CONFIG: "+str(Config.USER)+"\n"
         initial_info +=  "\n### RESTRICTIONS: "+str(Config.RESTRICTIONS)+"\n"
-        initial_info += self.environment_.metrics()
+        initial_info += self.environment_.metrics_.quick_metrics()
         initial_info += "\nSeeds per run: "+str(self.seeds_per_run_)
         initial_info += "\nDiversities: "+str(Config.USER['advanced_training_parameters']['diversity']['metrics'])
         return initial_info

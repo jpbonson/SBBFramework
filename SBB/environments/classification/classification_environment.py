@@ -1,11 +1,12 @@
 import random
-from collections import Counter
 import numpy
+from collections import Counter
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score
 from classification_point import ClassificationPoint
+from classification_metrics import ClassificationMetrics
 from ..default_environment import DefaultEnvironment
 from ..default_point import  reset_points_ids
-from ...utils.helpers import round_array, flatten, round_value
+from ...utils.helpers import round_array, flatten
 from ...config import Config
 
 class ClassificationEnvironment(DefaultEnvironment):
@@ -31,6 +32,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         # ensures that the point population will be balanced:
         total_samples_per_criteria = Config.USER['training_parameters']['populations']['points']/self.total_actions_
         Config.USER['training_parameters']['populations']['points'] = total_samples_per_criteria*self.total_actions_
+        self.metrics_ = ClassificationMetrics(self)
 
     def _initialize_datasets(self):
         """
@@ -240,45 +242,3 @@ class ClassificationEnvironment(DefaultEnvironment):
         best_team = teams_population[fitness.index(max(fitness))]
         self.evaluate_team(best_team, Config.RESTRICTIONS['mode']['validation'])
         return best_team
-
-    def metrics_for_team(self, team):
-        msg = ""
-        if team.extra_metrics_:
-            msg += "\n\n### Classification-specific metrics for the best team:"
-            msg += "\nrecall per action: "+str(team.extra_metrics_['recall_per_action'])
-            msg += "\n\naccuracy: "+str(round_value(team.extra_metrics_['accuracy']))
-            msg += "\n\nconfusion matrix:\n"+str(team.extra_metrics_['confusion_matrix'])
-            if team.diversity_:
-                msg += "\n\ndiversities:"
-                for key, value in team.diversity_.iteritems():
-                    msg += "\n - "+str(key)+": "+str(value)
-        return msg
-
-    def initialize_attributes_for_run_info(self, run_info):
-        run_info.recall_per_validation_ = []
-
-    def generate_output_for_attributes_for_run_info(self, run_info):
-        msg = ""
-        msg += "\n\n\n\n#################### Classification-specific Metrics:"
-        msg += "\n\nBest Team Recall per Action per Validation: "+str(run_info.recall_per_validation_)
-        return msg
-
-    def metrics(self):
-        msg = ""
-        msg += "\n### Dataset Info:"
-        msg += "\ntotal inputs: "+str(self.total_inputs_)
-        msg += "\ntotal actions: "+str(self.total_actions_)
-        msg += "\nactions mapping: "+str(self.action_mapping_)
-        msg += "\nclass distribution (train set, "+str(len(self.train_population_))+" samples): "+str(self.trainset_class_distribution_)
-        msg += "\nclass distribution (test set, "+str(len(self.test_population_))+" samples): "+str(self.testset_class_distribution_)
-        return msg
-
-    def store_per_validation_metrics(self, run_info, best_team, teams_population, programs_population, current_generation):
-        super(ClassificationEnvironment, self).store_per_validation_metrics(run_info, best_team, teams_population, programs_population, current_generation)
-        
-        run_info.recall_per_validation_.append(best_team.extra_metrics_['recall_per_action'])
-
-        older_teams = [team for team in teams_population if team.generation != current_generation]
-        validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
-        run_info.global_mean_validation_score_per_validation_.append(validation_score_mean)
-        run_info.temp_info_['validation_score_mean'] = validation_score_mean

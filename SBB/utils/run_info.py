@@ -38,7 +38,7 @@ class RunInfo:
         self.mean_program_size_with_introns_per_validation_ = []
         self.mean_program_size_without_introns_per_validation_ = []
         
-        self.environment.initialize_attributes_for_run_info(self)
+        self.environment.metrics_.initialize_attributes_for_run_info(self)
 
     def end(self):
         self.elapsed_time_ = round_value((time.time() - self.start_time_)/60.0)
@@ -109,6 +109,6 @@ class RunInfo:
         msg += "\n - per validation: "+str(self.mean_program_size_without_introns_per_validation_)
 
 
-        msg += self.environment.generate_output_for_attributes_for_run_info(self)
+        msg += self.environment.metrics_.generate_output_for_attributes_for_run_info(self)
 
         return msg

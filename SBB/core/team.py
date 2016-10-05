@@ -208,7 +208,7 @@ class Team(DefaultOpponent):
         for program in inactive_programs:
             self.remove_program(program)
 
-    def metrics(self):
+    def quick_metrics(self):
         validation_active_teams_members_ids = [p.__repr__() for p in self.validation_active_programs_]
         validation_inactive_programs = list(set(self.programs) - set(self.validation_active_programs_))
         validation_inactive_teams_members_ids = [p.__repr__() for p in validation_inactive_programs]
@@ -227,7 +227,7 @@ class Team(DefaultOpponent):
         msg += "\ninputs distribution: "+str(self.inputs_distribution())
         
         msg += "\n"
-        msg += self.environment.metrics_for_team(self)
+        msg += self.environment.metrics_.metrics_for_team(self)
         return msg
 
     def inputs_distribution(self):
@@ -266,7 +266,7 @@ class Team(DefaultOpponent):
     def __str__(self):
         text = "TEAM "+self.__repr__()
         text += "\n\n\n######## METRICS\n"
-        text += self.metrics()
+        text += self.quick_metrics()
         text += "\n\n\n######## PROGRAMS (ACTIVE)"
         for p in self.active_programs_:
             text += "\n"+str(p)

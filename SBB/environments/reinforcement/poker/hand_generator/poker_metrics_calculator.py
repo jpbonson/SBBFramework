@@ -7,7 +7,7 @@ from tables.normalized_equity_table import NORMALIZED_HAND_EQUITY
 from tables.strenght_table_for_2cards import STRENGTH_TABLE_FOR_2_CARDS
 from ..poker_config import PokerConfig
 
-class PokerMetrics():
+class PokerMetricsCalculator():
     
     @staticmethod
     def initialize_deck():
