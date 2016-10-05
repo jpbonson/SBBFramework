@@ -17,21 +17,27 @@ class ClassificationEnvironment(DefaultEnvironment):
     def __init__(self):
         reset_points_ids()
         self.point_population_ = None
+
         train, test = self._initialize_datasets()
         self.train_population_ = self._dataset_to_points(train)
         self.test_population_ = self._dataset_to_points(test)
         self.trainset_class_distribution_ = Counter([p.output for p in self.train_population_])
         self.testset_class_distribution_ = Counter([p.output for p in self.test_population_])
+
         self.total_actions_ = len(self.testset_class_distribution_)
         self.total_inputs_ = len(self.train_population_[0].inputs)
         self.trainset_per_action_ = self._get_data_per_action(self.train_population_)
+
         Config.RESTRICTIONS['total_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_raw_actions'] = self.total_actions_
         Config.RESTRICTIONS['total_inputs'] = self.total_inputs_
         Config.RESTRICTIONS['use_memmory_for_actions'] = True # since for the same input, the output label is always the same
+        
         # ensures that the point population will be balanced:
-        total_samples_per_criteria = Config.USER['training_parameters']['populations']['points']/self.total_actions_
-        Config.USER['training_parameters']['populations']['points'] = total_samples_per_criteria*self.total_actions_
+        total_samples_per_criteria = (Config.USER['training_parameters']['populations']['points']
+            /self.total_actions_)
+        Config.USER['training_parameters']['populations']['points'] = (total_samples_per_criteria
+            *self.total_actions_)
         self.metrics_ = ClassificationMetrics(self)
 
     def _initialize_datasets(self):
@@ -40,8 +46,10 @@ class ClassificationEnvironment(DefaultEnvironment):
         """
         dataset_filename = Config.USER['classification_parameters']['dataset']
         print("\nReading inputs from data: "+dataset_filename)
-        train = self._read_space_separated_file(Config.USER['classification_parameters']['working_path']+dataset_filename+".train")
-        test = self._read_space_separated_file(Config.USER['classification_parameters']['working_path']+dataset_filename+".test")
+        train = self._read_space_separated_file(Config.USER['classification_parameters']['working_path']
+            +dataset_filename+".train")
+        test = self._read_space_separated_file(Config.USER['classification_parameters']['working_path']
+            +dataset_filename+".test")
         normalization_params = self._get_normalization_params(train, test)
         train = self._normalize(normalization_params, train)
         test = self._normalize(normalization_params, test)
@@ -97,7 +105,9 @@ class ClassificationEnvironment(DefaultEnvironment):
                     if normalization_params[i]['range'] == 0.0:
                         cell = 0.0
                     else:
-                        cell = (cell-normalization_params[i]['min'])/float(normalization_params[i]['range'])*Config.RESTRICTIONS['multiply_normalization_by']
+                        cell = ((cell-normalization_params[i]['min'])
+                            /float(normalization_params[i]['range'])
+                            *Config.RESTRICTIONS['multiply_normalization_by'])
                 new_line.append(cell)
             normalized_data.append(new_line)
         return normalized_data
@@ -171,12 +181,15 @@ class ClassificationEnvironment(DefaultEnvironment):
 
     def _check_for_bugs(self):
         if len(self.point_population_) != Config.USER['training_parameters']['populations']['points']:
-            raise ValueError("The size of the points population changed during selection! You got a bug! (it is: "+str(len(self.point_population_))+", should be: "+str(Config.USER['training_parameters']['populations']['points'])+")")
+            raise ValueError("The size of the points population changed during selection! "
+                "You got a bug! (it is: "+str(len(self.point_population_))+", "
+                "should be: "+str(Config.USER['training_parameters']['populations']['points'])+")")
 
     def evaluate_point_population(self, teams_population):
         current_subsets_per_class = self._get_data_per_action(self.point_population_)
         total_samples_per_class = Config.USER['training_parameters']['populations']['points']/self.total_actions_
-        samples_per_class_to_keep = int(round(total_samples_per_class*(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
+        samples_per_class_to_keep = int(round(total_samples_per_class
+            *(1.0-Config.USER['training_parameters']['replacement_rate']['points'])))
 
         kept_subsets_per_class = []
         removed_subsets_per_class = []
@@ -209,7 +222,8 @@ class ClassificationEnvironment(DefaultEnvironment):
 
         outputs = []
         for point in population:
-            output = team.execute(point.point_id_, point.inputs, range(Config.RESTRICTIONS['total_raw_actions']), is_training)
+            output = team.execute(point.point_id_, point.inputs, range(Config.RESTRICTIONS['total_raw_actions']),
+                is_training)
             outputs.append(output)
             if is_training:
                 if output == point.output:
