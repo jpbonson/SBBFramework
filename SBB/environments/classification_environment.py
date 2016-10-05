@@ -280,3 +280,13 @@ class ClassificationEnvironment(DefaultEnvironment):
         msg += "\nclass distribution (train set, "+str(len(self.train_population_))+" samples): "+str(self.trainset_class_distribution_)
         msg += "\nclass distribution (test set, "+str(len(self.test_population_))+" samples): "+str(self.testset_class_distribution_)
         return msg
+
+    def store_per_validation_metrics(self, run_info, best_team, teams_population, programs_population, current_generation):
+        super(ClassificationEnvironment, self).store_per_validation_metrics(run_info, best_team, teams_population, programs_population, current_generation)
+        
+        run_info.recall_per_validation_.append(best_team.extra_metrics_['recall_per_action'])
+
+        older_teams = [team for team in teams_population if team.generation != current_generation]
+        validation_score_mean = round_value(numpy.mean([team.score_testset_ for team in older_teams]))
+        run_info.global_mean_validation_score_per_validation_.append(validation_score_mean)
+        run_info.temp_info_['validation_score_mean'] = validation_score_mean

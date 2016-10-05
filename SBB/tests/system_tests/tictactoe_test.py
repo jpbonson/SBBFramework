@@ -88,7 +88,7 @@ TEST_CONFIG = {
     },
 }
 
-class TictactoeWithSocketsTests(unittest.TestCase):
+class TictactoeTests(unittest.TestCase):
     def setUp(self):
         Config.RESTRICTIONS['write_output_files'] = False
         Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['teams']*1.0))

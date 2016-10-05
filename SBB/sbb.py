@@ -37,13 +37,13 @@ class SBB:
     def __init__(self):
         self.current_generation_ = 0
         self.best_scores_per_runs_ = [] # used by tests
-        Config.RESTRICTIONS['used_diversities'] = list(Config.USER['advanced_training_parameters']['diversity']['metrics'])
         total_registers = (Config.RESTRICTIONS['genotype_options']['output_registers'] 
             + Config.USER['advanced_training_parameters']['extra_registers'])
         Config.RESTRICTIONS['genotype_options']['total_registers'] = total_registers
         self._initialize_seeds()
         self.environment_ = self._initialize_environment()
         self.selection_ = Selection(self.environment_)
+        self.run_infos_ = []
 
     def _initialize_seeds(self):
         if isinstance(Config.USER['advanced_training_parameters']['seed'], list):
@@ -63,7 +63,6 @@ class SBB:
         initial_info = self._generate_initial_message_output()
         print initial_info
 
-        run_infos = []
         for run_id in range(Config.USER['training_parameters']['runs_total']):
             
             run_info = RunInfo(run_id+1, self.environment_, self.seeds_per_run_[run_id])
@@ -103,25 +102,26 @@ class SBB:
                     sys.stdout.flush()
                 else:
                     best_team = self.environment_.validate(self.current_generation_, teams_population)
-                    self.environment_.print_and_store_per_validation_metrics(run_info, best_team, 
+                    self.environment_.store_per_validation_metrics(run_info, best_team, 
                         teams_population, programs_population, self.current_generation_)
+                    self.environment_.print_per_validation_metrics(run_info, best_team, self.current_generation_)
 
             self.environment_.store_per_run_metrics(run_info, best_team, teams_population, pareto_front, 
                 self.current_generation_)
 
             run_info.end()
             print("\nFinished run "+str(run_info.run_id)+", elapsed time: "+str(run_info.elapsed_time_)+" mins")
-            run_infos.append(run_info)
+            self.run_infos_.append(run_info)
             sys.stdout.flush()
         
         # finalize execution (get final metrics, print to output, print to file)
-        msg, best_scores_per_runs = self.environment_.generate_overall_metrics_output(run_infos)
+        msg, best_scores_per_runs = self.environment_.generate_overall_metrics_output(self.run_infos_)
         initial_info += msg
         self.best_scores_per_runs_ = best_scores_per_runs
         print initial_info
         sys.stdout.flush()
         if Config.RESTRICTIONS['write_output_files']:
-            self._write_output_files(run_infos, initial_info)
+            self._write_output_files(initial_info)
     
     def _initialize_environment(self):
         environment = None
@@ -144,7 +144,7 @@ class SBB:
         initial_info +=  "\n### RESTRICTIONS: "+str(Config.RESTRICTIONS)+"\n"
         initial_info += self.environment_.metrics()
         initial_info += "\nSeeds per run: "+str(self.seeds_per_run_)
-        initial_info += "\nDiversities: "+str(Config.RESTRICTIONS['used_diversities'])
+        initial_info += "\nDiversities: "+str(Config.USER['advanced_training_parameters']['diversity']['metrics'])
         return initial_info
 
     def _set_seed(self, seed):
@@ -209,11 +209,11 @@ class SBB:
             return True
         return False
 
-    def _write_output_files(self, run_infos, initial_info):
+    def _write_output_files(self, initial_info):
         self.filepath_ = self._create_folder()
         with open(self.filepath_+"metrics_overall.txt", "w") as text_file:
             text_file.write(initial_info)
-        for run in run_infos:
+        for run in self.run_infos_:
             path = self.filepath_+"run"+str(run.run_id)+"/"
             os.makedirs(path)
             with open(path+"metrics.txt", "w") as text_file:

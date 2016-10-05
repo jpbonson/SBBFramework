@@ -241,56 +241,6 @@ class PokerEnvironment(ReinforcementEnvironment):
 
         return best_team
 
-    def calculate_poker_metrics_per_validation(self, run_info):
-        self._calculate_point_population_metrics_per_validation(run_info)
-        self._calculate_validation_population_metrics_per_validation(run_info)
-
-    def _calculate_point_population_metrics_per_validation(self, run_info):
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
-
-    def _calculate_point_population_metric_per_validation(self, run_info, get_attribute, key, labels):
-        for label in labels:
-            total = len([point for point in self.point_population() if get_attribute(point) == label])
-            if label not in run_info.point_population_distribution_per_validation_[key]:
-                run_info.point_population_distribution_per_validation_[key][label] = []
-            run_info.point_population_distribution_per_validation_[key][label].append(total)
-
-    def _calculate_validation_population_metrics_per_validation(self, run_info):
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
-        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
-
-    def _calculate_validation_population_metric_per_validation(self, run_info, get_attribute, key, labels):
-        point_per_distribution = {}
-        for label in labels:
-            point_per_distribution[label] = [point for point in self.validation_population() if get_attribute(point) == label]
-        run_info.validation_population_distribution_per_validation_[key] = {}
-        for label in labels:
-            run_info.validation_population_distribution_per_validation_[key][label] = len(point_per_distribution[label])
-
-        for label in labels:
-            temp = flatten([point.teams_results_ for point in point_per_distribution[label]])
-            if len(temp) > 0:
-                means_per_position = round_value(numpy.mean(temp))
-            else:
-                means_per_position = 0.0
-            if label not in run_info.global_result_per_validation_[key]:
-                run_info.global_result_per_validation_[key][label] = []
-            run_info.global_result_per_validation_[key][label].append(means_per_position)
-
-        point_per_distribution = {}
-        for label in labels:
-            point_per_distribution[label] = [point for point in self.champion_population() if get_attribute(point) == label]
-        run_info.champion_population_distribution_per_validation_[key] = {}
-        for label in labels:
-            run_info.champion_population_distribution_per_validation_[key][label] = len(point_per_distribution[label])
-
-    def calculate_final_validation_metrics(self, run_info, teams_population, current_generation):
-        super(PokerEnvironment, self).calculate_final_validation_metrics(run_info, teams_population, current_generation)
-        self._get_validation_scores_per_subcategory(run_info, teams_population, current_generation)
-
     def _calculate_accumulative_performances(self, run_info, teams_population, current_generation):
         older_teams = [team for team in teams_population if team.generation != current_generation]
         metrics = ['score', 'hands_played', 'hands_won']
@@ -330,22 +280,6 @@ class PokerEnvironment(ReinforcementEnvironment):
 
     def _summarize_accumulative_performances(self, run_info, metrics = ['score', 'hands_played', 'hands_won']):
         super(PokerEnvironment, self)._summarize_accumulative_performances(run_info, metrics)
-
-    def _get_validation_scores_per_subcategory(self, run_info, teams_population, current_generation):
-        older_teams = [team for team in teams_population if team.generation != current_generation]
-        run_info.final_teams_validations_ids_ = [team.__repr__() for team in older_teams]
-        for subcategory in PokerConfig.CONFIG['labels_per_subdivision'].keys():
-            for subdivision in PokerConfig.CONFIG['labels_per_subdivision'][subcategory]:
-                run_info.final_teams_validations_per_subcategory_[subcategory][subdivision] = []
-                for team in older_teams:
-                    if subcategory == 'opponent':
-                        scores = team.extra_metrics_['opponents'][subdivision]
-                    else:
-                        scores = team.extra_metrics_['points'][subcategory][subdivision]
-                    mean_score = numpy.mean(scores)
-                    if not math.isnan(mean_score):
-                        mean_score = round_value(mean_score)
-                    run_info.final_teams_validations_per_subcategory_[subcategory][subdivision].append(mean_score)
 
     def _initialize_extra_metrics_for_points(self):
         extra_metrics_points = {}
@@ -509,3 +443,90 @@ class PokerEnvironment(ReinforcementEnvironment):
         if Config.USER['reinforcement_parameters']['hall_of_fame']['enabled']:
             msg += "\nhall of fame size: "+str(Config.USER['reinforcement_parameters']['hall_of_fame']['size'])
         return msg
+
+    def store_per_validation_metrics(self, run_info, best_team, teams_population, programs_population, current_generation):
+        super(PokerEnvironment, self).store_per_validation_metrics(run_info, best_team, teams_population, programs_population, current_generation)
+        self._calculate_point_population_metrics_per_validation(run_info)
+        self._calculate_validation_population_metrics_per_validation(run_info)
+
+    def _calculate_point_population_metrics_per_validation(self, run_info):
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        self._calculate_point_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
+
+    def _calculate_point_population_metric_per_validation(self, run_info, get_attribute, key, labels):
+        for label in labels:
+            total = len([point for point in self.point_population() if get_attribute(point) == label])
+            if label not in run_info.point_population_distribution_per_validation_[key]:
+                run_info.point_population_distribution_per_validation_[key][label] = []
+            run_info.point_population_distribution_per_validation_[key][label].append(total)
+
+    def _calculate_validation_population_metrics_per_validation(self, run_info):
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.players['team']['position'], 'position', range(PokerConfig.CONFIG['positions']))
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.label_, 'sbb_label', PokerConfig.CONFIG['labels_per_subdivision']['sbb_label'])
+        self._calculate_validation_population_metric_per_validation(run_info, lambda x: x.sbb_sd_label_, 'sd_label', range(3))
+
+    def _calculate_validation_population_metric_per_validation(self, run_info, get_attribute, key, labels):
+        point_per_distribution = {}
+        for label in labels:
+            point_per_distribution[label] = [point for point in self.validation_population() if get_attribute(point) == label]
+        run_info.validation_population_distribution_per_validation_[key] = {}
+        for label in labels:
+            run_info.validation_population_distribution_per_validation_[key][label] = len(point_per_distribution[label])
+
+        for label in labels:
+            temp = flatten([point.teams_results_ for point in point_per_distribution[label]])
+            if len(temp) > 0:
+                means_per_position = round_value(numpy.mean(temp))
+            else:
+                means_per_position = 0.0
+            if label not in run_info.global_result_per_validation_[key]:
+                run_info.global_result_per_validation_[key][label] = []
+            run_info.global_result_per_validation_[key][label].append(means_per_position)
+
+        point_per_distribution = {}
+        for label in labels:
+            point_per_distribution[label] = [point for point in self.champion_population() if get_attribute(point) == label]
+        run_info.champion_population_distribution_per_validation_[key] = {}
+        for label in labels:
+            run_info.champion_population_distribution_per_validation_[key][label] = len(point_per_distribution[label])
+
+    def print_per_validation_metrics(self, run_info, best_team, current_generation):
+        super(PokerEnvironment, self).print_per_validation_metrics(run_info, best_team, current_generation)
+        print
+        print "Point Population Distribution per Validation (last gen.):"
+        for attribute in run_info.point_population_distribution_per_validation_:
+            temp = []
+            for key in run_info.point_population_distribution_per_validation_[attribute]:
+                temp.append(str(key)+": "+str(run_info.point_population_distribution_per_validation_[attribute][key][-1]))
+            print "- "+str(attribute)+" = "+", ".join(temp)
+        print
+        print "Validation Population Distribution per Validation: "+str(run_info.validation_population_distribution_per_validation_)
+        print "Global Point Results per Validation: "
+        for attribute in run_info.global_result_per_validation_:
+            temp = []
+            for key in run_info.global_result_per_validation_[attribute]:
+                temp.append(str(key)+": "+str(run_info.global_result_per_validation_[attribute][key][-1]))
+            print "- "+str(attribute)+" = "+", ".join(temp)
+        print
+        print "Champion Population Distribution per Validation: "+str(run_info.champion_population_distribution_per_validation_)
+
+    def store_per_run_metrics(self, run_info, best_team, teams_population, pareto_front, current_generation):
+        super(PokerEnvironment, self).store_per_run_metrics(run_info, best_team, teams_population, pareto_front, current_generation)
+        self._get_validation_scores_per_subcategory(run_info, teams_population, current_generation)
+
+    def _get_validation_scores_per_subcategory(self, run_info, teams_population, current_generation):
+        older_teams = [team for team in teams_population if team.generation != current_generation]
+        run_info.final_teams_validations_ids_ = [team.__repr__() for team in older_teams]
+        for subcategory in PokerConfig.CONFIG['labels_per_subdivision'].keys():
+            for subdivision in PokerConfig.CONFIG['labels_per_subdivision'][subcategory]:
+                run_info.final_teams_validations_per_subcategory_[subcategory][subdivision] = []
+                for team in older_teams:
+                    if subcategory == 'opponent':
+                        scores = team.extra_metrics_['opponents'][subdivision]
+                    else:
+                        scores = team.extra_metrics_['points'][subcategory][subdivision]
+                    mean_score = numpy.mean(scores)
+                    if not math.isnan(mean_score):
+                        mean_score = round_value(mean_score)
+                    run_info.final_teams_validations_per_subcategory_[subcategory][subdivision].append(mean_score)

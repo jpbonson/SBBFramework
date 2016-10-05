@@ -20,6 +20,7 @@ class RunInfo:
         self.pareto_front_in_last_generation_ = []
         self.second_layer_files_ = {}
         self.start_time_ = time.time()
+        self.temp_info_ = {}
         
         self.global_mean_validation_score_per_validation_ = []
         self.train_score_per_validation_ = []
@@ -55,7 +56,7 @@ class RunInfo:
         msg += "\n\nBest Team Fitness per Validation: "+str(round_array(self.train_score_per_validation_))
         msg += "\nBest Team Validation Score per Validation (champion): "+str(round_array(self.test_score_per_validation_))
 
-        if len(Config.RESTRICTIONS['used_diversities']) > 0:
+        if len(Config.USER['advanced_training_parameters']['diversity']['metrics']) > 0:
             msg += "\n\nGlobal Diversities per Validation"
             for key in self.global_diversity_per_validation_:
                 msg += "\n - "+str(key)+": "+str(self.global_diversity_per_validation_[key])
@@ -65,16 +66,16 @@ class RunInfo:
 
         msg += "\n\nGlobal Mean Fitness Score per Training: "+str(self.global_mean_fitness_per_generation_)
         msg += "\nGlobal Max. Fitness Score per Training: "+str(self.global_max_fitness_per_generation_)
-        if len(Config.RESTRICTIONS['used_diversities']) > 1:
+        if len(Config.USER['advanced_training_parameters']['diversity']['metrics']) > 1:
             msg += "\n\n\nGlobal Fitness Score per Training (per diversity):"
             for key in self.global_fitness_per_diversity_per_generation_:
                 msg += "\n - "+str(key)+": "+str(self.global_fitness_per_diversity_per_generation_[key])
 
-        if len(Config.RESTRICTIONS['used_diversities']) > 0:
+        if len(Config.USER['advanced_training_parameters']['diversity']['metrics']) > 0:
             msg += "\n\nGlobal Diversities per Training"
             for key in self.global_diversity_per_generation_:
                 msg += "\n - "+str(key)+": "+str(self.global_diversity_per_generation_[key])
-            if len(Config.RESTRICTIONS['used_diversities']) > 1:
+            if len(Config.USER['advanced_training_parameters']['diversity']['metrics']) > 1:
                 msg += "\n\nDiversity Type per Training: "+str(self.novelty_type_per_generation_)
 
 
