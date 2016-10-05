@@ -63,10 +63,10 @@ class Selection:
     def _apply_diversity(self, teams_population, teams_to_keep, diversity):
         if Config.USER['advanced_training_parameters']['novelty']['enabled']:
             archive = teams_population+list(Config.RESTRICTIONS['novelty_archive']['samples'])
-            DiversityMaintenance.calculate_diversities(archive, self.environment.point_population())
+            DiversityMaintenance.calculate_diversities(archive, self.environment.point_population_)
             self._update_novelty_archive(teams_population, diversity)
         else:
-            DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population())
+            DiversityMaintenance.calculate_diversities(teams_population, self.environment.point_population_)
         
         if (Config.USER['advanced_training_parameters']['novelty']['enabled'] 
             and not Config.USER['advanced_training_parameters']['novelty']['use_fitness']):

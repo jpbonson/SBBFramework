@@ -166,7 +166,7 @@ class PokerMetrics(ReinforcementMetrics):
 
     def _calculate_point_population_metric_per_validation(self, run_info, get_attribute, key, labels):
         for label in labels:
-            total = len([point for point in self.environment_.point_population() if get_attribute(point) == label])
+            total = len([point for point in self.environment_.point_population_ if get_attribute(point) == label])
             if label not in run_info.point_population_distribution_per_validation_[key]:
                 run_info.point_population_distribution_per_validation_[key][label] = []
             run_info.point_population_distribution_per_validation_[key][label].append(total)
@@ -182,7 +182,7 @@ class PokerMetrics(ReinforcementMetrics):
     def _calculate_validation_population_metric_per_validation(self, run_info, get_attribute, key, labels):
         point_per_distribution = {}
         for label in labels:
-            point_per_distribution[label] = [point for point in self.environment_.validation_population() if get_attribute(point) == label]
+            point_per_distribution[label] = [point for point in self.environment_.validation_point_population_ if get_attribute(point) == label]
         run_info.validation_population_distribution_per_validation_[key] = {}
         for label in labels:
             run_info.validation_population_distribution_per_validation_[key][label] = len(point_per_distribution[label])

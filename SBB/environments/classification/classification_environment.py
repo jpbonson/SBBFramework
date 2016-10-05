@@ -128,9 +128,6 @@ class ClassificationEnvironment(DefaultEnvironment):
             subsets_per_class.append(values)
         return subsets_per_class
 
-    def point_population(self):
-        return self.point_population_
-
     def reset(self):
         self.point_population_ = None
 

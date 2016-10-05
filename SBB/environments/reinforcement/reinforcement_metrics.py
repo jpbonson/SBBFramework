@@ -161,7 +161,7 @@ class ReinforcementMetrics(DefaultMetrics):
         metric = 'score'
         sorting_criteria = lambda x: x.extra_metrics_['validation_score']
         get_results_per_points = lambda x: x.results_per_points_for_validation_
-        point_ids = [point.point_id_ for point in self.environment_.validation_population()]
+        point_ids = [point.point_id_ for point in self.environment_.validation_point_population_]
         individual_performance, accumulative_performance, teams_ids = accumulative_performances(older_teams, point_ids, sorting_criteria, get_results_per_points)
         run_info.individual_performance_in_last_generation_[metric] = individual_performance
         run_info.accumulative_performance_in_last_generation_[metric] = accumulative_performance

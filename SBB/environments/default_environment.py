@@ -12,13 +12,6 @@ class DefaultEnvironment(object):
         self.metrics_ = DefaultMetrics(self)
 
     @abc.abstractmethod
-    def point_population(self):
-         """
-         Return the point_population. If the Hall of Fame is being used, it will return 
-         the point_population plus the hall_of_fame, since both were used during training.
-         """
-
-    @abc.abstractmethod
     def reset(self):
          """
          Method that is called at the beginning of each run by SBB, to reset the 
