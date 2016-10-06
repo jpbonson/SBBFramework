@@ -1,9 +1,15 @@
 [![Build Status](https://travis-ci.org/jpbonson/SBBFramework.svg?branch=master)](https://travis-ci.org/jpbonson/SBBFramework) [![Coverage Status](https://coveralls.io/repos/github/jpbonson/SBBFramework/badge.svg?branch=master)](https://coveralls.io/github/jpbonson/SBBFramework?branch=master)
 
 # SBBFramework
-Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming (GP). Algorithm developed by the NIMS laboratory, Dalhousie University, Canada. This implementation can be used as an extendable code to apply GP to reinforcement learning tasks.
+Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming (GP). This algorithm was developed by the NIMS laboratory, Dalhousie University, Canada.
 
-[Work in progress....]
+This framework can be used in the following ways:
+
+- reinforcement learning tasks (via sockets): 
+implement a socket client that follows SBB socket interface (available below), define a configuration, and run SBB and the client. A simple socket client for tictactoe is available in SBB/tests/system_tests/tictactoe_game/.py. Sample configurations for this task are available in SBB/configs/sockets/
+- reinforcement learning tasks (via code extension): implement a class that inherits SBB/environments/default_environment, add the new environment to _initialize_environment in SBB/sbb.py, define a configuration, and run SBB. A simple class implementation for tictactoe is available in SBB/environments/reinforcement/tictactoe/. Sample configurations for this task are available in SBB/configs/tictactoe/ and SBB/configs/poker/
+- reinforcement learning tasks (via code extension): 
+- classification tasks: add a .train and a .test file to SBB/datasets, define a configuration, and run SBB. Sample configurations for this task are available in SBB/configs/classification/ (Warning: This framework was developed focusing on reinforcement learning, so it is not able to deal with big datasets)
 
 # Index
 1. Introduction
