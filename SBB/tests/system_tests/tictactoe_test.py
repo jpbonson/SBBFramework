@@ -1,6 +1,4 @@
 import unittest
-import os
-import subprocess
 from collections import deque
 from ...config import Config
 from ...sbb import SBB

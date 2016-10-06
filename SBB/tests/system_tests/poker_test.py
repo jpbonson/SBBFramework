@@ -1,6 +1,5 @@
 import unittest
-import os
-import subprocess
+import shutil
 from collections import deque
 from ...config import Config
 from ...sbb import SBB
@@ -103,10 +102,14 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         config['training_parameters']['populations']['points'] = 40
         config['reinforcement_parameters']['validation_population'] = 40
         config['reinforcement_parameters']['champion_population'] = 40
+        config['reinforcement_parameters']['hall_of_fame']['enabled'] = False
+        config['reinforcement_parameters']['hall_of_fame']['opponents'] = 0
         config['advanced_training_parameters']['diversity']['metrics'] = []
         config['advanced_training_parameters']['novelty']['enabled'] = False
         config['reinforcement_parameters']['environment_parameters']['training_opponents_labels'] = ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"]
         config['reinforcement_parameters']['environment_parameters']['validation_opponents_labels'] = ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"]
+        config['debug']['enabled'] = False
+
         Config.USER = config
 
     def test_reinforcement_for_poker(self):
@@ -176,12 +179,36 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         expected = 1
         self.assertEqual(expected, result)
 
+    def test_reinforcement_for_poker_with_hall_of_fame(self):
+        opponents = ["random"]
+        Config.USER['reinforcement_parameters']['environment_parameters']['training_opponents_labels'] = opponents
+        Config.USER['reinforcement_parameters']['environment_parameters']['validation_opponents_labels'] = opponents
+        Config.USER['reinforcement_parameters']['hall_of_fame']['enabled'] = True
+        Config.USER['reinforcement_parameters']['hall_of_fame']['opponents'] = 2
+        Config.check_parameters()
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        self.assertEqual(expected, result)
+
+    def test_reinforcement_for_poker_with_debug(self):
+        Config.USER['debug']['output_path'] = "SBB/tests/temp_files/"
+        Config.USER['debug']['enabled'] = True
+        Config.check_parameters()
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        shutil.rmtree("SBB/tests/temp_files/")
+        self.assertEqual(expected, result)
+
     def test_file_content_for_poker_point(self):
         Config.check_parameters()
         sbb = SBB()
         sbb.run()
         content = str(sbb.environment_.point_population_[-1])
         self.assertTrue(content)
-
+    
 if __name__ == '__main__':
     unittest.main()
