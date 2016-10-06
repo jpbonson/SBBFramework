@@ -296,15 +296,24 @@ class ReinforcementEnvironment(DefaultEnvironment):
         if mode == Config.RESTRICTIONS['mode']['training']:
             point_population = self.point_population_
             opponent_population = self.training_opponent_population()
-            results = []
-            extra_metrics_opponents = defaultdict(list)
-            match_id = 0
+        elif mode == Config.RESTRICTIONS['mode']['validation']:
+            point_population = self.validation_point_population_
+            opponent_population = self.validation_opponent_population_
+        elif mode == Config.RESTRICTIONS['mode']['champion']:
+            point_population = self.champion_population()
+            opponent_population = self.champion_opponent_population()
+        else:
+            raise ValueError("Invalid mode")
+        results = []
+        extra_metrics_opponents = defaultdict(list)
+        match_id = 0
 
-            if len(point_population) == 0:
-                raise ValueError("Error: Nothing in point population. Probably the population size is too small.")
-            if len(opponent_population) == 0:
-                raise ValueError("Error: Nothing in opponent population. Probably the population size is too small.")
+        if len(point_population) == 0:
+            raise ValueError("Error: Nothing in point population. Probably the population size is too small.")
+        if len(opponent_population) == 0:
+            raise ValueError("Error: Nothing in opponent population. Probably the population size is too small.")
 
+        if mode == Config.RESTRICTIONS['mode']['training']:
             for point, opponent in zip(point_population, opponent_population):
                 match_id += 1
                 result = self._play_match(team, opponent, point, mode, match_id)
@@ -314,29 +323,11 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 results.append(result)
                 if opponent.opponent_id == 'hall_of_fame': # since the hall of fame changes over time, it is better to dont use it to get the champion score, since you wouldnt be able to track the score improvement
                     extra_metrics_opponents[opponent.__repr__()].append(result)
-            for key in extra_metrics_opponents:
-                extra_metrics_opponents[key] = round_value(numpy.mean(extra_metrics_opponents[key]))
-            team.extra_metrics_['training_opponents'] = extra_metrics_opponents
+            
+            opponent_type = 'training_opponents'
             team.fitness_ = numpy.mean(results)
         else:
-            if mode == Config.RESTRICTIONS['mode']['validation']:
-                point_population = self.validation_point_population_
-                opponent_population = self.validation_opponent_population_
-            elif mode == Config.RESTRICTIONS['mode']['champion']:
-                point_population = self.champion_population()
-                opponent_population = self.champion_opponent_population()
-            else:
-                raise ValueError("Invalid mode")
-            results = []
-            extra_metrics_opponents = defaultdict(list)
             extra_metrics_points = self._initialize_extra_metrics_for_points()
-            match_id = 0
-
-            if len(point_population) == 0:
-                raise ValueError("Error: Nothing in point population. Probably the population size is too small.")
-            if len(opponent_population) == 0:
-                raise ValueError("Error: Nothing in opponent population. Probably the population size is too small.")
-
             for point, opponent in zip(point_population, opponent_population):
                 match_id += 1
                 result = self._play_match(team, opponent, point, mode, match_id)
@@ -351,9 +342,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
                         results.append(result)
                     else:
                         extra_metrics_opponents[opponent.__repr__()].append(result)
-            for key in extra_metrics_opponents:
-                extra_metrics_opponents[key] = round_value(numpy.mean(extra_metrics_opponents[key]))
-            team.extra_metrics_['opponents'] = extra_metrics_opponents
+            
+            opponent_type = 'opponents'
             for key in extra_metrics_points:
                 for subkey in extra_metrics_points[key]:
                     extra_metrics_points[key][subkey] = round_value(numpy.mean(extra_metrics_points[key][subkey]))
@@ -362,6 +352,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 team.score_validation_ = round_value(numpy.mean(results))
             else:
                 team.score_champion_ = round_value(numpy.mean(results))
+
+        for key in extra_metrics_opponents:
+            extra_metrics_opponents[key] = round_value(numpy.mean(extra_metrics_opponents[key]))
+        team.extra_metrics_[opponent_type] = extra_metrics_opponents
 
     def _initialize_extra_metrics_for_points(self):
         return {}
