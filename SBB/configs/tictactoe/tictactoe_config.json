@@ -3,9 +3,9 @@
 # This file contains only configurations for reinforcement learning (without sockets).
 
 # Sample result:
-#   Global Mean Validation Score per Validation per Run: [0.43949]
-#   Best Team Validation Score per Validation per Run (champion): [0.56937]
-#   Runtime: 25 mins
+#   Global Mean Validation Score per Validation per Run: [0.48074]
+#   Champion Score per Validation per Run (champion): [0.62937]
+#   Runtime: 32 mins
 
 {
     "task": "reinforcement", 
@@ -96,5 +96,9 @@
     "debug": {
         "enabled": false,
         "output_path": "logs/"
+    },
+
+    "verbose": {
+        "dont_show_std_deviation_in_reports": true
     }
 }

@@ -3,9 +3,29 @@
 # check the other configuration files.
 
 # Sample result:
-#   Global Mean Validation Score per Validation per Run: [0.56967]
-#   Best Team Validation Score per Validation per Run (champion): [0.54629]
-#   Runtime: 0.02 mins
+#   ### Summary Per Run
+#   
+#   Global Mean Fitness Score per Training per Run:
+#   [0.568]
+#   mean: 0.56799
+#   
+#   Global Max. Fitness Score per Training per Run:
+#   [0.57696]
+#   mean: 0.57696
+#   
+#   Global Mean Validation Score per Validation per Run:
+#   [0.5486]
+#   mean: 0.5486
+#   
+#   Global Max. Validation Score per Validation per Run:
+#   [0.56828]
+#   mean: 0.56828
+#   
+#   Champion Score per Validation per Run:
+#   [0.55208]
+#   mean: 0.55208
+#   
+#   Finished execution, total elapsed time: 0.02708 mins (mean: 0.02708, std: 0.0)
 
 {
     "task": "reinforcement", 
@@ -96,5 +116,9 @@
     "debug": {
         "enabled": false,
         "output_path": "logs/"
+    },
+
+    "verbose": {
+        "dont_show_std_deviation_in_reports": true
     }
 }

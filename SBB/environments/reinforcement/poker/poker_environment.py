@@ -15,7 +15,7 @@ from poker_opponents import (PokerRandomOpponent, PokerAlwaysCallOpponent, Poker
     PokerLooseAgressiveOpponent, PokerLoosePassiveOpponent, PokerTightAgressiveOpponent, 
     PokerTightPassiveOpponent, PokerBayesianOpponent)
 from ..reinforcement_environment import ReinforcementEnvironment
-from ....utils.helpers import flatten, accumulative_performances
+from ....utils.helpers import flatten
 from ....config import Config
 
 class PokerEnvironment(ReinforcementEnvironment):
@@ -240,49 +240,6 @@ class PokerEnvironment(ReinforcementEnvironment):
         best_team = super(PokerEnvironment, self).validate(current_generation, teams_population)
 
         return best_team
-
-    def _calculate_accumulative_performances(self, run_info, teams_population, current_generation):
-        older_teams = [team for team in teams_population if team.generation != current_generation]
-        metrics = ['score', 'hands_played', 'hands_won']
-
-        for metric in metrics:
-            if metric == 'score':
-                sorting_criteria = lambda x: x.extra_metrics_['validation_score']
-                get_results_per_points = lambda x: x.results_per_points_for_validation_
-            if metric == 'hands_played':
-                sorting_criteria = lambda x: numpy.mean(x.extra_metrics_['hands_played_or_not_per_point'].values())
-                get_results_per_points = lambda x: x.extra_metrics_['hands_played_or_not_per_point']
-            if metric == 'hands_won':
-                sorting_criteria = lambda x: numpy.mean(x.extra_metrics_['hands_won_or_lost_per_point'].values())
-                get_results_per_points = lambda x: x.extra_metrics_['hands_won_or_lost_per_point']
-            point_ids = [point.point_id_ for point in self.validation_point_population_]
-            individual_performance, accumulative_performance, teams_ids = accumulative_performances(older_teams, point_ids, sorting_criteria, get_results_per_points)
-            run_info.individual_performance_in_last_generation_[metric] = individual_performance
-            run_info.accumulative_performance_in_last_generation_[metric] = accumulative_performance
-            run_info.ids_for_acc_performance_in_last_generation_[metric] = teams_ids
-
-            for subdivision in PokerConfig.CONFIG['labels_per_subdivision'].keys():
-                run_info.individual_performance_per_label_in_last_generation_[metric][subdivision] = {}
-                run_info.accumulative_performance_per_label_in_last_generation_[metric][subdivision] = {}
-                run_info.ids_for_acc_performance_per_label_in_last_generation_[metric][subdivision] = {}
-                for label in PokerConfig.CONFIG['labels_per_subdivision'][subdivision]:
-                    point_ids = [point.point_id_ for point in self.validation_point_population_ if PokerConfig.CONFIG['attributes_per_subdivision'][subdivision](point) == label]
-                    if metric == 'score':
-                        sorting_criteria_per_label = lambda x: numpy.mean(
-                            [x.results_per_points_for_validation_[point_id] for point_id in point_ids])
-                    if metric == 'hands_played':
-                        sorting_criteria_per_label = lambda x: numpy.mean(
-                            [x.extra_metrics_['hands_played_or_not_per_point'][point_id] for point_id in point_ids])
-                    if metric == 'hands_won':
-                        sorting_criteria_per_label = lambda x: numpy.mean(
-                            [x.extra_metrics_['hands_won_or_lost_per_point'][point_id] for point_id in point_ids])
-                    individual_performance, accumulative_performance, teams_ids = accumulative_performances(older_teams, point_ids, sorting_criteria_per_label, get_results_per_points)
-                    run_info.individual_performance_per_label_in_last_generation_[metric][subdivision][label] = individual_performance
-                    run_info.accumulative_performance_per_label_in_last_generation_[metric][subdivision][label] = accumulative_performance
-                    run_info.ids_for_acc_performance_per_label_in_last_generation_[metric][subdivision][label] = teams_ids
-
-    def _summarize_accumulative_performances(self, run_info, metrics = ['score', 'hands_played', 'hands_won']):
-        super(PokerEnvironment, self)._summarize_accumulative_performances(run_info, metrics)
 
     def _initialize_extra_metrics_for_points(self):
         extra_metrics_points = {}

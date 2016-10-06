@@ -52,8 +52,10 @@ class DefaultEnvironment(object):
     @abc.abstractmethod
     def validate(self, current_generation, teams_population):
         """
-        Return the best team for the teams_population using the validation set. It must 
-        also set the team.score_testset_ and, if necessary, team.extra_metrics_
+        For classification:
+        - Return the best team for the teams_population using the champion set.
+        For reinforcement:
+        - All teams go against the validation set, and then the best one go against the champion set
         """
 
     def hall_of_fame(self):

@@ -235,7 +235,7 @@ class ClassificationEnvironment(DefaultEnvironment):
         if is_training:
             team.fitness_ = score
         else:
-            team.score_testset_ = score
+            team.score_champion_ = score
             team.extra_metrics_ = extra_metrics
 
     def _calculate_team_metrics(self, predicted_outputs, desired_outputs, is_training = False):
@@ -251,5 +251,5 @@ class ClassificationEnvironment(DefaultEnvironment):
     def validate(self, current_generation, teams_population):
         fitness = [p.fitness_ for p in teams_population]
         best_team = teams_population[fitness.index(max(fitness))]
-        self.evaluate_team(best_team, Config.RESTRICTIONS['mode']['validation'])
+        self.evaluate_team(best_team, Config.RESTRICTIONS['mode']['champion'])
         return best_team

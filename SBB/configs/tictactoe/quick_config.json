@@ -2,19 +2,33 @@
 # The goal is just to see if everything is working, to train actual good players
 # check the other configuration files.
 
-# This file contains all possible configurations for SBB.
-
 # Sample result:
-#   Global Mean Validation Score per Validation per Run: [0.3875]
-#   Best Team Validation Score per Validation per Run (champion): [0.3875]
-#   Runtime: 0.04 mins
+#   ### Summary Per Run
+#   
+#   Global Mean Fitness Score per Training per Run:
+#   [0.329]
+#   mean: 0.329
+#   
+#   Global Max. Fitness Score per Training per Run:
+#   [0.4]
+#   mean: 0.4
+#   
+#   Global Mean Validation Score per Validation per Run:
+#   [0.36]
+#   mean: 0.36
+#   
+#   Global Max. Validation Score per Validation per Run:
+#   [0.3875]
+#   mean: 0.3875
+#   
+#   Champion Score per Validation per Run:
+#   [0.33125]
+#   mean: 0.33125
+#   
+#   Finished execution, total elapsed time: 0.03436 mins (mean: 0.03436, std: 0.0)
+
 {
     "task": "reinforcement", 
-
-    "classification_parameters": { # only used if "task" is "classification"
-        "dataset": "iris", # must have a .train and a .test file
-        "working_path": "SBB/datasets/"
-    },
 
     "reinforcement_parameters": { # only used if "task" is "reinforcement"
         "environment": "tictactoe",
@@ -33,14 +47,6 @@
             "point_labels_total": 1, # for tictactoe: since no labels are being used
             "training_opponents_labels": ["random", "smart"], # if there are no opponents, set as None or []
             "validation_opponents_labels": ["random", "smart"] # if there are no opponents, set as None or []
-        },
-        "sockets_parameters": { # only used if "environment" is "sockets"
-            "connection": {
-                "host": "localhost",
-                "port": 7800,
-                "timeout": 120,
-                "buffer": 5000
-            }
         }
     },
 
@@ -110,5 +116,9 @@
     "debug": {
         "enabled": false,
         "output_path": "logs/"
+    },
+
+    "verbose": {
+        "dont_show_std_deviation_in_reports": true
     }
 }

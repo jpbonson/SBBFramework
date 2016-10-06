@@ -4,7 +4,7 @@
 
 # Sample result:
 #   Global Mean Validation Score per Validation per Run: [0.01936]
-#   Best Team Validation Score per Validation per Run (champion): [0.96801]
+#   Champion Score per Validation per Run (champion): [0.96801]
 #   Runtime: 21 mins
 
 {
@@ -81,5 +81,9 @@
     "debug": {
         "enabled": false,
         "output_path": "logs/"
+    },
+
+    "verbose": {
+        "dont_show_std_deviation_in_reports": true
     }
 }

@@ -325,6 +325,8 @@ class ReinforcementEnvironment(DefaultEnvironment):
             elif mode == Config.RESTRICTIONS['mode']['champion']:
                 point_population = self.champion_population()
                 opponent_population = self.champion_opponent_population()
+            else:
+                raise ValueError("Invalid mode")
             results = []
             extra_metrics_opponents = defaultdict(list)
             extra_metrics_points = self._initialize_extra_metrics_for_points()
@@ -356,7 +358,10 @@ class ReinforcementEnvironment(DefaultEnvironment):
                 for subkey in extra_metrics_points[key]:
                     extra_metrics_points[key][subkey] = round_value(numpy.mean(extra_metrics_points[key][subkey]))
             team.extra_metrics_['points'] = extra_metrics_points
-            team.score_testset_ = numpy.mean(results)
+            if mode == Config.RESTRICTIONS['mode']['validation']:
+                team.score_validation_ = round_value(numpy.mean(results))
+            else:
+                team.score_champion_ = round_value(numpy.mean(results))
 
     def _initialize_extra_metrics_for_points(self):
         return {}
@@ -370,17 +375,15 @@ class ReinforcementEnvironment(DefaultEnvironment):
             if team.generation != current_generation: # dont evaluate teams that have just being created (to improve performance and to get training metrics)
                 team.results_per_points_for_validation_ = {}
                 self.evaluate_team(team, Config.RESTRICTIONS['mode']['validation'])
-                team.extra_metrics_['validation_score'] = round_value(team.score_testset_)
                 team.extra_metrics_['validation_opponents'] = team.extra_metrics_['opponents']
                 team.extra_metrics_['validation_points'] = team.extra_metrics_['points']
                 team.extra_metrics_.pop('champion_score', None)
                 team.extra_metrics_.pop('champion_opponents', None)
                 team.extra_metrics_.pop('champion_points', None)
-        score = [p.score_testset_ for p in teams_population]
+        score = [p.score_validation_ for p in teams_population]
         best_team = teams_population[score.index(max(score))]
         print "\nvalidating champion..."
         self.evaluate_team(best_team, Config.RESTRICTIONS['mode']['champion'])
-        best_team.extra_metrics_['champion_score'] = round_value(best_team.score_testset_)
         best_team.extra_metrics_['champion_opponents'] = best_team.extra_metrics_['opponents']
         best_team.extra_metrics_['champion_points'] = best_team.extra_metrics_['points']
         return best_team

@@ -22,9 +22,8 @@ class RunInfo:
         self.start_time_ = time.time()
         self.temp_info_ = {}
         
-        self.global_mean_validation_score_per_validation_ = []
         self.train_score_per_validation_ = []
-        self.test_score_per_validation_ = []
+        self.champion_score_per_validation_ = []
         self.global_diversity_per_validation_ = defaultdict(list)
         self.global_mean_fitness_per_generation_ = []
         self.global_max_fitness_per_generation_ = []
@@ -51,10 +50,8 @@ class RunInfo:
 
         msg += "\n\n\n##### GLOBAL METRICS PER VALIDATION"
 
-        msg += "\n\nGlobal Mean Validation Score per Validation: "+str(self.global_mean_validation_score_per_validation_)
-        
-        msg += "\n\nBest Team Fitness per Validation: "+str(round_array(self.train_score_per_validation_))
-        msg += "\nBest Team Validation Score per Validation (champion): "+str(round_array(self.test_score_per_validation_))
+        msg += "\n\nChampion Fitness per Validation: "+str(round_array(self.train_score_per_validation_))
+        msg += "\nChampion Score per Validation: "+str(round_array(self.champion_score_per_validation_))
 
         if len(Config.USER['advanced_training_parameters']['diversity']['metrics']) > 0:
             msg += "\n\nGlobal Diversities per Validation"

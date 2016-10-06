@@ -32,8 +32,9 @@ class Team(DefaultOpponent):
         for program in programs:
             self._add_program(program)
         self.environment = environment
-        self.fitness_ = 0
-        self.score_testset_ = 0
+        self.fitness_ = -1
+        self.score_validation_ = -1
+        self.score_champion_ = -1
         self.extra_metrics_ = {}
         self.active_programs_ = [] # only for training, used for genotype diversity
         self.validation_active_programs_ = [] # for training and validation
@@ -210,21 +211,27 @@ class Team(DefaultOpponent):
 
     def quick_metrics(self):
         validation_active_teams_members_ids = [p.__repr__() for p in self.validation_active_programs_]
-        validation_inactive_programs = list(set(self.programs) - set(self.validation_active_programs_))
-        validation_inactive_teams_members_ids = [p.__repr__() for p in validation_inactive_programs]
-        active_teams_members_ids = [p.__repr__() for p in self.active_programs_]
-        inactive_programs = list(set(self.programs) - set(self.active_programs_))
-        inactive_teams_members_ids = [p.__repr__() for p in inactive_programs]
+        training_active_teams_members_ids = [p.__repr__() for p in self.active_programs_]
 
         msg = self.__repr__()
-        msg += ("\nteam members ("+str(len(self.programs))+"), "
-            "A: "+str(active_teams_members_ids)+", I: "+str(inactive_teams_members_ids))
-        msg += ("\n- validation: A: "+str(validation_active_teams_members_ids)+", "
-            "I: "+str(validation_inactive_teams_members_ids))
+        all_programs_training_info = ["A" if p in self.active_programs_ else "I" for p in self.programs]
+        all_programs_validation_info = ["A" if p in self.validation_active_programs_ else "I" for p in self.programs]
+        all_programs_info = []
+        for p,t,v in zip(self.programs, all_programs_training_info, all_programs_validation_info):
+            all_programs_info.append(p.__repr__()+"-"+t+v)
 
-        msg += ("\nfitness: "+str(round_value(self.fitness_))+", "
-            "test score: "+str(round_value(self.score_testset_)))
-        msg += "\ninputs distribution: "+str(self.inputs_distribution())
+        msg += "\n\nteam members ("+str(len(self.programs))+"): "+str(all_programs_info)
+        msg += "\n(Obs.: (0:0, 0)-AI means that this program was Active in training and Inactive in validation)"
+
+        if Config.USER['task'] == 'classification':
+            msg += ("\n\nfitness: "+str(round_value(self.fitness_))+", "
+                "champion score: "+str(round_value(self.score_champion_)))
+        else:
+            msg += ("\n\nfitness: "+str(round_value(self.fitness_))+", "
+                "validation score: "+str(round_value(self.score_validation_))+", "
+                "champion score: "+str(round_value(self.score_champion_)))
+
+        msg += "\n\ninputs distribution: "+str(self.inputs_distribution())
         
         msg += "\n"
         msg += self.environment.metrics_.metrics_for_team(self)

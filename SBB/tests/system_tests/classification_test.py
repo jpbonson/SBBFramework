@@ -69,6 +69,10 @@ TEST_CONFIG = {
         "enabled": False,
         "output_path": "logs/",
     },
+
+    "verbose": {
+        "dont_show_std_deviation_in_reports": True,
+    },
 }
 
 class ClassificationTests(unittest.TestCase):

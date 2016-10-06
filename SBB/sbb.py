@@ -105,7 +105,9 @@ class SBB:
                     best_team = self.environment_.validate(self.current_generation_, teams_population)
                     self.environment_.metrics_.store_per_validation_metrics(run_info, best_team, 
                         teams_population, programs_population, self.current_generation_)
-                    self.environment_.metrics_.print_per_validation_metrics(run_info, best_team, self.current_generation_)
+                    print "\n\n>>>>> Generation: "+str(self.current_generation_)+", run: "+str(run_info.run_id)
+                    self.environment_.metrics_.print_per_validation_metrics(run_info, best_team)
+                    print "\n<<<<< Generation: "+str(self.current_generation_)+", run: "+str(run_info.run_id)
 
             self.environment_.metrics_.store_per_run_metrics(run_info, best_team, teams_population, pareto_front, 
                 self.current_generation_)
@@ -116,14 +118,14 @@ class SBB:
             sys.stdout.flush()
         
         # finalize execution (get final metrics, print to output, print to file)
-        msg, best_scores_per_runs = self.environment_.metrics_.generate_overall_metrics_output(self.run_infos_)
+        msg = self.environment_.metrics_.generate_overall_metrics_output(self.run_infos_)
 
         elapseds_per_run = [run.elapsed_time_ for run in self.run_infos_]
         msg += "\n\nFinished execution, total elapsed time: "+str(round_value(sum(elapseds_per_run)))+" mins "
         msg += "(mean: "+str(round_value(numpy.mean(elapseds_per_run)))+", std: "+str(round_value(numpy.std(elapseds_per_run)))+")"
 
         initial_info += msg
-        self.best_scores_per_runs_ = best_scores_per_runs
+        self.best_scores_per_runs_ = [round_value(run.best_team_.score_champion_) for run in self.run_infos_]
         print initial_info
         sys.stdout.flush()
         if Config.RESTRICTIONS['write_output_files']:
