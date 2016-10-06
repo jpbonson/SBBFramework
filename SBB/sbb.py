@@ -239,8 +239,8 @@ class SBB:
         print "\n### Files saved at "+self.filepath_+"\n"
 
     def _create_folder(self):
-        if not os.path.exists("outputs/"):
-            os.makedirs("outputs/")
+        if not os.path.exists(Config.RESTRICTIONS['output_folder']):
+            os.makedirs(Config.RESTRICTIONS['output_folder'])
         localtime = time.localtime()
         hours = "%02d%02d%02d" % (localtime.tm_hour,localtime.tm_min,localtime.tm_sec,)
         pretty_localtime = str(localtime.tm_year)+"-"+str(localtime.tm_mon)+"-"+str(localtime.tm_mday)+"-"+hours
@@ -248,7 +248,7 @@ class SBB:
             filename = Config.USER['classification_parameters']['dataset']
         else:
             filename = Config.USER['reinforcement_parameters']['environment']
-        filepath = "outputs/"+str(filename)+"_"+pretty_localtime+"/"
+        filepath = Config.RESTRICTIONS['output_folder']+str(filename)+"_"+pretty_localtime+"/"
         os.makedirs(filepath)
         return filepath
 

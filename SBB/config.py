@@ -61,6 +61,7 @@ class Config():
             'action_mapping': {}, # initialized by sbb.py
             'short_action_mapping': {}, # initialized by sbb.py
         },
+        'output_folder': 'outputs/',
     }
 
     @staticmethod
