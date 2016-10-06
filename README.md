@@ -55,7 +55,28 @@ This framework can be used in the following ways:
 6. Socket Interface
 
 ## 1. Introduction to SBB
-[TODO]
+
+**General Idea:**
+- teams of programs evolve and compete over time
+- each team represents a player in the game
+- at each generation they play many matches against various opponents
+- the best ones reproduce and keep evolving, the others are discarded
+
+**Main Algorithms**:
+- It follows the structure of a typical genetic algorithm:
+
+![](https://s13.postimg.org/uej2lc0fr/image.png "Overview of a Genetic Algorithm")
+
+- Modified with the SBB algorithm:
+
+![](https://s13.postimg.org/6c28qgjsn/sbb.png "Overview of SBB")
+
+- each team (host) is composed of 2 or more programs (symbionts)
+- programs are composed of a set of instructions, registers and an action
+- before a team executes an action:
+   - all of its programs run over the inputs for the current match state
+   - the action from the program with the highest output is selected as the team’s action
+- a point is a game match, that represents the environment
 
 ## 2. References
 
