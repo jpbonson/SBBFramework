@@ -1,15 +1,47 @@
-[![Build Status](https://travis-ci.org/jpbonson/SBBFramework.svg?branch=master)](https://travis-ci.org/jpbonson/SBBFramework)
+[![Build Status](https://travis-ci.org/jpbonson/SBBFramework.svg?branch=master)](https://travis-ci.org/jpbonson/SBBFramework) [![Coverage Status](https://coveralls.io/repos/github/jpbonson/SBBFramework/badge.svg?branch=master)](https://coveralls.io/github/jpbonson/SBBFramework?branch=master)
 
 # SBBFramework
 Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming (GP). This algorithm was developed by the NIMS laboratory, Dalhousie University, Canada.
 
 This framework can be used in the following ways:
 
-- reinforcement learning tasks (via sockets): 
-implement a socket client that follows SBB socket interface (available below), define a configuration, and run SBB and the client. A simple socket client for tictactoe is available in SBB/tests/system_tests/tictactoe_game/.py. Sample configurations for this task are available in SBB/configs/sockets/
-- reinforcement learning tasks (via code extension): implement a class that inherits SBB/environments/default_environment, add the new environment to _initialize_environment in SBB/sbb.py, define a configuration, and run SBB. A simple class implementation for tictactoe is available in SBB/environments/reinforcement/tictactoe/. Sample configurations for this task are available in SBB/configs/tictactoe/ and SBB/configs/poker/
-- reinforcement learning tasks (via code extension): 
-- classification tasks: add a .train and a .test file to SBB/datasets, define a configuration, and run SBB. Sample configurations for this task are available in SBB/configs/classification/ (Warning: This framework was developed focusing on reinforcement learning, so it is not able to deal with big datasets)
+**Reinforcement Learning tasks (via sockets)**
+
+1. implement a socket client that follows SBB socket interface (available below)
+
+2. define a configuration
+
+3. run SBB and the client
+
+- a simple socket client for tictactoe is available in SBB/tests/system_tests/tictactoe_game/
+
+- sample configurations for this task are available in SBB/configs/sockets/
+
+**Reinforcement Learning tasks (via code extension)**
+
+1. implement a class that inherits SBB/environments/default_environment
+
+2. add the new environment to _initialize_environment in SBB/sbb.py
+
+3. define a configuration
+
+4. run SBB
+
+- a simple class implementation for tictactoe is available in SBB/environments/reinforcement/tictactoe/
+
+- sample configurations for this task are available in SBB/configs/tictactoe/ and SBB/configs/poker/
+
+**Classification tasks**
+
+1. add a .train and a .test file to SBB/datasets
+
+2. define a configuration
+
+3. run SBB
+
+- sample configurations for this task are available in SBB/configs/classification/
+- *warning: This framework was developed focusing on reinforcement learning, so it is not able to deal with big datasets*
+
 
 # Index
 1. Introduction to SBB
@@ -17,7 +49,7 @@ implement a socket client that follows SBB socket interface (available below), d
 3. How to Install
 4. How to Run
 5. How to Test
-6. SBB Examples
+6. Socket Interface
 
 ## 1. Introduction to SBB
 [TODO]
@@ -87,3 +119,7 @@ Various predefined configuration files are available in SBB/configs/
 ```
 nosetests
 ```
+
+## 6. Socket Interface
+
+[TODO]
