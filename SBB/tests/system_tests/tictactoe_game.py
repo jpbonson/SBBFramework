@@ -94,9 +94,10 @@ class TictactoeGame():
 
     CONFIG = {}
 
-    def __init__(self, test_mode):
+    def __init__(self, test_mode, port = TEST_CONFIG['port']):
         if test_mode:
             TictactoeGame.CONFIG = TEST_CONFIG
+            TictactoeGame.CONFIG['port'] = port
         else:
             TictactoeGame.CONFIG = DEFAULT_CONFIG
 
@@ -356,6 +357,9 @@ if __name__ == "__main__":
     test_mode = False
     if len(sys.argv) > 1 and sys.argv[1] == "test":
         test_mode = True
-    game = TictactoeGame(test_mode)
+    if len(sys.argv) > 2:
+        game = TictactoeGame(test_mode, int(sys.argv[2]))
+    else:
+        game = TictactoeGame(test_mode)
     while True:
         game.wait_for_requests()

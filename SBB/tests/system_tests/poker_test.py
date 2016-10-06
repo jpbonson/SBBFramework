@@ -109,7 +109,6 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         config['reinforcement_parameters']['environment_parameters']['training_opponents_labels'] = ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"]
         config['reinforcement_parameters']['environment_parameters']['validation_opponents_labels'] = ["loose_agressive", "loose_passive", "tight_agressive", "tight_passive"]
         config['debug']['enabled'] = False
-
         Config.USER = config
 
     def test_reinforcement_for_poker(self):
@@ -193,14 +192,14 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_reinforcement_for_poker_with_debug(self):
-        Config.USER['debug']['output_path'] = "SBB/tests/temp_files/"
+        Config.USER['debug']['output_path'] = "SBB/tests/temp_files2/"
         Config.USER['debug']['enabled'] = True
         Config.check_parameters()
         sbb = SBB()
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
         expected = 1
-        shutil.rmtree("SBB/tests/temp_files/")
+        shutil.rmtree("SBB/tests/temp_files2/")
         self.assertEqual(expected, result)
 
     def test_file_content_for_poker_point(self):
