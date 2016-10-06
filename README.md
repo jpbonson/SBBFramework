@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jpbonson/SBBFramework.svg?branch=master)](https://travis-ci.org/jpbonson/SBBFramework) [![Coverage Status](https://coveralls.io/repos/github/jpbonson/SBBFramework/badge.svg?branch=master)](https://coveralls.io/github/jpbonson/SBBFramework?branch=master)
+[![Build Status](https://travis-ci.org/jpbonson/SBBFramework.svg?branch=master)](https://travis-ci.org/jpbonson/SBBFramework)
 
 # SBBFramework
 Python implementation of **Symbiotic Bid-Based (SBB)** framework for problem decomposition using Genetic Programming (GP). This algorithm was developed by the NIMS laboratory, Dalhousie University, Canada.
@@ -12,20 +12,37 @@ implement a socket client that follows SBB socket interface (available below), d
 - classification tasks: add a .train and a .test file to SBB/datasets, define a configuration, and run SBB. Sample configurations for this task are available in SBB/configs/classification/ (Warning: This framework was developed focusing on reinforcement learning, so it is not able to deal with big datasets)
 
 # Index
-1. Introduction
+1. Introduction to SBB
 2. References
 3. How to Install
 4. How to Run
 5. How to Test
 6. SBB Examples
 
-## 1. Introduction
-...
+## 1. Introduction to SBB
+[TODO]
 
 ## 2. References
+
+Below there are a few of the publications about SBB.
+
+**Papers**
+
+P. Lichodzijewski and M. I. Heywood. Symbiosis, complexification and simplicity under GP. In Proceedings of the ACM Genetic and Evolutionary Computation Conference, pages 853–860, 2010.
+
+J. A. Doucette, P. Lichodzijewski, and M. I. Heywood. Hierarchical task decomposition through symbiosis in reinforcement learning. In ACM Genetic and Evolutionary Computation Conference, pages 97–104, 2012.
+
+S. Kelly, P. Lichodzijewski, and M. I. Heywood. On run time libraries and hierarchical symbiosis. In Evolutionary Computation (CEC), 2012 IEEE Congress on, pages 1–8. IEEE, 2012.
+
+J. P. C. Bonson, A. Mcintyre, and M. I. Heywood. On Novelty Driven Evolution in Poker. In Computational Intelligence, 2016 IEEE Symposium Series on. IEEE, 2016.
+
+**Master Thesis**
+
+J. P. C. Bonson. Diversity and Novelty as Objectives in Poker, 2016. ([link](http://web.cs.dal.ca/~mheywood/Thesis/JPCBonson.pdf))
+
 **PhD Thesis**
 
-Lichodzijewski, P. (2011) A Symbiotic Bid-Based (SBB) framework for problem decomposition using Genetic Programming, PhD Thesis ([link](http://web.cs.dal.ca/~mheywood/Thesis/PLichodzijewski.pdf))
+P. Lichodzijewski. A Symbiotic Bid-Based (SBB) framework for problem decomposition using Genetic Programming, 2011. ([link](http://web.cs.dal.ca/~mheywood/Thesis/PLichodzijewski.pdf))
 
 ## 3. How to Install
 
@@ -46,10 +63,10 @@ sudo apt-get install python-pip
 
 Install the dependencies:
 ```
-sudo apt-get install build-essential python-dev pkg-config python-setuptools python-numpy python-scipy  libatlas-dev libatlas3gf-base libfreetype6-dev python-pypoker-eval
+sudo apt-get install build-essential python-dev pkg-config python-setuptools python-numpy python-scipy  libatlas-dev libatlas3gf-base libfreetype6-dev
 ```
 
-Obs.: You only need to install 'python-pypoker-eval' if you intend to generate poker hands.
+Obs.: You should also install the library 'python-pypoker-eval' if you intend to generate poker hands.
 
 Then execute:
 ```
@@ -60,22 +77,13 @@ Obs.: You also have the option to use Anaconda for Ubuntu.
 ## 4. How to Run
 
 ```
-python main.py
+python main.py -f CONFIG_FILE
 ```
 
-All configurable options are in the SBB/config.py file, in the variable CONFIG.
+Various predefined configuration files are available in SBB/configs/
 
 ## 5. How to Test
 
-To run all tests, execute in the main folder:
 ```
 nosetests
 ```
-
-You can also execute individual tests files using the file name, for example:
-```
-python tests/unit_tests/unit_tests.py
-```
-
-## 6. SBB Examples
-...
