@@ -106,46 +106,30 @@ class PokerTightPassiveOpponent(PokerRuleBasedOpponent):
 
 class PokerLAAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "LA_antiplayer"
-    def __init__(self, balanced = True):
-        if balanced:
-            alfa = 5.0
-            beta = 5.0
-        else:
-            alfa = 4.0
-            beta = 4.0
+    def __init__(self):
+        alfa = 5.0
+        beta = 5.0
         super(PokerLAAntiPlayerOpponent, self).__init__(PokerLAAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
 
 class PokerLPAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "LP_antiplayer"
-    def __init__(self, balanced = True):
-        if balanced:
-            alfa = 6.0
-            beta = 6.0
-        else:
-            alfa = 4.0
-            beta = 5.0
+    def __init__(self):
+        alfa = 6.0
+        beta = 6.0
         super(PokerLPAntiPlayerOpponent, self).__init__(PokerLPAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
 
 class PokerTAAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "TA_antiplayer"
-    def __init__(self, balanced = True):
-        if balanced:
-            alfa = 2.0
-            beta = 2.0
-        else:
-            alfa = 0.0
-            beta = 0.0
+    def __init__(self):
+        alfa = 2.0
+        beta = 2.0
         super(PokerTAAntiPlayerOpponent, self).__init__(PokerTAAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
 
 class PokerTPAntiPlayerOpponent(PokerRuleBasedOpponent):
     OPPONENT_ID = "TP_antiplayer"
-    def __init__(self, balanced = True):
-        if balanced:
-            alfa = 2.0
-            beta = 2.0
-        else:
-            alfa = 0.0
-            beta = 0.0
+    def __init__(self):
+        alfa = 2.0
+        beta = 2.0
         super(PokerTPAntiPlayerOpponent, self).__init__(PokerTPAntiPlayerOpponent.OPPONENT_ID, alfa, beta)
 
 class PokerBayesianOpponent(DefaultOpponent):
@@ -244,26 +228,3 @@ class PokerBayesianOpponent(DefaultOpponent):
 
     def reset_registers(self):
         pass
-
-    def get_behaviors_quick_metrics(self):
-        result = {}
-        result['agressiveness'] = self.extra_metrics_['agressiveness']
-        result['tight_loose'] = self.extra_metrics_['tight_loose']
-        result['passive_aggressive'] = self.extra_metrics_['passive_aggressive']
-        result['bluffing'] = self.extra_metrics_['bluffing']
-        result['normalized_result_mean'] = numpy.mean(self.results_per_points_for_validation_.values())
-        result['normalized_result_std'] = numpy.std(self.results_per_points_for_validation_.values())
-        return result
-
-    def quick_metrics(self):
-        print "Metrics for Played Hands:"
-        print "- total_hands: "+str(float(self.extra_metrics_['total_hands']['validation']))
-        print "- hand_played: "+str(self.extra_metrics_['hand_played']['validation'])
-        print "- won_hands: "+str(self.extra_metrics_['won_hands']['validation'])
-        print "- hand_played/total_hands: "+str(self.extra_metrics_['hand_played']['validation']
-            /float(self.extra_metrics_['total_hands']['validation']))
-        print "- won_hands/total_hands: "+str(self.extra_metrics_['won_hands']['validation']
-            /float(self.extra_metrics_['total_hands']['validation']))
-        print "- won_hands/hand_played: "+str(self.extra_metrics_['won_hands']['validation']
-            /float(self.extra_metrics_['hand_played']['validation']))
-        return ""
