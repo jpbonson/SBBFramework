@@ -188,10 +188,10 @@ class PokerBayesianOpponent(DefaultOpponent):
         }
         self.action_prob = action_prob_from_tests_with_4bets
         self.antiplayers = {
-            'tp': PokerTPAntiPlayerOpponent(balanced),
-            'ta': PokerTAAntiPlayerOpponent(balanced),
-            'lp': PokerLPAntiPlayerOpponent(balanced),
-            'la': PokerLAAntiPlayerOpponent(balanced),
+            'tp': PokerTPAntiPlayerOpponent(),
+            'ta': PokerTAAntiPlayerOpponent(),
+            'lp': PokerLPAntiPlayerOpponent(),
+            'la': PokerLAAntiPlayerOpponent(),
         }
         self.programs = []
         self.extra_metrics_ = {}
