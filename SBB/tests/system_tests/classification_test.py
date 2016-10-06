@@ -1,4 +1,5 @@
 import unittest
+import shutil
 from collections import deque
 from ...config import Config
 from ...sbb import SBB
@@ -110,6 +111,17 @@ class ClassificationTests(unittest.TestCase):
         sbb.run()
         result = len(sbb.best_scores_per_runs_)
         expected = 1
+        self.assertEqual(expected, result)
+
+    def test_classification_for_iris_with_output(self):
+        Config.RESTRICTIONS['write_output_files'] = True
+        Config.RESTRICTIONS['output_folder'] = "SBB/tests/temp_files4/"
+        Config.check_parameters()
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        shutil.rmtree("SBB/tests/temp_files4/")
         self.assertEqual(expected, result)
 
     def test_classification_for_thyroid(self):

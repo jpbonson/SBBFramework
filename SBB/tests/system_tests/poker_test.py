@@ -202,6 +202,17 @@ class TictactoeWithSocketsTests(unittest.TestCase):
         shutil.rmtree("SBB/tests/temp_files2/")
         self.assertEqual(expected, result)
 
+    def test_reinforcement_for_poker_with_output(self):
+        Config.RESTRICTIONS['write_output_files'] = True
+        Config.RESTRICTIONS['output_folder'] = "SBB/tests/temp_files3/"
+        Config.check_parameters()
+        sbb = SBB()
+        sbb.run()
+        result = len(sbb.best_scores_per_runs_)
+        expected = 1
+        shutil.rmtree("SBB/tests/temp_files3/")
+        self.assertEqual(expected, result)
+
     def test_file_content_for_poker_point(self):
         Config.check_parameters()
         sbb = SBB()

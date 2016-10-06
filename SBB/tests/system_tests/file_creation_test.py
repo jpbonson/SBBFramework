@@ -12,9 +12,9 @@ class FileCreationTests(unittest.TestCase):
     def setUpClass(cls):
         super(FileCreationTests, cls).setUpClass()
         Config.RESTRICTIONS['write_output_files'] = True
-        Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['teams']*1.0))
         Config.RESTRICTIONS['output_folder'] = "SBB/tests/temp_files/"
-
+        Config.RESTRICTIONS['novelty_archive']['samples'] = deque(maxlen=int(TEST_CONFIG['training_parameters']['populations']['teams']*1.0))
+        
         config = dict(TEST_CONFIG)
         config['training_parameters']['runs_total'] = 1
         config['reinforcement_parameters']['hall_of_fame']['enabled'] = True
