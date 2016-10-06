@@ -11,11 +11,13 @@ This framework can be used in the following ways:
 
 2. define a configuration
 
-3. run SBB and the client
+3. run SBB
 
-- a simple socket client for tictactoe is available in SBB/tests/system_tests/tictactoe_game/
+4. run the socket client
 
-- sample configurations for this task are available in SBB/configs/sockets/
+- a simple socket client for tictactoe is available [here](https://github.com/jpbonson/SBBFramework/blob/master/SBB/tests/system_tests/tictactoe_game.py).
+
+- sample configurations for this task are available [here](https://github.com/jpbonson/SBBFramework/tree/master/SBB/configs/sockets).
 
 **Reinforcement Learning tasks (via code extension)**
 
@@ -27,9 +29,9 @@ This framework can be used in the following ways:
 
 4. run SBB
 
-- a simple class implementation for tictactoe is available in SBB/environments/reinforcement/tictactoe/
+- a simple class implementation for tictactoe is available [here](https://github.com/jpbonson/SBBFramework/blob/master/SBB/environments/reinforcement/tictactoe/tictactoe_environment.py).
 
-- sample configurations for this task are available in SBB/configs/tictactoe/ and SBB/configs/poker/
+- sample configurations for this task are available [here](https://github.com/jpbonson/SBBFramework/tree/master/SBB/configs/tictactoe) for tictactoe and [here](https://github.com/jpbonson/SBBFramework/tree/master/SBB/configs/poker) for poker.
 
 **Classification tasks**
 
@@ -39,8 +41,9 @@ This framework can be used in the following ways:
 
 3. run SBB
 
-- sample configurations for this task are available in SBB/configs/classification/
-- *warning: This framework was developed focusing on reinforcement learning, so it is not able to deal with big datasets*
+- sample configurations for this task are available [here](https://github.com/jpbonson/SBBFramework/tree/master/SBB/configs/classification).
+
+- *warning: This framework was developed focusing on reinforcement learning, so it is not able to deal with big datasets.*
 
 
 # Index
@@ -84,27 +87,20 @@ Install [Anaconda for Python 2.7](http://continuum.io/downloads)
 
 In the Windows console, type 'anaconda' before running the python commands.
 
-Obs.: You should also install the library 'python-pypoker-eval' if you intend to generate poker hands.
-
 **Ubuntu:**
-
-First, you must have pip installed:
-```
-sudo apt-get install python-pip
-```
 
 Install the dependencies:
 ```
-sudo apt-get install build-essential python-dev pkg-config python-setuptools python-numpy python-scipy  libatlas-dev libatlas3gf-base libfreetype6-dev
+apt-get install build-essential python-dev pkg-config python-setuptools python-numpy python-scipy libatlas-dev libatlas3gf-base libfreetype6-dev python-pip
 ```
-
-Obs.: You should also install the library 'python-pypoker-eval' if you intend to generate poker hands.
 
 Then execute:
 ```
-sudo pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 Obs.: You also have the option to use Anaconda for Ubuntu.
+
+Obs.: You should also install the library 'python-pypoker-eval' if you want to generate poker hands.
 
 ## 4. How to Run
 
@@ -112,7 +108,7 @@ Obs.: You also have the option to use Anaconda for Ubuntu.
 python main.py -f CONFIG_FILE
 ```
 
-Various predefined configuration files are available in SBB/configs/
+Various predefined configuration files are available [here](https://github.com/jpbonson/SBBFramework/tree/master/SBB/configs).
 
 ## 5. How to Test
 
