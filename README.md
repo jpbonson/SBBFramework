@@ -118,4 +118,47 @@ nosetests
 
 ## 6. Socket Interface
 
-[TODO]
+All the messages have the format:
+{'message_type': message_type, 'params': {}}
+
+The server sends the following message types: ['new_match', 'perform_action']
+
+The client sends the following message types: ['match_running', 'match_ended']
+
+A match starts with a 'new_match' message from the server, then sequences of 'match_running' from the client and 'perform_action' from the server, until the client sends a 'match_ended'.
+
+### Message Types:
+
+**'new_match'**
+- Informs the client that it should set up a new match.
+- **Sent by:** server
+- **Parameters:** 
+    - 'mode': 'training', 'validation', or 'champion', can be used to debug (string)
+    - 'match_id': can be used to debug (string)
+    - 'opponent_label': used by the client, to know what opponent should be used to initialize the match (optional) (string)
+    - 'point_label': used by the client, to know what label should be used to initialize the match (optional) (int)
+        - for example, in the case of poker there are 9 labels, for 9 hands based on the player's strength and the opponent's strength, where the strength is [weak, intermediate, strong]
+    - 'point_seed': used by the client, to know what seed should be used to initialize the match (optional) (int)
+    - 'point_id': used by the client, to know what point should be used to initialize the match (optional) (int)
+
+**'match_running'**
+- Gives information about the match state to the server.
+- **Sent by:** client
+- **Parameters:** 
+    - 'inputs': the current match state, all values must be between 0.0 and 10.0 (list of floats)
+    - 'valid_actions': the valid actions for the current match state (list of ints)
+    - 'current_player': 'sbb' or 'hall_of_fame', only is used if the hall of fame is enabled (string)
+                            
+**'perform_action'**
+- Based on the match state, defines an action to execute in the client.
+- **Sent by:** server
+- **Parameters:** 
+    - 'mode': 'training', 'validation', or 'champion', can be used to debug (string)
+    - 'match_id': can be used to debug (string)
+    - 'action': the chosen action (int)
+
+**'match_ended'**
+- Informs the server that the match ended.
+- **Sent by:** client
+- **Parameters:** 
+    - 'result': a value from 0.0 to 1.0 indicating how the player performed in this match (float)
