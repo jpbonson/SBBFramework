@@ -116,7 +116,6 @@ class ClassificationTests(unittest.TestCase):
     def test_classification_for_iris_with_output(self):
         Config.RESTRICTIONS['write_output_files'] = True
         Config.RESTRICTIONS['output_folder'] = "SBB/tests/temp_files4/"
-        Config.USER['advanced_training_parameters']['diversity']['metrics'] = ['genotype', 'fitness_sharing']
         Config.check_parameters()
         sbb = SBB()
         sbb.run()
