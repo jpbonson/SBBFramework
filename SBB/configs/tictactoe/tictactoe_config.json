@@ -3,9 +3,29 @@
 # This file contains only configurations for reinforcement learning (without sockets).
 
 # Sample result:
-#   Global Mean Validation Score per Validation per Run: [0.48074]
-#   Champion Score per Validation per Run (champion): [0.62937]
-#   Runtime: 32 mins
+#   ### Summary Per Run
+#   
+#   Global Mean Fitness Score per Training per Run:
+#   [0.472]
+#   mean: 0.472
+#   
+#   Global Max. Fitness Score per Training per Run:
+#   [0.63]
+#   mean: 0.63
+#   
+#   Global Mean Validation Score per Validation per Run:
+#   [0.45877]
+#   mean: 0.45877
+#   
+#   Global Max. Validation Score per Validation per Run:
+#   [0.57999]
+#   mean: 0.57999
+#   
+#   Champion Score per Validation per Run:
+#   [0.55687]
+#   mean: 0.55687
+#   
+#   Finished execution, total elapsed time: 27.87208 mins (mean: 27.87208, std: 0.0)
 
 {
     "task": "reinforcement", 

@@ -3,9 +3,21 @@
 # This file contains only configurations for classification.
 
 # Sample result:
-#   Global Mean Validation Score per Validation per Run: [0.01933, 0.01933]
-#   Champion Score per Validation per Run (champion): [0.96666, 1.0]
-#   Runtime: 30 mins (15 mins per run)
+#   ### Summary Per Run
+#   
+#   Global Mean Fitness Score per Training per Run:
+#   [0.778, 0.732]
+#   mean: 0.755
+#   
+#   Global Max. Fitness Score per Training per Run:
+#   [0.97979, 0.98989]
+#   mean: 0.98484
+#   
+#   Champion Score per Validation per Run:
+#   [0.93333, 0.96666]
+#   mean: 0.94999
+
+Finished execution, total elapsed time: 33.5405 mins (mean: 16.77025, std: 2.75526)
 
 {
     "task": "classification", 
