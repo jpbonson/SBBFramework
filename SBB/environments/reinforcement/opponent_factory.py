@@ -12,7 +12,7 @@ class DummyOpponent(DefaultOpponent):
         pass
 
     def execute(self, point_id_, inputs, valid_actions, is_training):
-        return 0
+        pass
 
 def opponent_factory(name, opponent_id, BaseClass=DummyOpponent):
     def _custom_init(self):

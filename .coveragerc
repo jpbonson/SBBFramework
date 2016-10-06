@@ -33,9 +33,11 @@ exclude_lines =
     raise SystemExit
     raise ValueError
     sys.stderr.write
+    socket.error
 
     # Don't complain if non-runnable code isn't run:
     if 0:
     if __name__ == .__main__.:
+    pass
 
 ignore_errors = True
